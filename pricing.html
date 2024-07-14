@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+       :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            background-color: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .get-started-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-left: 1.5rem;
+        }
+
+        .get-started-btn:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-toggle button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pricing-toggle button.active {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .pricing-plan {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pricing-plan:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        }
+
+        .pricing-plan h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .price span {
+            font-size: 1rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-button {
+            display: block;
+            text-align: center;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #0EA5E9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: var(--card-bg);
+            color: #D1D5DB;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="index.html">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        TaskMasterAI
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing </a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#" class="get-started-btn">Get started today</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1>Choose Your Perfect Plan</h1>
+
+        <div class="pricing-toggle">
+            <button id="yearly" class="active">Yearly</button>
+            <button id="monthly">Monthly</button>
+        </div>
+
+        <div class="pricing-container">
+            <div class="pricing-plan">
+                <h2>Basic</h2>
+                <div class="price">Free</div>
+                <p id="basic-billing">Billed yearly</p>
+                <ul>
+                    <li>Personalized Learning Paths</li>
+                    <li>Task and Project Management</li>
+                    <li>Interactive Tutorials and Courses</li>
+                    <li>AI-Powered Assistance</li>
+                    <li>Resource Library</li>
+                    <li>Community and Networking</li>
+                </ul>
+                <a href="#" class="cta-button">Get Started for Free</a>
+            </div>
+
+            <div class="pricing-plan">
+                <h2>Standard</h2>
+                <div class="price">$8.99 <span>per month</span></div>
+                <p id="standard-billing">Billed yearly</p>
+                <ul>
+                    <li>All Basic features, plus</li>
+                    <li>Enhanced AI-Powered Assistance</li>
+                    <li>Full access to Resource Library</li>
+                    <li>Advanced Productivity Tools</li>
+                    <li>Career Development tools</li>
+                </ul>
+                <a href="#" class="cta-button">Get Started Now</a>
+            </div>
+
+            <div class="pricing-plan">
+                <h2>Premium</h2>
+                <div class="price">$3.99 <span>per month</span></div>
+                <p id="premium-billing">Billed yearly</p>
+                <ul>
+                    <li>All Standard features, plus</li>
+                    <li>Priority support</li>
+                    <li>Customizable Dashboard</li>
+                    <li>Advanced Analytics</li>
+                    <li>Exclusive content and resources</li>
+                </ul>
+                <a href="#" class="cta-button">Get Started Now</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 TaskMaster AI. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const yearlyButton = document.getElementById('yearly');
+        const monthlyButton = document.getElementById('monthly');
+        const standardPrice = document.querySelector('.pricing-plan:nth-child(2) .price');
+        const premiumPrice = document.querySelector('.pricing-plan:nth-child(3) .price');
+        const standardBilling = document.getElementById('standard-billing');
+        const premiumBilling = document.getElementById('premium-billing');
+
+        yearlyButton.addEventListener('click', () => {
+            yearlyButton.classList.add('active');
+            monthlyButton.classList.remove('active');
+            standardPrice.innerHTML = '$8.99 <span>per month</span>';
+            premiumPrice.innerHTML = '$3.99 <span>per month</span>';
+            standardBilling.textContent = 'Billed yearly';
+            premiumBilling.textContent = 'Billed yearly';
+        });
+
+        monthlyButton.addEventListener('click', () => {
+            monthlyButton.classList.add('active');
+            yearlyButton.classList.remove('active');
+            standardPrice.innerHTML = '$12.99 <span>per month</span>';
+            premiumPrice.innerHTML = '$8.99 <span>per month</span>';
+            standardBilling.textContent = 'Billed monthly';
+            premiumBilling.textContent = 'Billed monthly';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+       :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            background-color: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .get-started-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-left: 1.5rem;
+        }
+
+        .get-started-btn:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            padding: 8rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-color), var(--secondary-color));
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            color: #D1D5DB;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .cta-button:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button::after {
+            content: 'No credit card required';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #D1D5DB;
+            white-space: nowrap;
+        }
+
+        .features {
+            padding: 8rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        }
+
+        .feature h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature p {
+            font-size: 1.1rem;
+            color: #D1D5DB;
+        }
+
+        .trusted-section {
+            text-align: center;
+            padding: 6rem 0;
+            background-color: var(--secondary-color);
+        }
+
+        .trusted-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .logo-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .logo-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            background-color: var(--card-bg);
+            color: #D1D5DB;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="index.html">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        TaskMasterAI
+                    </a>
+                    
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="#about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="signup.html" class="get-started-btn">Get started today</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Smart scheduling, seamless collaboration, personalized reminders, and beyond.</h1>
+                <p>Upload any document, audio, video, or website and transform it into actionable insights!</p>
+                <a href="signup.html" class="cta-button">Start now for free</a>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature">
+                        <h3>AI-Powered Task Prioritization</h3>
+                        <p>Our advanced AI algorithms intelligently organize and prioritize your tasks, ensuring you focus on what matters most.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Adaptive Learning Paths</h3>
+                        <p>Experience personalized learning journeys that adapt to your progress, goals, and learning style for optimal growth.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Smart Time Analytics</h3>
+                        <p>Gain invaluable insights into your time usage patterns with our AI-driven time tracking and analysis tools.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Collaborative AI Workspace</h3>
+                        <p>Seamlessly collaborate with team members while our AI facilitates efficient communication and task distribution.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Contextual AI Reminders</h3>
+                        <p>Receive intelligent, context-aware reminders that help you stay on track with your goals and commitments.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Predictive Performance Insights</h3>
+                        <p>Leverage AI-generated predictions and recommendations to continuously improve your productivity and skills.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="trusted-section">
+            <div class="container">
+                <h2>Trusted by Industry Leaders</h2>
+                <div class="logo-grid">
+                    <div class="logo-item"><img src="file:///Users/srinibaj/Downloads/629a63d7c979dec9708b11b2.png" alt="Asana"></div>
+                    <div class="logo-item"><img src="https://seeklogo.com/images/S/slack-logo-50A32CEFAA-seeklogo.com.png" alt="Slack"></div>
+                    <div class="logo-item"><img src="file:///Users/srinibaj/Downloads/trello.png" alt="Trello"></div>
+                    <div class="logo-item"><img src="https://static.vecteezy.com/system/resources/previews/012/871/376/original/zoom-logo-in-blue-colors-meetings-app-logotype-illustration-free-png.png" alt="Zoom"></div>
+                    <div class="logo-item"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" alt="Notion"></div>
+                    <div class="logo-item"><img src="https://cdn.freebiesupply.com/logos/large/2x/evernote-icon-logo-png-transparent.png" alt="Evernote"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 TaskMaster AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
