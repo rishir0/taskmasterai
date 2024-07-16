@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
+    <title>TaskMaster AI - Sign In</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,8 +14,6 @@
             --bg-color: #121212;
             --card-bg: #1E1E1E;
         }
-        
-        
         
         * {
             margin: 0;
@@ -34,7 +32,7 @@
             min-height: 100vh;
         }
 
-        .signup-container {
+        .signin-container {
             background-color: var(--card-bg);
             border-radius: 10px;
             padding: 2rem;
@@ -121,7 +119,7 @@
             color: var(--text-color);
         }
 
-        .create-account-btn {
+        .signin-btn {
             background-color: var(--accent-color);
             color: var(--text-color);
             padding: 0.75rem;
@@ -132,16 +130,27 @@
             transition: background-color 0.3s ease;
         }
 
-        .create-account-btn:hover {
+        .signin-btn:hover {
             background-color: #0EA5E9;
         }
 
-        .signin-link {
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .signup-link {
             text-align: center;
             margin-top: 1rem;
         }
 
-        .signin-link a {
+        .signup-link a {
             color: var(--primary-color);
             text-decoration: none;
         }
@@ -160,8 +169,8 @@
     </style>
 </head>
 <body>
-    <div class="signup-container">
-        <h1>Sign Up</h1>
+    <div class="signin-container">
+        <h1>Login</h1>
         <p class="description">Create notes in minutes. Free forever. No credit card required.</p>
         <a href="#" class="google-btn">
             <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
@@ -177,14 +186,6 @@
         </div>
         <form>
             <div class="form-group">
-                <label for="firstname">First name</label>
-                <input type="text" id="firstname" name="firstname" required>
-            </div>
-            <div class="form-group">
-                <label for="lastname">Last name</label>
-                <input type="text" id="lastname" name="lastname" required>
-            </div>
-            <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
             </div>
@@ -192,13 +193,16 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="create-account-btn">Create Account</button>
+            <div class="forgot-password">
+                <a href="#">Forgot password?</a>
+            </div>
+            <button type="submit" class="signin-btn">Sign In</button>
         </form>
-        <div class="signin-link">
-            <p>Already have an account? <a href="login.html">Sign In</p>
+        <div class="signup-link">
+            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
         </div>
         <div class="terms">
-            <p>By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+            <p>By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
         </div>
     </div>
 </body>

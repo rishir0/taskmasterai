@@ -6,7 +6,7 @@
     <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-       :root {
+        :root {
             --primary-color: #6C63FF;
             --secondary-color: #3F3D56;
             --accent-color: #F50057;
@@ -119,25 +119,32 @@
         h1 {
             font-size: 3rem;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
         }
 
         .pricing-toggle {
             display: flex;
             justify-content: center;
             margin-bottom: 3rem;
+            background-color: var(--card-bg);
+            border-radius: 30px;
+            padding: 3px;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .pricing-toggle button {
-            margin: 1rem;
-            padding: 1.75rem 4rem;
-            font-size: 2rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
             border: none;
-            background-color: var(--card-bg);
+            background: none;
             color: var(--text-color);
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-            border-radius: 15px;
+            transition: background-color 0.3s ease;
+            border-radius: 25px;
+            width: 50%;
         }
 
         .pricing-toggle button.active {
@@ -148,8 +155,8 @@
         .pricing-container {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
             gap: 2rem;
+            margin-bottom: 4rem;
         }
 
         .pricing-plan {
@@ -157,29 +164,34 @@
             border-radius: 15px;
             padding: 2rem;
             width: 300px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
 
-        .pricing-plan:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        .pricing-plan.featured {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
         }
 
         .pricing-plan h2 {
-            font-size: 1.5rem;
-            text-align: center;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
         }
 
         .price {
-            font-size: 2.5rem;
-            text-align: center;
-            margin: 1rem 0;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
         }
 
         .price span {
             font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .billing-cycle {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 1.5rem;
         }
 
         ul {
@@ -189,12 +201,30 @@
         }
 
         li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        li::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 0.5rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+
+        .pricing-plan.featured li::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .cta-button {
             display: block;
-            margin-top: auto;
             text-align: center;
             background-color: var(--accent-color);
             color: var(--text-color);
@@ -209,15 +239,49 @@
             background-color: #0EA5E9;
         }
 
+        .pricing-plan.featured .cta-button {
+            background-color: var(--text-color);
+            color: var(--primary-color);
+        }
+
         footer {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
             text-align: center;
             padding: 2rem 0;
             background-color: var(--card-bg);
             color: #D1D5DB;
+        }
+
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #7e6bf1;
+            transition: color 0.3s ease;
+        }
+    
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+    
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .logo a:hover {
+            color: #9f91f5;
+        }
+    
+        .logo a:hover svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+    
+        .logo a:hover svg path {
+            stroke: #9f91f5;
+            transition: stroke 0.3s ease;
         }
     </style>
 </head>
@@ -232,20 +296,21 @@
                             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        TaskMasterAI
+                        <span>TaskMasterAI</span>
                     </a>
                 </div>
                 <div class="nav-links">
-                    <a href="index.html">Home</a>
                     <a href="index.html#features">Features</a>
-                    <a href="#pricing">Pricing </a>
+                    <a href="pricing.html">Pricing </a>
+                    <a href="#about">About</a>
+                    <a href="contact.html">Contact</a>
                     <a href="signup.html" class="get-started-btn">Get started today</a>
                 </div>
             </nav>
         </div>
     </header>
 
-    <main>
+    <main class="container">
         <h1>Choose Your Perfect Plan</h1>
 
         <div class="pricing-toggle">
@@ -256,8 +321,8 @@
         <div class="pricing-container">
             <div class="pricing-plan">
                 <h2>Basic</h2>
-                <div class="price">Free</div>
-                <p id="basic-billing">Billed yearly</p>
+                <p class="price">Free</p>
+                <p class="billing-cycle" id="basic-billing">Billed yearly</p>
                 <ul>
                     <li>Personalized Learning Paths</li>
                     <li>Task and Project Management</li>
@@ -266,35 +331,35 @@
                     <li>Resource Library</li>
                     <li>Community and Networking</li>
                 </ul>
-                <a href="signup.html" class="cta-button">Get Started for Free</a>
+                <a href="#" class="cta-button">Get Started for Free</a>
             </div>
 
-            <div class="pricing-plan">
-                <h2>Standard</h2>
-                <div class="price">$8.99 <span>per month</span></div>
-                <p id="standard-billing">Billed yearly</p>
-                <ul>
-                    <li>All Basic features, plus</li>
-                    <li>Enhanced AI-Powered Assistance</li>
-                    <li>Full access to Resource Library</li>
-                    <li>Advanced Productivity Tools</li>
-                    <li>Career Development tools</li>
-                </ul>
-                <a href="signup.html" class="cta-button">Get Started Now</a>
-            </div>
-
-            <div class="pricing-plan">
+            <div class="pricing-plan featured">
                 <h2>Premium</h2>
-                <div class="price">$3.99 <span>per month</span></div>
-                <p id="premium-billing">Billed yearly</p>
+                <p class="price">$8.99 <span>per month</span></p>
+                <p class="billing-cycle" id="standard-billing">Billed yearly</p>
                 <ul>
-                    <li>All Standard features, plus</li>
+                    <li>All Standard features</li>
                     <li>Priority support</li>
                     <li>Customizable Dashboard</li>
                     <li>Advanced Analytics</li>
                     <li>Exclusive content and resources</li>
                 </ul>
-                <a href="signup.html" class="cta-button">Get Started Now</a>
+                <a href="#" class="cta-button">Get Started Now</a>
+            </div>
+
+            <div class="pricing-plan">
+                <h2>Standard</h2>
+                <p class="price">$3.99 <span>per month</span></p>
+                <p class="billing-cycle" id="premium-billing">Billed yearly</p>
+                <ul>
+                    <li>All Basic features</li>
+                    <li>Enhanced AI-Powered Assistance</li>
+                    <li>Full access to Resource Library</li>
+                    <li>Advanced Productivity Tools</li>
+                    <li>Career Development tools</li>
+                </ul>
+                <a href="#" class="cta-button">Get Started Now</a>
             </div>
         </div>
     </main>

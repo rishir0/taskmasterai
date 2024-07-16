@@ -30,7 +30,7 @@
         }
 
         .container {
-            max-width: 1500px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -130,8 +130,8 @@
         }
 
         .hero p {
-            font-size: 3rem;
-            max-width: 900px;
+            font-size: 1.4rem;
+            max-width: 700px;
             margin: 0 auto 3rem;
             color: #D1D5DB;
         }
@@ -168,7 +168,7 @@
         }
 
         .features {
-            padding: 3rem 0;
+            padding: 8rem 0;
         }
 
         .features-grid {
@@ -180,7 +180,7 @@
         .feature {
             background-color: var(--card-bg);
             border-radius: 15px;
-            padding: 2rem;
+            padding: 2.5rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -255,20 +255,58 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="index.html">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        TaskMasterAI
-                    </a>
+                    <div class="logo">
+                        <a href="index.html">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>TaskMasterAI</span>
+                        </a>
+                    </div>
+                    
+                    <style>
+                        .logo a {
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #7e6bf1;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .logo svg {
+                            width: 30px;
+                            height: 30px;
+                            margin-right: 10px;
+                            transition: transform 0.3s ease;
+                        }
+                    
+                        .logo span {
+                            font-size: 24px;
+                            font-weight: bold;
+                        }
+                    
+                        .logo a:hover {
+                            color: #9f91f5;
+                        }
+                    
+                        .logo a:hover svg {
+                            transform: rotate(15deg) scale(1.1);
+                        }
+                    
+                        .logo a:hover svg path {
+                            stroke: #9f91f5;
+                            transition: stroke 0.3s ease;
+                        }
+                    </style>
                     
                 </div>
                 <div class="nav-links">
-                    <a href="index.html">Home</a>
                     <a href="#features">Features</a>
                     <a href="pricing.html">Pricing</a>
+                    <a href="#about.html">About</a>
+                    <a href="contact.html">Contact</a>
                     <a href="signup.html" class="get-started-btn">Get started today</a>
                 </div>
             </nav>
