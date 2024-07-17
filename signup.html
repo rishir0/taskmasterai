@@ -6,6 +6,157 @@
     <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .signup-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .description {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #D1D5DB;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #4285F4;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .google-btn:hover {
+            background-color: #3367D6;
+        }
+
+        .google-icon {
+            margin-right: 10px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #4B5563;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            color: #4B5563;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #4B5563;
+            border-radius: 5px;
+            background-color: #374151;
+            color: var(--text-color);
+        }
+
+        .create-account-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .create-account-btn:hover {
+            background-color: #0EA5E9;
+        }
+
+        .signin-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .signin-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .terms {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #9CA3AF;
+        }
+
+        .terms a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <div class="signup-container">
@@ -24,7 +175,23 @@
             <span>OR</span>
         </div>
         <form>
-            <!-- Your existing form content -->
+            <div class="form-group">
+                <label for="firstname">First name</label>
+                <input type="text" id="firstname" name="firstname" required>
+            </div>
+            <div class="form-group">
+                <label for="lastname">Last name</label>
+                <input type="text" id="lastname" name="lastname" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="create-account-btn">Create Account</button>
         </form>
         <div class="signin-link">
             <p>Already have an account? <a href="login.html">Sign In</a></p>
