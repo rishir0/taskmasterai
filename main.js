@@ -1,3 +1,5 @@
+import { account} from './appwrite'
+
 // Load the Google API client library
 function loadAuth() {
     gapi.load('auth2', initAuth);
