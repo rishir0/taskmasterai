@@ -6,7 +6,7 @@ function loadAuth() {
   // Initialize the Google API client library
   function initAuth() {
     gapi.auth2.init({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID',
+      client_id: '770736679860-jqmf4nq7dga1oks76c608e2c98hrmf3a.apps.googleusercontent.com',
       scope: 'profile email'
     }).then(() => {
       attachSignin(document.getElementById('google-signin-btn'));
