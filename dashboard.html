@@ -177,6 +177,40 @@
         .menu-dots {
             cursor: pointer;
         }
+
+        .pomodoro-timer {
+            margin-top: 20px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .pomodoro-timer input[type="text"] {
+            width: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .pomodoro-timer button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .pomodoro-timer button:hover {
+            background-color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
@@ -211,7 +245,7 @@
                     <path d="M12 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M9 14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Projects
+                Features
             </div>
             <div class="menu-item">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -233,7 +267,7 @@
                 </svg>
                 Upgrade to Premium
             </button>
-            <div class="user-profile">
+            <div class="user-profile" onclick="window.location.href='account.html'">
                 <div class="user-avatar"></div>
                 <div id="username">User Name</div>
                 <div class="menu-dots">
@@ -271,8 +305,63 @@
                     <span>Details</span>
                 </div>
             </div>
+            <div class="pomodoro-timer">
+            <h2>Pomodoro Timer</h2>
+            <input type="text" id="timer" value="25:00" readonly>
+            <br>
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
         </div>
     </div>
+    <script>
+    let timer;
+    let isRunning = false;
+    let timeLeft = 1500; // 25 minutes
+    
+    const timerDisplay = document.getElementById('timer');
+    const startButton = document.getElementById('start');
+    const pauseButton = document.getElementById('pause');
+    const resetButton = document.getElementById('reset');
+    
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        timer = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                isRunning = false;
+            }
+        }, 1000);
+    }
+    
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+    }
+    
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        timeLeft = 1500;
+        updateDisplay();
+    }
+    
+    function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const seconds = (timeLeft % 60).toString().padStart(2, '0');
+        timerDisplay.value = `${minutes}:${seconds}`;
+    }
+    
+    startButton.addEventListener('click', startTimer);
+    pauseButton.addEventListener('click', pauseTimer);
+    resetButton.addEventListener('click', resetTimer);
+    
+    updateDisplay();
+    </script>
+    </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
