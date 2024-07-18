@@ -164,6 +164,7 @@
             align-items: center;
             margin-top: auto;
             padding-top: 20px;
+            cursor: pointer;
         }
 
         .user-avatar {
@@ -177,6 +178,86 @@
         .menu-dots {
             cursor: pointer;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: var(--text-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .modal-body {
+            margin: 15px 0;
+        }
+
+        .modal-body label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .modal-body input[type="text"],
+        .modal-body input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background-color: #524bdc;
+        }
+
     </style>
 </head>
 <body>
@@ -199,31 +280,15 @@
             </div>
             <div class="menu-item">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Tasks
             </div>
             <div class="menu-item">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 2V6H8V2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 17H20L23 20V4C23 2.89543 22.1046 2 21 2H3C1.89543 2 1 2.89543 1 4V20L4 17H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Projects
-            </div>
-            <div class="menu-item">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 11H20L17 14M7 14L4 11H7M17 3L21 7M3 7L7 3M12 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Integration
-            </div>
-            <div class="menu-item">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13 16H7M17 10H7M7 21H17C18.1046 21 19 20.1046 19 19V5C19 3.89543 18.1046 3 17 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Documentation
+                Messages
             </div>
             <button class="upgrade-btn">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -231,48 +296,80 @@
                     <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Upgrade to Premium
+                Upgrade
             </button>
-            <div class="user-profile">
+            <div class="user-profile" onclick="document.getElementById('settingsModal').style.display='block'">
                 <div class="user-avatar"></div>
-                <div id="username">User Name</div>
+                <div>
+                    <p id="username">John Doe</p>
+                </div>
                 <div class="menu-dots">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11ZM12 8C12.5523 8 13 7.55228 13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7C11 7.55228 11.4477 8 12 8ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17C13 16.4477 12.5523 16 12 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
             </div>
         </div>
         <div class="main-content">
             <div class="dashboard-header">
-                <h1>Welcome, <span id="displayName">User</span>!</h1>
-                <p>Your personalized dashboard</p>
+                <h1>Welcome to TaskMaster AI</h1>
+                <p>Your AI-powered productivity assistant</p>
             </div>
             <div class="create-new">
                 <div class="create-option">
                     <h3>Create New Task</h3>
-                    <p>Organize your work efficiently</p>
+                    <p>Organize your tasks and stay productive</p>
                 </div>
                 <div class="create-option">
                     <h3>Create New Project</h3>
-                    <p>Manage your projects</p>
+                    <p>Manage your projects and collaborate with others</p>
+                </div>
+                <div class="create-option">
+                    <h3>Create New Note</h3>
+                    <p>Keep your notes and ideas in one place</p>
                 </div>
             </div>
             <div class="all-items">
-                <h3>All Items</h3>
+                <h2>All Items</h2>
                 <div class="item">
-                    <span>Task 1</span>
-                    <span>Details</span>
+                    <p>Task 1</p>
+                    <button>Complete</button>
                 </div>
                 <div class="item">
-                    <span>Project 1</span>
-                    <span>Details</span>
+                    <p>Project 1</p>
+                    <button>Complete</button>
+                </div>
+                <div class="item">
+                    <p>Note 1</p>
+                    <button>Complete</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- The Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('settingsModal').style.display='none'">&times;</span>
+            <div class="modal-header">
+                <h2>Settings</h2>
+            </div>
+            <div class="modal-body">
+                <label for="username">Change Username</label>
+                <input type="text" id="displayName" name="username" value="John Doe">
+                
+                <label for="password">Change Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter new password">
+                
+                <label for="email">Change Email</label>
+                <input type="text" id="email" name="email" value="john.doe@example.com">
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -295,7 +392,8 @@
                 if (user) {
                     const username = user.displayName || user.email;
                     document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
+                    document.getElementById('displayName').value = username;
+                    document.getElementById('email').value = user.email;
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
