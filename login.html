@@ -172,7 +172,7 @@
     <div class="signin-container">
         <h1>Login</h1>
         <p class="description">Create notes in minutes. Free forever. No credit card required.</p>
-        <a href="#" class="google-btn">
+        <a href="#" class="google-btn" id="google-login-btn">
             <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
                 <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
                 <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
@@ -184,7 +184,7 @@
         <div class="divider">
             <span>OR</span>
         </div>
-        <form>
+        <form id="signin-form">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
@@ -205,5 +205,91 @@
             <p>By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"></script>
+    <script type="module">
+        // Import the necessary Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAaEx5MNHGkpTDG99HLsUmOTG_4jgkzT5w",
+            authDomain: "deepwork-ai.firebaseapp.com",
+            projectId: "deepwork-ai",
+            storageBucket: "deepwork-ai.appspot.com",
+            messagingSenderId: "665565085555",
+            appId: "1:665565085555:web:bf4d8de1c5bd0b46a90f06"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        // Function to save user data
+        const saveUserData = async (user) => {
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || "Anonymous"
+                });
+                console.log("User data saved successfully");
+            } catch (error) {
+                console.error("Error saving user data:", error);
+            }
+        };
+
+        // Google Sign-In
+        const provider = new GoogleAuthProvider();
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', () => {
+                signInWithPopup(auth, provider)
+                    .then(async (result) => {
+                        // Google Sign-In successful
+                        const user = result.user;
+                        console.log('Google Sign-In successful:', user);
+                        await saveUserData(user);
+                        alert('Google Sign-In successful');
+                        window.location.href = "dashboard.html"; // Redirect to dashboard
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Error with Google Sign-In:', errorCode, errorMessage);
+                        alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
+                    });
+            });
+        }
+
+        // Sign-In Form
+        const signinForm = document.getElementById('signin-form');
+        if (signinForm) {
+            signinForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // Signed in
+                        const user = userCredential.user;
+                        console.log('Sign-In successful:', user);
+                        alert('Sign-In successful');
+                        window.location.href = "dashboard.html"; // Redirect to dashboard
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Error signing in:', errorCode, errorMessage);
+                        alert(`Error signing in: ${errorCode} - ${errorMessage}`);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
