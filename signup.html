@@ -173,7 +173,7 @@
         <div class="divider">
             <span>OR</span>
         </div>
-        <form>
+        <form id="signup-form">
             <div class="form-group">
                 <label for="firstname">First name</label>
                 <input type="text" id="firstname" name="firstname" required>
@@ -205,107 +205,92 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"></script>
     <script type="module">
         // Import the necessary Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-      authDomain: "deepworkai-c3419.firebaseapp.com",
-      projectId: "deepworkai-c3419",
-      storageBucket: "deepworkai-c3419.appspot.com",
-      messagingSenderId: "367439182644",
-      appId: "1:367439182644:web:304216430df97eff68c361"
-    };
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore();
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
 
-    // Function to save user data
-    const saveUserData = async (user) => {
-      try {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || "Anonymous"
-        });
-        console.log("User data saved successfully");
-      } catch (error) {
-        console.error("Error saving user data:", error);
-      }
-    };
+        // Function to save user data
+        const saveUserData = async (user) => {
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || "Anonymous",
+                    firstName: user.firstName || "",
+                    lastName: user.lastName || ""
+                });
+                console.log("User data saved successfully");
+            } catch (error) {
+                console.error("Error saving user data:", error);
+            }
+        };
 
-    // Google Sign-In
-    const provider = new GoogleAuthProvider();
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    if (googleLoginBtn) {
-      googleLoginBtn.addEventListener('click', () => {
-        signInWithPopup(auth, provider)
-          .then(async (result) => {
-            // Google Sign-In successful
-            const user = result.user;
-            console.log('Google Sign-In successful:', user);
-            await saveUserData(user);
-            alert('Google Sign-In successful');
-            window.location.href = "dashboard.html"; // Redirect to dashboard
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error('Error with Google Sign-In:', errorCode, errorMessage);
-            alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-          });
-      });
-    }
+        // Google Sign-In
+        const provider = new GoogleAuthProvider();
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', () => {
+                signInWithPopup(auth, provider)
+                    .then(async (result) => {
+                        // Google Sign-In successful
+                        const user = result.user;
+                        console.log('Google Sign-In successful:', user);
+                        await saveUserData(user);
+                        alert('Google Sign-In successful');
+                        window.location.href = "dashboard.html"; // Redirect to dashboard
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Error with Google Sign-In:', errorCode, errorMessage);
+                        alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
+                    });
+            });
+        }
 
-    // Sign-Up Form
-    const signupForm = document.getElementById('signup-form');
-    if (signupForm) {
-      signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        createUserWithEmailAndPassword(auth, email, password)
-          .then(async (userCredential) => {
-            // Signed up
-            const user = userCredential.user;
-            console.log('Sign-Up successful:', user);
-            await saveUserData(user);
-            alert('Sign-Up successful');
-            window.location.href = "dashboard.html"; // Redirect to dashboard
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error('Error signing up:', errorCode, errorMessage);
-            alert(`Error signing up: ${errorCode} - ${errorMessage}`);
-          });
-      });
-    }
-
-    // Forgot Password
-    const forgotPasswordLink = document.getElementById('forgot-password');
-    if (forgotPasswordLink) {
-      forgotPasswordLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Add your forgot password logic here
-        console.log('Forgot Password clicked');
-        alert('Forgot Password clicked');
-      });
-    }
-
-    // Login Button
-    const loginButton = document.getElementById('login-button');
-    if (loginButton) {
-      loginButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Redirect to the login page
-        window.location.href = 'login.html';
-      });
-    }
-  </script>
+        // Sign-Up Form
+        const signupForm = document.getElementById('signup-form');
+        if (signupForm) {
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const firstName = document.getElementById('firstname').value;
+                const lastName = document.getElementById('lastname').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        // Signed up
+                        const user = userCredential.user;
+                        user.firstName = firstName;
+                        user.lastName = lastName;
+                        console.log('Sign-Up successful:', user);
+                        await saveUserData(user);
+                        alert('Sign-Up successful');
+                        window.location.href = "dashboard.html"; // Redirect to dashboard
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error('Error signing up:', errorCode, errorMessage);
+                        alert(`Error signing up: ${errorCode} - ${errorMessage}`);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
