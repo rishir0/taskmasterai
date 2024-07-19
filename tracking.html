@@ -188,33 +188,8 @@
         }
 
         .goal-list li {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             padding: 10px;
             border-bottom: 1px solid var(--primary-color);
-        }
-
-        .goal-list li.completed {
-            text-decoration: line-through;
-            color: grey;
-        }
-
-        .goal-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .goal-actions button {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .goal-actions button:hover {
-            color: var(--accent-color);
         }
     </style>
 </head>
@@ -279,135 +254,105 @@
         </div>
     </div>
     
-    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-    <script>
-        // Your web app's Firebase configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
+<script>
+    // Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+        authDomain: "deepworkai-c3419.firebaseapp.com",
+        projectId: "deepworkai-c3419",
+        storageBucket: "deepworkai-c3419.appspot.com",
+        messagingSenderId: "367439182644",
+        appId: "1:367439182644:web:304216430df97eff68c361"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-                    // Fetch goals from Firestore
-                    loadGoals(user.uid);
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
+    // Authentication state observer
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+
+            // Load goals for the authenticated user
+            loadGoals(user.uid);
+
+            // Handle form submission to add new goal
+            document.getElementById('goalForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addGoal(user.uid);
             });
+        } else {
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    });
 
-            document.getElementById('add-goal-btn').addEventListener('click', function() {
-                const goalInput = document.getElementById('goal-input');
-                const goalText = goalInput.value.trim();
-                const user = firebase.auth().currentUser;
-                
-                if (goalText !== '' && user) {
-                    addGoal(user.uid, goalText);
-                    goalInput.value = '';
-                }
+    // Load goals from Firestore
+    function loadGoals(userId) {
+        db.collection('goals').where('userId', '==', userId).onSnapshot(snapshot => {
+            const goalList = document.getElementById('goalList');
+            goalList.innerHTML = ''; // Clear existing goals
+            snapshot.forEach(doc => {
+                const goal = doc.data();
+                const li = document.createElement('li');
+                li.textContent = goal.text;
+                li.appendChild(createEditButton(doc.id, goal.text));
+                li.appendChild(createDeleteButton(doc.id));
+                goalList.appendChild(li);
             });
         });
+    }
 
-        function addGoal(userId, goalText) {
-            db.collection('users').doc(userId).collection('goals').add({
+    // Add a new goal to Firestore
+    function addGoal(userId) {
+        const goalInput = document.getElementById('goalInput');
+        const goalText = goalInput.value.trim();
+        if (goalText) {
+            db.collection('goals').add({
+                userId: userId,
                 text: goalText,
-                completed: false,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(function(docRef) {
-                displayGoal(docRef.id, goalText, false);
-            }).catch(function(error) {
-                console.error("Error adding goal: ", error);
+            }).then(() => {
+                goalInput.value = ''; // Clear input field
+            }).catch(error => {
+                console.error('Error adding goal: ', error);
             });
         }
+    }
 
-        function loadGoals(userId) {
-            db.collection('users').doc(userId).collection('goals').orderBy('timestamp', 'asc')
-                .get()
-                .then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
-                        displayGoal(doc.id, doc.data().text, doc.data().completed);
-                    });
-                })
-                .catch(function(error) {
-                    console.error("Error loading goals: ", error);
-                });
-        }
-
-        function displayGoal(goalId, goalText, completed) {
-            const goalList = document.getElementById('goal-list');
-            const listItem = document.createElement('li');
-            listItem.setAttribute('data-id', goalId);
-            listItem.className = completed ? 'completed' : '';
-            listItem.innerHTML = `
-                <span class="goal-text">${goalText}</span>
-                <div class="goal-actions">
-                    <button onclick="editGoal('${goalId}', '${goalText}')">Edit</button>
-                    <button onclick="deleteGoal('${goalId}')">Delete</button>
-                    <button onclick="toggleCompleteGoal('${goalId}', ${!completed})">${completed ? 'Undo' : 'Complete'}</button>
-                </div>
-            `;
-            goalList.appendChild(listItem);
-        }
-
-        function editGoal(goalId, currentText) {
-            const newText = prompt("Edit your goal:", currentText);
-            if (newText !== null && newText.trim() !== "") {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
-                        text: newText
-                    }).then(function() {
-                        document.querySelector(`li[data-id="${goalId}"] .goal-text`).textContent = newText;
-                    }).catch(function(error) {
-                        console.error("Error updating goal: ", error);
-                    });
-                }
-            }
-        }
-
-        function deleteGoal(goalId) {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                db.collection('users').doc(user.uid).collection('goals').doc(goalId).delete()
-                    .then(function() {
-                        document.querySelector(`li[data-id="${goalId}"]`).remove();
-                    }).catch(function(error) {
-                        console.error("Error deleting goal: ", error);
-                    });
-            }
-        }
-
-        function toggleCompleteGoal(goalId, completed) {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
-                    completed: completed
-                }).then(function() {
-                    const listItem = document.querySelector(`li[data-id="${goalId}"]`);
-                    listItem.className = completed ? 'completed' : '';
-                    listItem.querySelector('button:last-child').textContent = completed ? 'Undo' : 'Complete';
-                }).catch(function(error) {
-                    console.error("Error updating goal: ", error);
+    // Create edit button for each goal
+    function createEditButton(goalId, currentText) {
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => {
+            const newText = prompt('Edit your goal:', currentText);
+            if (newText) {
+                db.collection('goals').doc(goalId).update({
+                    text: newText
+                }).catch(error => {
+                    console.error('Error editing goal: ', error);
                 });
             }
-        }
-    </script>
+        });
+        return editButton;
+    }
+
+    // Create delete button for each goal
+    function createDeleteButton(goalId) {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => {
+            db.collection('goals').doc(goalId).delete().catch(error => {
+                console.error('Error deleting goal: ', error);
+            });
+        });
+        return deleteButton;
+    }
+</script>
 </body>
 </html>
