@@ -204,6 +204,14 @@
                 <h1>Features</h1>
             </div>
             <div class="section">
+                <h2>Distraction Blocker</h2>
+                <div>
+                    <input type="text" id="block-item-input" placeholder="Add website/app to block" />
+                    <button id="block-item-btn">Add</button>
+                </div>
+                <div id="blocked-list"></div>
+            </div>
+            <div class="section">
                 <h2>Ambient Sounds</h2>
                 <div class="sound-options">
                     <div class="sound-option" data-sound="white-noise">White Noise</div>
@@ -215,10 +223,57 @@
                   <iframe id="instrumental" src="https://www.youtube.com/embed/lBFmdkEZiMQ?autoplay=0&loop=1&playlist=lBFmdkEZiMQ" allow="autoplay"></iframe>
                   <div id="playing" class="playing" style="display: none;">Now Playing: <span id="current-sound"></span></div>
                 </main>
-              
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+    const blockedList = document.getElementById('blocked-list');
+    const blockItemInput = document.getElementById('block-item-input');
+    const blockItemBtn = document.getElementById('block-item-btn');
+
+    const blockedSites = JSON.parse(localStorage.getItem('blockedSites')) || [];
+
+    function saveBlockedSites() {
+        localStorage.setItem('blockedSites', JSON.stringify(blockedSites));
+    }
+
+    function renderBlockedSites() {
+        blockedList.innerHTML = '';
+        blockedSites.forEach((site, index) => {
+            const blockedItemDiv = document.createElement('div');
+            blockedItemDiv.classList.add('blocked-item');
+            blockedItemDiv.innerHTML = `<span>${site}</span><button class="remove-btn" data-index="${index}">Remove</button>`;
+            blockedList.appendChild(blockedItemDiv);
+        });
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = this.getAttribute('data-index');
+                blockedSites.splice(index, 1);
+                saveBlockedSites();
+                renderBlockedSites();
+            });
+        });
+    }
+
+    blockItemBtn.addEventListener('click', () => {
+        const item = blockItemInput.value.trim();
+        if (item && !blockedSites.includes(item)) {
+            blockedSites.push(item);
+            saveBlockedSites();
+            renderBlockedSites();
+            blockItemInput.value = '';
+        }
+    });
+
+    renderBlockedSites();
+
+    // Redirect if current URL is in the blocked list
+    const currentSite = window.location.hostname;
+    if (blockedSites.includes(currentSite)) {
+        window.location.href = 'https://www.google.com'; // Redirect to a safe page
+    }
+});
 
               
-                <script>
                   const soundOptions = document.querySelectorAll('.sound-option');
                   const playingDisplay = document.getElementById('playing');
                   const currentSoundDisplay = document.getElementById('current-sound');
