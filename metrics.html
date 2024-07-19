@@ -154,6 +154,52 @@
             margin-bottom: 10px;
         }
     </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+
+                    // Fetch and display focus metrics
+                    const db = firebase.firestore();
+                    db.collection('focusMetrics').doc(user.uid).get().then((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('timeSpent').textContent = data.timeSpent || 'No data';
+                            document.getElementById('distractions').textContent = data.distractions || 'No data';
+                            document.getElementById('productivityTrends').textContent = data.productivityTrends || 'No data';
+                        } else {
+                            console.log("No such document!");
+                        }
+                    }).catch((error) => {
+                        console.log("Error getting document:", error);
+                    });
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -205,15 +251,15 @@
                 <div class="focus-metrics">
                     <div class="metric-card">
                         <h3>Time Spent on Focused Work</h3>
-                        <p>Track the amount of time you spend on focused work without distractions.</p>
+                        <p id="timeSpent">Loading...</p>
                     </div>
                     <div class="metric-card">
                         <h3>Distraction Metrics</h3>
-                        <p>Identify the common distractions and how much time is spent on them.</p>
+                        <p id="distractions">Loading...</p>
                     </div>
                     <div class="metric-card">
                         <h3>Productivity Trends</h3>
-                        <p>Analyze productivity trends over time to understand your work habits.</p>
+                        <p id="productivityTrends">Loading...</p>
                     </div>
                 </div>
             </div>
