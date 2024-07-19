@@ -188,8 +188,33 @@
         }
 
         .goal-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 10px;
             border-bottom: 1px solid var(--primary-color);
+        }
+
+        .goal-list li.completed {
+            text-decoration: line-through;
+            color: grey;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .goal-actions button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .goal-actions button:hover {
+            color: var(--accent-color);
         }
     </style>
 </head>
@@ -303,10 +328,10 @@
         function addGoal(userId, goalText) {
             db.collection('users').doc(userId).collection('goals').add({
                 text: goalText,
+                completed: false,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(function(docRef) {
-                console.log("Goal added with ID: ", docRef.id);
-                displayGoal(goalText);
+                displayGoal(docRef.id, goalText, false);
             }).catch(function(error) {
                 console.error("Error adding goal: ", error);
             });
@@ -317,7 +342,7 @@
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        displayGoal(doc.data().text);
+                        displayGoal(doc.id, doc.data().text, doc.data().completed);
                     });
                 })
                 .catch(function(error) {
@@ -325,11 +350,63 @@
                 });
         }
 
-        function displayGoal(goalText) {
+        function displayGoal(goalId, goalText, completed) {
             const goalList = document.getElementById('goal-list');
             const listItem = document.createElement('li');
-            listItem.textContent = goalText;
+            listItem.setAttribute('data-id', goalId);
+            listItem.className = completed ? 'completed' : '';
+            listItem.innerHTML = `
+                <span class="goal-text">${goalText}</span>
+                <div class="goal-actions">
+                    <button onclick="editGoal('${goalId}', '${goalText}')">Edit</button>
+                    <button onclick="deleteGoal('${goalId}')">Delete</button>
+                    <button onclick="toggleCompleteGoal('${goalId}', ${!completed})">${completed ? 'Undo' : 'Complete'}</button>
+                </div>
+            `;
             goalList.appendChild(listItem);
+        }
+
+        function editGoal(goalId, currentText) {
+            const newText = prompt("Edit your goal:", currentText);
+            if (newText !== null && newText.trim() !== "") {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
+                        text: newText
+                    }).then(function() {
+                        document.querySelector(`li[data-id="${goalId}"] .goal-text`).textContent = newText;
+                    }).catch(function(error) {
+                        console.error("Error updating goal: ", error);
+                    });
+                }
+            }
+        }
+
+        function deleteGoal(goalId) {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection('users').doc(user.uid).collection('goals').doc(goalId).delete()
+                    .then(function() {
+                        document.querySelector(`li[data-id="${goalId}"]`).remove();
+                    }).catch(function(error) {
+                        console.error("Error deleting goal: ", error);
+                    });
+            }
+        }
+
+        function toggleCompleteGoal(goalId, completed) {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
+                    completed: completed
+                }).then(function() {
+                    const listItem = document.querySelector(`li[data-id="${goalId}"]`);
+                    listItem.className = completed ? 'completed' : '';
+                    listItem.querySelector('button:last-child').textContent = completed ? 'Undo' : 'Complete';
+                }).catch(function(error) {
+                    console.error("Error updating goal: ", error);
+                });
+            }
         }
     </script>
 </body>
