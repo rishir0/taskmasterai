@@ -172,65 +172,31 @@
       color: #ffffff;
     }
 
-        .chat-container {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-        }
+    .chatbot-container {
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      max-width: 800px;
+      margin: 2rem auto;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
 
-        .chat-box {
-            display: flex;
-            flex-direction: column;
-            height: 300px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--primary-color);
-            border-radius: 5px;
-        }
+    .chatbot-header {
+      background-color: #333;
+      color: #fff;
+      padding: 16px;
+      text-align: center;
+    }
 
-        .chat-message {
-            margin-bottom: 10px;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            text-align: right;
-        }
-
-        .bot-message {
-            align-self: flex-start;
-            text-align: left;
-        }
-
-        .chat-input {
-            display: flex;
-            gap: 10px;
-        }
-
-        .chat-input input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid var(--primary-color);
-            border-radius: 5px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-
-        .chat-input button {
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: var(--text-color);
-            transition: background-color 0.3s ease;
-        }
-
-        .chat-input button:hover {
-            background-color: #574b90;
-        }
+    .chatbot-iframe {
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
     </style>
 </head>
 <body>
@@ -251,6 +217,12 @@
                 </svg>
                 Dashboard
             </div>
+            <div class="menu-item" onclick="window.location.href='workschedule.html'">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 12L21 12M12 3L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Work Schedule
+            </div>            
         </div>
         <div class="main-content">
             <div class="dashboard-header">
@@ -305,20 +277,21 @@
                   });
                 </script>
               </body>
-            <div class="section">
-                <h2>Work Schedule</h2>
-                <div class="chat-container">
-                    <div class="chat-box" id="chat-box">
-                        <!-- Chat messages will appear here -->
-                    </div>
-                    <div class="chat-input">
-                        <input type="text" id="user-input" placeholder="Type a message..." />
-                        <button id="send-button">Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                <main>
+                    <div class="section">
+                        <div class="chatbot-container">
+                            <div class="chatbot-header">
+                                <h2>Personalized Work Schedule</h2>
+                            </div>
+                            <iframe
+                                class="chatbot-iframe"
+                                src="https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU"
+                                title="Chatbot"
+                                frameborder="0"
+                                style="width: 100%; height: 600px; border: none;"
+                            ></iframe>
+                        </div>
+                    </div>                               
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
