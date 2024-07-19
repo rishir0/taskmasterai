@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster AI - Features</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .menu-item {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .menu-item:hover {
+            color: var(--primary-color);
+        }
+
+        .upgrade-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .upgrade-btn svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .upgrade-btn:hover {
+            background-color: #0EA5E9;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .back-link {
+            display: block;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .sound-options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .sound-option {
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      text-align: center;
+      width: 150px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .sound-option:hover {
+      background-color: #2c3e91;
+    }
+
+    iframe {
+      display: none;
+      width: 0;
+      height: 0;
+      border: none;
+    }
+
+    .playing {
+      display: block;
+      margin-top: 2rem;
+      color: #ffffff;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                TaskMaster AI
+            </div>
+            <div class="menu-item" onclick="window.location.href='dashboard.html'">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Dashboard
+            </div>
+            <div class="menu-item" onclick="window.location.href='workschedule.html'">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 12L21 12M12 3L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Work Schedule
+            </div>            
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h1>Features</h1>
+            </div>
+            <div class="section">
+                <h2>Ambient Sounds</h2>
+                <div class="sound-options">
+                    <div class="sound-option" data-sound="white-noise">White Noise</div>
+                    <div class="sound-option" data-sound="nature">Rain Sounds</div>
+                    <div class="sound-option" data-sound="instrumental">Instrumental Music</div>
+                  </div>
+                  <iframe id="white-noise" src="https://www.youtube.com/embed/nMfPqeZjc2c?autoplay=0&loop=1&playlist=nMfPqeZjc2c" allow="autoplay"></iframe>
+                  <iframe id="nature" src="https://www.youtube.com/embed/GqwagDvuWNk?autoplay=0&loop=1&playlist=GqwagDvuWNk" allow="autoplay"></iframe>
+                  <iframe id="instrumental" src="https://www.youtube.com/embed/lBFmdkEZiMQ?autoplay=0&loop=1&playlist=lBFmdkEZiMQ" allow="autoplay"></iframe>
+                  <div id="playing" class="playing" style="display: none;">Now Playing: <span id="current-sound"></span></div>
+                </main>
+              
+
+              
+                <script>
+                  const soundOptions = document.querySelectorAll('.sound-option');
+                  const playingDisplay = document.getElementById('playing');
+                  const currentSoundDisplay = document.getElementById('current-sound');
+                  let currentIframe = null;
+              
+                  soundOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                      const sound = option.getAttribute('data-sound');
+                      const iframeElement = document.getElementById(sound);
+              
+                      if (currentIframe && currentIframe !== iframeElement) {
+                        currentIframe.src = currentIframe.src.replace("autoplay=1", "autoplay=0"); // Stop current iframe
+                        currentIframe.style.display = 'none';
+                      }
+              
+                      if (currentIframe === iframeElement && iframeElement.style.display === 'block') {
+                        iframeElement.src = iframeElement.src.replace("autoplay=1", "autoplay=0");
+                        iframeElement.style.display = 'none';
+                        currentIframe = null;
+                        playingDisplay.style.display = 'none';
+                      } else {
+                        iframeElement.src = iframeElement.src.replace("autoplay=0", "autoplay=1"); // Start iframe
+                        iframeElement.style.display = 'block';
+                        currentIframe = iframeElement;
+                        currentSoundDisplay.textContent = option.textContent;
+                        playingDisplay.style.display = 'block';
+                      }
+                    });
+                  });
+                </script>
+              </body>
+                <main>
+                          
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDu-g8EdM4Z39SoJexi4Y4J8J9jLNV8Wqs",
+            authDomain: "taskmaster-ai.firebaseapp.com",
+            projectId: "taskmaster-ai",
+            storageBucket: "taskmaster-ai.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script>
+            const chatBox = document.getElementById('chat-box');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+
+            function addMessage(message, isUser = true) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('chat-message', isUser ? 'user-message' : 'bot-message');
+                messageDiv.textContent = message;
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            sendButton.addEventListener('click', () => {
+                const message = userInput.value.trim();
+                if (message) {
+                    addMessage(message);
+                    userInput.value = '';
+                    // Simulate bot response
+                    setTimeout(() => {
+                        addMessage(`Bot response to "${message}"`, false);
+                    }, 1000);
+                }
+            });
+
+            userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
