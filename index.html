@@ -248,7 +248,7 @@
             color: #D1D5DB;
         }
 
-       /* Mobile Styles */
+        /* Mobile Styles */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -269,83 +269,56 @@
                 margin-bottom: 0.5rem;
             }
 
-            .nav-links .get-started-btn {
-                display: inline-block;
+            .get-started-btn {
                 font-size: 0.8rem;
                 padding: 0.4rem 0.8rem;
-                margin-top: 0.5rem;
             }
 
             .nav-links.active {
                 display: flex;
-                flex-direction: column;
             }
 
-            .popup-menu {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                justify-content: center;
-                align-items: center;
-                z-index: 1001;
-            }
-
-            .popup-menu.active {
-                display: flex;
-            }
-
-            .popup-menu .menu-content {
-                background: var(--card-bg);
-                padding: 2rem;
-                border-radius: 10px;
-                text-align: center;
-                max-width: 300px;
-                width: 80%;
-            }
-
-            .popup-menu .menu-content a {
+            .sidebar-toggle {
                 display: block;
-                margin: 1rem 0;
-                font-size: 1.2rem;
-                color: var(--primary-color);
-                text-decoration: none;
-            }
-
-            .popup-menu .menu-content .get-started-btn {
-                font-size: 1rem;
-                padding: 0.5rem 1rem;
-                margin-top: 1rem;
-            }
-
-            .popup-menu .close-btn {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                font-size: 2rem;
-                color: var(--primary-color);
+                background-color: transparent;
+                border: none;
                 cursor: pointer;
+                color: var(--text-color);
             }
-        }
 
-        /* Typography Adjustments */
-        @media (max-width: 768px) {
+            .sidebar-toggle svg {
+                width: 24px;
+                height: 24px;
+            }
+
             h1 {
-                font-size: 3rem;
-            }
-
-            p {
-                font-size: 1rem;
-            }
-
-            h2 {
                 font-size: 2rem;
             }
 
-            h3 {
+            .pricing-container {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .pricing-plan {
+                width: auto;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .logo svg {
+                width: 50px; /* Increased size */
+                height: 50px; /* Increased size */
+                margin-right: 10px;
+            }
+
+            .pricing-toggle button {
+                font-size: 0.8rem;
+            }
+
+            .pricing-plan h2 {
                 font-size: 1.5rem;
             }
 
@@ -447,17 +420,6 @@
         </div>
     </header>
 
-    <div class="popup-menu">
-        <div class="menu-content">
-            <span class="close-btn">&times;</span>
-            <a href="index.html#features">Features</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="#about">About</a>
-            <a href="contact.html">Contact</a>
-            <a href="signup.html" class="get-started-btn">Get started today</a>
-        </div>
-    </div>
-
     <main>
         <section class="hero">
             <div class="container">
@@ -521,11 +483,7 @@
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            document.querySelector('.popup-menu').classList.toggle('active');
-        });
-
-        document.querySelector('.popup-menu .close-btn').addEventListener('click', function() {
-            document.querySelector('.popup-menu').classList.remove('active');
+            document.querySelector('.nav-links').classList.toggle('active');
         });
     </script>
 
