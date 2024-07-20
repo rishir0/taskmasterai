@@ -427,57 +427,6 @@
                 }
             });
         });
-        
-    // Authentication state observer
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-
-            // Load goals for the authenticated user
-            loadGoals(user.uid);
-
-            // Handle form submission to add new goal
-            document.getElementById('goalForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                addGoal(user.uid);
-            });
-        } else {
-            window.location.href = "login.html"; // Redirect to login page
-        }
-    });
-
-    // Load goals from Firestore
-    function loadGoals(userId) {
-        db.collection('goals').where('userId', '==', userId).onSnapshot(snapshot => {
-            const goalList = document.getElementById('goalList');
-            goalList.innerHTML = ''; // Clear existing goals
-            snapshot.forEach(doc => {
-                const goal = doc.data();
-                const li = document.createElement('li');
-                li.textContent = goal.text;
-                li.appendChild(createEditButton(doc.id, goal.text));
-                li.appendChild(createDeleteButton(doc.id));
-                goalList.appendChild(li);
-            });
-        });
-    }
-
-    // Add a new goal to Firestore
-    function addGoal(userId) {
-        const goalInput = document.getElementById('goalInput');
-        const goalText = goalInput.value.trim();
-        if (goalText) {
-            db.collection('goals').add({
-                userId: userId,
-                text: goalText,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                goalInput.value = ''; // Clear input field
-            }).catch(error => {
-                console.error('Error adding goal: ', error);
-            });
-        }
-    }
+    </script>
 </body>
 </html>
