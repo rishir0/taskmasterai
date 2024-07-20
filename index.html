@@ -249,14 +249,45 @@
         }
         /* Mobile Styles */
         @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                background-color: var(--secondary-color);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
             .nav-links a {
                 font-size: 0.8rem;
-                margin-left: 1rem;
+                margin-left: 0;
+                margin-bottom: 0.5rem;
             }
 
             .get-started-btn {
                 font-size: 0.8rem;
                 padding: 0.4rem 0.8rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: var(--text-color);
+            }
+
+            .sidebar-toggle svg {
+                width: 24px;
+                height: 24px;
             }
 
             h1 {
@@ -277,9 +308,9 @@
             }
 
             .logo svg {
-                width: 25px;
-                height: 25px;
-                margin-right: 5px;
+                width: 50px; /* Increased size */
+                height: 50px; /* Increased size */
+                margin-right: 10px;
             }
 
             .pricing-toggle button {
@@ -309,6 +340,13 @@
             .cta-button {
                 font-size: 0.8rem;
                 padding: 0.6rem;
+            }
+        }
+
+        /* Hide sidebar toggle on desktop */
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
             }
         }
     </style>
@@ -363,8 +401,13 @@
                             transition: stroke 0.3s ease;
                         }
                     </style>
-                    
-                </div>
+                button class="sidebar-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+                </button>
                 <div class="nav-links">
                     <a href="index.html#features">Features</a>
                     <a href="pricing.html">Pricing </a>
@@ -437,6 +480,11 @@
         </div>
     </footer>
 
+    <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
     
 </body>
 </html>
