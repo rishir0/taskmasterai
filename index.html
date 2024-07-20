@@ -366,6 +366,42 @@
                         <span>TaskMasterAI</span>
                     </a>
                 </div>
+
+                <style>
+                        .logo a {
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #7e6bf1;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .logo svg {
+                            width: 30px;
+                            height: 30px;
+                            margin-right: 10px;
+                            transition: transform 0.3s ease;
+                        }
+                    
+                        .logo span {
+                            font-size: 24px;
+                            font-weight: bold;
+                        }
+                    
+                        .logo a:hover {
+                            color: #9f91f5;
+                        }
+                    
+                        .logo a:hover svg {
+                            transform: rotate(15deg) scale(1.1);
+                        }
+                    
+                        .logo a:hover svg path {
+                            stroke: #9f91f5;
+                            transition: stroke 0.3s ease;
+                        }
+                    </style>
+                
                 <button class="sidebar-toggle">
                     <svg viewBox="0 0 100 80" width="40" height="40">
                         <rect width="100" height="20"></rect>
