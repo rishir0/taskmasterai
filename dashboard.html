@@ -230,53 +230,23 @@
     background-color: #0EA5E9;
     transform: scale(1.1);
 }
-/* Mobile optimizations */
-        @media (max-width: 768px) {
+/* Mobile-specific styles */
+@media (max-width: 600px) {
             .sidebar {
                 width: 60px;
                 padding: 10px;
             }
 
-            .logo span,
-            .menu-item span,
-            .upgrade-btn span,
-            #username,
-            .menu-dots {
+            .sidebar a span {
                 display: none;
             }
 
-            .logo svg,
-            .menu-item svg,
-            .upgrade-btn svg {
-                margin-right: 0;
-            }
-
-            .logo {
-                justify-content: center;
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-
-            .upgrade-btn {
-                justify-content: center;
-            }
-
-            .user-profile {
-                justify-content: center;
-            }
-
-            .user-avatar {
+            .sidebar a svg {
                 margin-right: 0;
             }
 
             .main-content {
                 padding: 10px;
-            }
-
-            .dashboard-header h1 {
-                font-size: 2rem;
             }
         }
 
