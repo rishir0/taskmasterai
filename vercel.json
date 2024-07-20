@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "https://taskmasterai.vercel.app/contact.html",
+      "source": "/(.*)",
       "destination": "/error.html"
     }
   ],
