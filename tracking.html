@@ -375,34 +375,7 @@
         }
     }
 
-    // Create edit button for each goal
-    function createEditButton(goalId, currentText) {
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Edit';
-        editButton.addEventListener('click', () => {
-            const newText = prompt('Edit your goal:', currentText);
-            if (newText) {
-                db.collection('goals').doc(goalId).update({
-                    text: newText
-                }).catch(error => {
-                    console.error('Error editing goal: ', error);
-                });
-            }
-        });
-        return editButton;
-    }
-
-    // Create delete button for each goal
-    function createDeleteButton(goalId) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.addEventListener('click', () => {
-            db.collection('goals').doc(goalId).delete().catch(error => {
-                console.error('Error deleting goal: ', error);
-            });
-        });
-        return deleteButton;
-    }
+   
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
