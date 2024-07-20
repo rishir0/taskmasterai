@@ -230,6 +230,107 @@
     background-color: #0EA5E9;
     transform: scale(1.1);
 }
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100px;
+        padding: 10px;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .logo span {
+        display: none;
+    }
+
+    .logo svg {
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+    }
+
+    .menu-item span {
+        display: none;
+    }
+
+    .menu-item svg {
+        width: 25px;
+        height: 25px;
+    }
+
+    .upgrade-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.9rem;
+    }
+
+    .create-new {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .create-option h3 {
+        font-size: 1.2rem;
+    }
+
+    .create-option p {
+        font-size: 0.9rem;
+    }
+
+    .all-items h2 {
+        font-size: 1.5rem;
+    }
+
+    .item {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .pomodoro-timer h2 {
+        font-size: 1.5rem;
+    }
+
+    .pomodoro-timer input[type="text"] {
+        width: 80px;
+        font-size: 1rem;
+    }
+
+    .pomodoro-timer button {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .user-profile {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .account-button span {
+        font-size: 0.9rem;
+    }
+
+    .menu-dots {
+        width: 20px;
+        height: 20px;
+    }
+}
     </style>
 </head>
 <body>
