@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "/error.html",
+      "statusCode": 404
+    }
+  ]
+}
