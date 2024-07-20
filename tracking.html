@@ -303,6 +303,11 @@
             </div>
         </div>
     </div>
+    <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
     
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -374,13 +379,5 @@
             });
         }
     }
-
-   
-
-    <script>
-        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>
