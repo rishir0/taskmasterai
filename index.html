@@ -287,8 +287,8 @@
             }
 
             .sidebar-toggle svg {
-                width: 24px;
-                height: 24px;
+                width: 40px;
+                height: 40px;
             }
 
             h1 {
@@ -377,8 +377,8 @@
                         }
                     
                         .logo svg {
-                            width: 30px;
-                            height: 30px;
+                            width: 40px;
+                            height: 40px;
                             margin-right: 10px;
                             transition: transform 0.3s ease;
                         }
@@ -407,6 +407,40 @@
             <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <style>
+                        .logo a {
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #7e6bf1;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .logo svg {
+                            width: 40px;
+                            height: 40px;
+                            margin-right: 10px;
+                            transition: transform 0.3s ease;
+                        }
+                    
+                        .logo span {
+                            font-size: 24px;
+                            font-weight: bold;
+                        }
+                    
+                        .logo a:hover {
+                            color: #9f91f5;
+                        }
+                    
+                        .logo a:hover svg {
+                            transform: rotate(15deg) scale(1.1);
+                        }
+                    
+                        .logo a:hover svg path {
+                            stroke: #9f91f5;
+                            transition: stroke 0.3s ease;
+                        }
+                    </style>
         </svg>
                 </button>
                 <div class="nav-links">
