@@ -332,6 +332,8 @@
             </div>
         </div>
     </div>
+    </script>
+    </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -352,8 +354,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-                    document.getElementById('name').value = user.displayName;
-                    document.getElementById('email').value = user.email;
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
