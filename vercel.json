@@ -5,6 +5,5 @@
       "statusCode": 404,
       "destination": "/error.html"
     }
-  ],
-  "cleanUrls": true
+  ]
 }
