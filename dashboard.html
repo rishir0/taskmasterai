@@ -39,6 +39,16 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: -250px;
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            left: 0;
         }
 
         .logo {
@@ -103,6 +113,8 @@
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
         }
 
         .dashboard-header {
@@ -213,30 +225,61 @@
         }
 
         .account-button {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0;
-}
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
 
-.account-button:focus {
-    outline: none;
-}
+        .account-button:focus {
+            outline: none;
+        }
 
-.user-avatar:hover {
-    background-color: #0EA5E9;
-    transform: scale(1.1);
-}
+        .user-avatar:hover {
+            background-color: #0EA5E9;
+            transform: scale(1.1);
+        }
 
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+        }
 
+        .hamburger-menu div {
+            width: 100%;
+            height: 4px;
+            background-color: var(--text-color);
+            border-radius: 2px;
+        }
 
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
 
+            .hamburger-menu {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
     <div class="container">
         <div class="sidebar">
             <div class="logo">
