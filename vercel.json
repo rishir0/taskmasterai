@@ -1,9 +1,9 @@
 {
-  "errorPages": [
+  "redirects": [
     {
       "source": "/(.*)",
-      "statusCode": 404,
-      "destination": "/error.html"
+      "destination": "/error.html",
+      "statusCode": 404
     }
   ]
 }
