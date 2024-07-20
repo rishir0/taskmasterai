@@ -6,7 +6,7 @@
     <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-       :root {
+        :root {
             --primary-color: #6C63FF;
             --secondary-color: #3F3D56;
             --accent-color: #F50057;
@@ -14,7 +14,7 @@
             --bg-color: #121212;
             --card-bg: #1E1E1E;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -59,8 +59,8 @@
         }
 
         .logo svg {
-            width: 30px;
-            height: 30px;
+            width: 50px; /* Increased size */
+            height: 50px; /* Increased size */
             margin-right: 10px;
             transition: transform 0.3s ease;
         }
@@ -247,6 +247,7 @@
             background-color: var(--card-bg);
             color: #D1D5DB;
         }
+
         /* Mobile Styles */
         @media (max-width: 768px) {
             .nav-links {
@@ -356,63 +357,25 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <div class="logo">
-                        <a href="index.html">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span>TaskMasterAI</span>
-                        </a>
-                    </div>
-                    <button class="sidebar-toggle">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <a href="index.html">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>TaskMasterAI</span>
+                    </a>
+                </div>
+                <button class="sidebar-toggle">
+                    <svg viewBox="0 0 100 80" width="40" height="40">
+                        <rect width="100" height="20"></rect>
+                        <rect y="30" width="100" height="20"></rect>
+                        <rect y="60" width="100" height="20"></rect>
                     </svg>
                 </button>
-                    
-                    <style>
-                        .logo a {
-                            display: flex;
-                            align-items: center;
-                            text-decoration: none;
-                            color: #7e6bf1;
-                            transition: color 0.3s ease;
-                        }
-                    
-                        .logo svg {
-                            width: 30px;
-                            height: 30px;
-                            margin-right: 10px;
-                            transition: transform 0.3s ease;
-                        }
-                    
-                        .logo span {
-                            font-size: 24px;
-                            font-weight: bold;
-                        }
-                    
-                        .logo a:hover {
-                            color: #9f91f5;
-                        }
-                    
-                        .logo a:hover svg {
-                            transform: rotate(15deg) scale(1.1);
-                        }
-                    
-                        .logo a:hover svg path {
-                            stroke: #9f91f5;
-                            transition: stroke 0.3s ease;
-                        }
-                    </style>
-                    
-                </div>
                 <div class="nav-links">
                     <a href="index.html#features">Features</a>
-                    <a href="pricing.html">Pricing </a>
+                    <a href="pricing.html">Pricing</a>
                     <a href="#about">About</a>
                     <a href="contact.html">Contact</a>
                     <a href="signup.html" class="get-started-btn">Get started today</a>
