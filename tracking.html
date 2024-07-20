@@ -226,15 +226,14 @@
                 </svg>
                 Work Schedule
             </div>
-            <div class="menu-item" onclick="window.location.href='metrics.html'">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
-        <path d="M12 6C9.24 6 7 8.24 7 11C7 13.76 9.24 16 12 16C14.76 16 17 13.76 17 11C17 8.24 14.76 6 12 6ZM12 14C10.34 14 9 12.66 9 11C9 9.34 10.34 8 12 8C13.66 8 15 9.34 15 11C15 12.66 13.66 14 12 14Z" fill="currentColor"/>
-        <path d="M16 2V4H18C19.1 4 20 4.9 20 6V8H22V6C22 3.79 20.21 2 18 2H16Z" fill="currentColor"/>
-        <path d="M2 16H4V18C4 19.1 4.9 20 6 20H8V22H6C3.79 22 2 20.21 2 18V16Z" fill="currentColor"/>
-    </svg>
-    Focus Metrics
-    </div>
+            <div class="menu-item" onclick="window.location.href='metrics.html'" style="display: flex; align-items: center; gap: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                    <path d="M12 18c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"/>
+                    <path d="M12 14c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z"/>
+                  </svg>
+               Focus Metrics
+            </div>
         </div>
         <div class="main-content">
             <div class="dashboard-header">
@@ -276,86 +275,85 @@
     const db = firebase.firestore();
 
     // Authentication state observer
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                const username = user.displayName || user.email;
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
 
-                // Load goals for the authenticated user
-                loadGoals(user.uid);
+            // Load goals for the authenticated user
+            loadGoals(user.uid);
 
-                // Handle form submission to add new goal
-                document.getElementById('goalForm').addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    addGoal(user.uid);
+            // Handle form submission to add new goal
+            document.getElementById('goalForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addGoal(user.uid);
+            });
+        } else {
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    });
+
+    // Load goals from Firestore
+    function loadGoals(userId) {
+        db.collection('goals').where('userId', '==', userId).onSnapshot(snapshot => {
+            const goalList = document.getElementById('goalList');
+            goalList.innerHTML = ''; // Clear existing goals
+            snapshot.forEach(doc => {
+                const goal = doc.data();
+                const li = document.createElement('li');
+                li.textContent = goal.text;
+                li.appendChild(createEditButton(doc.id, goal.text));
+                li.appendChild(createDeleteButton(doc.id));
+                goalList.appendChild(li);
+            });
+        });
+    }
+
+    // Add a new goal to Firestore
+    function addGoal(userId) {
+        const goalInput = document.getElementById('goalInput');
+        const goalText = goalInput.value.trim();
+        if (goalText) {
+            db.collection('goals').add({
+                userId: userId,
+                text: goalText,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                goalInput.value = ''; // Clear input field
+            }).catch(error => {
+                console.error('Error adding goal: ', error);
+            });
+        }
+    }
+
+    // Create edit button for each goal
+    function createEditButton(goalId, currentText) {
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => {
+            const newText = prompt('Edit your goal:', currentText);
+            if (newText) {
+                db.collection('goals').doc(goalId).update({
+                    text: newText
+                }).catch(error => {
+                    console.error('Error editing goal: ', error);
                 });
-            } else {
-                // Redirect to login page if not logged in
-                window.location.href = "login.html";
             }
         });
+        return editButton;
+    }
 
-        // Load goals from Firestore
-        function loadGoals(userId) {
-            db.collection('goals').where('userId', '==', userId).onSnapshot(snapshot => {
-                const goalList = document.getElementById('goal-list');
-                goalList.innerHTML = ''; // Clear existing goals
-                snapshot.forEach(doc => {
-                    const goal = doc.data();
-                    const li = document.createElement('li');
-                    li.textContent = goal.text;
-                    li.appendChild(createEditButton(doc.id, goal.text));
-                    li.appendChild(createDeleteButton(doc.id));
-                    goalList.appendChild(li);
-                });
+    // Create delete button for each goal
+    function createDeleteButton(goalId) {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => {
+            db.collection('goals').doc(goalId).delete().catch(error => {
+                console.error('Error deleting goal: ', error);
             });
-        }
-
-        // Add a new goal to Firestore
-        function addGoal(userId) {
-            const goalInput = document.getElementById('goal-input');
-            const goalText = goalInput.value.trim();
-            if (goalText) {
-                db.collection('goals').add({
-                    userId: userId,
-                    text: goalText,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    goalInput.value = ''; // Clear input field
-                }).catch(error => {
-                    console.error('Error adding goal: ', error);
-                });
-            }
-        }
-
-        // Create edit button for each goal
-        function createEditButton(goalId, currentText) {
-            const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.addEventListener('click', () => {
-                const newText = prompt('Edit your goal:', currentText);
-                if (newText) {
-                    db.collection('goals').doc(goalId).update({
-                        text: newText
-                    }).catch(error => {
-                        console.error('Error editing goal: ', error);
-                    });
-                }
-            });
-            return editButton;
-        }
-
-        // Create delete button for each goal
-        function createDeleteButton(goalId) {
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.addEventListener('click', () => {
-                db.collection('goals').doc(goalId).delete().catch(error => {
-                    console.error('Error deleting goal: ', error);
-                });
-            });
-            return deleteButton;
-        }
-    </script>
+        });
+        return deleteButton;
+    }
+</script>
 </body>
 </html>
-
