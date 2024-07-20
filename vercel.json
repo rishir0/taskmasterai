@@ -1,9 +1,9 @@
 {
-  "errorPages": [
+  "rewrites": [
     {
-      "source": "/(.*)",
-      "statusCode": 404,
+      "source": "https://taskmasterai.vercel.app/contact.html",
       "destination": "/error.html"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
