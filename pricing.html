@@ -286,14 +286,46 @@
 
         /* Mobile Styles */
         @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                background-color: var(--secondary-color);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
             .nav-links a {
                 font-size: 0.8rem;
-                margin-left: 1rem;
+                margin-left: 0;
+                margin-bottom: 0.5rem;
             }
 
             .get-started-btn {
                 font-size: 0.8rem;
                 padding: 0.4rem 0.8rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: #7E6BF1;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            .sidebar-toggle svg {
+                width: 35px;
+                height: 35px;
             }
 
             h1 {
@@ -314,9 +346,10 @@
             }
 
             .logo svg {
-                width: 25px;
-                height: 25px;
-                margin-right: 5px;
+                width: 40px; /* Increased size */
+                height: 40px; /* Increased size */
+                margin-right: 10px;
+                transition: transform 0.3s ease;
             }
 
             .pricing-toggle button {
@@ -346,6 +379,13 @@
             .cta-button {
                 font-size: 0.8rem;
                 padding: 0.6rem;
+            }
+        }
+
+        /* Hide sidebar toggle on desktop */
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
             }
         }
     </style>
