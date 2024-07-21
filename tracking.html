@@ -444,133 +444,64 @@
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script>
-        // TODO: Replace the following with your app's Firebase project configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Import the necessary Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+    authDomain: "deepworkai-c3419.firebaseapp.com",
+    projectId: "deepworkai-c3419",
+    storageBucket: "deepworkai-c3419.appspot.com",
+    messagingSenderId: "367439182644",
+    appId: "1:367439182644:web:304216430df97eff68c361"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
+
+// Function to save user data
+const saveUserData = async (user) => {
+    try {
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || "Anonymous",
+            goals: [] // Initialize an empty array for goals
         });
-    // Get Firestore instance
-        const db = firebase.firestore();
+        console.log("User data saved successfully");
+    } catch (error) {
+        console.error("Error saving user data:", error);
+    }
+};
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const goalInput = document.getElementById('goal-input');
-            const addGoalBtn = document.getElementById('add-goal-btn');
-            const goalList = document.getElementById('goal-list');
-
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    loadGoals(user.uid);
-                } else {
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-
-            addGoalBtn.addEventListener('click', addGoal);
-
-            function addGoal() {
-                const goalText = goalInput.value.trim();
-                if (goalText) {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        db.collection('users').doc(user.uid).collection('goals').add({
-                            text: goalText,
-                            completed: false,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            goalInput.value = '';
-                            loadGoals(user.uid);
-                        }).catch((error) => {
-                            console.error("Error adding goal: ", error);
-                        });
-                    }
-                }
-            }
-
-            function loadGoals(userId) {
-                goalList.innerHTML = '';
-                db.collection('users').doc(userId).collection('goals').orderBy('createdAt', 'desc').get().then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        const goal = doc.data();
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <span class="${goal.completed ? 'completed' : ''}">${goal.text}</span>
-                            <button class="complete-btn">${goal.completed ? 'Undo' : 'Complete'}</button>
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        `;
-                        
-                        li.querySelector('.complete-btn').addEventListener('click', () => toggleComplete(doc.id, !goal.completed));
-                        li.querySelector('.edit-btn').addEventListener('click', () => editGoal(doc.id, goal.text));
-                        li.querySelector('.delete-btn').addEventListener('click', () => deleteGoal(doc.id));
-                        
-                        goalList.appendChild(li);
-                    });
-                });
-            }
-
-            function toggleComplete(goalId, completed) {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
-                        completed: completed
-                    }).then(() => {
-                        loadGoals(user.uid);
-                    }).catch((error) => {
-                        console.error("Error updating goal: ", error);
-                    });
-                }
-            }
-
-            function editGoal(goalId, currentText) {
-                const newText = prompt("Edit your goal:", currentText);
-                if (newText !== null && newText.trim() !== "") {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        db.collection('users').doc(user.uid).collection('goals').doc(goalId).update({
-                            text: newText.trim()
-                        }).then(() => {
-                            loadGoals(user.uid);
-                        }).catch((error) => {
-                            console.error("Error updating goal: ", error);
-                        });
-                    }
-                }
-            }
-
-            function deleteGoal(goalId) {
-                if (confirm("Are you sure you want to delete this goal?")) {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        db.collection('users').doc(user.uid).collection('goals').doc(goalId).delete().then(() => {
-                            loadGoals(user.uid);
-                        }).catch((error) => {
-                            console.error("Error deleting goal: ", error);
-                        });
-                    }
-                }
-            }
+// Function to save a new goal for the user
+const saveGoal = async (userId, goal) => {
+    try {
+        const userRef = doc(db, "users", userId);
+        await updateDoc(userRef, {
+            goals: arrayUnion(goal)
         });
-    </script>
+        console.log("Goal saved successfully");
+    } catch (error) {
+        console.error("Error saving goal:", error);
+    }
+};
+
+// Example usage:
+// Assume the user is already authenticated and you have their userId
+const userId = "exampleUserId";
+const newGoal = {
+    title: "Learn JavaScript",
+    description: "Complete an online JavaScript course",
+    dueDate: new Date("2023-12-31"),
+    completed: false
+};
+
+saveGoal(userId, newGoal);
 </body>
 </html>
