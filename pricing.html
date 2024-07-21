@@ -14,7 +14,7 @@
             --bg-color: #121212;
             --card-bg: #1E1E1E;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
@@ -59,8 +59,8 @@
         }
 
         .logo svg {
-            width: 50px; /* Increased size */
-            height: 50px; /* Increased size */
+            width: 30px;
+            height: 30px;
             margin-right: 10px;
             transition: transform 0.3s ease;
         }
@@ -112,140 +112,176 @@
             transform: translateY(-2px);
         }
 
-        .hero {
-            padding: 8rem 0;
-            text-align: center;
-            background: linear-gradient(135deg, var(--bg-color), var(--secondary-color));
+        main {
+            padding: 4rem 0;
         }
 
         h1 {
-            font-size: 4.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.2;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
         }
 
-        .hero p {
-            font-size: 1.4rem;
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            color: #D1D5DB;
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            background-color: var(--card-bg);
+            border-radius: 30px;
+            padding: 3px;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-toggle button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border: none;
+            background: none;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 25px;
+            width: 50%;
+        }
+
+        .pricing-toggle button.active {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-plan {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 300px;
+            transition: transform 0.3s;
+        }
+
+        .pricing-plan.featured {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-plan h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .billing-cycle {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        li::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 0.5rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+
+        .pricing-plan.featured li::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .cta-button {
-            display: inline-block;
+            display: block;
+            text-align: center;
             background-color: var(--accent-color);
             color: var(--text-color);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
             text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 5px;
             font-weight: 600;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
+            transition: background-color 0.3s;
         }
 
         .cta-button:hover {
             background-color: #0EA5E9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .cta-button::after {
-            content: 'No credit card required';
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            color: #D1D5DB;
-            white-space: nowrap;
-        }
-
-        .features {
-            padding: 8rem 0;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 3rem;
-        }
-
-        .feature {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
-        }
-
-        .feature h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
+        .pricing-plan.featured .cta-button {
+            background-color: var(--text-color);
             color: var(--primary-color);
-        }
-
-        .feature p {
-            font-size: 1.1rem;
-            color: #D1D5DB;
-        }
-
-        .trusted-section {
-            text-align: center;
-            padding: 6rem 0;
-            background-color: var(--secondary-color);
-        }
-
-        .trusted-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: var(--text-color);
-        }
-
-        .logo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .logo-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100px;
-            transition: all 0.3s ease;
-        }
-
-        .logo-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .logo-item img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
         }
 
         footer {
             text-align: center;
-            padding: 3rem 0;
+            padding: 2rem 0;
             background-color: var(--card-bg);
             color: #D1D5DB;
+        }
+
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #7e6bf1;
+            transition: color 0.3s ease;
+        }
+    
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+    
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .logo a:hover {
+            color: #9f91f5;
+        }
+    
+        .logo a:hover svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+    
+        .logo a:hover svg path {
+            stroke: #9f91f5;
+            transition: stroke 0.3s ease;
         }
 
         /* Mobile Styles */
@@ -504,17 +540,49 @@
                             transition: stroke 0.3s ease;
                         }
                     </style>
-                    <div class="mobile-menu-container">
-                        <a href="signup.html" class="mobile-get-started">Get Started</a>
-                        <button class="sidebar-toggle">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="nav-links">
+                
+                <button class="sidebar-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                        <style>
+                        .logo a {
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #7e6bf1;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .logo svg {
+                            width: 40px;
+                            height: 40px;
+                            margin-right: 10px;
+                            transition: transform 0.3s ease;
+                        }
+                    
+                        .logo span {
+                            font-size: 24px;
+                            font-weight: bold;
+                        }
+                    
+                        .logo a:hover {
+                            color: #9f91f5;
+                        }
+                    
+                        .logo a:hover svg {
+                            transform: rotate(15deg) scale(1.1);
+                        }
+                    
+                        .logo a:hover svg path {
+                            stroke: #9f91f5;
+                            transition: stroke 0.3s ease;
+                        }
+                    </style>
+                </button>
+                <div class="nav-links">
                     <a href="index.html#features">Features</a>
                     <a href="pricing.html">Pricing</a>
                     <a href="#about">About</a>
