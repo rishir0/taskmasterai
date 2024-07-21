@@ -350,6 +350,36 @@
         @media (min-width: 769px) {
             .sidebar-toggle {
                 display: none;
+
+                .nav-links {
+                background-color: var(--secondary-color);
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                display: none;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                margin: 0.5rem 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: var(--primary-color);
+                font-size: 1.4rem;
+                padding: 0.5rem 1rem;
             }
         }
     </style>
@@ -410,6 +440,10 @@
                         <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
+                    <a href="signup.html" class="get-started-btn">Get Started</a>
+                <button class="sidebar-toggle"
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16M4 12h16m-7 7h7"></path></svg>
+                </button>
                         <style>
                         .logo a {
                             display: flex;
