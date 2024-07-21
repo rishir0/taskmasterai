@@ -251,7 +251,6 @@
                         const user = result.user;
                         console.log('Google Sign-In successful:', user);
                         await saveUserData(user);
-                        alert('Google Sign-In successful');
                         window.location.href = "dashboard.html"; // Redirect to dashboard
                     })
                     .catch((error) => {
@@ -280,7 +279,6 @@
                         user.lastName = lastName;
                         console.log('Sign-Up successful:', user);
                         await saveUserData(user);
-                        alert('Sign-Up successful');
                         window.location.href = "dashboard.html"; // Redirect to dashboard
                     })
                     .catch((error) => {
