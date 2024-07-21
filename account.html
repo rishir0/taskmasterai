@@ -191,6 +191,21 @@
             background-color: var(--accent-color);
         }
 
+        .sign-out-btn {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.sign-out-btn:hover {
+    background-color: #D32F2F;
+}
+
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -329,6 +344,9 @@
                 <div class="form-group">
                     <button type="button" onclick="updateAccount()">Save Changes</button>
                 </div>
+                <div class="form-group">
+                    <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+                </div>
             </div>
         </div>
     </div>
@@ -391,5 +409,15 @@
             document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
+
+    function signOut() {
+    firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+        window.location.href = "login.html";
+    }).catch(function(error) {
+        // An error happened.
+        console.error("Error signing out:", error);
+    });
+}
 </body>
 </html>
