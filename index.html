@@ -292,6 +292,24 @@
                 height: 35px;
             }
 
+            .sidebar-toggle .get-started-btn {
+                margin-left: 1rem;
+                background-color: var(--accent-color);
+                color: var(--text-color);
+                padding: 0.5rem 1rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar-toggle .get-started-btn:hover {
+                background-color: #0EA5E9;
+                transform: translateY(-2px);
+            }
+        }
+
             h1 {
                 font-size: 2rem;
             }
@@ -410,6 +428,12 @@
                         <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                    </svg>
+                    <div class="get-started-btn">Get Started</div>
+                </button>
                         <style>
                         .logo a {
                             display: flex;
