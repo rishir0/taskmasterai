@@ -350,6 +350,8 @@
         @media (min-width: 769px) {
             .sidebar-toggle {
                 display: none;
+            .sidebar-toggle {
+                display: none;
             }
             
         }
@@ -548,6 +550,12 @@
             });
         });
     });
+</script>
+<script>
+    function toggleSidebar() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
 </script>
 
 </body>
