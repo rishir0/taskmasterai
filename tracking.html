@@ -230,6 +230,45 @@
             border-bottom: 1px solid var(--primary-color);
         }
 
+        .goal-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.goal-list li span {
+    flex-grow: 1;
+}
+
+.goal-list li span.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.goal-list li button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.complete-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.edit-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -248,6 +287,8 @@
             width: 24px;
             height: 24px;
         }
+
+        
 
         @media (max-width: 768px) {
             .sidebar {
