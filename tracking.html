@@ -444,10 +444,10 @@
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script>
-        // Import the necessary Firebase modules
+       // Import the necessary Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -464,44 +464,85 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-// Function to save user data
-const saveUserData = async (user) => {
+// Function to save a new goal for the user
+const saveGoal = async (goal) => {
     try {
-        await setDoc(doc(db, "users", user.uid), {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || "Anonymous",
-            goals: [] // Initialize an empty array for goals
-        });
-        console.log("User data saved successfully");
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        const newGoal = {
+            userId: user.uid,
+            title: goal.title,
+            description: goal.description,
+            dueDate: goal.dueDate,
+            completed: false,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        const docRef = await addDoc(collection(db, "goals"), newGoal);
+        console.log("Goal saved successfully with ID: ", docRef.id);
+        return docRef.id;
     } catch (error) {
-        console.error("Error saving user data:", error);
+        console.error("Error saving goal:", error);
+        throw error;
     }
 };
 
-// Function to save a new goal for the user
-const saveGoal = async (userId, goal) => {
+// Function to get all goals for the current user
+const getUserGoals = async () => {
     try {
-        const userRef = doc(db, "users", userId);
-        await updateDoc(userRef, {
-            goals: arrayUnion(goal)
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        const goalsQuery = query(collection(db, "goals"), where("userId", "==", user.uid));
+        const querySnapshot = await getDocs(goalsQuery);
+        
+        const goals = [];
+        querySnapshot.forEach((doc) => {
+            goals.push({ id: doc.id, ...doc.data() });
         });
-        console.log("Goal saved successfully");
+
+        return goals;
     } catch (error) {
-        console.error("Error saving goal:", error);
+        console.error("Error getting user goals:", error);
+        throw error;
     }
 };
 
 // Example usage:
-// Assume the user is already authenticated and you have their userId
-const userId = "exampleUserId";
-const newGoal = {
-    title: "Learn JavaScript",
-    description: "Complete an online JavaScript course",
-    dueDate: new Date("2023-12-31"),
-    completed: false
+const saveNewGoal = async () => {
+    const newGoal = {
+        title: "Learn JavaScript",
+        description: "Complete an online JavaScript course",
+        dueDate: new Date("2023-12-31"),
+        completed: false
+    };
+
+    try {
+        const goalId = await saveGoal(newGoal);
+        console.log("New goal saved with ID:", goalId);
+    } catch (error) {
+        console.error("Failed to save goal:", error);
+    }
 };
 
-saveGoal(userId, newGoal);
+const displayUserGoals = async () => {
+    try {
+        const goals = await getUserGoals();
+        console.log("User goals:", goals);
+        // Here you would typically update your UI to display these goals
+    } catch (error) {
+        console.error("Failed to fetch user goals:", error);
+    }
+};
+
+// Call these functions when needed, e.g., after user interaction
+// saveNewGoal();
+// displayUserGoals();
 </body>
 </html>
