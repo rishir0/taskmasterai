@@ -367,18 +367,6 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('name').value = user.displayName;
-                    document.getElementById('email').value = user.email;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
         function updateAccount() {
             const user = firebase.auth().currentUser;
             const newName = document.getElementById('name').value;
@@ -402,22 +390,32 @@
                 });
             }
         }
-    </script>
 
-    <script>
+        function signOut() {
+            firebase.auth().signOut().then(function() {
+                // Sign-out successful.
+                window.location.href = "login.html";
+            }).catch(function(error) {
+                // An error happened.
+                console.error("Error signing out:", error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('name').value = user.displayName;
+                    document.getElementById('email').value = user.email;
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
-
-    function signOut() {
-    firebase.auth().signOut().then(function() {
-        // Sign-out successful.
-        window.location.href = "login.html";
-    }).catch(function(error) {
-        // An error happened.
-        console.error("Error signing out:", error);
-    });
-}
 </body>
 </html>
