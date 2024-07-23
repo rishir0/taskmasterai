@@ -326,31 +326,31 @@
             </div>
         </div>
          <div class="main-content">
-            <div class="dashboard-header">
-                <h1>Goal Tracking</h1>
-            </div>
-            <div class="section">
-                <h2>Track Your Goals</h2>
-                <div class="goal-tracking">
-                    <div class="goal-card">
-                        <h3>Set New Goals</h3>
-                        <div class="goal-input">
-                            <input type="text" id="goal-input" placeholder="Enter your goal" />
-                            <button id="add-goal-btn">Add Goal</button>
-                        </div>
-                        <ul class="goal-list" id="goal-list"></ul>
+        <div class="dashboard-header">
+            <h1>Goal Tracking</h1>
+        </div>
+        <div class="section">
+            <h2>Track Your Goals</h2>
+            <div class="goal-tracking">
+                <div class="goal-card">
+                    <h3>Set New Goals</h3>
+                    <div class="goal-input">
+                        <input type="text" id="goal-input" placeholder="Enter your goal" />
+                        <button id="add-goal-btn">Add Goal</button>
                     </div>
+                    <ul class="goal-list" id="goal-list"></ul>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Firebase SDKs -->
+     </body>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
-        // Firebase configuration
+        // TODO: Replace the following with your app's Firebase project configuration
         var firebaseConfig = {
             apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
             authDomain: "deepworkai-c3419.firebaseapp.com",
@@ -363,19 +363,32 @@
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+        
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const username = user.displayName || user.email;
                     document.getElementById('username').textContent = username;
-                    loadGoals();
+                    document.getElementById('displayName').textContent = username;
                 } else {
+                    // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
                 }
             });
-
-            document.getElementById('add-goal-btn').addEventListener('click', createGoals);
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('displayName').textContent = user.displayName;
+                    loadGoals();
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
 
         function createGoals() {
             const goalInput = document.getElementById('goal-input');
@@ -385,11 +398,8 @@
                     goal: goal,
                     userId: firebase.auth().currentUser.uid,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    goalInput.value = '';
-                }).catch(error => {
-                    console.error("Error adding goal: ", error);
                 });
+                goalInput.value = '';
             }
         }
 
@@ -398,7 +408,7 @@
                 .where('userId', '==', firebase.auth().currentUser.uid)
                 .orderBy('createdAt')
                 .onSnapshot(snapshot => {
-                    const goalsList = document.getElementById('goal-list');
+                    const goalsList = document.getElementById('goals-list');
                     goalsList.innerHTML = '';
                     snapshot.forEach(doc => {
                         const goal = doc.data();
@@ -410,6 +420,8 @@
                     });
                 });
         }
+
+        
 
         function createEditButton(id, type) {
             const button = document.createElement('button');
@@ -438,9 +450,21 @@
             db.collection(type + 's').doc(id).delete();
         }
 
-        // Sidebar toggle functionality
+
+// Listen for authentication state changes to load goals
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        loadGoals();
+    }
+});
+
+    </script>
+
+
+    <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
         });
+    </script>
 </body>
 </html>
