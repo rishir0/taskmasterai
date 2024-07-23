@@ -424,10 +424,18 @@
                     <p>Add a new task</p>
                 </div>
             </div>
-            <div class="all-items">
-                <h2>Tasks & Projects</h2>
-                <div id="tasks-projects-list"></div>
-            </div>
+            <div class="section" id="tasks">
+            <h2>Tasks</h2>
+            <ul id="taskList">
+                <!-- Tasks will be listed here -->
+            </ul>
+        </div>
+        <div class="section" id="projects">
+            <h2>Projects</h2>
+            <ul id="projectList">
+                <!-- Projects will be listed here -->
+            </ul>
+        </div>
             <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
             <input type="text" id="timer" value="25:00" readonly>
@@ -761,6 +769,95 @@ function displayTasksAndProjects() {
     });
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const tasks = [
+        { id: 1, text: 'Task 1', completed: false },
+        { id: 2, text: 'Task 2', completed: false }
+    ];
+
+    const projects = [
+        { id: 1, text: 'Project 1' },
+        { id: 2, text: 'Project 2' }
+    ];
+
+    function renderList(list, containerId, type) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        list.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item.text;
+
+            if (type === 'tasks') {
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => editItem(item.id, type));
+
+                const completeButton = document.createElement('button');
+                completeButton.textContent = item.completed ? 'Undo' : 'Complete';
+                completeButton.addEventListener('click', () => toggleComplete(item.id));
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => deleteItem(item.id, type));
+
+                li.appendChild(editButton);
+                li.appendChild(completeButton);
+                li.appendChild(deleteButton);
+            } else {
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => editItem(item.id, type));
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => deleteItem(item.id, type));
+
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+            }
+
+            container.appendChild(li);
+        });
+    }
+
+    function editItem(id, type) {
+        const newText = prompt('Enter new text:');
+        if (newText) {
+            if (type === 'tasks') {
+                const item = tasks.find(task => task.id === id);
+                item.text = newText;
+                renderList(tasks, 'taskList', 'tasks');
+            } else {
+                const item = projects.find(project => project.id === id);
+                item.text = newText;
+                renderList(projects, 'projectList', 'projects');
+            }
+        }
+    }
+
+    function toggleComplete(id) {
+        const task = tasks.find(task => task.id === id);
+        task.completed = !task.completed;
+        renderList(tasks, 'taskList', 'tasks');
+    }
+
+    function deleteItem(id, type) {
+        if (type === 'tasks') {
+            const index = tasks.findIndex(task => task.id === id);
+            tasks.splice(index, 1);
+            renderList(tasks, 'taskList', 'tasks');
+        } else {
+            const index = projects.findIndex(project => project.id === id);
+            projects.splice(index, 1);
+            renderList(projects, 'projectList', 'projects');
+        }
+    }
+
+    renderList(tasks, 'taskList', 'tasks');
+    renderList(projects, 'projectList', 'projects');
+});
 
 // Call the function to display tasks and projects
 displayTasksAndProjects();
