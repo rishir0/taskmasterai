@@ -438,69 +438,41 @@
         </div>
     </div>
 
-    <div class="modal" id="create-task-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Task</h3>
-                <button onclick="closeModal('create-task-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="task-name" placeholder="Task Name">
-                <textarea id="task-details" placeholder="Task Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createTask()">Create</button>
-            </div>
+    <!-- Modal for Editing Tasks -->
+<div class="modal" id="edit-task-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Task</h3>
+            <button onclick="closeModal('edit-task-modal')">X</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-task-id">
+            <input type="text" id="edit-task-name" placeholder="Task Name">
+            <textarea id="edit-task-details" placeholder="Task Details"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button onclick="saveTask()">Save</button>
         </div>
     </div>
+</div>
 
-    <div class="modal" id="create-project-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Project</h3>
-                <button onclick="closeModal('create-project-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="project-name" placeholder="Project Name">
-                <textarea id="project-details" placeholder="Project Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createProject()">Create</button>
-            </div>
+<!-- Modal for Editing Projects -->
+<div class="modal" id="edit-project-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Project</h3>
+            <button onclick="closeModal('edit-project-modal')">X</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-project-id">
+            <input type="text" id="edit-project-name" placeholder="Project Name">
+            <textarea id="edit-project-details" placeholder="Project Details"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button onclick="saveProject()">Save</button>
         </div>
     </div>
-
-    <div class="modal" id="edit-task-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Task</h3>
-                <button onclick="closeModal('edit-task-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="edit-task-name" placeholder="Task Name">
-                <textarea id="edit-task-details" placeholder="Task Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="saveTask()">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="edit-project-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Project</h3>
-                <button onclick="closeModal('edit-project-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="edit-project-name" placeholder="Project Name">
-                <textarea id="edit-project-details" placeholder="Project Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="saveProject()">Save</button>
-            </div>
-        </div>
-    </div>
+</div>
 
     <script>
     let timer;
@@ -566,6 +538,7 @@
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
@@ -580,85 +553,126 @@
             });
         });
 
-        function createTask() {
+        // Function to create a new project
+function createProject() {
     const user = firebase.auth().currentUser;
-    const taskName = document.getElementById('taskName').value;
+    const projectName = document.getElementById('project-name').value;
+    const projectDetails = document.getElementById('project-details').value;
 
-    if (taskName && user) {
-        db.collection('tasks').add({
-            name: taskName,
-            completed: false,
+    if (projectName && user) {
+        db.collection('projects').add({
+            name: projectName,
+            details: projectDetails,
             userId: user.uid,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            alert("Task added successfully!");
-            document.getElementById('taskName').value = ""; // Clear the input field
-            loadTasks(); // Refresh the task list
+            alert("Project added successfully!");
+            document.getElementById('project-name').value = ""; // Clear the input field
+            document.getElementById('project-details').value = ""; // Clear the details field
+            loadProjects(); // Refresh the project list
         }).catch((error) => {
-            console.error("Error adding task: ", error);
+            console.error("Error adding project: ", error);
         });
     } else {
-        alert("Please enter a task name.");
+        alert("Please enter a project name.");
     }
 }
 
-// Function to mark a task as completed
-function completeTask(taskId) {
+// Function to update a task
+function saveTask() {
+    const taskId = document.getElementById('edit-task-id').value;
+    const taskName = document.getElementById('edit-task-name').value;
+    const taskDetails = document.getElementById('edit-task-details').value;
+
     db.collection('tasks').doc(taskId).update({
-        completed: true
+        name: taskName,
+        details: taskDetails
     }).then(() => {
-        alert("Task marked as completed!");
+        alert("Task updated successfully!");
+        closeModal('edit-task-modal'); // Close the modal
         loadTasks(); // Refresh the task list
     }).catch((error) => {
-        console.error("Error completing task: ", error);
+        console.error("Error updating task: ", error);
     });
 }
 
-// Function to delete a task
-function deleteTask(taskId) {
-    db.collection('tasks').doc(taskId).delete().then(() => {
-        alert("Task deleted successfully!");
-        loadTasks(); // Refresh the task list
+// Function to update a project
+function saveProject() {
+    const projectId = document.getElementById('edit-project-id').value;
+    const projectName = document.getElementById('edit-project-name').value;
+    const projectDetails = document.getElementById('edit-project-details').value;
+
+    db.collection('projects').doc(projectId).update({
+        name: projectName,
+        details: projectDetails
+    }).then(() => {
+        alert("Project updated successfully!");
+        closeModal('edit-project-modal'); // Close the modal
+        loadProjects(); // Refresh the project list
     }).catch((error) => {
-        console.error("Error deleting task: ", error);
+        console.error("Error updating project: ", error);
     });
 }
 
-// Function to load and display tasks
-function loadTasks() {
+// Function to load and display projects
+function loadProjects() {
     const user = firebase.auth().currentUser;
     if (user) {
-        db.collection('tasks').where('userId', '==', user.uid).orderBy('timestamp').get()
+        db.collection('projects').where('userId', '==', user.uid).orderBy('timestamp').get()
             .then((querySnapshot) => {
-                const taskList = document.getElementById('taskList');
-                taskList.innerHTML = ""; // Clear the current task list
+                const projectList = document.getElementById('projectList');
+                projectList.innerHTML = ""; // Clear the current project list
 
                 querySnapshot.forEach((doc) => {
-                    const task = doc.data();
-                    const taskItem = document.createElement('li');
-                    taskItem.textContent = task.name;
-                    
-                    if (task.completed) {
-                        taskItem.style.textDecoration = "line-through";
-                    } else {
-                        const completeButton = document.createElement('button');
-                        completeButton.textContent = "Complete";
-                        completeButton.onclick = () => completeTask(doc.id);
-                        taskItem.appendChild(completeButton);
-                    }
-                    
+                    const project = doc.data();
+                    const projectItem = document.createElement('li');
+                    projectItem.textContent = project.name;
+
+                    // Edit and delete buttons
+                    const editButton = document.createElement('button');
+                    editButton.textContent = "Edit";
+                    editButton.onclick = () => openEditProjectModal(doc.id, project.name, project.details);
+                    projectItem.appendChild(editButton);
+
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = "Delete";
-                    deleteButton.onclick = () => deleteTask(doc.id);
-                    taskItem.appendChild(deleteButton);
+                    deleteButton.onclick = () => deleteProject(doc.id);
+                    projectItem.appendChild(deleteButton);
 
-                    taskList.appendChild(taskItem);
+                    projectList.appendChild(projectItem);
                 });
             }).catch((error) => {
-                console.error("Error loading tasks: ", error);
+                console.error("Error loading projects: ", error);
             });
     }
 }
+
+// Function to open the edit task modal
+function openEditTaskModal(taskId, taskName, taskDetails) {
+    document.getElementById('edit-task-id').value = taskId;
+    document.getElementById('edit-task-name').value = taskName;
+    document.getElementById('edit-task-details').value = taskDetails;
+    openModal('edit-task-modal');
+}
+
+// Function to open the edit project modal
+function openEditProjectModal(projectId, projectName, projectDetails) {
+    document.getElementById('edit-project-id').value = projectId;
+    document.getElementById('edit-project-name').value = projectName;
+    document.getElementById('edit-project-details').value = projectDetails;
+    openModal('edit-project-modal');
+}
+
+// Function to delete a project
+function deleteProject(projectId) {
+    db.collection('projects').doc(projectId).delete().then(() => {
+        alert("Project deleted successfully!");
+        loadProjects(); // Refresh the project list
+    }).catch((error) => {
+        console.error("Error deleting project: ", error);
+    });
+}
+
 
 // Listen for authentication state changes to load tasks
 firebase.auth().onAuthStateChanged((user) => {
