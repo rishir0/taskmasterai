@@ -418,8 +418,12 @@
             </div>
             <div class="create-new">
                 <div class="create-option">
-                    <h3>Create New Task</h3>
+                <<div id="tasks-section">
+                    <h2>Tasks</h2>
                     <p>Organize your work efficiently</p>
+                    <input type="text" id="task-input" placeholder="Enter new task">
+                    <button onclick="createTask()">Create Task</button>
+                    <div id="tasks-list">
                 </div>
                 <div class="create-option">
                     <h3>Create New Project</h3>
