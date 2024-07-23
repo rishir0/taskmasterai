@@ -645,63 +645,77 @@
             });
         });
 
-        // Function to create a new task
-function createTask() {
-    var taskInput = document.getElementById('task-input').value;
-    db.collection("tasks").add({
-        name: taskInput
-    }).then(() => {
-        document.getElementById('task-input').value = '';
-        loadTasks();
-    });
-}
+        function createTask() {
+            const taskInput = document.getElementById('task-input');
+            const task = taskInput.value.trim();
+            if (task) {
+                db.collection('tasks').add({
+                    task: task,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Task created:', task);
+                }).catch((error) => {
+                    console.error('Error creating task:', error);
+                });
+                taskInput.value = '';
+            }
+        }
 
-// Function to create a new project
-function createProject() {
-    var projectInput = document.getElementById('project-input').value;
-    db.collection("projects").add({
-        name: projectInput
-    }).then(() => {
-        document.getElementById('project-input').value = '';
-        loadProjects();
-    });
-}
+        function createProject() {
+            const projectInput = document.getElementById('project-input');
+            const project = projectInput.value.trim();
+            if (project) {
+                db.collection('projects').add({
+                    project: project,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Project created:', project);
+                }).catch((error) => {
+                    console.error('Error creating project:', error);
+                });
+                projectInput.value = '';
+            }
+        }
 
-// Function to load tasks from Firestore
-function loadTasks() {
-    var tasksList = document.getElementById('tasks-list');
-    tasksList.innerHTML = '';
-    db.collection("tasks").get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            var taskItem = document.createElement('div');
-            taskItem.className = 'task-item';
-            taskItem.innerHTML = `
-                ${doc.data().name}
-                <button onclick="editTask('${doc.id}')">Edit</button>
-                <button onclick="deleteTask('${doc.id}')">Delete</button>
-            `;
-            tasksList.appendChild(taskItem);
-        });
-    });
-}
+        function loadTasks() {
+            db.collection('tasks')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    console.log('Tasks snapshot received:', snapshot);
+                    const tasksList = document.getElementById('tasks-list');
+                    tasksList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const task = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = task.task;
+                        li.appendChild(createEditButton(doc.id, 'task'));
+                        li.appendChild(createDeleteButton(doc.id, 'task'));
+                        tasksList.appendChild(li);
+                    });
+                });
+        }
 
-// Function to load projects from Firestore
-function loadProjects() {
-    var projectsList = document.getElementById('projects-list');
-    projectsList.innerHTML = '';
-    db.collection("projects").get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            var projectItem = document.createElement('div');
-            projectItem.className = 'project-item';
-            projectItem.innerHTML = `
-                ${doc.data().name}
-                <button onclick="editProject('${doc.id}')">Edit</button>
-                <button onclick="deleteProject('${doc.id}')">Delete</button>
-            `;
-            projectsList.appendChild(projectItem);
-        });
-    });
-}
+        function loadProjects() {
+            db.collection('projects')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    console.log('Projects snapshot received:', snapshot);
+                    const projectsList = document.getElementById('projects-list');
+                    projectsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const project = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = project.project;
+                        li.appendChild(createEditButton(doc.id, 'project'));
+                        li.appendChild(createDeleteButton(doc.id, 'project'));
+                        projectsList.appendChild(li);
+                    });
+                });
+        }
 
         function createEditButton(id, type) {
             const button = document.createElement('button');
@@ -752,11 +766,10 @@ firebase.auth().onAuthStateChanged((user) => {
         loadProjects();
     }
 });
+        
 
-// Call load functions on page load
-window.onload = function() {
-    loadTasks();
-    loadProjects();
+
+
 
     </script>
 
