@@ -417,21 +417,23 @@
                 <p>Your personalized dashboard</p>
             </div>
             <div class="create-new">
-                <div class="create-option">
+            <div class="card">
+            <div class="create-option">
+            <<<div id="tasks-section">
+                <h2>Tasks</h2>
+                <input type="text" id="task-input" placeholder="Enter new task">
+                <button onclick="createTask()">Create Task</button>
+                <div id="tasks-list">
+            </div>
+            
+            <div id="projects-section">
                 <div class="card">
-                    <h3>Tasks</h3>
-                    <p>Organize your work efficiently</p>
-                    <input type="text" id="task-input" placeholder="Enter new task">
-                    <button onclick="createTask()">Create Task</button>
-                    <div id="tasks-list">
-                </div>
+                <div class="create-new">
                 <div class="create-option">
-                <div class="card">
-                    <h3>Projects</h3>
-                    <p>Manage your projects</p>
-                    <input type="text" id="project-input" placeholder="Enter new project">
-                    <button onclick="createProject()">Create Project</button>
-                    </div>
+                <h2>Projects</h2>
+                <input type="text" id="project-input" placeholder="Enter new project">
+                <button onclick="createProject()">Create Project</button>
+               <div id="projects-list">
             </div>
             <div class="all-items">
                 <h3>All Items</h3>
