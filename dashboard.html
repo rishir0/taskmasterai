@@ -414,22 +414,18 @@
                 <h1>Welcome, <span id="displayName">User</span>!</h1>
                 <p>Your personalized dashboard</p>
             </div>
-            <div class="create-new">
-                <div class="create-option" onclick="showCreateProjectModal()">
-                    <h3>Create Project</h3>
-                    <p>Start a new project</p>
-                </div>
-                <div class="create-option" onclick="showCreateTaskModal()">
-                    <h3>Create Task</h3>
-                    <p>Add a new task</p>
-                </div>
+            <<div id="tasks-section">
+                <h2>Tasks</h2>
+                <input type="text" id="task-input" placeholder="Enter new task">
+                <button onclick="createTask()">Create Task</button>
+                <ul id="tasks-list"></ul>
             </div>
-            <div class="all-items">
-                <h2>Tasks & Projects</h2>
-                <div id="tasks-projects-list"></div>
-            </div>
-        </div>
-    </div>
+            
+            <div id="projects-section">
+                <h2>Projects</h2>
+                <input type="text" id="project-input" placeholder="Enter new project">
+                <button onclick="createProject()">Create Project</button>
+                <ul id="projects-list"></ul>
             </div>
             <div class="all-items">
                 <h2>Tasks & Projects</h2>
