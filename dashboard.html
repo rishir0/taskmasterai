@@ -474,6 +474,34 @@
     </div>
 </div>
 
+<script>
+    function submitProject() {
+        const name = document.getElementById('project-name').value;
+        const description = document.getElementById('project-details').value;
+        addProject(name, description);
+        closeModal('create-project-modal');
+    }
+
+    function submitTask() {
+        const name = document.getElementById('task-name').value;
+        const description = document.getElementById('task-details').value;
+        addTask(name, description, null); // Adjust projectId if needed
+        closeModal('create-task-modal');
+    }
+
+    function showCreateProjectModal() {
+        document.getElementById('create-project-modal').style.display = 'flex';
+    }
+
+    function showCreateTaskModal() {
+        document.getElementById('create-task-modal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+</script>
+
     <script>
     let timer;
     let isRunning = false;
@@ -723,6 +751,23 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
+// Listen for changes in the 'projects' collection
+db.collection('projects').onSnapshot(snapshot => {
+  const projects = [];
+  snapshot.forEach(doc => {
+    projects.push({ id: doc.id, ...doc.data() });
+  });
+  updateProjectsUI(projects); // Function to update your UI with the new projects
+});
+
+// Listen for changes in the 'tasks' collection
+db.collection('tasks').onSnapshot(snapshot => {
+  const tasks = [];
+  snapshot.forEach(doc => {
+    tasks.push({ id: doc.id, ...doc.data() });
+  });
+  updateTasksUI(tasks); // Function to update your UI with the new tasks
+});
     </script>
 
 
