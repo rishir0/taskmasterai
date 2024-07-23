@@ -440,38 +440,23 @@
         </div>
     </div>
 
-    <!-- Modal for Editing project -->
-    <div id="edit-project-modal" class="modal">
+    <!-- Modal for creating tasks -->
+    <div id="createTaskModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Project</h3>
-                <button onclick="closeModal('edit-project-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-project-id">
-                <input type="text" id="edit-project-name" placeholder="Project Name">
-                <textarea id="edit-project-details" placeholder="Project Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="updateProject()">Save</button>
-            </div>
+            <span class="close" onclick="closeCreateTaskModal()">&times;</span>
+            <h2>Create Task</h2>
+            <input type="text" id="modal-task-input" class="input" placeholder="Enter task name">
+            <button class="btn" onclick="createTaskFromModal()">Create Task</button>
         </div>
     </div>
 
-<!-- Modal for Editing task -->
-<div id="edit-task-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Edit Task</h3>
-            <button onclick="closeModal('edit-task-modal')">X</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="edit-task-id">
-            <input type="text" id="edit-task-name" placeholder="Task Name">
-            <textarea id="edit-task-details" placeholder="Task Details"></textarea>
-        </div>
-        <div class="modal-footer">
-            <button onclick="updateTask()">Save</button>
+    <!-- Modal for creating projects -->
+    <div id="createProjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCreateProjectModal()">&times;</span>
+            <h2>Create Project</h2>
+            <input type="text" id="modal-project-input" class="input" placeholder="Enter project name">
+            <button class="btn" onclick="createProjectFromModal()">Create Project</button>
         </div>
     </div>
 </div>
