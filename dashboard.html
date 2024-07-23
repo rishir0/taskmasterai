@@ -503,6 +503,83 @@
     </div>
 
     <script>
+    let timer;
+    let isRunning = false;
+    let timeLeft = 1500; // 25 minutes
+    
+    const timerDisplay = document.getElementById('timer');
+    const startButton = document.getElementById('start');
+    const pauseButton = document.getElementById('pause');
+    const resetButton = document.getElementById('reset');
+    
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        timer = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                isRunning = false;
+            }
+        }, 1000);
+    }
+    
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+    }
+    
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        timeLeft = 1500;
+        updateDisplay();
+    }
+    
+    function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const seconds = (timeLeft % 60).toString().padStart(2, '0');
+        timerDisplay.value = `${minutes}:${seconds}`;
+    }
+    
+    startButton.addEventListener('click', startTimer);
+    pauseButton.addEventListener('click', pauseTimer);
+    resetButton.addEventListener('click', resetTimer);
+    
+    updateDisplay();
+    </script>
+    </body>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script>
+        // TODO: Replace the following with your app's Firebase project configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
         let tasks = [];
         let projects = [];
         let currentEditIndex = -1;
@@ -641,181 +718,6 @@
             });
         }
 
-
-    
-    let timer;
-    let isRunning = false;
-    let timeLeft = 1500; // 25 minutes
-    
-    const timerDisplay = document.getElementById('timer');
-    const startButton = document.getElementById('start');
-    const pauseButton = document.getElementById('pause');
-    const resetButton = document.getElementById('reset');
-    
-    function startTimer() {
-        if (isRunning) return;
-        isRunning = true;
-        timer = setInterval(() => {
-            timeLeft--;
-            updateDisplay();
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                isRunning = false;
-            }
-        }, 1000);
-    }
-    
-    function pauseTimer() {
-        clearInterval(timer);
-        isRunning = false;
-    }
-    
-    function resetTimer() {
-        clearInterval(timer);
-        isRunning = false;
-        timeLeft = 1500;
-        updateDisplay();
-    }
-    
-    function updateDisplay() {
-        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-        const seconds = (timeLeft % 60).toString().padStart(2, '0');
-        timerDisplay.value = `${minutes}:${seconds}`;
-    }
-    
-    startButton.addEventListener('click', startTimer);
-    pauseButton.addEventListener('click', pauseTimer);
-    resetButton.addEventListener('click', resetTimer);
-    
-    updateDisplay();
-    </script>
-    </body>
-    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script>
-        // TODO: Replace the following with your app's Firebase project configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
-        function showTasksProjects() {
-            document.getElementById('pomodoro-section').style.display = 'none';
-        }
-
-        function showPomodoro() {
-            document.getElementById('pomodoro-section').style.display = 'block';
-        }
-
-        function showCreateTaskModal() {
-            document.getElementById('create-task-modal').style.display = 'flex';
-        }
-
-        function showCreateProjectModal() {
-            document.getElementById('create-project-modal').style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function createTask() {
-            const taskName = document.getElementById('task-name').value;
-            const taskDetails = document.getElementById('task-details').value;
-            if (taskName) {
-                tasks.push({ name: taskName, details: taskDetails, completed: false });
-                renderTasksProjects();
-                closeModal('create-task-modal');
-            }
-        }
-
-        function createProject() {
-            const projectName = document.getElementById('project-name').value;
-            const projectDetails = document.getElementById('project-details').value;
-            if (projectName) {
-                projects.push({ name: projectName, details: projectDetails });
-                renderTasksProjects();
-                closeModal('create-project-modal');
-            }
-        }
-
-        function editTask(index) {
-            currentEditIndex = index;
-            isEditingTask = true;
-            document.getElementById('edit-task-name').value = tasks[index].name;
-            document.getElementById('edit-task-details').value = tasks[index].details;
-            document.getElementById('edit-task-modal').style.display = 'flex';
-        }
-
-        function editProject(index) {
-            currentEditIndex = index;
-            isEditingTask = false;
-            document.getElementById('edit-project-name').value = projects[index].name;
-            document.getElementById('edit-project-details').value = projects[index].details;
-            document.getElementById('edit-project-modal').style.display = 'flex';
-        }
-
-        function saveTask() {
-            const taskName = document.getElementById('edit-task-name').value;
-            const taskDetails = document.getElementById('edit-task-details').value;
-            if (taskName) {
-                tasks[currentEditIndex] = { name: taskName, details: taskDetails, completed: false };
-                renderTasksProjects();
-                closeModal('edit-task-modal');
-            }
-        }
-
-        function saveProject() {
-            const projectName = document.getElementById('edit-project-name').value;
-            const projectDetails = document.getElementById('edit-project-details').value;
-            if (projectName) {
-                projects[currentEditIndex] = { name: projectName, details: projectDetails };
-                renderTasksProjects();
-                closeModal('edit-project-modal');
-            }
-        }
-
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            renderTasksProjects();
-        }
-
-        function deleteProject(index) {
-            projects.splice(index, 1);
-            renderTasksProjects();
-        }
-
-        function toggleComplete(index) {
-            tasks[index].completed = !tasks[index].completed;
-            renderTasksProjects();
-        }
-
-        function renderTasksProjects() {
-            const tasksProjectsList = document.getElementById('tasks-projects-list');
-            tasksProjectsList.innerHTML = '';
-
-        }
     </script>
 
     <script>
