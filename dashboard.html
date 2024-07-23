@@ -751,23 +751,95 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-// Listen for changes in the 'projects' collection
-db.collection('projects').onSnapshot(snapshot => {
-  const projects = [];
-  snapshot.forEach(doc => {
-    projects.push({ id: doc.id, ...doc.data() });
-  });
-  updateProjectsUI(projects); // Function to update your UI with the new projects
-});
+import React, { useEffect, useState } from 'react';
+import { firestore } from './firebaseConfig'; // make sure to import your firebase config
 
-// Listen for changes in the 'tasks' collection
-db.collection('tasks').onSnapshot(snapshot => {
-  const tasks = [];
-  snapshot.forEach(doc => {
-    tasks.push({ id: doc.id, ...doc.data() });
-  });
-  updateTasksUI(tasks); // Function to update your UI with the new tasks
-});
+const ProjectTaskList = () => {
+  const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
+  // Fetch projects
+  const fetchProjects = async () => {
+    const projectCollection = await firestore.collection('projects').get();
+    const projectData = projectCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setProjects(projectData);
+  };
+
+  // Fetch tasks
+  const fetchTasks = async () => {
+    const taskCollection = await firestore.collection('tasks').get();
+    const taskData = taskCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setTasks(taskData);
+  };
+
+  // Fetch projects and tasks on component mount
+  useEffect(() => {
+    fetchProjects();
+    fetchTasks();
+  }, []);
+
+  // Set up real-time listeners for projects and tasks
+  useEffect(() => {
+    const unsubscribeProjects = firestore.collection('projects').onSnapshot(snapshot => {
+      const projectData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProjects(projectData);
+    });
+
+    const unsubscribeTasks = firestore.collection('tasks').onSnapshot(snapshot => {
+      const taskData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTasks(taskData);
+    });
+
+    // Clean up listeners on unmount
+    return () => {
+      unsubscribeProjects();
+      unsubscribeTasks();
+    };
+  }, []);
+
+  return (
+    <div className="all-items">
+      <h2>Tasks & Projects</h2>
+      <div id="tasks-projects-list">
+        <h3>Projects</h3>
+        <ul>
+          {projects.map(project => (
+            <li key={project.id}>
+              <h4>{project.name}</h4>
+              <p>{project.description}</p>
+            </li>
+          ))}
+        </ul>
+        <h3>Tasks</h3>
+        <ul>
+          {tasks.map(task => (
+            <li key={task.id}>
+              <h4>{task.name}</h4>
+              <p>{task.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default ProjectTaskList;
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ProjectTaskList from './ProjectTaskList'; // adjust the path as necessary
+
+const App = () => {
+  return (
+    <div>
+      <ProjectTaskList />
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
     </script>
 
 
