@@ -230,6 +230,80 @@
     background-color: #0EA5E9;
     transform: scale(1.1);
 
+/* Updated styles for Tasks and Projects sections */
+
+/* Common Styles for Sections */
+#tasks-section, #projects-section {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+#tasks-section h2, #projects-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Input and Button Styles */
+#tasks-section input, #projects-section input {
+    width: 70%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+#tasks-section button, #projects-section button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+#tasks-section button:hover, #projects-section button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Item Styles */
+.task-item, .project-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.task-item:hover, .project-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.task-item button, .project-item button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+.task-item button:hover, .project-item button:hover {
+    background-color: var(--accent-color);
+}
 
 }
 .sidebar-toggle {
@@ -416,10 +490,8 @@
                 <h1>Welcome, <span id="displayName">User</span>!</h1>
                 <p>Your personalized dashboard</p>
             </div>
-            <div class="create-new">
-            <div class="card">
-            <div class="create-option">
-            <<<div id="tasks-section">
+            <<div id="tasks-section">
+                <div class="card">
                 <h2>Tasks</h2>
                 <input type="text" id="task-input" placeholder="Enter new task">
                 <button onclick="createTask()">Create Task</button>
@@ -427,25 +499,12 @@
             </div>
             
             <div id="projects-section">
-                <div class="card">
-                <div class="create-new">
-                <div class="create-option">
                 <h2>Projects</h2>
                 <input type="text" id="project-input" placeholder="Enter new project">
                 <button onclick="createProject()">Create Project</button>
                <div id="projects-list">
             </div>
-            <div class="all-items">
-                <h3>All Items</h3>
-                <div class="item">
-                    <span>Task 1</span>
-                    <span>Details</span>
-                </div>
-                <div class="item">
-                    <span>Project 1</span>
-                    <span>Details</span>
-                </div>
-            </div>
+            
             <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
             <input type="text" id="timer" value="25:00" readonly>
