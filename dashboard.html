@@ -662,6 +662,58 @@ function createTask() {
     }
 }
 
+// Function to load tasks and projects
+function loadTasks() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        db.collection('tasks').where('createdBy', '==', user.uid).orderBy('createdAt', 'desc').get().then(snapshot => {
+            const tasksProjectsList = document.getElementById('tasks-projects-list');
+            tasksProjectsList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const task = doc.data();
+                const taskItem = document.createElement('div');
+                taskItem.classList.add('item');
+                taskItem.innerHTML = `
+                    <div>
+                        <h4>${task.name}</h4>
+                        <p>${task.details}</p>
+                    </div>
+                    <div>
+                        <button onclick="editTask('${doc.id}', '${task.name}', '${task.details}')">Edit</button>
+                        <button onclick="deleteTask('${doc.id}')">Delete</button>
+                    </div>
+                `;
+                tasksProjectsList.appendChild(taskItem);
+            });
+        });
+    }
+}
+
+function loadProjects() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        db.collection('projects').where('createdBy', '==', user.uid).orderBy('createdAt', 'desc').get().then(snapshot => {
+            const tasksProjectsList = document.getElementById('tasks-projects-list');
+            snapshot.forEach(doc => {
+                const project = doc.data();
+                const projectItem = document.createElement('div');
+                projectItem.classList.add('item');
+                projectItem.innerHTML = `
+                    <div>
+                        <h4>${project.name}</h4>
+                        <p>${project.details}</p>
+                    </div>
+                    <div>
+                        <button onclick="editProject('${doc.id}', '${project.name}', '${project.details}')">Edit</button>
+                        <button onclick="deleteProject('${doc.id}')">Delete</button>
+                    </div>
+                `;
+                tasksProjectsList.appendChild(projectItem);
+            });
+        });
+    }
+}
+        
 // Function to update a project
 function saveProject() {
     const projectId = document.getElementById('edit-project-id').value;
@@ -714,6 +766,27 @@ function openEditProjectModal(projectId, projectName, projectDetails) {
     openModal('edit-project-modal');
 }
 
+// Function to delete a task
+function deleteTask(taskId) {
+    if (confirm("Are you sure you want to delete this task?")) {
+        db.collection('tasks').doc(taskId).delete().then(() => {
+            loadTasks();
+        }).catch(error => {
+            console.error("Error deleting task: ", error);
+        });
+    }
+}
+
+// Function to delete a project
+function deleteProject(projectId) {
+    if (confirm("Are you sure you want to delete this project?")) {
+        db.collection('projects').doc(projectId).delete().then(() => {
+            loadProjects();
+        }).catch(error => {
+            console.error("Error deleting project: ", error);
+        });
+    }
+}
 
 
 // Listen for authentication state changes to load tasks
@@ -722,6 +795,11 @@ firebase.auth().onAuthStateChanged((user) => {
         loadTasks();
     }
 });
+
+// Load tasks and projects on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadTasks();
+    loadProjects();
 
     </script>
 
