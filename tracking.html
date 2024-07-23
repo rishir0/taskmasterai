@@ -378,69 +378,7 @@
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('displayName').textContent = user.displayName;
-                    loadGoals();
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
-        function loadGoals() {
-            db.collection('goals')
-                .where('userId', '==', firebase.auth().currentUser.uid)
-                .orderBy('createdAt')
-                .onSnapshot(snapshot => {
-                    const goalList = document.getElementById('goal-list');
-                    goalList.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const goal = doc.data();
-                        const li = document.createElement('li');
-                        li.textContent = goal.goal;
-                        li.appendChild(createEditButton(doc.id));
-                        li.appendChild(createDeleteButton(doc.id));
-                        goalList.appendChild(li);
-                    });
-                });
-        }
-
-        function createEditButton(id) {
-            const button = document.createElement('button');
-            button.textContent = 'Edit';
-            button.onclick = () => editGoal(id);
-            return button;
-        }
-
-        function createDeleteButton(id) {
-            const button = document.createElement('button');
-            button.textContent = 'Delete';
-            button.onclick = () => deleteGoal(id);
-            return button;
-        }
-
-        function editGoal(id) {
-            const newGoal = prompt('Enter new goal:');
-            if (newGoal) {
-                db.collection('goals').doc(id).update({
-                    goal: newGoal
-                });
-            }
-        }
-
-        function deleteGoal(id) {
-            db.collection('goals').doc(id).delete();
-        }
-
-        // Listen for authentication state changes to load goals
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                loadGoals();
-            }
-        });
+        
         
 </body>
 </html>
