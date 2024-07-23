@@ -232,41 +232,33 @@
 
 /* Updated styles for Tasks and Projects sections */
 
-/* Common Styles for Cards */
-.card {
+/* Common Styles for Sections */
+#tasks-section, #projects-section {
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 20px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* Task Section */
-#tasks-section {
     margin-bottom: 30px;
 }
 
-#tasks-section h2 {
+#tasks-section h2, #projects-section h2 {
     color: var(--primary-color);
     margin-bottom: 20px;
+    font-weight: bold;
 }
 
-.task-input {
-    width: 100%;
+/* Input and Button Styles */
+.input-field {
+    width: 80%;
     padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin-bottom: 10px;
+    margin-right: 10px;
 }
 
-.task-button {
+.button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
@@ -276,11 +268,12 @@
     font-size: 1rem;
 }
 
-.task-button:hover {
+.button:hover {
     background-color: var(--accent-color);
 }
 
-.task-item {
+/* Item Styles */
+.item {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
     border-radius: 5px;
@@ -291,32 +284,7 @@
     align-items: center;
 }
 
-.task-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Project Section */
-#projects-section {
-    margin-bottom: 30px;
-}
-
-#projects-section h2 {
-    color: var(--primary-color);
-    margin-bottom: 20px;
-}
-
-.project-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    transition: background-color 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.project-item:hover {
+.item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -514,11 +482,11 @@
             </div>
             
             <div id="projects-section">
-                <div class="card">
                 <h2>Projects</h2>
                 <input type="text" id="project-input" placeholder="Enter new project">
                 <button onclick="createProject()">Create Project</button>
-                <ul id="projects-list"></ul>
+                <div class="item">Project 1</div>
+                <div class="item">Project 2</div>
             </div>
             
             <div class="pomodoro-timer">
