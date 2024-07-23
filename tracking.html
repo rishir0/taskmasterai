@@ -363,100 +363,91 @@
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
-        
         document.addEventListener('DOMContentLoaded', function() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-            loadGoals();
-        } else {
-            // No user is signed in.
-            window.location.href = "login.html"; // Redirect to login page
-        }
-    });
-});
-
-function createGoal() {
-    const goalInput = document.getElementById('goal-input');
-    const goal = goalInput.value.trim();
-    console.log('Goal input:', goal); // Add this line
-    if (goal) {
-        db.collection('goals').add({
-            goal: goal,
-            userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            console.log('Goal added successfully'); // Add this line
-            goalInput.value = '';
-        })
-        .catch(error => {
-            console.error('Error adding goal:', error); // Add this line
-        });
-    }
-}
-
-function loadGoals() {
-    db.collection('goals')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            const goalsList = document.getElementById('goals-list');
-            goalsList.innerHTML = '';
-            snapshot.forEach(doc => {
-                const goal = doc.data();
-                const li = document.createElement('li');
-                li.textContent = goal.goal;
-                li.appendChild(createEditButton(doc.id, 'goal'));
-                li.appendChild(createDeleteButton(doc.id, 'goal'));
-                goalsList.appendChild(li);
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    loadGoals(); // Load goals when user is authenticated
+                } else {
+                    window.location.href = "login.html"; // Redirect to login page
+                }
             });
         });
-}
 
-function createEditButton(id, type) {
-    const button = document.createElement('button');
-    button.textContent = 'Edit';
-    button.onclick = () => editItem(id, type);
-    return button;
-}
+        document.getElementById('btn').addEventListener('click', createGoal); // Add event listener to button
 
-function createDeleteButton(id, type) {
-    const button = document.createElement('button');
-    button.textContent = 'Delete';
-    button.onclick = () => deleteItem(id, type);
-    return button;
-}
+        function createGoal() {
+            const goalInput = document.getElementById('goal-input');
+            const goal = goalInput.value.trim();
+            if (goal) {
+                db.collection('goals').add({
+                    goal: goal,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    goalInput.value = ''; // Clear the input field
+                }).catch(error => {
+                    console.error("Error adding goal: ", error);
+                });
+            }
+        }
 
-function editItem(id, type) {
-    const newValue = prompt(`Enter new ${type}:`);
-    if (newValue) {
-        db.collection(type + 's').doc(id).update({
-            [type]: newValue
-        });
-    }
-}
+        function loadGoals() {
+            db.collection('goals')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    const goalsList = document.getElementById('goals-list');
+                    goalsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const goal = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = goal.goal;
+                        li.appendChild(createEditButton(doc.id, 'goal'));
+                        li.appendChild(createDeleteButton(doc.id, 'goal'));
+                        goalsList.appendChild(li);
+                    });
+                }, error => {
+                    console.error("Error loading goals: ", error);
+                });
+        }
 
-function deleteItem(id, type) {
-    db.collection(type + 's').doc(id).delete();
-}
+        function createEditButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Edit';
+            button.onclick = () => editItem(id, type);
+            return button;
+        }
 
+        function createDeleteButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Delete';
+            button.onclick = () => deleteItem(id, type);
+            return button;
+        }
 
-// Listen for authentication state changes to load goals
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        loadGoals();
-    }
-});
+        function editItem(id, type) {
+            const newValue = prompt(`Enter new ${type}:`);
+            if (newValue) {
+                db.collection(type + 's').doc(id).update({
+                    [type]: newValue
+                }).catch(error => {
+                    console.error("Error updating goal: ", error);
+                });
+            }
+        }
 
-    </script>
+        function deleteItem(id, type) {
+            db.collection(type + 's').doc(id).delete().catch(error => {
+                console.error("Error deleting goal: ", error);
+            });
+        }
 
-
-    <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
+
 </body>
 </html>
