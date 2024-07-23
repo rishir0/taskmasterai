@@ -428,7 +428,6 @@
                 <h2>Tasks & Projects</h2>
                 <div id="tasks-projects-list"></div>
             </div>
-              <script src="app.js"></script>
             <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
             <input type="text" id="timer" value="25:00" readonly>
@@ -555,6 +554,8 @@
                 }
             });
         });
+
+        
 
         // Function to show the Create Project modal
 function showCreateProjectModal() {
@@ -738,6 +739,7 @@ firebase.auth().onAuthStateChanged((user) => {
 
 
     </script>
+    <script src="app.js"></script>
 
 
     <script>
