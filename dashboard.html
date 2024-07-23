@@ -414,15 +414,21 @@
                 <h1>Welcome, <span id="displayName">User</span>!</h1>
                 <p>Your personalized dashboard</p>
             </div>
-            <div class="create-new">
-                <div class="create-option" onclick="showCreateProjectModal()">
-                    <h3>Create Project</h3>
-                    <p>Start a new project</p>
-                </div>
-                <div class="create-option" onclick="showCreateTaskModal()">
-                    <h3>Create Task</h3>
-                    <p>Add a new task</p>
-                </div>
+            <div id="tasks-section">
+                <h2>Tasks</h2>
+                <input type="text" id="task-input" placeholder="Enter new task">
+                <button onclick="createTask()">Create Task</button>
+                <ul id="tasks-list"></ul>
+            </div>
+            
+            <div id="projects-section">
+                <h2>Projects</h2>
+                <input type="text" id="project-input" placeholder="Enter new project">
+                <button onclick="createProject()">Create Project</button>
+                <ul id="projects-list"></ul>
+            </div>
+        </div>
+    </div>
             </div>
             <div class="all-items">
                 <h2>Tasks & Projects</h2>
@@ -539,7 +545,7 @@
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        var db = firebase.firestore();
 
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -555,182 +561,107 @@
             });
         });
 
-        // Function to show the Create Project modal
-function showCreateProjectModal() {
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-    modal.id = 'create-project-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Project</h3>
-                <button onclick="closeModal('create-project-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="project-name" placeholder="Project Name">
-                <textarea id="project-details" placeholder="Project Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createProject()">Create</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-// Function to show the Create Task modal
-function showCreateTaskModal() {
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-    modal.id = 'create-task-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Task</h3>
-                <button onclick="closeModal('create-task-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="task-name" placeholder="Task Name">
-                <textarea id="task-details" placeholder="Task Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createTask()">Create</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-
-        // Function to create a new project
-function createProject() {
-    const user = firebase.auth().currentUser;
-    const projectName = document.getElementById('project-name').value;
-    const projectDetails = document.getElementById('project-details').value;
-
-    if (projectName && user) {
-        db.collection('projects').add({
-            name: projectName,
-            details: projectDetails,
-            userId: user.uid,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Project added successfully!");
-            document.getElementById('project-name').value = ""; // Clear the input field
-            document.getElementById('project-details').value = ""; // Clear the details field
-            loadProjects(); // Refresh the project list
-            displayName = projectName
-        }).catch((error) => {
-            console.error("Error adding project: ", error);
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('displayName').textContent = user.displayName;
+                    loadTasks();
+                    loadProjects();
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
         });
-    } else {
-        alert("Please enter a project name.");
-    }
-}
 
-// Function to create a new task
-function createTask() {
-    const user = firebase.auth().currentUser;
-    const taskName = document.getElementById('task-name').value;
-    const taskDetails = document.getElementById('task-details').value;
+        function createTask() {
+            const taskInput = document.getElementById('task-input');
+            const task = taskInput.value.trim();
+            if (task) {
+                db.collection('tasks').add({
+                    task: task,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                taskInput.value = '';
+            }
+        }
 
-    if (taskName && user) {
-        db.collection('tasks').add({
-            name: taskName,
-            details: taskDetails,
-            userId: user.uid,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Task added successfully!");
-            document.getElementById('task-name').value = ""; // Clear the input field
-            document.getElementById('task-details').value = ""; // Clear the details field
-            loadTasks(); // Refresh the task list
-        }).catch((error) => {
-            console.error("Error adding task: ", error);
-        });
-    } else {
-        alert("Please enter a task name.");
-    }
-}
+        function createProject() {
+            const projectInput = document.getElementById('project-input');
+            const project = projectInput.value.trim();
+            if (project) {
+                db.collection('projects').add({
+                    project: project,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                projectInput.value = '';
+            }
+        }
 
-// Function to update a project
-function updateProject() {
-    const projectId = document.getElementById('edit-project-id').value;
-    const projectName = document.getElementById('edit-project-name').value;
-    const projectDetails = document.getElementById('edit-project-details').value;
+        function loadTasks() {
+            db.collection('tasks')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    const tasksList = document.getElementById('tasks-list');
+                    tasksList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const task = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = task.task;
+                        li.appendChild(createEditButton(doc.id, 'task'));
+                        li.appendChild(createDeleteButton(doc.id, 'task'));
+                        tasksList.appendChild(li);
+                    });
+                });
+        }
 
-    if (projectId) {
-        db.collection('projects').doc(projectId).update({
-            name: projectName,
-            details: projectDetails
-        }).then(() => {
-            alert("Project updated successfully!");
-            closeModal('edit-project-modal'); // Close the modal
-            loadProjects(); // Refresh the project list
-        }).catch((error) => {
-            console.error("Error updating project: ", error);
-        });
-    } else {
-        alert("Please select a project to update.");
-    }
-}
+        function loadProjects() {
+            db.collection('projects')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    const projectsList = document.getElementById('projects-list');
+                    projectsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const project = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = project.project;
+                        li.appendChild(createEditButton(doc.id, 'project'));
+                        li.appendChild(createDeleteButton(doc.id, 'project'));
+                        projectsList.appendChild(li);
+                    });
+                });
+        }
 
-// Function to update a task
-function updateTask() {
-    const taskId = document.getElementById('edit-task-id').value;
-    const taskName = document.getElementById('edit-task-name').value;
-    const taskDetails = document.getElementById('edit-task-details').value;
+        function createEditButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Edit';
+            button.onclick = () => editItem(id, type);
+            return button;
+        }
 
-    if (taskId) {
-        db.collection('tasks').doc(taskId).update({
-            name: taskName,
-            details: taskDetails
-        }).then(() => {
-            alert("Task updated successfully!");
-            closeModal('edit-task-modal'); // Close the modal
-            loadTasks(); // Refresh the task list
-        }).catch((error) => {
-            console.error("Error updating task: ", error);
-        });
-    } else {
-        alert("Please select a task to update.");
-    }
-}
+        function createDeleteButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Delete';
+            button.onclick = () => deleteItem(id, type);
+            return button;
+        }
 
-// Function to open the edit task modal
-function openEditTaskModal(taskId, taskName, taskDetails) {
-    document.getElementById('edit-task-id').value = taskId;
-    document.getElementById('edit-task-name').value = taskName;
-    document.getElementById('edit-task-details').value = taskDetails;
-    openModal('edit-task-modal');
-}
+        function editItem(id, type) {
+            const newValue = prompt(`Enter new ${type}:`);
+            if (newValue) {
+                db.collection(type + 's').doc(id).update({
+                    [type]: newValue
+                });
+            }
+        }
 
-// Function to open the edit project modal
-function openEditProjectModal(projectId, projectName, projectDetails) {
-    document.getElementById('edit-project-id').value = projectId;
-    document.getElementById('edit-project-name').value = projectName;
-    document.getElementById('edit-project-details').value = projectDetails;
-    openModal('edit-project-modal');
-}
-
-// Function to show the edit project modal
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-}
-
-// Function to close a modal
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
+        function deleteItem(id, type) {
+            db.collection(type + 's').doc(id).delete();
+        }
 
 
 // Listen for authentication state changes to load tasks
