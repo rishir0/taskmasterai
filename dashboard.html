@@ -570,54 +570,6 @@
             });
         });
 
-        // Function to show the Create Project modal
-function showCreateProjectModal() {
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-    modal.id = 'create-project-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Project</h3>
-                <button onclick="closeModal('create-project-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="project-name" placeholder="Project Name">
-                <textarea id="project-details" placeholder="Project Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createProject()">Create</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-// Function to show the Create Task modal
-function showCreateTaskModal() {
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-    modal.id = 'create-task-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create Task</h3>
-                <button onclick="closeModal('create-task-modal')">X</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="task-name" placeholder="Task Name">
-                <textarea id="task-details" placeholder="Task Details"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button onclick="createTask()">Create</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
         function createTask() {
             const taskInput = document.getElementById('task-input');
             const task = taskInput.value.trim();
