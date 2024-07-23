@@ -274,13 +274,8 @@
     background-color: var(--accent-color);
 }
 
-/* List Styles */
-#tasks-list, #projects-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-#tasks-list li, #projects-list li {
+/* Item Styles */
+.task-item, .project-item {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
     border-radius: 5px;
@@ -291,11 +286,11 @@
     transition: background-color 0.3s ease;
 }
 
-#tasks-list li:hover, #projects-list li:hover {
+.task-item:hover, .project-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-#tasks-list li button, #projects-list li button {
+.task-item button, .project-item button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
@@ -306,7 +301,7 @@
     margin-left: 5px;
 }
 
-#tasks-list li button:hover, #projects-list li button:hover {
+.task-item button:hover, .project-item button:hover {
     background-color: var(--accent-color);
 }
 
@@ -445,7 +440,7 @@
                     <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Tasks
+                Na/Na
             </div>
              <div class="menu-item" onclick="window.location.href='features.html'">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -500,14 +495,14 @@
                 <h2>Tasks</h2>
                 <input type="text" id="task-input" placeholder="Enter new task">
                 <button onclick="createTask()">Create Task</button>
-                <ul id="tasks-list"></ul>
+                <div id="tasks-list">
             </div>
             
             <div id="projects-section">
                 <h2>Projects</h2>
                 <input type="text" id="project-input" placeholder="Enter new project">
                 <button onclick="createProject()">Create Project</button>
-               <ul id="projects-list"></ul>
+               <div id="projects-list">
             </div>
             
             <div class="pomodoro-timer">
