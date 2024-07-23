@@ -637,7 +637,7 @@ function createProject() {
     }
 }
 
-// Function to create a new project
+// Function to create a new task
 function createTask() {
     const user = firebase.auth().currentUser;
     const taskName = document.getElementById('task-name').value;
@@ -680,74 +680,22 @@ function saveProject() {
     });
 }
 
-// Fetch and display project details
-        function displayProject(projectId) {
-            db.collection('projects').doc(projectId).get().then(doc => {
-                if (doc.exists) {
-                    const projectData = doc.data();
-                    document.getElementById('project-details').innerHTML = `
-                        <h2>${projectData.name}</h2>
-                        <p>${projectData.description}</p>
-                    `;
-                    displayTasks(projectId);
-                } else {
-                    console.log('No such project!');
-                }
-            }).catch(error => {
-                console.error('Error getting document:', error);
-            });
-        }
+// Function to update a task
+function saveTask() {
+    const taskId = document.getElementById('edit-task-id').value;
+    const taskName = document.getElementById('edit-task-name').value;
+    const taskDetails = document.getElementById('edit-task-details').value;
 
-        // Fetch and display tasks for the project
-        function displayTasks(projectId) {
-            db.collection('projects').doc(projectId).collection('tasks').get().then(querySnapshot => {
-                const tasksDiv = document.getElementById('tasks');
-                tasksDiv.innerHTML = '';
-                querySnapshot.forEach(doc => {
-                    const taskData = doc.data();
-                    tasksDiv.innerHTML += `
-                        <div>
-                            <h3>${taskData.title}</h3>
-                            <p>${taskData.description}</p>
-                        </div>
-                    `;
-                });
-            }).catch(error => {
-                console.error('Error getting tasks:', error);
-            });
-        }
-
-// Function to load and display projects
-function loadProjects() {
-    const user = firebase.auth().currentUser;
-    if (user) {
-        db.collection('projects').where('userId', '==', user.uid).orderBy('timestamp').get()
-            .then((querySnapshot) => {
-                const projectList = document.getElementById('projectList');
-                projectList.innerHTML = ""; // Clear the current project list
-
-                querySnapshot.forEach((doc) => {
-                    const project = doc.data();
-                    const projectItem = document.createElement('li');
-                    projectItem.textContent = project.name;
-
-                    // Edit and delete buttons
-                    const editButton = document.createElement('button');
-                    editButton.textContent = "Edit";
-                    editButton.onclick = () => openEditProjectModal(doc.id, project.name, project.details);
-                    projectItem.appendChild(editButton);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = "Delete";
-                    deleteButton.onclick = () => deleteProject(doc.id);
-                    projectItem.appendChild(deleteButton);
-
-                    projectList.appendChild(projectItem);
-                });
-            }).catch((error) => {
-                console.error("Error loading projects: ", error);
-            });
-    }
+    db.collection('tasks').doc(projectId).update({
+        name: taskName,
+        details: taskDetails
+    }).then(() => {
+        alert("Task updated successfully!");
+        closeModal('edit-task-modal'); // Close the modal
+        loadTasks(); // Refresh the task list
+    }).catch((error) => {
+        console.error("Error updating task: ", error);
+    });
 }
 
 // Function to open the edit task modal
@@ -766,15 +714,6 @@ function openEditProjectModal(projectId, projectName, projectDetails) {
     openModal('edit-project-modal');
 }
 
-// Function to delete a project
-function deleteProject(projectId) {
-    db.collection('projects').doc(projectId).delete().then(() => {
-        alert("Project deleted successfully!");
-        loadProjects(); // Refresh the project list
-    }).catch((error) => {
-        console.error("Error deleting project: ", error);
-    });
-}
 
 
 // Listen for authentication state changes to load tasks
@@ -784,11 +723,6 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-// Example usage: display a specific project
-        document.addEventListener('DOMContentLoaded', () => {
-            const projectId = 'IUUOq8IRYhVHkCKeZdwI'; // Replace with actual project ID
-            displayProject(projectId);
-        });
     </script>
 
 
