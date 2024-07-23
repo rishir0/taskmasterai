@@ -636,49 +636,46 @@ function createProject() {
         alert("Please enter a project name.");
     }
 }
+        
 
-/function createTask() {
-    const user = firebase.auth().currentUser;
-    const projectId = document.getElementById('selected-project-id').value; // You should select a project before creating tasks
-    const taskName = document.getElementById('task-name').value;
-    const taskDetails = document.getElementById('task-details').value;
 
-    if (taskName && user && projectId) {
-        db.collection('projects').doc(projectId).collection('tasks').add({
-            name: taskName,
-            details: taskDetails,
-            userId: user.uid,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            alert("Task added successfully!");
-            document.getElementById('task-name').value = ""; // Clear the input field
-            document.getElementById('task-details').value = ""; // Clear the details field
-            displayTasks(projectId); // Refresh the task list
-        }).catch((error) => {
-            console.error("Error adding task: ", error);
-        });
-    } else {
-        alert("Please enter a task name and select a project.");
-    }
-}
 
-function displayTasks(projectId) {
-    db.collection('projects').doc(projectId).collection('tasks').orderBy('timestamp').get().then(querySnapshot => {
-        const tasksDiv = document.getElementById('tasks');
-        tasksDiv.innerHTML = '';
-        querySnapshot.forEach(doc => {
-            const taskData = doc.data();
-            tasksDiv.innerHTML += `
-                <div>
-                    <h3>${taskData.name}</h3>
-                    <p>${taskData.details}</p>
-                </div>
-            `;
-        });
-    }).catch(error => {
-        console.error('Error getting tasks:', error);
+// Function to update a project
+function saveProject() {
+    const projectId = document.getElementById('edit-project-id').value;
+    const projectName = document.getElementById('edit-project-name').value;
+    const projectDetails = document.getElementById('edit-project-details').value;
+
+    db.collection('projects').doc(projectId).update({
+        name: projectName,
+        details: projectDetails
+    }).then(() => {
+        alert("Project updated successfully!");
+        closeModal('edit-project-modal'); // Close the modal
+        loadProjects(); // Refresh the project list
+    }).catch((error) => {
+        console.error("Error updating project: ", error);
     });
 }
+
+// Fetch and display project details
+        function displayProject(projectId) {
+            db.collection('projects').doc(projectId).get().then(doc => {
+                if (doc.exists) {
+                    const projectData = doc.data();
+                    document.getElementById('project-details').innerHTML = `
+                        <h2>${projectData.name}</h2>
+                        <p>${projectData.description}</p>
+                    `;
+                    displayTasks(projectId);
+                } else {
+                    console.log('No such project!');
+                }
+            }).catch(error => {
+                console.error('Error getting document:', error);
+            });
+        }
+
 
 // Function to load and display projects
 function loadProjects() {
@@ -705,16 +702,6 @@ function loadProjects() {
                     deleteButton.onclick = () => deleteProject(doc.id);
                     projectItem.appendChild(deleteButton);
 
-                    // Button to select project and display tasks
-                    const viewTasksButton = document.createElement('button');
-                    viewTasksButton.textContent = "View Tasks";
-                    viewTasksButton.onclick = () => {
-                        displayProject(doc.id);
-                        document.getElementById('selected-project-id').value = doc.id;
-                        displayTasks(doc.id);
-                    };
-                    projectItem.appendChild(viewTasksButton);
-
                     projectList.appendChild(projectItem);
                 });
             }).catch((error) => {
@@ -722,8 +709,6 @@ function loadProjects() {
             });
     }
 }
-
-
 
 // Function to open the edit task modal
 function openEditTaskModal(taskId, taskName, taskDetails) {
