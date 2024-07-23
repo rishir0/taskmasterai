@@ -178,6 +178,8 @@
             cursor: pointer;
         }
 
+        
+
         .pomodoro-timer {
             margin-top: 20px;
             background-color: var(--card-bg);
@@ -247,63 +249,63 @@
     font-weight: bold;
 }
 
-/* Input and Button Styles */
-#tasks-section input, #projects-section input {
-    width: 70%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin-bottom: 10px;
-    margin-right: 10px;
-}
+.card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
 
-#tasks-section button, #projects-section button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-}
+    .card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: #333;
+    }
 
-#tasks-section button:hover, #projects-section button:hover {
-    background-color: var(--accent-color);
-}
+    .create-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
 
-/* Item Styles */
-.task-item, .project-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.3s ease;
-}
+    .create-button:hover {
+        background-color: #45a049;
+    }
 
-.task-item:hover, .project-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
+    .item-list {
+        list-style-type: none;
+        padding: 0;
+    }
 
-.task-item button, .project-item button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-left: 5px;
-}
+    .item {
+        background-color: #f9f9f9;
+        border-radius: 4px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.task-item button:hover, .project-item button:hover {
-    background-color: var(--accent-color);
-}
+    .item-actions button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        margin-left: 5px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .item-actions button:hover {
+        color: #333;
+    }
 
 }
 .sidebar-toggle {
@@ -490,19 +492,20 @@
                 <h1>Welcome, <span id="displayName">User</span>!</h1>
                 <p>Your personalized dashboard</p>
             </div>
-            <<div id="tasks-section">
-                <div class="card">
+            <div id="tasks-section" class="card">
                 <h2>Tasks</h2>
-                <input type="text" id="task-input" placeholder="Enter new task">
-                <button onclick="createTask()">Create Task</button>
-                <div id="tasks-list">
+                <button class="create-button" onclick="createTask()">Create Task</button>
+                <div id="tasks-list" class="item-list">
+                <!-- Tasks will be dynamically added here -->
+                </div>
             </div>
-            
-            <div id="projects-section">
+
+            <div id="projects-section" class="card">
                 <h2>Projects</h2>
-                <input type="text" id="project-input" placeholder="Enter new project">
-                <button onclick="createProject()">Create Project</button>
-               <div id="projects-list">
+                <button class="create-button" onclick="createProject()">Create Project</button>
+                <div id="projects-list" class="item-list">
+                <!-- Projects will be dynamically added here -->
+                </div>
             </div>
             
             <div class="pomodoro-timer">
