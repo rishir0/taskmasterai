@@ -325,7 +325,6 @@
                 </div>
             </div>
         </div>
-        <div class="main-content">
          <div class="main-content">
         <div class="dashboard-header">
             <h1>Goal Tracking</h1>
@@ -344,8 +343,7 @@
             </div>
         </div>
     </div>
-    
-    </body>
+     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -378,7 +376,95 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('displayName').textContent = user.displayName;
+                    loadGoals();
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
+
+        function createGoals() {
+            const goalInput = document.getElementById('goal-input');
+            const goal = goalInput.value.trim();
+            if (goal) {
+                db.collection('goals').add({
+                    goal: goal,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                goalInput.value = '';
+            }
+        }
+
+        function loadGoals() {
+            db.collection('goals')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    const goalsList = document.getElementById('goals-list');
+                    goalsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const goal = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = goal.goal;
+                        li.appendChild(createEditButton(doc.id, 'goal'));
+                        li.appendChild(createDeleteButton(doc.id, 'goal'));
+                        goalsList.appendChild(li);
+                    });
+                });
+        }
+
         
-        
+
+        function createEditButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Edit';
+            button.onclick = () => editItem(id, type);
+            return button;
+        }
+
+        function createDeleteButton(id, type) {
+            const button = document.createElement('button');
+            button.textContent = 'Delete';
+            button.onclick = () => deleteItem(id, type);
+            return button;
+        }
+
+        function editItem(id, type) {
+            const newValue = prompt(`Enter new ${type}:`);
+            if (newValue) {
+                db.collection(type + 's').doc(id).update({
+                    [type]: newValue
+                });
+            }
+        }
+
+        function deleteItem(id, type) {
+            db.collection(type + 's').doc(id).delete();
+        }
+
+
+// Listen for authentication state changes to load goals
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        loadGoals();
+    }
+});
+
+    </script>
+
+
+    <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
