@@ -637,22 +637,29 @@ function createProject() {
     }
 }
 
-// Function to update a task
-function saveTask() {
-    const taskId = document.getElementById('edit-task-id').value;
-    const taskName = document.getElementById('edit-task-name').value;
-    const taskDetails = document.getElementById('edit-task-details').value;
+// Function to create a new project
+function createTask() {
+    const user = firebase.auth().currentUser;
+    const taskName = document.getElementById('task-name').value;
+    const taskDetails = document.getElementById('task-details').value;
 
-    db.collection('tasks').doc(taskId).update({
-        name: taskName,
-        details: taskDetails
-    }).then(() => {
-        alert("Task updated successfully!");
-        closeModal('edit-task-modal'); // Close the modal
-        loadTasks(); // Refresh the task list
-    }).catch((error) => {
-        console.error("Error updating task: ", error);
-    });
+    if (projectName && user) {
+        db.collection('tasks').add({
+            name: taskName,
+            details: taskDetails,
+            userId: user.uid,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert("Task added successfully!");
+            document.getElementById('task-name').value = ""; // Clear the input field
+            document.getElementById('task-details').value = ""; // Clear the details field
+            loadTasks(); // Refresh the project list
+        }).catch((error) => {
+            console.error("Error adding task: ", error);
+        });
+    } else {
+        alert("Please enter a task name.");
+    }
 }
 
 // Function to update a project
