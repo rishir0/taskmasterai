@@ -841,6 +841,50 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
+// Listen for authentication state changes to load tasks
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        loadProjects();
+    }
+});
+        
+// Function to load and display tasks
+function loadTasks() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        db.collection('tasks').where('userId', '==', user.uid).orderBy('timestamp').get()
+            .then((querySnapshot) => {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = ""; // Clear the current task list
+
+                querySnapshot.forEach((doc) => {
+                    const task = doc.data();
+                    const taskItem = document.createElement('li');
+                    taskItem.textContent = task.name;
+
+                    if (task.completed) {
+                        taskItem.style.textDecoration = "line-through";
+                    } else {
+                        const completeButton = document.createElement('button');
+                        completeButton.textContent = "Complete";
+                        completeButton.onclick = () => completeTask(doc.id);
+                        taskItem.appendChild(completeButton);
+                    }
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = "Delete";
+                    deleteButton.onclick = () => deleteTask(doc.id);
+                    taskItem.appendChild(deleteButton);
+
+                    taskList.appendChild(taskItem);
+                });
+            }).catch((error) => {
+                console.error("Error loading tasks: ", error);
+            });
+        }
+    }
+}
+
 
 
     </script>
