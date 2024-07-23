@@ -326,6 +326,7 @@
             </div>
         </div>
         <div class="main-content">
+         <div class="main-content">
         <div class="dashboard-header">
             <h1>Goal Tracking</h1>
         </div>
@@ -343,12 +344,7 @@
             </div>
         </div>
     </div>
-    <script>
-        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-    </script>
-
+    
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -374,7 +370,7 @@
                     const username = user.displayName || user.email;
                     document.getElementById('username').textContent = username;
                     document.getElementById('displayName').textContent = username;
-                    loadGoals(user.uid);
+                    loadGoals();
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
@@ -386,36 +382,66 @@
             const goalInput = document.getElementById('goal-input');
             const goalText = goalInput.value.trim();
             if (goalText) {
-                firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
-                        db.collection('goals').add({
-                            uid: user.uid,
-                            goal: goalText,
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            goalInput.value = '';
-                        }).catch(error => {
-                            console.error("Error adding goal: ", error);
-                        });
-                    }
+                db.collection('goals').add({
+                    goal: goalText,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                goalInput.value = '';
             }
         });
 
-        function loadGoals(uid) {
-            db.collection('goals').where('uid', '==', uid).orderBy('timestamp')
-            .onSnapshot(snapshot => {
-                const goalList = document.getElementById('goal-list');
-                goalList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const goal = doc.data().goal;
-                    const li = document.createElement('li');
-                    li.textContent = goal;
-                    goalList.appendChild(li);
+        function loadGoals() {
+            db.collection('goals')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    const goalList = document.getElementById('goal-list');
+                    goalList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const goal = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = goal.goal;
+                        li.appendChild(createEditButton(doc.id));
+                        li.appendChild(createDeleteButton(doc.id));
+                        goalList.appendChild(li);
+                    });
                 });
-            });
         }
 
+        function createEditButton(id) {
+            const button = document.createElement('button');
+            button.textContent = 'Edit';
+            button.onclick = () => editGoal(id);
+            return button;
+        }
+
+        function createDeleteButton(id) {
+            const button = document.createElement('button');
+            button.textContent = 'Delete';
+            button.onclick = () => deleteGoal(id);
+            return button;
+        }
+
+        function editGoal(id) {
+            const newGoal = prompt('Enter new goal:');
+            if (newGoal) {
+                db.collection('goals').doc(id).update({
+                    goal: newGoal
+                });
+            }
+        }
+
+        function deleteGoal(id) {
+            db.collection('goals').doc(id).delete();
+        }
+
+        // Listen for authentication state changes to load goals
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                loadGoals();
+            }
+        });
         
 </body>
 </html>
