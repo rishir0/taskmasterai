@@ -733,7 +733,37 @@ firebase.auth().onAuthStateChanged((user) => {
         loadProjects();
     }
 });
-        
+
+// Function to display tasks and projects
+function displayTasksAndProjects() {
+  const tasksProjectsList = document.getElementById('tasks-projects-list');
+
+  // Clear previous contents
+  tasksProjectsList.innerHTML = '';
+
+  // Fetch tasks
+  db.collection('tasks').get().then((tasksSnapshot) => {
+    tasksSnapshot.forEach((doc) => {
+      const task = doc.data();
+      const taskElement = document.createElement('div');
+      taskElement.textContent = `Task: ${task.title}`;
+      tasksProjectsList.appendChild(taskElement);
+    });
+  });
+
+  // Fetch projects
+  db.collection('projects').get().then((projectsSnapshot) => {
+    projectsSnapshot.forEach((doc) => {
+      const project = doc.data();
+      const projectElement = document.createElement('div');
+      projectElement.textContent = `Project: ${project.name}`;
+      tasksProjectsList.appendChild(projectElement);
+    });
+  });
+}
+
+// Call the function to display tasks and projects
+displayTasksAndProjects();
 
 
 
