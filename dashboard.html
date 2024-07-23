@@ -566,6 +566,7 @@
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
@@ -580,144 +581,92 @@
             });
         });
 
-        let tasks = [];
-        let projects = [];
-        let currentEditIndex = -1;
-        let isEditingTask = true;
-
-        function showTasksProjects() {
-            document.getElementById('pomodoro-section').style.display = 'none';
-        }
-
-        function showPomodoro() {
-            document.getElementById('pomodoro-section').style.display = 'block';
-        }
-
-        function showCreateTaskModal() {
-            document.getElementById('create-task-modal').style.display = 'flex';
-        }
-
-        function showCreateProjectModal() {
-            document.getElementById('create-project-modal').style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
         function createTask() {
-            const taskName = document.getElementById('task-name').value;
-            const taskDetails = document.getElementById('task-details').value;
-            if (taskName) {
-                tasks.push({ name: taskName, details: taskDetails, completed: false });
-                renderTasksProjects();
-                closeModal('create-task-modal');
-            }
-        }
+    const user = firebase.auth().currentUser;
+    const taskName = document.getElementById('taskName').value;
 
-        function createProject() {
-            const projectName = document.getElementById('project-name').value;
-            const projectDetails = document.getElementById('project-details').value;
-            if (projectName) {
-                projects.push({ name: projectName, details: projectDetails });
-                renderTasksProjects();
-                closeModal('create-project-modal');
-            }
-        }
+    if (taskName && user) {
+        db.collection('tasks').add({
+            name: taskName,
+            completed: false,
+            userId: user.uid,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert("Task added successfully!");
+            document.getElementById('taskName').value = ""; // Clear the input field
+            loadTasks(); // Refresh the task list
+        }).catch((error) => {
+            console.error("Error adding task: ", error);
+        });
+    } else {
+        alert("Please enter a task name.");
+    }
+}
 
-        function editTask(index) {
-            currentEditIndex = index;
-            isEditingTask = true;
-            document.getElementById('edit-task-name').value = tasks[index].name;
-            document.getElementById('edit-task-details').value = tasks[index].details;
-            document.getElementById('edit-task-modal').style.display = 'flex';
-        }
+// Function to mark a task as completed
+function completeTask(taskId) {
+    db.collection('tasks').doc(taskId).update({
+        completed: true
+    }).then(() => {
+        alert("Task marked as completed!");
+        loadTasks(); // Refresh the task list
+    }).catch((error) => {
+        console.error("Error completing task: ", error);
+    });
+}
 
-        function editProject(index) {
-            currentEditIndex = index;
-            isEditingTask = false;
-            document.getElementById('edit-project-name').value = projects[index].name;
-            document.getElementById('edit-project-details').value = projects[index].details;
-            document.getElementById('edit-project-modal').style.display = 'flex';
-        }
+// Function to delete a task
+function deleteTask(taskId) {
+    db.collection('tasks').doc(taskId).delete().then(() => {
+        alert("Task deleted successfully!");
+        loadTasks(); // Refresh the task list
+    }).catch((error) => {
+        console.error("Error deleting task: ", error);
+    });
+}
 
-        function saveTask() {
-            const taskName = document.getElementById('edit-task-name').value;
-            const taskDetails = document.getElementById('edit-task-details').value;
-            if (taskName) {
-                tasks[currentEditIndex] = { name: taskName, details: taskDetails, completed: false };
-                renderTasksProjects();
-                closeModal('edit-task-modal');
-            }
-        }
+// Function to load and display tasks
+function loadTasks() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        db.collection('tasks').where('userId', '==', user.uid).orderBy('timestamp').get()
+            .then((querySnapshot) => {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = ""; // Clear the current task list
 
-        function saveProject() {
-            const projectName = document.getElementById('edit-project-name').value;
-            const projectDetails = document.getElementById('edit-project-details').value;
-            if (projectName) {
-                projects[currentEditIndex] = { name: projectName, details: projectDetails };
-                renderTasksProjects();
-                closeModal('edit-project-modal');
-            }
-        }
+                querySnapshot.forEach((doc) => {
+                    const task = doc.data();
+                    const taskItem = document.createElement('li');
+                    taskItem.textContent = task.name;
+                    
+                    if (task.completed) {
+                        taskItem.style.textDecoration = "line-through";
+                    } else {
+                        const completeButton = document.createElement('button');
+                        completeButton.textContent = "Complete";
+                        completeButton.onclick = () => completeTask(doc.id);
+                        taskItem.appendChild(completeButton);
+                    }
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = "Delete";
+                    deleteButton.onclick = () => deleteTask(doc.id);
+                    taskItem.appendChild(deleteButton);
 
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            renderTasksProjects();
-        }
-
-        function deleteProject(index) {
-            projects.splice(index, 1);
-            renderTasksProjects();
-        }
-
-        function toggleComplete(index) {
-            tasks[index].completed = !tasks[index].completed;
-            renderTasksProjects();
-        }
-
-        function renderTasksProjects() {
-            const tasksProjectsList = document.getElementById('tasks-projects-list');
-            tasksProjectsList.innerHTML = '';
-
-            tasks.forEach((task, index) => {
-                const taskItem = document.createElement('div');
-                taskItem.className = 'item';
-                taskItem.innerHTML = `
-                    <div class="item-content">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(${index})">
-                        <div class="item-details">
-                            <h3>${task.name}</h3>
-                            <p>${task.details}</p>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button onclick="editTask(${index})">Edit</button>
-                        <button onclick="deleteTask(${index})">Delete</button>
-                    </div>
-                `;
-                tasksProjectsList.appendChild(taskItem);
+                    taskList.appendChild(taskItem);
+                });
+            }).catch((error) => {
+                console.error("Error loading tasks: ", error);
             });
+    }
+}
 
-            projects.forEach((project, index) => {
-                const projectItem = document.createElement('div');
-                projectItem.className = 'item';
-                projectItem.innerHTML = `
-                    <div class="item-content">
-                        <div class="item-details">
-                            <h3>${project.name}</h3>
-                            <p>${project.details}</p>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button onclick="editProject(${index})">Edit</button>
-                        <button onclick="deleteProject(${index})">Delete</button>
-                    </div>
-                `;
-                tasksProjectsList.appendChild(projectItem);
-            });
-        }
-
+// Listen for authentication state changes to load tasks
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        loadTasks();
+    }
+});
     </script>
 
     <script>
