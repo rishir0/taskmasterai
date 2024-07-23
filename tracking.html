@@ -336,7 +336,7 @@
                     <h3>Set New Goals</h3>
                     <div class="goal-input">
                         <input type="text" id="goal-input" placeholder="Enter your goal" />
-                        <button id="btn">Add Goal</button>
+                        <button id="btn" onclick="createGoal()">Add Goal</button>
                     </div>
                     <ul id="goals-list" class="list"></ul>
                 </div>
@@ -380,13 +380,20 @@
 function createGoal() {
     const goalInput = document.getElementById('goal-input');
     const goal = goalInput.value.trim();
+    console.log('Goal input:', goal); // Add this line
     if (goal) {
         db.collection('goals').add({
             goal: goal,
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            console.log('Goal added successfully'); // Add this line
+            goalInput.value = '';
+        })
+        .catch(error => {
+            console.error('Error adding goal:', error); // Add this line
         });
-        goalInput.value = '';
     }
 }
 
