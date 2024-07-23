@@ -438,8 +438,26 @@
         </div>
     </div>
 
-    <!-- Modal for Editing Tasks -->
-<div class="modal" id="edit-task-modal">
+    <!-- Modal for Editing project -->
+    <div id="edit-project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Project</h3>
+                <button onclick="closeModal('edit-project-modal')">X</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-project-id">
+                <input type="text" id="edit-project-name" placeholder="Project Name">
+                <textarea id="edit-project-details" placeholder="Project Details"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button onclick="updateProject()">Save</button>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal for Editing task -->
+<div id="edit-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Edit Task</h3>
@@ -451,25 +469,7 @@
             <textarea id="edit-task-details" placeholder="Task Details"></textarea>
         </div>
         <div class="modal-footer">
-            <button onclick="saveTask()">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal for Editing Projects -->
-<div class="modal" id="edit-project-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Edit Project</h3>
-            <button onclick="closeModal('edit-project-modal')">X</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="edit-project-id">
-            <input type="text" id="edit-project-name" placeholder="Project Name">
-            <textarea id="edit-project-details" placeholder="Project Details"></textarea>
-        </div>
-        <div class="modal-footer">
-            <button onclick="saveProject()">Save</button>
+            <button onclick="updateTask()">Save</button>
         </div>
     </div>
 </div>
@@ -555,8 +555,6 @@
             });
         });
 
-        
-
         // Function to show the Create Project modal
 function showCreateProjectModal() {
     const modal = document.createElement('div');
@@ -605,14 +603,6 @@ function showCreateTaskModal() {
     modal.style.display = 'flex';
 }
 
-// Function to close a modal
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.removeChild(modal);
-    }
-}
 
         // Function to create a new project
 function createProject() {
@@ -632,7 +622,6 @@ function createProject() {
             document.getElementById('project-details').value = ""; // Clear the details field
             loadProjects(); // Refresh the project list
             displayName = projectName
-
         }).catch((error) => {
             console.error("Error adding project: ", error);
         });
@@ -667,39 +656,47 @@ function createTask() {
 }
 
 // Function to update a project
-function saveProject() {
+function updateProject() {
     const projectId = document.getElementById('edit-project-id').value;
     const projectName = document.getElementById('edit-project-name').value;
     const projectDetails = document.getElementById('edit-project-details').value;
 
-    db.collection('projects').doc(projectId).update({
-        name: projectName,
-        details: projectDetails
-    }).then(() => {
-        alert("Project updated successfully!");
-        closeModal('edit-project-modal'); // Close the modal
-        loadProjects(); // Refresh the project list
-    }).catch((error) => {
-        console.error("Error updating project: ", error);
-    });
+    if (projectId) {
+        db.collection('projects').doc(projectId).update({
+            name: projectName,
+            details: projectDetails
+        }).then(() => {
+            alert("Project updated successfully!");
+            closeModal('edit-project-modal'); // Close the modal
+            loadProjects(); // Refresh the project list
+        }).catch((error) => {
+            console.error("Error updating project: ", error);
+        });
+    } else {
+        alert("Please select a project to update.");
+    }
 }
 
 // Function to update a task
-function saveTask() {
+function updateTask() {
     const taskId = document.getElementById('edit-task-id').value;
     const taskName = document.getElementById('edit-task-name').value;
     const taskDetails = document.getElementById('edit-task-details').value;
 
-    db.collection('tasks').doc(taskId).update({
-        name: taskName,
-        details: taskDetails
-    }).then(() => {
-        alert("Task updated successfully!");
-        closeModal('edit-task-modal'); // Close the modal
-        loadTasks(); // Refresh the task list
-    }).catch((error) => {
-        console.error("Error updating task: ", error);
-    });
+    if (taskId) {
+        db.collection('tasks').doc(taskId).update({
+            name: taskName,
+            details: taskDetails
+        }).then(() => {
+            alert("Task updated successfully!");
+            closeModal('edit-task-modal'); // Close the modal
+            loadTasks(); // Refresh the task list
+        }).catch((error) => {
+            console.error("Error updating task: ", error);
+        });
+    } else {
+        alert("Please select a task to update.");
+    }
 }
 
 // Function to open the edit task modal
@@ -718,6 +715,22 @@ function openEditProjectModal(projectId, projectName, projectDetails) {
     openModal('edit-project-modal');
 }
 
+// Function to show the edit project modal
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Function to close a modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 
 
 // Listen for authentication state changes to load tasks
@@ -733,132 +746,12 @@ firebase.auth().onAuthStateChanged((user) => {
         loadProjects();
     }
 });
-
-// Function to display tasks and projects
-function displayTasksAndProjects() {
-  const tasksProjectsList = document.getElementById('tasks-projects-list');
-
-  // Clear previous contents
-  tasksProjectsList.innerHTML = '';
-
-  // Fetch tasks
-  db.collection('tasks').get().then((tasksSnapshot) => {
-    tasksSnapshot.forEach((doc) => {
-      const task = doc.data();
-      const taskElement = document.createElement('div');
-      taskElement.textContent = `Task: ${task.title}`;
-      tasksProjectsList.appendChild(taskElement);
-    });
-  });
-
-  // Fetch projects
-  db.collection('projects').get().then((projectsSnapshot) => {
-    projectsSnapshot.forEach((doc) => {
-      const project = doc.data();
-      const projectElement = document.createElement('div');
-      projectElement.textContent = `Project: ${project.name}`;
-      tasksProjectsList.appendChild(projectElement);
-    });
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const tasks = [
-        { id: 1, text: 'Task 1', completed: false },
-        { id: 2, text: 'Task 2', completed: false }
-    ];
-
-    const projects = [
-        { id: 1, text: 'Project 1' },
-        { id: 2, text: 'Project 2' }
-    ];
-
-    function renderList(list, containerId, type) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-
-        list.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item.text;
-
-            if (type === 'tasks') {
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.addEventListener('click', () => editItem(item.id, type));
-
-                const completeButton = document.createElement('button');
-                completeButton.textContent = item.completed ? 'Undo' : 'Complete';
-                completeButton.addEventListener('click', () => toggleComplete(item.id));
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', () => deleteItem(item.id, type));
-
-                li.appendChild(editButton);
-                li.appendChild(completeButton);
-                li.appendChild(deleteButton);
-            } else {
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.addEventListener('click', () => editItem(item.id, type));
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', () => deleteItem(item.id, type));
-
-                li.appendChild(editButton);
-                li.appendChild(deleteButton);
-            }
-
-            container.appendChild(li);
-        });
-    }
-
-    function editItem(id, type) {
-        const newText = prompt('Enter new text:');
-        if (newText) {
-            if (type === 'tasks') {
-                const item = tasks.find(task => task.id === id);
-                item.text = newText;
-                renderList(tasks, 'taskList', 'tasks');
-            } else {
-                const item = projects.find(project => project.id === id);
-                item.text = newText;
-                renderList(projects, 'projectList', 'projects');
-            }
-        }
-    }
-
-    function toggleComplete(id) {
-        const task = tasks.find(task => task.id === id);
-        task.completed = !task.completed;
-        renderList(tasks, 'taskList', 'tasks');
-    }
-
-    function deleteItem(id, type) {
-        if (type === 'tasks') {
-            const index = tasks.findIndex(task => task.id === id);
-            tasks.splice(index, 1);
-            renderList(tasks, 'taskList', 'tasks');
-        } else {
-            const index = projects.findIndex(project => project.id === id);
-            projects.splice(index, 1);
-            renderList(projects, 'projectList', 'projects');
-        }
-    }
-
-    renderList(tasks, 'taskList', 'tasks');
-    renderList(projects, 'projectList', 'projects');
-});
-
-// Call the function to display tasks and projects
-displayTasksAndProjects();
+        
 
 
 
 
     </script>
-    <script src="app.js"></script>
 
 
     <script>
