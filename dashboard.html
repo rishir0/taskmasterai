@@ -636,9 +636,24 @@ function createProject() {
         alert("Please enter a project name.");
     }
 }
-        
 
+// Function to update a task
+function saveTask() {
+    const taskId = document.getElementById('edit-task-id').value;
+    const taskName = document.getElementById('edit-task-name').value;
+    const taskDetails = document.getElementById('edit-task-details').value;
 
+    db.collection('tasks').doc(taskId).update({
+        name: taskName,
+        details: taskDetails
+    }).then(() => {
+        alert("Task updated successfully!");
+        closeModal('edit-task-modal'); // Close the modal
+        loadTasks(); // Refresh the task list
+    }).catch((error) => {
+        console.error("Error updating task: ", error);
+    });
+}
 
 // Function to update a project
 function saveProject() {
@@ -676,6 +691,24 @@ function saveProject() {
             });
         }
 
+        // Fetch and display tasks for the project
+        function displayTasks(projectId) {
+            db.collection('projects').doc(projectId).collection('tasks').get().then(querySnapshot => {
+                const tasksDiv = document.getElementById('tasks');
+                tasksDiv.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const taskData = doc.data();
+                    tasksDiv.innerHTML += `
+                        <div>
+                            <h3>${taskData.title}</h3>
+                            <p>${taskData.description}</p>
+                        </div>
+                    `;
+                });
+            }).catch(error => {
+                console.error('Error getting tasks:', error);
+            });
+        }
 
 // Function to load and display projects
 function loadProjects() {
@@ -744,6 +777,12 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
+// Example usage: display a specific project
+        document.addEventListener('DOMContentLoaded', () => {
+            const projectId = 'IUUOq8IRYhVHkCKeZdwI'; // Replace with actual project ID
+            displayProject(projectId);
+        });
+    </script>
 
 
     <script>
