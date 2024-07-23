@@ -643,7 +643,7 @@ function createTask() {
     const taskName = document.getElementById('task-name').value;
     const taskDetails = document.getElementById('task-details').value;
 
-    if (projectName && user) {
+    if (taskName && user) {
         db.collection('tasks').add({
             name: taskName,
             details: taskDetails,
@@ -653,7 +653,7 @@ function createTask() {
             alert("Task added successfully!");
             document.getElementById('task-name').value = ""; // Clear the input field
             document.getElementById('task-details').value = ""; // Clear the details field
-            loadTasks(); // Refresh the project list
+            loadTasks(); // Refresh the task list
         }).catch((error) => {
             console.error("Error adding task: ", error);
         });
@@ -686,7 +686,7 @@ function saveTask() {
     const taskName = document.getElementById('edit-task-name').value;
     const taskDetails = document.getElementById('edit-task-details').value;
 
-    db.collection('tasks').doc(projectId).update({
+    db.collection('tasks').doc(taskId).update({
         name: taskName,
         details: taskDetails
     }).then(() => {
