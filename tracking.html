@@ -365,90 +365,75 @@
 
         
         document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            loadGoals();
+        } else {
+            // No user is signed in.
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    });
+});
+
+function createGoal() {
+    const goalInput = document.getElementById('goal-input');
+    const goal = goalInput.value.trim();
+    if (goal) {
+        db.collection('goals').add({
+            goal: goal,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        goalInput.value = '';
+    }
+}
+
+function loadGoals() {
+    db.collection('goals')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const goalsList = document.getElementById('goals-list');
+            goalsList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const goal = doc.data();
+                const li = document.createElement('li');
+                li.textContent = goal.goal;
+                li.appendChild(createEditButton(doc.id, 'goal'));
+                li.appendChild(createDeleteButton(doc.id, 'goal'));
+                goalsList.appendChild(li);
             });
         });
+}
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('displayName').textContent = user.displayName;
-                    loadGoals();
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.onclick = () => editItem(id, type);
+    return button;
+}
+
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
+
+function editItem(id, type) {
+    const newValue = prompt(`Enter new ${type}:`);
+    if (newValue) {
+        db.collection(type + 's').doc(id).update({
+            [type]: newValue
         });
+    }
+}
 
-
-        function createGoal() {
-            const goalInput = document.getElementById('goal-input');
-            const goal = goalInput.value.trim();
-            if (goal) {
-                db.collection('goals').add({
-                    goal: goal,
-                    userId: firebase.auth().currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                goalInput.value = '';
-            }
-        }
-
-        function loadGoals() {
-            db.collection('goals')
-                .where('userId', '==', firebase.auth().currentUser.uid)
-                .orderBy('createdAt')
-                .onSnapshot(snapshot => {
-                    const goalsList = document.getElementById('goals-list');
-                    goalsList.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const goal = doc.data();
-                        const li = document.createElement('li');
-                        li.textContent = goal.goal;
-                        li.appendChild(createEditButton(doc.id, 'goal'));
-                        li.appendChild(createDeleteButton(doc.id, 'goal'));
-                        goalsList.appendChild(li);
-                    });
-                });
-        }
-
-        
-
-        function createEditButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Edit';
-            button.onclick = () => editItem(id, type);
-            return button;
-        }
-
-        function createDeleteButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Delete';
-            button.onclick = () => deleteItem(id, type);
-            return button;
-        }
-
-        function editItem(id, type) {
-            const newValue = prompt(`Enter new ${type}:`);
-            if (newValue) {
-                db.collection(type + 's').doc(id).update({
-                    [type]: newValue
-                });
-            }
-        }
-
-        function deleteItem(id, type) {
-            db.collection(type + 's').doc(id).delete();
-        }
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete();
+}
 
 
 // Listen for authentication state changes to load goals
