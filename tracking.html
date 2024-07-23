@@ -413,20 +413,19 @@
             </div>
         </div>
         <div class="main-content">
-            <div class="dashboard-header">
-                <h1>Goal Tracking</h1>
-            </div>
-            <div class="section">
-                <h2>Track Your Goals</h2>
-                <div class="goal-tracking">
-                    <div class="goal-card">
-                        <h3>Set New Goals</h3>
-                        <div class="goal-input">
-                            <input type="text" id="goal-input" placeholder="Enter your goal" />
-                            <button id="add-goal-btn">Add Goal</button>
-                        </div>
-                        <ul class="goal-list" id="goal-list"></ul>
+        <div class="dashboard-header">
+            <h1>Goal Tracking</h1>
+        </div>
+        <div class="section">
+            <h2>Track Your Goals</h2>
+            <div class="goal-tracking">
+                <div class="goal-card">
+                    <h3>Set New Goals</h3>
+                    <div class="goal-input">
+                        <input type="text" id="goal-input" placeholder="Enter your goal" />
+                        <button id="add-goal-btn">Add Goal</button>
                     </div>
+                    <ul class="goal-list" id="goal-list"></ul>
                 </div>
             </div>
         </div>
@@ -436,113 +435,74 @@
             document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
-    
-</script>
-    </body>
+
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
-       // Import the necessary Firebase modules
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-    authDomain: "deepworkai-c3419.firebaseapp.com",
-    projectId: "deepworkai-c3419",
-    storageBucket: "deepworkai-c3419.appspot.com",
-    messagingSenderId: "367439182644",
-    appId: "1:367439182644:web:304216430df97eff68c361"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-
-// Function to save a new goal for the user
-const saveGoal = async (goal) => {
-    try {
-        const user = auth.currentUser;
-        if (!user) {
-            throw new Error("No authenticated user found");
-        }
-
-        const newGoal = {
-            userId: user.uid,
-            title: goal.title,
-            description: goal.description,
-            dueDate: goal.dueDate,
-            completed: false,
-            createdAt: new Date(),
-            updatedAt: new Date()
+        // TODO: Replace the following with your app's Firebase project configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
         };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
 
-        const docRef = await addDoc(collection(db, "goals"), newGoal);
-        console.log("Goal saved successfully with ID: ", docRef.id);
-        return docRef.id;
-    } catch (error) {
-        console.error("Error saving goal:", error);
-        throw error;
-    }
-};
-
-// Function to get all goals for the current user
-const getUserGoals = async () => {
-    try {
-        const user = auth.currentUser;
-        if (!user) {
-            throw new Error("No authenticated user found");
-        }
-
-        const goalsQuery = query(collection(db, "goals"), where("userId", "==", user.uid));
-        const querySnapshot = await getDocs(goalsQuery);
-        
-        const goals = [];
-        querySnapshot.forEach((doc) => {
-            goals.push({ id: doc.id, ...doc.data() });
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+                    loadGoals(user.uid);
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
         });
 
-        return goals;
-    } catch (error) {
-        console.error("Error getting user goals:", error);
-        throw error;
-    }
-};
+        document.getElementById('add-goal-btn').addEventListener('click', function() {
+            const goalInput = document.getElementById('goal-input');
+            const goalText = goalInput.value.trim();
+            if (goalText) {
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        db.collection('goals').add({
+                            uid: user.uid,
+                            goal: goalText,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            goalInput.value = '';
+                        }).catch(error => {
+                            console.error("Error adding goal: ", error);
+                        });
+                    }
+                });
+            }
+        });
 
-// Example usage:
-const saveNewGoal = async () => {
-    const newGoal = {
-        title: "Learn JavaScript",
-        description: "Complete an online JavaScript course",
-        dueDate: new Date("2023-12-31"),
-        completed: false
-    };
+        function loadGoals(uid) {
+            db.collection('goals').where('uid', '==', uid).orderBy('timestamp')
+            .onSnapshot(snapshot => {
+                const goalList = document.getElementById('goal-list');
+                goalList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const goal = doc.data().goal;
+                    const li = document.createElement('li');
+                    li.textContent = goal;
+                    goalList.appendChild(li);
+                });
+            });
+        }
 
-    try {
-        const goalId = await saveGoal(newGoal);
-        console.log("New goal saved with ID:", goalId);
-    } catch (error) {
-        console.error("Failed to save goal:", error);
-    }
-};
-
-const displayUserGoals = async () => {
-    try {
-        const goals = await getUserGoals();
-        console.log("User goals:", goals);
-        // Here you would typically update your UI to display these goals
-    } catch (error) {
-        console.error("Failed to fetch user goals:", error);
-    }
-};
-
-// Call these functions when needed, e.g., after user interaction
-// saveNewGoal();
-// displayUserGoals();
+        
 </body>
 </html>
