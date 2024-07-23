@@ -364,13 +364,13 @@
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+        
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const username = user.displayName || user.email;
                     document.getElementById('username').textContent = username;
                     document.getElementById('displayName').textContent = username;
-                    loadGoals();
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
@@ -378,17 +378,16 @@
             });
         });
 
-        document.getElementById('add-goal-btn').addEventListener('click', function() {
-            const goalInput = document.getElementById('goal-input');
-            const goalText = goalInput.value.trim();
-            if (goalText) {
-                db.collection('goals').add({
-                    goal: goalText,
-                    userId: firebase.auth().currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                goalInput.value = '';
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('displayName').textContent = user.displayName;
+                    loadGoals();
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
         });
 
         function loadGoals() {
