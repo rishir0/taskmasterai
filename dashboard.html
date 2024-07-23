@@ -415,6 +415,7 @@
                 <p>Your personalized dashboard</p>
             </div>
             <<div id="tasks-section">
+                <div class="create-option" onclick="showCreateTaskModal()">
                 <h2>Tasks</h2>
                 <input type="text" id="task-input" placeholder="Enter new task">
                 <button onclick="createTask()">Create Task</button>
@@ -422,9 +423,9 @@
             </div>
             
             <div id="projects-section">
+                <div class="create-option" onclick="showCreateProjectModal()">
                 <h2>Projects</h2>
                 <input type="text" id="project-input" placeholder="Enter new project">
-                <div class="create-option" onclick="showCreateProjectModal()">
                 <button onclick="createProject()">Create Project</button>
                 <ul id="projects-list"></ul>
             </div>
