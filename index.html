@@ -505,7 +505,7 @@
                         }
                     </style>
                     <div class="mobile-menu-container">
-                        <a href="signup.html" class="mobile-get-started" id="get-started-btn">Get Started</a>
+                        <a href="signup.html" class="mobile-get-started" >Get Started</a>
                         <button class="sidebar-toggle">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -647,6 +647,15 @@
             const getStartedBtn = document.getElementById('get-started-btn');
             getStartedBtn.textContent = 'Dashboard';
             getStartedBtn.href = 'dashboard.html';
+        }
+    });
+});
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const ctaBtn = document.getElementById('ctaButton');
+            ctaBtn.style.display = 'none';
         }
     });
 });
