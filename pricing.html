@@ -541,7 +541,7 @@
                         }
                     </style>
                     <div class="mobile-menu-container">
-                        <a href="signup.html" class="mobile-get-started">Get Started</a>
+                        <a href="signup.html" class="mobile-get-started" id="mobileGetStarted">Get Started</a>
                         <button class="sidebar-toggle">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -555,7 +555,7 @@
                     <a href="pricing.html">Pricing</a>
                     <a href="#about">About</a>
                     <a href="contact.html">Contact</a>
-                    <a href="signup.html" class="get-started-btn">Get started today</a>
+                    <a href="signup.html" class="get-started-btn" id="get-started-btn">Get started today</a>
                 </div>
             </nav>
         </div>
@@ -671,5 +671,61 @@
         });
     });
 </script>
+
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('getStartedBtn').textContent = "Dashboard";
+                    document.getElementById('getStartedBtn').href = "dashboard.html";
+                    document.getElementById('ctaButton').style.display = 'none';
+                    document.getElementById('mobileGetStarted').textContent = "Dashboard";
+                    document.getElementById('mobileGetStarted').href = "dashboard.html";
+                } else {
+                    document.getElementById('getStartedBtn').textContent = "Get started today";
+                    document.getElementById('getStartedBtn').href = "signup.html";
+                    document.getElementById('ctaButton').style.display = 'inline-block';
+                    document.getElementById('mobileGetStarted').textContent = "Get Started";
+                    document.getElementById('mobileGetStarted').href = "signup.html";
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const getStartedBtn = document.getElementById('get-started-btn');
+            getStartedBtn.textContent = 'Dashboard';
+            getStartedBtn.href = 'dashboard.html';
+        }
+    });
+});
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const mobileGetStarted = document.getElementById('mobileGetStarted');
+            mobileGetStarted.textContent = 'Dashboard';
+            mobileGetStarted.href = 'dashboard.html';
+        }
+    });
+});
+    </script>
 </body>
 </html>
