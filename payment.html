@@ -200,6 +200,115 @@
             color: #D1D5DB;
         }
 
+        /* Updated styles for mobile Get Started button */
+            .mobile-get-started {
+                display: block;
+                background-color: var(--accent-color);
+                color: var(--text-color);
+                padding: 0.5rem 1rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-right: 1rem;
+            }
+
+            nav {
+                justify-content: space-between;
+            }
+
+            .logo {
+                margin-right: auto;
+            }
+
+            .mobile-menu-container {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        /* Hide sidebar toggle on desktop */
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .nav-links {
+                background-color: var(--secondary-color);
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                display: none;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                margin: 0.5rem 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: var(--primary-color);
+                font-size: 1.4rem;
+                padding: 0.5rem 1rem;
+            }
+
+            /* Hide mobile Get Started button on desktop */
+            .mobile-get-started {
+                display: none;
+            }
+
+            .mobile-menu-container {
+                display: none;
+            }
+        }
+
+        /* Desktop Styles - Update these */
+        @media (min-width: 769px) {
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: transparent;
+        position: static;
+        width: auto;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem;
+        margin: 0 0 0 1.5rem;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+
+    .mobile-get-started {
+        display: none;
+    }
+
+    .mobile-menu-container {
+        display: none;
+    }
+
+    .get-started-btn {
+        display: inline-block;
+    }
+}
+
         @media (max-width: 768px) {
             .payment-container {
                 flex-direction: column;
