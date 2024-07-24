@@ -581,7 +581,7 @@
                     <li>Resource Library</li>
                     <li>Community and Networking</li>
                 </ul>
-                <a href="signup.html" class="cta-button">Get Started for Free</a>
+                <a href="signup.html" class="cta-button" id="get1-started-btn">Get Started for Free</a>
             </div>
 
             <div class="pricing-plan featured">
@@ -595,7 +595,7 @@
                     <li>Advanced Analytics</li>
                     <li>Exclusive content and resources</li>
                 </ul>
-                <a href="signup.html" class="cta-button">Get Started Now</a>
+                <a href="signup.html" class="cta-button" id="get2-started-btn">Get Started Now</a>
             </div>
 
             <div class="pricing-plan">
@@ -609,7 +609,7 @@
                     <li>Advanced Productivity Tools</li>
                     <li>Career Development tools</li>
                 </ul>
-                <a href="signup.html" class="cta-button">Get Started Now</a>
+                <a href="signup.html" class="cta-button" id="get3-started-btn">Get Started Now</a>
             </div>
         </div>
     </main>
@@ -723,6 +723,34 @@
             const mobileGetStarted = document.getElementById('mobileGetStarted');
             mobileGetStarted.textContent = 'Dashboard';
             mobileGetStarted.href = 'dashboard.html';
+        }
+    });
+});
+        
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const get1StartedBtn = document.getElementById('get1-started-btn');
+            get1StartedBtn.textContent = 'Subscribe Now';
+            get1StartedBtn.href = 'pricing.html';
+        }
+    });
+});
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const get2StartedBtn = document.getElementById('get2-started-btn');
+            get2StartedBtn.textContent = 'Subscribe Now';
+            get2StartedBtn.href = 'pricing.html';
+        }
+    });
+});
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const get3StartedBtn = document.getElementById('get3-started-btn');
+            get3StartedBtn.textContent = 'Subscribe Now';
+            get3StartedBtn.href = 'pricing.html';
         }
     });
 });
