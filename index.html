@@ -519,7 +519,7 @@
                     <a href="pricing.html">Pricing</a>
                     <a href="#about">About</a>
                     <a href="contact.html">Contact</a>
-                    <a href="signup.html" class="get-started-btn" id="getStartedBtn">Get started today</a>
+                    <a href="signup.html" class="get-started-btn" id="get-started-btn">Get started today</a>
                 </div>
             </nav>
         </div>
@@ -530,7 +530,7 @@
             <div class="container">
                 <h1>Smart scheduling, seamless collaboration, personalized reminders, and beyond.</h1>
                 <p>Upload any document, audio, video, or website and transform it into actionable insights!</p>
-                <a href="signup.html" class="cta-button">Start now for free</a>
+                <a href="signup.html" class="cta-button" id="ctaButton">Start now for free</a>
             </div>
         </section>
 
@@ -640,7 +640,18 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const getStartedBtn = document.getElementById('get-started-btn');
+            getStartedBtn.textContent = 'Dashboard';
+            getStartedBtn.href = 'dashboard.html';
+        }
+    });
+});
     </script>
+    
 
 
 </body>
