@@ -652,5 +652,30 @@
             document.querySelector('.nav-links').classList.toggle('active');
         });
     </script>
+    <script>
+        const stripe = Stripe('your-publishable-key');
+
+        document.getElementById('checkout-button').addEventListener('click', async () => {
+            const response = await fetch('https://us-central1-your-project-id.cloudfunctions.net/createStripeCheckoutSession', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    priceId: 'your-price-id'
+                })
+            });
+
+            const session = await response.json();
+
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id
+            });
+
+            if (result.error) {
+                alert(result.error.message);
+            }
+        });
+    </script>
 </body>
 </html>
