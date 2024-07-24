@@ -248,6 +248,94 @@
             color: #D1D5DB;
         }
 
+        .payment-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem 0;
+        }
+
+        .payment-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .payment-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .payment-card form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-card label {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #D1D5DB;
+        }
+
+        .payment-card input {
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .payment-card input[type="text"],
+        .payment-card input[type="email"] {
+            width: 100%;
+        }
+
+        .payment-card input[type="text"]::placeholder,
+        .payment-card input[type="email"]::placeholder {
+            color: #A0AEC0;
+        }
+
+        .payment-card .card-details {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .payment-card .card-details input {
+            width: 48%;
+        }
+
+        .payment-card button {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.75rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .payment-card button:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            background-color: var(--card-bg);
+            color: #D1D5DB;
+        }
+
         /* Mobile Styles */
         @media (max-width: 768px) {
             .nav-links {
@@ -345,93 +433,7 @@
                 padding: 0.6rem;
             }
 
-            .payment-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 5rem 0;
-        }
-
-        .payment-card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 2.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .payment-card h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            text-align: center;
-        }
-
-        .payment-card form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .payment-card label {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            color: #D1D5DB;
-        }
-
-        .payment-card input {
-            padding: 0.75rem;
-            border-radius: 10px;
-            border: none;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .payment-card input[type="text"],
-        .payment-card input[type="email"] {
-            width: 100%;
-        }
-
-        .payment-card input[type="text"]::placeholder,
-        .payment-card input[type="email"]::placeholder {
-            color: #A0AEC0;
-        }
-
-        .payment-card .card-details {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .payment-card .card-details input {
-            width: 48%;
-        }
-
-        .payment-card button {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 0.75rem;
-            border-radius: 50px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .payment-card button:hover {
-            background-color: #0EA5E9;
-            transform: translateY(-2px);
-        }
-
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            background-color: var(--card-bg);
-            color: #D1D5DB;
-        }
+            
 
 
             /* Updated styles for mobile Get Started button */
