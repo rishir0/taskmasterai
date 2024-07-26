@@ -507,34 +507,36 @@
                 <p>Your personalized dashboard</p>
             </div>
             <div class="pomodoro-timer">
-            <h2>Pomodoro Timer</h2>
-            <input type="text" id="timer" value="25:00" readonly>
-            <br>
-            <button id="start">Start</button>
-            <button id="pause">Pause</button>
-            <button id="reset">Reset</button>
-        </div>
+    <h2>Pomodoro Timer</h2>
+    <input type="text" id="timer" value="25:00" readonly>
+    <br>
+    <button id="start">Start</button>
+    <button id="pause">Pause</button>
+    <button id="reset">Reset</button>
+</div>
 
-            
-<div class="custom-timers">
-    <h2>Custom Timers</h2>
-    <div id="custom-timer-1" class="custom-timer">
-        <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
-        <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
-        <button onclick="saveCustomTimer(1)">Save Timer</button>
-        <button onclick="startCustomTimer(1)">Start</button>
-        <button onclick="pauseCustomTimer(1)">Pause</button>
-        <button onclick="resetCustomTimer(1)">Reset</button>
-    </div>
-    <div id="custom-timer-2" class="custom-timer">
-        <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
-        <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
-        <button onclick="saveCustomTimer(2)">Save Timer</button>
-        <button onclick="startCustomTimer(2)">Start</button>
-        <button onclick="pauseCustomTimer(2)">Pause</button>
-        <button onclick="resetCustomTimer(2)">Reset</button>
+<div class="custom-timers-dropdown">
+    <button class="dropdown-btn" onclick="toggleCustomTimers()">Custom Timers</button>
+    <div id="custom-timers-container" class="custom-timers hidden">
+        <div id="custom-timer-1" class="custom-timer">
+            <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
+            <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
+            <button onclick="saveCustomTimer(1)">Save Timer</button>
+            <button onclick="startCustomTimer(1)">Start</button>
+            <button onclick="pauseCustomTimer(1)">Pause</button>
+            <button onclick="resetCustomTimer(1)">Reset</button>
+        </div>
+        <div id="custom-timer-2" class="custom-timer">
+            <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
+            <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
+            <button onclick="saveCustomTimer(2)">Save Timer</button>
+            <button onclick="startCustomTimer(2)">Start</button>
+            <button onclick="pauseCustomTimer(2)">Pause</button>
+            <button onclick="resetCustomTimer(2)">Reset</button>
+        </div>
     </div>
 </div>
+
 
     
         <div id="tasks-projects" class="section">
