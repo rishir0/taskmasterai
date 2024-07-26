@@ -289,6 +289,12 @@
     margin: 0; 
 }
 
+/* Styles for Edit and Delete buttons */
+.task-button {
+    display: inline-block;
+    margin: 0 5px; /* Adjust the margin as needed */
+}
+
 
 }
 .sidebar-toggle {
@@ -334,6 +340,18 @@
             }
         }
 
+        /* Responsive Styles */
+@media (max-width: 768px) {
+    #tasks-projects .tasks-section, #tasks-projects .projects-section {
+        width: 100%;
+        margin-bottom: 20px; /* Adds space between sections on mobile */
+    }
+    
+    .task-button {
+        display: block; /* Stacks buttons vertically on mobile */
+        margin: 10px 0; /* Adds space between buttons */
+    }
+}
         
     </style>
 </head>
