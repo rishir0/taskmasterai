@@ -219,7 +219,6 @@
     font-weight: 600;
     margin-left: 10px;
     vertical-align: middle;
-    display: inline-block;
 }
 
 .try-now-btn {
@@ -283,17 +282,17 @@
         /* Media query for mobile devices */
 @media (max-width: 768px) {
     .feature-title {
-        display: flex; /* Use flexbox to align items */
-        align-items: center; /* Vertically center items */
         position: relative;
     }
 
     .beta-tag {
-        font-size: 0.825rem; /* 10% larger than 0.75rem */
-        padding: 2px 6px; /* Adjusted padding to match the increased size */
-        margin-left: 5px; /* Space between the text and the beta tag */
-        background-color: #f0f0f0; /* Optional: background color to make the tag stand out */
-        border-radius: 3px; /* Optional: rounded corners for the tag */
+        font-size: 0.5rem;
+        padding: 1px 4px;
+        position: absolute;
+        top: -10px;
+        right: -30px;
+        transform: translateY(-100%);
+        margin-left: 0;
     }
 }
     </style>
@@ -404,7 +403,7 @@
                 <h1>Features</h1>
             </div>
             <div class="section">
-    <h2 class="feature-title">
+    <h2>
         Distraction Blocker
         <span class="beta-tag">BETA</span>
     </h2>
