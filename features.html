@@ -283,17 +283,17 @@
         /* Media query for mobile devices */
 @media (max-width: 768px) {
     .feature-title {
+        display: flex; /* Use flexbox to align items */
+        align-items: center; /* Vertically center items */
         position: relative;
     }
 
     .beta-tag {
         font-size: 0.825rem; /* 10% larger than 0.75rem */
         padding: 2px 6px; /* Adjusted padding to match the increased size */
-        position: absolute;
-        top: -15px; /* Fine-tuned top value for vertical positioning */
-        left: 50%; /* Center the tag horizontally */
-        transform: translateX(-60%) translateY(-100%); /* Center it over the "r" */
-        margin-left: 0;
+        margin-left: 5px; /* Space between the text and the beta tag */
+        background-color: #f0f0f0; /* Optional: background color to make the tag stand out */
+        border-radius: 3px; /* Optional: rounded corners for the tag */
     }
 }
     </style>
