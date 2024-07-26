@@ -254,29 +254,24 @@
 }
 
 #tasks-projects .task-item, #tasks-projects .project-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Ensure items are spaced apart */
     align-items: center;
-    transition: background-color 0.3s ease;
 }
 
-#tasks-projects .task-item:hover, #tasks-projects .project-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+#tasks-projects .task-item .button-container, #tasks-projects .project-item .button-container {
+    display: flex; /* To align buttons horizontally */
+    gap: 5px; /* Space between buttons */
 }
 
 #tasks-projects .task-item button, #tasks-projects .project-item button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9rem;
-    margin-left: 2px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
 }
 
 #tasks-projects .task-item button:hover, #tasks-projects .project-item button:hover {
@@ -453,8 +448,28 @@
         <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
     </div>
 </div>
+        <div id="tasks-list">
+    <div class="task-item">
+        <span>Task Name</span>
+        <div class="button-container">
+            <button class="edit-button">Edit</button>
+            <button class="delete-button">Delete</button>
+        </div>
+    </div>
+    <!-- More task items... -->
+</div>
 
-            
+<div id="projects-list">
+    <div class="project-item">
+        <span>Project Name</span>
+        <div class="button-container">
+            <button class="edit-button">Edit</button>
+            <button class="delete-button">Delete</button>
+        </div>
+    </div>
+    <!-- More project items... -->
+</div>
+
             <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
             <input type="text" id="timer" value="25:00" readonly>
