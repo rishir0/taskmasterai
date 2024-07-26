@@ -193,25 +193,7 @@
     background-color: var(--accent-color);
 }
 
-/* Custom Timers Styles */
-.custom-timers-dropdown {
-    text-align: center;
-    margin-top: 20px;
-}
 
-.dropdown-btn {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.dropdown-btn:hover {
-    background-color: var(--accent-color);
-}
 
 .pomodoro-timer, .custom-timers {
     display: inline-block;
@@ -261,9 +243,6 @@
     background-color: var(--accent-color);
 }
 
-.hidden {
-    display: none;
-}
 
         .account-button {
     background: none;
@@ -517,30 +496,26 @@
     <button id="reset">Reset</button>
 </div>
 
-<div class="custom-timers-dropdown">
-    <button class="dropdown-btn" onclick="toggleCustomTimers()">Custom Timers</button>
-    <div id="custom-timers-container" class="custom-timers hidden">
-        <div id="custom-timer-1" class="custom-timer">
-            <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
-            <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
-            <button onclick="saveCustomTimer(1)">Save Timer</button>
-            <button onclick="startCustomTimer(1)">Start</button>
-            <button onclick="pauseCustomTimer(1)">Pause</button>
-            <button onclick="resetCustomTimer(1)">Reset</button>
-        </div>
-        <div id="custom-timer-2" class="custom-timer">
-            <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
-            <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
-            <button onclick="saveCustomTimer(2)">Save Timer</button>
-            <button onclick="startCustomTimer(2)">Start</button>
-            <button onclick="pauseCustomTimer(2)">Pause</button>
-            <button onclick="resetCustomTimer(2)">Reset</button>
-        </div>
+<div class="custom-timers">
+    <h2>Custom Timers</h2>
+    <div id="custom-timer-1" class="custom-timer">
+        <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
+        <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
+        <button onclick="saveCustomTimer(1)">Save Timer</button>
+        <button onclick="startCustomTimer(1)">Start</button>
+        <button onclick="pauseCustomTimer(1)">Pause</button>
+        <button onclick="resetCustomTimer(1)">Reset</button>
+    </div>
+    <div id="custom-timer-2" class="custom-timer">
+        <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
+        <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
+        <button onclick="saveCustomTimer(2)">Save Timer</button>
+        <button onclick="startCustomTimer(2)">Start</button>
+        <button onclick="pauseCustomTimer(2)">Pause</button>
+        <button onclick="resetCustomTimer(2)">Reset</button>
     </div>
 </div>
 
-
-    
         <div id="tasks-projects" class="section">
         <div class="tasks-section">
         <h2>Tasks</h2>
@@ -791,24 +766,7 @@ function loadProjects() {
         }
     }
 
-    function loadCustomTimers() {
-        const user = firebase.auth().currentUser;
-        if (user) {
-            db.collection('customTimers').where('uid', '==', user.uid).get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const timerData = doc.data();
-                    const timerNumber = timerData.timerNumber;
-                    customTimers[timerNumber].timeLeft = timerData.timeLeft;
-                    customTimers[timerNumber].isRunning = timerData.isRunning;
-                    document.getElementById(`custom-timer-${timerNumber}-name`).value = timerData.timerName || '';
-
-                    updateCustomTimerDisplay(timerNumber);
-                });
-            }).catch(error => {
-                console.error("Error loading custom timers: ", error);
-            });
-        }
-    }
+    
 
     function startCustomTimer(timerNumber) {
         const timer = customTimers[timerNumber];
@@ -881,10 +839,7 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
         
-function toggleCustomTimers() {
-    const container = document.getElementById('custom-timers-container');
-    container.classList.toggle('hidden');
-}
+
 
 // Function to display saved custom timers
 function displayCustomTimers() {
