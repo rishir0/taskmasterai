@@ -776,14 +776,12 @@ function loadProjects() {
     function loadCustomTimers() {
         const user = firebase.auth().currentUser;
         if (user) {
-            db.collection('customTimers').where('uid', '==', user.uid).get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
+            db.collection('customTimers').get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
                     const timerData = doc.data();
-                    const timerNumber = timerData.timerNumber;
-                    customTimers[timerNumber].timeLeft = timerData.timeLeft;
-                    customTimers[timerNumber].isRunning = timerData.isRunning;
-                    document.getElementById(`custom-timer-${timerNumber}-name`).value = timerData.timerName || '';
-
+                    const timerId = doc.id.replace('timer', '');
+                    document.getElementById(`custom-timer-${timerId}-name`).value = timerData.name;
+                    document.getElementById(`custom-timer-${timerId}-time`).value = timerData.time;
                     updateCustomTimerDisplay(timerNumber);
                 });
             }).catch(error => {
