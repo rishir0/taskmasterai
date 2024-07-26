@@ -194,6 +194,7 @@
 }
 
 /* Custom Timers Styles */
+
 .custom-timers {
     margin-top: 30px;
     background-color: var(--card-bg);
@@ -343,6 +344,64 @@
     display: inline-block;
     margin: 0 2px; /* Adjust the margin as needed */
 }
+
+.additional-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    gap: 10px; /* Adjust the gap as needed */
+    flex-wrap: wrap; /* Allows wrapping of buttons on smaller screens */
+}
+
+.custom-button {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid var(--primary-color);
+    padding: 15px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: 18%; /* Ensure all buttons have the same width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.custom-button:hover {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.custom-button span {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.custom-button p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+    .custom-button {
+        width: 48%; /* Adjust the width for smaller screens */
+        margin-bottom: 10px; /* Add margin for spacing between rows */
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-button {
+        width: 100%; /* Full width on very small screens */
+        margin-bottom: 10px; /* Add margin for spacing between rows */
+    }
+}
+
+
 
 
 .sidebar-toggle {
@@ -512,6 +571,32 @@
         <button onclick="resetCustomTimer(2)">Reset</button>
     </div>
 </div>
+
+<div class="additional-buttons">
+    <button class="custom-button" onclick="window.location.href='features.html'">
+        <span>Distraction Blocker</span>
+        <p>Keeps you focused by blocking distracting sites and notifications.</p>
+    </button>
+    <button class="custom-button" onclick="window.location.href='features.html'">
+        <span>Ambient Sounds</span>
+        <p>Provides soothing background sounds to boost concentration.</p>
+    </button>
+    <button class="custom-button" onclick="window.location.href='features.html'">
+        <span>Performance Analytics</span>
+        <p>Tracks your productivity and reveals improvement areas.</p>
+    </button>
+    <button class="custom-button" onclick="window.location.href='metrics.html'">
+        <span>Focus Metrics</span>
+        <p>Measures your focus levels to enhance your work efficiency.</p>
+    </button>
+    <button class="custom-button" onclick="window.location.href='workschedule.html'">
+        <span>Personalized Work Schedule</span>
+        <p>AI-customized schedules that optimize your productivity based on your tasks and habits.</p>
+    </button>
+</div>
+
+
+
 
     
         <div id="tasks-projects" class="section">
