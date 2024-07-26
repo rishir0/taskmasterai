@@ -193,6 +193,53 @@
     background-color: var(--accent-color);
 }
 
+/* Custom Timers Styles */
+.custom-timers {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.custom-timers h2 {
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.custom-timer {
+    margin-bottom: 20px;
+}
+
+.custom-timer input[type="text"],
+.custom-timer input[type="number"] {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.custom-timer button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+}
+
+.custom-timer button:hover {
+    background-color: var(--accent-color);
+}
+
         .account-button {
     background: none;
     border: none;
@@ -445,6 +492,27 @@
             <button id="reset">Reset</button>
         </div>
 
+            
+<div class="custom-timers">
+    <h2>Custom Timers</h2>
+    <div id="custom-timer-1" class="custom-timer">
+        <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
+        <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
+        <button onclick="saveCustomTimer(1)">Save Timer</button>
+        <button onclick="startCustomTimer(1)">Start</button>
+        <button onclick="pauseCustomTimer(1)">Pause</button>
+        <button onclick="resetCustomTimer(1)">Reset</button>
+    </div>
+    <div id="custom-timer-2" class="custom-timer">
+        <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
+        <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
+        <button onclick="saveCustomTimer(2)">Save Timer</button>
+        <button onclick="startCustomTimer(2)">Start</button>
+        <button onclick="pauseCustomTimer(2)">Pause</button>
+        <button onclick="resetCustomTimer(2)">Reset</button>
+    </div>
+</div>
+
     
         <div id="tasks-projects" class="section">
         <div class="tasks-section">
@@ -667,6 +735,109 @@ function loadProjects() {
                 console.error(`Error deleting ${type}:`, error);
             });
         }
+
+
+    let customTimers = {
+        1: { isRunning: false, timeLeft: 0, timer: null },
+        2: { isRunning: false, timeLeft: 0, timer: null }
+    };
+
+    function saveCustomTimer(timerNumber) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const timer = customTimers[timerNumber];
+            const timerName = document.getElementById(`custom-timer-${timerNumber}-name`).value;
+            const timeInMinutes = parseInt(document.getElementById(`custom-timer-${timerNumber}-time`).value || '0');
+            timer.timeLeft = timeInMinutes * 60;
+
+            db.collection('customTimers').doc(user.uid + '_' + timerNumber).set({
+                uid: user.uid,
+                timerNumber: timerNumber,
+                timeLeft: timer.timeLeft,
+                isRunning: timer.isRunning,
+                timerName: timerName
+            }).then(() => {
+                console.log('Custom timer saved.');
+            }).catch(error => {
+                console.error("Error saving custom timer: ", error);
+            });
+        }
+    }
+
+    function loadCustomTimers() {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            db.collection('customTimers').where('uid', '==', user.uid).get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const timerData = doc.data();
+                    const timerNumber = timerData.timerNumber;
+                    customTimers[timerNumber].timeLeft = timerData.timeLeft;
+                    customTimers[timerNumber].isRunning = timerData.isRunning;
+                    document.getElementById(`custom-timer-${timerNumber}-name`).value = timerData.timerName || '';
+
+                    updateCustomTimerDisplay(timerNumber);
+                });
+            }).catch(error => {
+                console.error("Error loading custom timers: ", error);
+            });
+        }
+    }
+
+    function startCustomTimer(timerNumber) {
+        const timer = customTimers[timerNumber];
+        if (timer.isRunning) return;
+
+        const timeInMinutes = parseInt(document.getElementById(`custom-timer-${timerNumber}-time`).value || '0');
+        timer.timeLeft = timeInMinutes * 60;
+
+        if (timer.timeLeft <= 0) return;
+
+        timer.isRunning = true;
+        timer.timer = setInterval(() => {
+            timer.timeLeft--;
+            updateCustomTimerDisplay(timerNumber);
+            saveCustomTimer(timerNumber);
+            if (timer.timeLeft <= 0) {
+                clearInterval(timer.timer);
+                timer.isRunning = false;
+            }
+        }, 1000);
+    }
+
+    function pauseCustomTimer(timerNumber) {
+        const timer = customTimers[timerNumber];
+        clearInterval(timer.timer);
+        timer.isRunning = false;
+        saveCustomTimer(timerNumber);
+    }
+
+    function resetCustomTimer(timerNumber) {
+        const timer = customTimers[timerNumber];
+        clearInterval(timer.timer);
+        timer.isRunning = false;
+        timer.timeLeft = 0;
+        updateCustomTimerDisplay(timerNumber);
+        saveCustomTimer(timerNumber);
+    }
+
+    function updateCustomTimerDisplay(timerNumber) {
+        const timer = customTimers[timerNumber];
+        const minutes = Math.floor(timer.timeLeft / 60).toString().padStart(2, '0');
+        const seconds = (timer.timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById(`custom-timer-${timerNumber}-time`).value = `${minutes}:${seconds}`;
+    }
+
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            loadCustomTimers();
+        }
+    });
+
+    // Custom Timer HTML Structure
+    document.addEventListener('DOMContentLoaded', () => {
+        // Timers will be created by the existing HTML structure
+        loadCustomTimers();
+    });
 
 
 // Listen for authentication state changes to load tasks
