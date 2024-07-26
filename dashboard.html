@@ -894,16 +894,7 @@ function loadProjects() {
             });
         }
 
-        function loadCustomTimers() {
-            db.collection('customTimers').get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const timerData = doc.data();
-                    const timerId = doc.id.replace('timer', '');
-                    document.getElementById(`custom-timer-${timerId}-name`).value = timerData.name;
-                    document.getElementById(`custom-timer-${timerId}-time`).value = timerData.time;
-                });
-            });
-        }
+        
 
         // Call the load function when the page loads
         window.onload = loadCustomTimers;
