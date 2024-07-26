@@ -210,6 +210,33 @@
       color: #ffffff;
     }
 
+    .beta-tag {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.try-now-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.try-now-btn:hover {
+    background-color: var(--accent-color);
+}
+
     .sidebar-toggle {
             display: none;
             position: fixed;
@@ -358,17 +385,14 @@
             <div class="dashboard-header">
                 <h1>Features</h1>
             </div>
-            <div class="main-content">
-            <div class="dashboard-header">
-                <h1>Distraction Blocker</h1>
-            </div>
-            <div id="blocker-section">
-                <h2>Add Websites to Block</h2>
-                <input type="text" id="block-site" placeholder="Enter website URL" />
-                <button onclick="addBlockSite()">Block</button>
-                <h3>Blocked Websites:</h3>
-                <ul id="blocked-sites-list"></ul>
-            </div>
+            <div class="section">
+    <h2>
+        Distraction Blocker
+        <span class="beta-tag">BETA</span>
+    </h2>
+    <p>This feature is currently in beta, so an extension is required.</p>
+    <button class="try-now-btn" onclick="window.location.href='https://chromewebstore.google.com/detail/stayfocusd-block-distract/laankejkbhbdhmipfmgcngdelahlfoji'">Try Now</button>
+</div>
             <div class="section">
                 <h2>Ambient Sounds</h2>
                 <div class="sound-options">
