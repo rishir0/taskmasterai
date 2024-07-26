@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Existing Styles */
+        :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .menu-item {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .menu-item:hover {
+            color: var(--primary-color);
+        }
+
+        .upgrade-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .upgrade-btn svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .upgrade-btn:hover {
+            background-color: #0EA5E9;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .create-new {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        .menu-dots {
+            cursor: pointer;
+        }
+        
+        .goal-card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Add spacing between cards */
+        }
+
+        .goal-card input {
+            width: calc(100% - 120px); /* Adjust width to fit the button */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin-right: 10px;
+        }
+
+        .goal-card button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .goal-card button:hover {
+            background-color: var(--accent-color);
+        }
+
+        #notes-list {
+            list-style: none; /* Ensure no list styles */
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .note-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .note-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .note-item button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 2px;
+        }
+
+        .note-item button:hover {
+            background-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <!-- Logo SVG or Text -->
+                <span>My Notes App</span>
+            </div>
+            <div class="menu-item">
+                <!-- Menu Icon SVG or Text -->
+                <span>Dashboard</span>
+            </div>
+            <div class="menu-item">
+                <!-- Menu Icon SVG or Text -->
+                <span>Notes</span>
+            </div>
+            <div class="upgrade-btn">
+                <!-- Upgrade Icon SVG or Text -->
+                <span>Upgrade</span>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar"></div>
+                <span>Username</span>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h1>Notes</h1>
+            </div>
+            <div class="create-new">
+                <div class="goal-card">
+                    <input type="text" id="note-input" placeholder="Enter new note">
+                    <button onclick="createNote()">Create Note</button>
+                </div>
+                <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "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";
+        const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+        async function generateSummary(text) {
+            const response = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inputs: text })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                return result[0].summary_text; // Adjust based on actual API response structure
+            } else {
+                throw new Error('Error generating summary');
+            }
+        }
+
+        function createNote() {
+            const noteInput = document.getElementById('note-input');
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                generateSummary(noteText)
+                    .then(summary => {
+                        const notesList = document.getElementById('notes-list');
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item';
+                        noteDiv.innerHTML = `
+                            <span>${summary}</span>
+                            <button onclick="editNote()">Edit</button>
+                            <button onclick="deleteNote()">Delete</button>
+                        `;
+                        notesList.appendChild(noteDiv);
+                    })
+                    .catch(error => {
+                        console.error('Error generating note:', error);
+                    });
+                noteInput.value = '';
+            }
+        }
+
+        function editNote() {
+            // Implement edit functionality
+        }
+
+        function deleteNote() {
+            // Implement delete functionality
+        }
+    </script>
+</body>
+</html>
