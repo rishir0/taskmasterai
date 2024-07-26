@@ -209,23 +209,24 @@
     background-color: #0EA5E9;
     transform: scale(1.1);
 
-.tasks-section, .projects-section {
+/* Added specificity to target sections correctly */
+#tasks-projects .tasks-section, #tasks-projects .projects-section {
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: 10px;
     width: 48%;
-    display: inline-block; /* To place tasks and projects side by side */
-    vertical-align: top;   /* Aligning top for both sections */
+    display: inline-block; 
+    vertical-align: top;  
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tasks-section h2, .projects-section h2 {
+#tasks-projects .tasks-section h2, #tasks-projects .projects-section h2 {
     color: var(--primary-color);
     margin-bottom: 20px;
     font-weight: bold;
 }
 
-.tasks-section input, .projects-section input {
+#tasks-projects .tasks-section input, #tasks-projects .projects-section input {
     width: 70%;
     padding: 10px;
     border: none;
@@ -236,7 +237,7 @@
     margin-right: 10px;
 }
 
-.tasks-section button, .projects-section button {
+#tasks-projects .tasks-section button, #tasks-projects .projects-section button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
@@ -247,11 +248,11 @@
     transition: background-color 0.3s ease;
 }
 
-.tasks-section button:hover, .projects-section button:hover {
+#tasks-projects .tasks-section button:hover, #tasks-projects .projects-section button:hover {
     background-color: var(--accent-color);
 }
 
-.task-item, .project-item {
+#tasks-projects .task-item, #tasks-projects .project-item {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
     border-radius: 5px;
@@ -262,11 +263,11 @@
     transition: background-color 0.3s ease;
 }
 
-.task-item:hover, .project-item:hover {
+#tasks-projects .task-item:hover, #tasks-projects .project-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.task-item button, .project-item button {
+#tasks-projects .task-item button, #tasks-projects .project-item button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
@@ -277,14 +278,14 @@
     margin-left: 5px;
 }
 
-.task-item button:hover, .project-item button:hover {
+#tasks-projects .task-item button:hover, #tasks-projects .project-item button:hover {
     background-color: var(--accent-color);
 }
 
-#tasks-list, #projects-list {
-    list-style: none; /* Remove list style */
-    padding: 0; /* Remove padding */
-    margin: 0; /* Remove margin */
+#tasks-projects #tasks-list, #tasks-projects #projects-list {
+    list-style: none; /* Ensure no list styles */
+    padding: 0; 
+    margin: 0; 
 }
 
 
@@ -612,6 +613,7 @@ function loadProjects() {
             });
         });
 }
+
 
 
         function createEditButton(id, type) {
