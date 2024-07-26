@@ -209,84 +209,78 @@
     background-color: #0EA5E9;
     transform: scale(1.1);
 
-/* Updated styles */
+/* Updated styles for Tasks and Projects sections */
+
 .tasks-section, .projects-section {
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
-    width: 48%;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 48%;
+        }
+
+        .tasks-section h2, .projects-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .tasks-section input, .projects-section input {
+            width: 70%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+
+        .tasks-section button, .projects-section button {
+            background-color: var(--primary-color);
+            color: var (--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .tasks-section button:hover, .projects-section button:hover {
+            background-color: var(--accent-color);
+        }
+
+        .task-item, .project-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-item:hover, .project-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .task-item button, .project-item button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+
+        .task-item button:hover, .project-item button:hover {
+            background-color: var(--accent-color);
+        }
+
 }
-
-.tasks-section h2, .projects-section h2 {
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
-.tasks-section input, .projects-section input {
-    width: 70%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin-bottom: 10px;
-    margin-right: 10px;
-}
-
-.tasks-section button, .projects-section button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-}
-
-.tasks-section button:hover, .projects-section button:hover {
-    background-color: var(--accent-color);
-}
-
-#tasks-container, #projects-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.task-item, .project-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.3s ease;
-    flex: 1 1 calc(50% - 20px); /* Adjust item width and spacing */
-    box-sizing: border-box;
-}
-
-.task-item:hover, .project-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.task-item button, .project-item button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-left: 5px;
-}
-
-.task-item button:hover, .project-item button:hover {
-    background-color: var(--accent-color);
-}
-
-
 .sidebar-toggle {
             display: none;
             position: fixed;
@@ -474,24 +468,20 @@
                 <p>Your personalized dashboard</p>
             </div>
             <div id="tasks-projects" class="section">
-    <div class="tasks-section">
-        <h2>Tasks</h2>
-        <div class="goal-card">
-            <input type="text" id="task-input" placeholder="Enter new task">
-            <button onclick="createTask()">Create Task</button>
-        </div>
-        <div id="tasks-container"></div>
-    </div>
-
-    <div class="projects-section">
-        <h2>Projects</h2>
-        <div class="goal-card">
-            <input type="text" id="project-input" placeholder="Enter new project">
-            <button onclick="createProject()">Create Project</button>
-        </div>
-        <div id="projects-container"></div>
-    </div>
-</div>
+                    <h2>Tasks</h2>
+                <div class="tasks-section">
+                <div class="goal-card">
+                    <input type="text" id="task-input" placeholder="Enter new task">
+                    <button onclick="createTask()">Create Task</button>
+                    <div id="tasks-list">
+            </div>
+            
+            <div id="projects-section">
+                <h2>Projects</h2>
+                <input type="text" id="project-input" placeholder="Enter new project">
+                <button onclick="createProject()">Create Project</button>
+               <div id="projects-list">
+            </div>
             
             <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
@@ -634,74 +624,77 @@
         });
 
         function createTask() {
-    const taskInput = document.getElementById('task-input');
-    const task = taskInput.value.trim();
-    if (task) {
-        db.collection('tasks').add({
-            task: task,
-            userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Task created:', task);
-        }).catch((error) => {
-            console.error('Error creating task:', error);
-        });
-        taskInput.value = '';
-    }
-}
+            const taskInput = document.getElementById('task-input');
+            const task = taskInput.value.trim();
+            if (task) {
+                db.collection('tasks').add({
+                    task: task,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Task created:', task);
+                }).catch((error) => {
+                    console.error('Error creating task:', error);
+                });
+                taskInput.value = '';
+            }
+        }
 
-function createProject() {
-    const projectInput = document.getElementById('project-input');
-    const project = projectInput.value.trim();
-    if (project) {
-        db.collection('projects').add({
-            project: project,
-            userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Project created:', project);
-        }).catch((error) => {
-            console.error('Error creating project:', error);
-        });
-        projectInput.value = '';
-    }
-}
+        function createProject() {
+            const projectInput = document.getElementById('project-input');
+            const project = projectInput.value.trim();
+            if (project) {
+                db.collection('projects').add({
+                    project: project,
+                    userId: firebase.auth().currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Project created:', project);
+                }).catch((error) => {
+                    console.error('Error creating project:', error);
+                });
+                projectInput.value = '';
+            }
+        }
 
-function loadTasks() {
-    db.collection('tasks')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            console.log('Tasks snapshot received:', snapshot);
-            const tasksContainer = document.getElementById('tasks-container');
-            tasksContainer.innerHTML = '';
-            snapshot.forEach(doc => {
-                const task = doc.data();
-                const taskDiv = document.createElement('div');
-                taskDiv.className = 'task-item';
-                taskDiv.innerHTML = `${task.task} <button onclick="removeTask('${doc.id}', this)">Remove</button>`;
-                tasksContainer.appendChild(taskDiv);
-            });
-        });
-}
+        function loadTasks() {
+            db.collection('tasks')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    console.log('Tasks snapshot received:', snapshot);
+                    const tasksList = document.getElementById('tasks-list');
+                    tasksList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const task = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = task.task;
+                        li.appendChild(createEditButton(doc.id, 'task'));
+                        li.appendChild(createDeleteButton(doc.id, 'task'));
+                        tasksList.appendChild(li);
+                    });
+                });
+        }
 
-function loadProjects() {
-    db.collection('projects')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            console.log('Projects snapshot received:', snapshot);
-            const projectsContainer = document.getElementById('projects-container');
-            projectsContainer.innerHTML = '';
-            snapshot.forEach(doc => {
-                const project = doc.data();
-                const projectDiv = document.createElement('div');
-                projectDiv.className = 'project-item';
-                projectDiv.innerHTML = `${project.project} <button onclick="removeProject('${doc.id}', this)">Remove</button>`;
-                projectsContainer.appendChild(projectDiv);
-            });
-        });
-}
+        function loadProjects() {
+            db.collection('projects')
+                .where('userId', '==', firebase.auth().currentUser.uid)
+                .orderBy('createdAt')
+                .onSnapshot(snapshot => {
+                    console.log('Projects snapshot received:', snapshot);
+                    const projectsList = document.getElementById('projects-list');
+                    projectsList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const project = doc.data();
+                        const li = document.createElement('li');
+                        li.textContent = project.project;
+                        li.appendChild(createEditButton(doc.id, 'project'));
+                        li.appendChild(createDeleteButton(doc.id, 'project'));
+                        projectsList.appendChild(li);
+                    });
+                });
+        }
+
         function createEditButton(id, type) {
             const button = document.createElement('button');
             button.textContent = 'Edit';
