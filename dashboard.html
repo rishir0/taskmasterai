@@ -742,36 +742,27 @@ function loadProjects() {
         2: { isRunning: false, timeLeft: 0, timer: null }
     };
 
-    // Functions to handle custom timers
-        function saveCustomTimer(timerId) {
-            const timerName = document.getElementById(`custom-timer-${timerId}-name`).value;
-            const timerTime = document.getElementById(`custom-timer-${timerId}-time`).value;
-            
-            db.collection('customTimers').doc(`timer${timerId}`).set({
-                name: timerName,
-                time: timerTime
-            })
-            .then(() => {
-                console.log("Timer saved successfully!");
-            })
-            .catch((error) => {
-                console.error("Error saving timer: ", error);
+    function saveCustomTimer(timerNumber) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const timer = customTimers[timerNumber];
+            const timerName = document.getElementById(`custom-timer-${timerNumber}-name`).value;
+            const timeInMinutes = parseInt(document.getElementById(`custom-timer-${timerNumber}-time`).value || '0');
+            timer.timeLeft = timeInMinutes * 60;
+
+            db.collection('customTimers').doc(user.uid + '_' + timerNumber).set({
+                uid: user.uid,
+                timerNumber: timerNumber,
+                timeLeft: timer.timeLeft,
+                isRunning: timer.isRunning,
+                timerName: timerName
+            }).then(() => {
+                console.log('Custom timer saved.');
+            }).catch(error => {
+                console.error("Error saving custom timer: ", error);
             });
         }
-
-        function loadCustomTimers() {
-            db.collection('customTimers').get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const timerData = doc.data();
-                    const timerId = doc.id.replace('timer', '');
-                    document.getElementById(`custom-timer-${timerId}-name`).value = timerData.name;
-                    document.getElementById(`custom-timer-${timerId}-time`).value = timerData.time;
-                });
-            });
-        }
-
-        // Call the load function when the page loads
-        window.onload = loadCustomTimers;
+    }
 
     function loadCustomTimers() {
         const user = firebase.auth().currentUser;
@@ -856,14 +847,13 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-
 // Listen for authentication state changes to load tasks
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         loadProjects();
     }
 });
-    
+        
 
 
 
