@@ -213,13 +213,15 @@
     background-color: var(--accent-color);
 }
 
+.pomodoro-timer, .custom-timers {
+    display: inline-block;
+    vertical-align: top;
+    width: 45%;
+    margin: 0 2.5%; /* Adjusted to add spacing between the timers */
+}
+
 .custom-timers {
-    margin-top: 30px;
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    margin-bottom: 30px;
+    margin-top: 0; /* Remove the top margin to align with the Pomodoro timer */
 }
 
 .custom-timers h2 {
@@ -883,6 +885,29 @@ function toggleCustomTimers() {
     const container = document.getElementById('custom-timers-container');
     container.classList.toggle('hidden');
 }
+
+// Function to display saved custom timers
+function displayCustomTimers() {
+    db.collection("customTimers").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const timerData = doc.data();
+            const timerId = `custom-timer-${timerData.timerNumber}`;
+            const timerElement = document.getElementById(timerId);
+
+            if (timerElement) {
+                document.getElementById(`${timerId}-name`).value = timerData.name;
+                document.getElementById(`${timerId}-time`).value = timerData.time;
+            }
+        });
+    }).catch((error) => {
+        console.error("Error fetching custom timers: ", error);
+    });
+}
+
+// Call the function to display the timers when the page loads
+window.onload = function() {
+    displayCustomTimers();
+};
 
     </script>
 
