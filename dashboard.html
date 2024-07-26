@@ -158,12 +158,12 @@
         }
 
         .pomodoro-timer {
-    margin-top: 30px; /* Increased margin for better spacing */
+    margin-top: 30px;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    margin-bottom: 30px; /* Added margin at the bottom */
+    margin-bottom: 30px;
 }
 
 .pomodoro-timer input[type="text"] {
@@ -186,26 +186,38 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    margin: 5px; /* Added margin for button spacing */
+    margin: 5px;
 }
 
 .pomodoro-timer button:hover {
     background-color: var(--accent-color);
 }
 
-/* Custom Timers Styles */
+.custom-timers-dropdown {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.dropdown-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.dropdown-btn:hover {
+    background-color: var(--accent-color);
+}
+
 .custom-timers {
-    margin-top: 30px;
+    display: none;
+    margin-top: 20px;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: 10px;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.custom-timers h2 {
-    margin-bottom: 20px;
-    color: var(--text-color);
 }
 
 .custom-timer {
@@ -214,14 +226,12 @@
 
 .custom-timer input[type="text"],
 .custom-timer input[type="number"] {
-    width: 150px;
+    width: 100%;
     padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: var(--bg-color);
     color: var(--text-color);
-    text-align: center;
-    font-size: 1rem;
     margin-bottom: 10px;
 }
 
@@ -229,7 +239,7 @@
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    padding: 10px 20px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
@@ -240,15 +250,10 @@
     background-color: var(--accent-color);
 }
 
-        .account-button {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0;
+.hidden {
+    display: none;
 }
+
 
 .account-button:focus {
     outline: none;
@@ -491,28 +496,27 @@
             <button id="pause">Pause</button>
             <button id="reset">Reset</button>
         </div>
-
-            
-<div class="custom-timers">
-    <h2>Custom Timers</h2>
-    <div id="custom-timer-1" class="custom-timer">
-        <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
-        <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
-        <button onclick="saveCustomTimer(1)">Save Timer</button>
-        <button onclick="startCustomTimer(1)">Start</button>
-        <button onclick="pauseCustomTimer(1)">Pause</button>
-        <button onclick="resetCustomTimer(1)">Reset</button>
-    </div>
-    <div id="custom-timer-2" class="custom-timer">
-        <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
-        <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
-        <button onclick="saveCustomTimer(2)">Save Timer</button>
-        <button onclick="startCustomTimer(2)">Start</button>
-        <button onclick="pauseCustomTimer(2)">Pause</button>
-        <button onclick="resetCustomTimer(2)">Reset</button>
+        <div class="custom-timers-dropdown">
+    <button class="dropdown-btn" onclick="toggleCustomTimers()">Custom Timers</button>
+    <div id="custom-timers-container" class="custom-timers hidden">
+        <div id="custom-timer-1" class="custom-timer">
+            <input type="text" id="custom-timer-1-name" placeholder="Timer 1 Name">
+            <input type="number" id="custom-timer-1-time" placeholder="Time in minutes">
+            <button onclick="saveCustomTimer(1)">Save Timer</button>
+            <button onclick="startCustomTimer(1)">Start</button>
+            <button onclick="pauseCustomTimer(1)">Pause</button>
+            <button onclick="resetCustomTimer(1)">Reset</button>
+        </div>
+        <div id="custom-timer-2" class="custom-timer">
+            <input type="text" id="custom-timer-2-name" placeholder="Timer 2 Name">
+            <input type="number" id="custom-timer-2-time" placeholder="Time in minutes">
+            <button onclick="saveCustomTimer(2)">Save Timer</button>
+            <button onclick="startCustomTimer(2)">Start</button>
+            <button onclick="pauseCustomTimer(2)">Pause</button>
+            <button onclick="resetCustomTimer(2)">Reset</button>
+        </div>
     </div>
 </div>
-
     
         <div id="tasks-projects" class="section">
         <div class="tasks-section">
@@ -853,12 +857,11 @@ firebase.auth().onAuthStateChanged((user) => {
         loadProjects();
     }
 });
-        
 
-
-
-
-    </script>
+function toggleCustomTimers() {
+    const container = document.getElementById('custom-timers-container');
+    container.classList.toggle('hidden');
+}
 
 
     <script>
