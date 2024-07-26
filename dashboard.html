@@ -193,15 +193,14 @@
     background-color: var(--accent-color);
 }
 
-.pomodoro-timer, .custom-timers {
-    display: inline-block;
-    vertical-align: top;
-    width: 45%;
-    margin: 0 2.5%; /* Adjusted to add spacing between the timers */
-}
-
+/* Custom Timers Styles */
 .custom-timers {
-    margin-top: 0; /* Remove the top margin to align with the Pomodoro timer */
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 .custom-timers h2 {
@@ -241,6 +240,15 @@
     background-color: var(--accent-color);
 }
 
+        .account-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
 
 .account-button:focus {
     outline: none;
@@ -476,14 +484,15 @@
                 <p>Your personalized dashboard</p>
             </div>
             <div class="pomodoro-timer">
-    <h2>Pomodoro Timer</h2>
-    <input type="text" id="timer" value="25:00" readonly>
-    <br>
-    <button id="start">Start</button>
-    <button id="pause">Pause</button>
-    <button id="reset">Reset</button>
-</div>
+            <h2>Pomodoro Timer</h2>
+            <input type="text" id="timer" value="25:00" readonly>
+            <br>
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
 
+            
 <div class="custom-timers">
     <h2>Custom Timers</h2>
     <div id="custom-timer-1" class="custom-timer">
@@ -503,7 +512,6 @@
         <button onclick="resetCustomTimer(2)">Reset</button>
     </div>
 </div>
-
 
     
         <div id="tasks-projects" class="section">
@@ -830,29 +838,6 @@ function loadProjects() {
         // Timers will be created by the existing HTML structure
         loadCustomTimers();
     });
-
-    // Function to display saved custom timers
-function displayCustomTimers() {
-    db.collection("customTimers").get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            const timerData = doc.data();
-            const timerId = `custom-timer-${timerData.timerNumber}`;
-            const timerElement = document.getElementById(timerId);
-
-            if (timerElement) {
-                document.getElementById(`${timerId}-name`).value = timerData.name;
-                document.getElementById(`${timerId}-time`).value = timerData.time;
-            }
-        });
-    }).catch((error) => {
-        console.error("Error fetching custom timers: ", error);
-    });
-}
-
-// Call the function to display the timers when the page loads
-window.onload = function() {
-    displayCustomTimers();
-};
 
 
 // Listen for authentication state changes to load tasks
