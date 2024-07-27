@@ -144,7 +144,7 @@
             margin-bottom: 30px;
         }
 
-        .create-new button {
+        .create-new button, .create-new input {
             background-color: var(--primary-color);
             color: var(--text-color);
             border: none;
@@ -155,7 +155,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .create-new button:hover {
+        .create-new button:hover, .create-new input:hover {
             background-color: var(--accent-color);
         }
 
@@ -246,7 +246,7 @@
                 margin-bottom: 10px; /* Adds space between buttons */
             }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 </head>
 <body>
     <button class="sidebar-toggle">
@@ -317,6 +317,7 @@
             <h1>Notes Dashboard</h1>
         </div>
         <div class="create-new">
+            <input type="text" id="note-input" placeholder="Enter new note">
             <button onclick="createNote()">Create Note</button>
             <input type="file" id="pdf-upload" accept="application/pdf" onchange="uploadPDF()">
         </div>
@@ -372,29 +373,34 @@
             const fileInput = document.getElementById('pdf-upload');
             const file = fileInput.files[0];
             if (file) {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                const pages = pdfDoc.getPages();
-                let pdfText = '';
-                for (const page of pages) {
-                    const textContent = await page.getTextContent();
-                    pdfText += textContent.items.map(item => item.str).join(' ') + ' ';
-                }
-                generateSummary(pdfText)
-                    .then(summary => {
-                        const notesList = document.getElementById('notes-list');
-                        const noteDiv = document.createElement('div');
-                        noteDiv.className = 'note-item';
-                        noteDiv.innerHTML = `
-                            <span>${summary}</span>
-                            <button onclick="editNote()">Edit</button>
-                            <button onclick="deleteNote()">Delete</button>
-                        `;
-                        notesList.appendChild(noteDiv);
-                    })
-                    .catch(error => {
-                        console.error('Error generating note:', error);
-                    });
+                const reader = new FileReader();
+                reader.onload = async function () {
+                    const typedArray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+                    let pdfText = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        pdfText += pageText + ' ';
+                    }
+                    generateSummary(pdfText)
+                        .then(summary => {
+                            const notesList = document.getElementById('notes-list');
+                            const noteDiv = document.createElement('div');
+                            noteDiv.className = 'note-item';
+                            noteDiv.innerHTML = `
+                                <span>${summary}</span>
+                                <button onclick="editNote()">Edit</button>
+                                <button onclick="deleteNote()">Delete</button>
+                            `;
+                            notesList.appendChild(noteDiv);
+                        })
+                        .catch(error => {
+                            console.error('Error generating note:', error);
+                        });
+                };
+                reader.readAsArrayBuffer(file);
             }
         }
     </script>
