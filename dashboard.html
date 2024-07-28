@@ -34,11 +34,29 @@
         }
 
         .sidebar {
-            width: 250px;
+            width: 280px; /* Adjusted width */
             background-color: var(--card-bg);
             padding: 20px;
             display: flex;
             flex-direction: column;
+            position: fixed;
+            height: 100%;
+        }
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 20px;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-size: 18px;
         }
 
         .logo {
