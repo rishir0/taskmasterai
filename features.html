@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Features</title>
+    <title>Distraction Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -222,6 +222,42 @@
     display: inline-block;
 }
 
+    .pomodoro-timer {
+    margin-top: 30px; /* Increased margin for better spacing */
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px; /* Added margin at the bottom */
+}
+
+.pomodoro-timer input[type="text"] {
+    width: 100px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.pomodoro-timer button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px; /* Added margin for button spacing */
+}
+
+.pomodoro-timer button:hover {
+    background-color: var(--accent-color);
+}
+
 .try-now-btn {
     background-color: var(--primary-color);
     color: var(--text-color);
@@ -387,7 +423,7 @@
         </div>
         <div class="main-content">
             <div class="dashboard-header">
-                <h1>Features</h1>
+                <h1>Distraction Management</h1>
             </div>
             <div class="section">
     <h2 class="feature-title">
@@ -410,14 +446,62 @@
                   <div id="playing" class="playing" style="display: none;">Now Playing: <span id="current-sound"></span></div>
                 </main>
 
-                <div class="section">
-                    <h2 class="feature-title">
-                    Performance Analytics
-                    <span class="beta-tag">BETA</span>
-                    </h2>          
-                    <p>Coming soon...</p>
-                </div>
+                <div class="pomodoro-timer">
+            <h2>Pomodoro Timer</h2>
+            <input type="text" id="timer" value="25:00" readonly>
+            <br>
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
 
+            <script>
+    let timer;
+    let isRunning = false;
+    let timeLeft = 1500; // 25 minutes
+    
+    const timerDisplay = document.getElementById('timer');
+    const startButton = document.getElementById('start');
+    const pauseButton = document.getElementById('pause');
+    const resetButton = document.getElementById('reset');
+    
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        timer = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                isRunning = false;
+            }
+        }, 1000);
+    }
+    
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+    }
+    
+    function resetTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        timeLeft = 1500;
+        updateDisplay();
+    }
+    
+    function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const seconds = (timeLeft % 60).toString().padStart(2, '0');
+        timerDisplay.value = `${minutes}:${seconds}`;
+    }
+    
+    startButton.addEventListener('click', startTimer);
+    pauseButton.addEventListener('click', pauseTimer);
+    resetButton.addEventListener('click', resetTimer);
+    
+    updateDisplay();
+    </script>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
