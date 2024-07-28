@@ -206,6 +206,33 @@
     background-color: #D32F2F;
 }
 
+.profile-pic-options {
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic-options input {
+    margin-right: 20px;
+}
+
+.default-pics {
+    display: flex;
+    gap: 10px;
+}
+
+.default-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.default-pic:hover {
+    transform: scale(1.1);
+}
+
+
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -330,6 +357,19 @@
                 <div class="form-group">
                     <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
                 </div>
+                <div class="form-group">
+                <label for="profile-pic">Profile Picture</label>
+                <div class="profile-pic-options">
+                <input type="file" id="profile-pic" accept="image/*" onchange="uploadProfilePic(event)">
+        <div class="default-pics">
+            <img src="path/to/default1.png" onclick="selectDefaultPic('default1.png')" class="default-pic">
+            <img src="path/to/default2.png" onclick="selectDefaultPic('default2.png')" class="default-pic">
+            <img src="path/to/default3.png" onclick="selectDefaultPic('default3.png')" class="default-pic">
+        </div>
+    </div>
+    <button onclick="saveProfilePic()">Save</button>
+</div>
+
             </div>
         </div>
     </div>
@@ -337,6 +377,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
     <script>
         // TODO: Replace the following with your app's Firebase project configuration
         var firebaseConfig = {
@@ -349,7 +392,39 @@
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
+        let selectedPic = null;
+
+        function uploadProfilePic(event) {
+        const file = event.target.files[0];
+        const storageRef = storage.ref(`profile_pics/${file.name}`);
+        storageRef.put(file).then((snapshot) => {
+            snapshot.ref.getDownloadURL().then((url) => {
+                selectedPic = url;
+                document.getElementById('profile-pic').value = '';
+            });
+        });
+    }
+
+    function selectDefaultPic(picName) {
+        selectedPic = `path/to/${picName}`;
+    }
+
+    function saveProfilePic() {
+        const userId = "USER_ID"; // Replace with the current user ID
+        db.collection('users').doc(userId).set({
+            profilePic: selectedPic
+        }, { merge: true }).then(() => {
+            console.log("Profile picture saved successfully!");
+        }).catch((error) => {
+            console.error("Error saving profile picture: ", error);
+        });
+    }
+
+        
         function updateAccount() {
             const user = firebase.auth().currentUser;
             const newName = document.getElementById('name').value;
