@@ -494,29 +494,17 @@
                 top: 0;
                 height: 100%;
                 z-index: 1000;
-                width: 150px; /* Further adjust sidebar width for smaller screens */
-                padding: 5px;
             }
-
             .sidebar.active {
                 display: flex;
             }
-
             .sidebar-toggle {
                 display: block;
             }
-
             .main-content {
-                margin-left: 150px; /* Adjust margin for smaller screens */
-                padding: 5px;
+                padding-left: 20px;
+                margin-left: 0; /* Reset margin for mobile */
             }
-
-            .sidebar h1 {
-                font-size: 18px; /* Adjust font size for smaller screens */
-            }
-            .sidebar ul li a {
-                font-size: 14px; /* Adjust font size for smaller screens */
-        }
 
         /* Responsive Styles */
 @media (max-width: 768px) {
