@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            background-color: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .get-started-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-left: 1.5rem;
+        }
+
+        .get-started-btn:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+        }
+
+        .contact-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .contact-form {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            resize: none;
+        }
+
+        .form-group textarea {
+            height: 150px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #5a54d1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: var(--card-bg);
+            color: #D1D5DB;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                background-color: var(--secondary-color);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                font-size: 0.8rem;
+                margin-left: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .get-started-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: #7E6BF1;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            .sidebar-toggle svg {
+                width: 40px;
+                height: 40px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .logo svg {
+                width: 40px;
+                height: 40px;
+                margin-right: 10px;
+                transition: transform 0.3s ease;
+            }
+
+            .logo a:hover svg {
+                transform: rotate(15deg) scale(1.1);
+            }
+        }
+
+        /* Hide sidebar toggle on desktop */
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .nav-links {
+                background-color: var(--secondary-color);
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                display: none;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                margin: 0.5rem 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: var(--primary-color);
+                font-size: 1.4rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .mobile-get-started {
+                display: none;
+            }
+
+            .mobile-menu-container {
+                display: none;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .nav-links {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                background-color: transparent;
+                position: static;
+                width: auto;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                margin: 0 0 0 1.5rem;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .mobile-get-started {
+                display: none;
+            }
+
+            .mobile-menu-container {
+                display: none;
+            }
+
+            .get-started-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="index.html">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>NoteMaster</span>
+                    </a>
+                </div>
+                <div class="mobile-menu-container">
+                    <button class="sidebar-toggle" aria-label="Open sidebar">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="notes.html">Notes</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="notes_dashboard.html" class="get-started-btn">Get Started</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h1>Contact Us</h1>
+            <div class="contact-container">
+                <form class="contact-form">
+                    <h2>Send us a message</h2>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 NoteMaster. All rights reserved.</p>
+    </footer>
+    <script>
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        sidebarToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
