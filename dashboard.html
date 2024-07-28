@@ -34,7 +34,7 @@
         }
 
         .sidebar {
-            width: 280px;
+            width: 250px;
             background-color: var(--card-bg);
             padding: 20px;
             display: flex;
@@ -572,11 +572,11 @@
             </div>
         </div>
         <div class="main-content">
-            <div class="dashboard-header">
-                <h1>Welcome, <span id="displayName">User</span>!</h1>
-                <p>Your personalized dashboard</p>
-            </div>
-            <div class="pomodoro-timer">
+        <div class="dashboard-header">
+            <h1>Welcome, <span id="displayName">User</span>!</h1>
+            <p>Your personalized dashboard</p>
+        </div>
+        <div class="pomodoro-timer">
             <h2>Pomodoro Timer</h2>
             <input type="text" id="timer" value="25:00" readonly>
             <br>
@@ -584,7 +584,6 @@
             <button id="pause">Pause</button>
             <button id="reset">Reset</button>
         </div>
-
         <div class="dropdown-menu">
             <div class="dropdown-header" onclick="toggleDropdown()">
                 <span>Custom Timers</span>
@@ -614,56 +613,55 @@
                 </div>
             </div>
         </div>
-
-<div class="additional-buttons">
-    <button class="custom-button" onclick="window.location.href='features.html'">
-        <span>Distraction Blocker</span>
-        <p>Keeps you focused by blocking distracting sites and notifications.</p>
-    </button>
-    <button class="custom-button" onclick="window.location.href='features.html'">
-        <span>Ambient Sounds</span>
-        <p>Provides soothing background sounds to boost concentration.</p>
-    </button>
-    <button class="custom-button" onclick="window.location.href='features.html'">
-        <span>Performance Analytics</span>
-        <p>Tracks your productivity and reveals improvement areas.</p>
-    </button>
-    <button class="custom-button" onclick="window.location.href='metrics.html'">
-        <span>Focus Metrics</span>
-        <p>Measures your focus levels to enhance your work efficiency.</p>
-    </button>
-    <button class="custom-button" onclick="window.location.href='workschedule.html'">
-        <span>Personalized Work Schedule</span>
-        <p>AI-customized schedules that optimize your productivity based on your tasks and habits.</p>
-    </button>
-</div>
-    
+        <div class="additional-buttons">
+            <button class="custom-button" onclick="window.location.href='features.html'">
+                <span>Distraction Blocker</span>
+                <p>Keeps you focused by blocking distracting sites and notifications.</p>
+            </button>
+            <button class="custom-button" onclick="window.location.href='features.html'">
+                <span>Ambient Sounds</span>
+                <p>Provides soothing background sounds to boost concentration.</p>
+            </button>
+            <button class="custom-button" onclick="window.location.href='features.html'">
+                <span>Performance Analytics</span>
+                <p>Tracks your productivity and reveals improvement areas.</p>
+            </button>
+            <button class="custom-button" onclick="window.location.href='metrics.html'">
+                <span>Focus Metrics</span>
+                <p>Measures your focus levels to enhance your work efficiency.</p>
+            </button>
+            <button class="custom-button" onclick="window.location.href='workschedule.html'">
+                <span>Personalized Work Schedule</span>
+                <p>AI-customized schedules that optimize your productivity based on your tasks and habits.</p>
+            </button>
+        </div>
         <div id="tasks-projects" class="section">
-    <div class="tasks-section">
-        <h2>Tasks</h2>
-        <div class="goal-card">
-            <input type="text" id="task-input" placeholder="Enter new task">
-            <button onclick="createTask()">Create Task</button>
+            <div class="tasks-section">
+                <h2>Tasks</h2>
+                <div class="goal-card">
+                    <input type="text" id="task-input" placeholder="Enter new task">
+                    <button onclick="createTask()">Create Task</button>
+                </div>
+                <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
+            </div>
+            <div class="projects-section">
+                <h2>Projects</h2>
+                <div class="goal-card">
+                    <input type="text" id="project-input" placeholder="Enter new project">
+                    <button onclick="createProject()">Create Project</button>
+                </div>
+                <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
+            </div>
+            <div class="goals-section">
+                <h2>Goals</h2>
+                <div class="goal-card">
+                    <input type="text" id="goal-input" placeholder="Enter new goal">
+                    <button onclick="createGoal()">Create Goal</button>
+                </div>
+                <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
+            </div>
         </div>
-        <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
-    <div class="projects-section">
-        <h2>Projects</h2>
-        <div class="goal-card">
-            <input type="text" id="project-input" placeholder="Enter new project">
-            <button onclick="createProject()">Create Project</button>
-        </div>
-        <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
-    </div>
-    <div class="goals-section">
-        <h2>Goals</h2>
-        <div class="goal-card">
-            <input type="text" id="goal-input" placeholder="Enter new goal">
-            <button onclick="createGoal()">Create Goal</button>
-        </div>
-        <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
-    </div>
-</div>
 
    
     <script>
