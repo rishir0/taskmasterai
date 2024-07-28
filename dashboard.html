@@ -409,7 +409,7 @@
 
 .additional-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Align items to the start to remove extra space */
     margin-bottom: 30px;
     gap: 5px; /* Adjust the gap as needed */
     flex-wrap: wrap; /* Allows wrapping of buttons on smaller screens */
@@ -424,12 +424,13 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease, color 0.3s ease;
-    width: 18%; /* Ensure all buttons have the same width */
+    flex: 1; /* Flex property to allow for responsive adjustments */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
+    max-width: calc(33.33% - 10px); /* Ensure three buttons per row, with a 5px gap on each side */
 }
 
 .custom-button:hover {
