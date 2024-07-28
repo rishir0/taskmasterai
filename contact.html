@@ -14,7 +14,7 @@
             --bg-color: #121212;
             --card-bg: #1E1E1E;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
@@ -352,26 +352,64 @@
                 <div class="logo">
                     <a href="index.html">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>NoteMaster</span>
+                        <span>TaskMasterAI</span>
                     </a>
                 </div>
-                <div class="mobile-menu-container">
-                    <button class="sidebar-toggle" aria-label="Open sidebar">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="nav-links">
-                    <a href="index.html">Home</a>
-                    <a href="notes.html">Notes</a>
-                    <a href="about.html">About</a>
+
+                <style>
+                        .logo a {
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #7e6bf1;
+                            transition: color 0.3s ease;
+                        }
+                    
+                        .logo svg {
+                            width: 40px;
+                            height: 40px;
+                            margin-right: 10px;
+                            transition: transform 0.3s ease;
+                        }
+                    
+                        .logo span {
+                            font-size: 24px;
+                            font-weight: bold;
+                        }
+                    
+                        .logo a:hover {
+                            color: #9f91f5;
+                        }
+                    
+                        .logo a:hover svg {
+                            transform: rotate(15deg) scale(1.1);
+                        }
+                    
+                        .logo a:hover svg path {
+                            stroke: #9f91f5;
+                            transition: stroke 0.3s ease;
+                        }
+                    </style>
+                    <div class="mobile-menu-container">
+                        <a href="signup.html" class="mobile-get-started" id="mobileGetStarted">Get Started</a>
+                        <button class="sidebar-toggle">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="nav-links">
+                    <a href="index.html#features">Features</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="#about">About</a>
                     <a href="contact.html">Contact</a>
-                    <a href="notes_dashboard.html" class="get-started-btn">Get Started</a>
+                    <a href="signup.html" class="get-started-btn" id="get-started-btn">Get started today</a>
                 </div>
             </nav>
         </div>
@@ -400,7 +438,7 @@
         </div>
     </main>
     <footer>
-        <p>&copy; 2023 NoteMaster. All rights reserved.</p>
+        <p>&copy; 2024 TaskMasterAI. All rights reserved.</p>
     </footer>
     <script>
         const sidebarToggle = document.querySelector('.sidebar-toggle');
