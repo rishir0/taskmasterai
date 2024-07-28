@@ -116,6 +116,20 @@
             padding: 4rem 0;
         }
 
+        .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: #7E6BF1;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            .sidebar-toggle svg {
+                width: 40px;
+                height: 40px;
+            }
+
         h1 {
             font-size: 3rem;
             text-align: center;
@@ -201,7 +215,7 @@
         }
 
         /* Mobile Styles */
-        @media (max-width: 768px) {
+        @media (max-width: 769px) {
             .nav-links {
                 display: none;
                 flex-direction: column;
@@ -228,6 +242,10 @@
 
             .nav-links.active {
                 display: flex;
+            }
+
+            .sidebar-toggle {
+                display: none;
             }
 
             .sidebar-toggle {
