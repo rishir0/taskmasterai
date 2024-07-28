@@ -276,6 +276,7 @@
         }
     </style>
 </head>
+
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -310,6 +311,13 @@
             });
         });
     }
+
+    // Ensure this block is executed only once
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+} else {
+    firebase.app(); // if already initialized, use that one
+}
 
     function selectDefaultPic(picName) {
         selectedPic = `path/to/${picName}`;
