@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact</title>
+    <title>Pricing</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -116,20 +116,6 @@
             padding: 4rem 0;
         }
 
-        .sidebar-toggle {
-                display: block;
-                background-color: transparent;
-                border: none;
-                cursor: pointer;
-                color: #7E6BF1;
-                font-family: 'Poppins', sans-serif;
-            }
-
-            .sidebar-toggle svg {
-                width: 40px;
-                height: 40px;
-            }
-
         h1 {
             font-size: 3rem;
             text-align: center;
@@ -207,6 +193,22 @@
             background-color: #5a54d1;
         }
 
+        .cta-button {
+            display: block;
+            text-align: center;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #0EA5E9;
+        }
+
         footer {
             text-align: center;
             padding: 2rem 0;
@@ -214,8 +216,41 @@
             color: #D1D5DB;
         }
 
+        .logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #7e6bf1;
+            transition: color 0.3s ease;
+        }
+    
+        .logo svg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+    
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .logo a:hover {
+            color: #9f91f5;
+        }
+    
+        .logo a:hover svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+    
+        .logo a:hover svg path {
+            stroke: #9f91f5;
+            transition: stroke 0.3s ease;
+        }
+
         /* Mobile Styles */
-        @media (max-width: 769px) {
+        @media (max-width: 768px) {
             .nav-links {
                 display: none;
                 flex-direction: column;
@@ -242,10 +277,6 @@
 
             .nav-links.active {
                 display: flex;
-            }
-
-            .sidebar-toggle {
-                display: none;
             }
 
             .sidebar-toggle {
@@ -361,7 +392,21 @@
                 display: inline-block;
             }
         }
-                    </style>
+    </style>
+    <body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <a href="index.html">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>TaskMasterAI</span>
+                    </a>
+                </div>
                 <div class="mobile-menu-container">
                     <a href="signup.html" class="mobile-get-started" id="mobileGetStarted">Get Started</a>
                     <button class="sidebar-toggle">
