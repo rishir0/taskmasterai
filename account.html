@@ -278,30 +278,35 @@
 </head>
 
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
-    <script>
-        // TODO: Replace the following with your app's Firebase project configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        // Initialize Firebase
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+<script>
+    // TODO: Replace the following with your app's Firebase project configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+        authDomain: "deepworkai-c3419.firebaseapp.com",
+        projectId: "deepworkai-c3419",
+        storageBucket: "deepworkai-c3419.appspot.com",
+        messagingSenderId: "367439182644",
+        appId: "1:367439182644:web:304216430df97eff68c361"
+    };
+
+    // Ensure Firebase is initialized only once
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
+    } else {
+        firebase.app(); // if already initialized, use that one
+    }
 
-        let selectedPic = null;
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
-        function uploadProfilePic(event) {
+    let selectedPic = null;
+
+    function uploadProfilePic(event) {
         const file = event.target.files[0];
         const storageRef = storage.ref(`profile_pics/${file.name}`);
         storageRef.put(file).then((snapshot) => {
@@ -311,13 +316,6 @@
             });
         });
     }
-
-    // Ensure this block is executed only once
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-} else {
-    firebase.app(); // if already initialized, use that one
-}
 
     function selectDefaultPic(picName) {
         selectedPic = `path/to/${picName}`;
@@ -334,57 +332,57 @@ if (!firebase.apps.length) {
         });
     }
 
-        
-        function updateAccount() {
-            const user = firebase.auth().currentUser;
-            const newName = document.getElementById('name').value;
-            const newPassword = document.getElementById('password').value;
+    function updateAccount() {
+        const user = firebase.auth().currentUser;
+        const newName = document.getElementById('name').value;
+        const newPassword = document.getElementById('password').value;
 
-            if (newName) {
-                user.updateProfile({
-                    displayName: newName
-                }).then(function() {
-                    alert("Name updated successfully!");
-                }).catch(function(error) {
-                    console.error("Error updating name:", error);
-                });
-            }
-
-            if (newPassword) {
-                user.updatePassword(newPassword).then(function() {
-                    alert("Password updated successfully!");
-                }).catch(function(error) {
-                    console.error("Error updating password:", error);
-                });
-            }
-        }
-
-        function signOut() {
-            firebase.auth().signOut().then(function() {
-                // Sign-out successful.
-                window.location.href = "login.html";
+        if (newName) {
+            user.updateProfile({
+                displayName: newName
+            }).then(function() {
+                alert("Name updated successfully!");
             }).catch(function(error) {
-                // An error happened.
-                console.error("Error signing out:", error);
+                console.error("Error updating name:", error);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('name').value = user.displayName;
-                    document.getElementById('email').value = user.email;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
+        if (newPassword) {
+            user.updatePassword(newPassword).then(function() {
+                alert("Password updated successfully!");
+            }).catch(function(error) {
+                console.error("Error updating password:", error);
             });
-        });
+        }
+    }
 
-        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('active');
+    function signOut() {
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+            window.location.href = "login.html";
+        }).catch(function(error) {
+            // An error happened.
+            console.error("Error signing out:", error);
         });
-    </script>
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                document.getElementById('name').value = user.displayName;
+                document.getElementById('email').value = user.email;
+            } else {
+                // No user is signed in.
+                window.location.href = "login.html"; // Redirect to login page
+            }
+        });
+    });
+
+    document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+</script>
+
 <body>
     <button class="sidebar-toggle">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
