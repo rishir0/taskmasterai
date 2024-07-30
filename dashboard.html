@@ -1163,8 +1163,27 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
     
-
-
+firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                var userId = user.uid;
+                var userDocRef = db.collection("users").doc(userId);
+                
+                userDocRef.get().then(function(doc) {
+                    if (doc.exists) {
+                        var userData = doc.data();
+                        if (!userData.hasSeenIntro) {
+                            document.getElementById('feature-intro-screen').style.display = 'block';
+                            // Set the flag to true after showing the screen
+                            userDocRef.update({ hasSeenIntro: true });
+                        }
+                    }
+                }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                });
+            } else {
+                // No user is signed in.
+            }
+        });
 
 
     </script>
