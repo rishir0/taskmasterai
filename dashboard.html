@@ -1163,28 +1163,45 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
     
-firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                var userId = user.uid;
-                var userDocRef = db.collection("users").doc(userId);
-                
-                userDocRef.get().then(function(doc) {
-                    if (doc.exists) {
-                        var userData = doc.data();
-                        if (!userData.hasSeenIntro) {
-                            document.getElementById('feature-intro-screen').style.display = 'block';
-                            // Set the flag to true after showing the screen
-                            userDocRef.update({ hasSeenIntro: true });
-                        }
-                    }
-                }).catch(function(error) {
-                    console.log("Error getting document:", error);
-                });
-            } else {
-                // No user is signed in.
-            }
-        });
+ firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      const userRef = db.collection('users').doc(user.uid);
 
+      userRef.get().then(doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          if (!userData.splashScreenShown) {
+            // Show splash screen
+            showSplashScreen();
+
+            // Update Firestore to set splashScreenShown to true
+            userRef.update({
+              splashScreenShown: true
+            });
+          }
+        } else {
+          // If user document does not exist, create it
+          userRef.set({
+            splashScreenShown: true
+          });
+          showSplashScreen();
+        }
+      });
+    }
+  });
+
+  function showSplashScreen() {
+  fetch('splashscreen.html')
+    .then(response => response.text())
+    .then(data => {
+      document.body.insertAdjacentHTML('afterbegin', data);
+      setTimeout(() => {
+        const splashScreen = document.getElementById('splashScreen');
+        splashScreen.style.display = 'none';
+      }, 3000); // Adjust the delay as needed
+    })
+    .catch(error => console.error('Error loading splash screen:', error));
+}
 
     </script>
 
