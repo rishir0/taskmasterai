@@ -242,6 +242,7 @@ body {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+            background: transparent;
         }
 
         .settings-header {
@@ -305,32 +306,6 @@ body {
 
 .sign-out-btn:hover {
     background-color: #D32F2F;
-}
-
-.profile-pic-options {
-    display: flex;
-    align-items: center;
-}
-
-.profile-pic-options input {
-    margin-right: 20px;
-}
-
-.default-pics {
-    display: flex;
-    gap: 10px;
-}
-
-.default-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.default-pic:hover {
-    transform: scale(1.1);
 }
 
 
@@ -410,34 +385,6 @@ body {
 
     const db = firebase.firestore();
     const storage = firebase.storage();
-
-    let selectedPic = null;
-
-    function uploadProfilePic(event) {
-        const file = event.target.files[0];
-        const storageRef = storage.ref(`profile_pics/${file.name}`);
-        storageRef.put(file).then((snapshot) => {
-            snapshot.ref.getDownloadURL().then((url) => {
-                selectedPic = url;
-                document.getElementById('profile-pic').value = '';
-            });
-        });
-    }
-
-    function selectDefaultPic(picName) {
-        selectedPic = `path/to/${picName}`;
-    }
-
-    function saveProfilePic() {
-        const userId = "USER_ID"; // Replace with the current user ID
-        db.collection('users').doc(userId).set({
-            profilePic: selectedPic
-        }, { merge: true }).then(() => {
-            console.log("Profile picture saved successfully!");
-        }).catch((error) => {
-            console.error("Error saving profile picture: ", error);
-        });
-    }
 
     function updateAccount() {
         const user = firebase.auth().currentUser;
@@ -571,19 +518,6 @@ body {
                 <div class="form-group">
                     <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
                 </div>
-                <div class="form-group">
-                <label for="profile-pic">Profile Picture</label>
-                <div class="profile-pic-options">
-                <input type="file" id="profile-pic" accept="image/*" onchange="uploadProfilePic(event)">
-        <div class="default-pics">
-            <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/calendar-days-svgrepo-com.png?alt=media&token=ee9d7776-2429-44f1-aeec-b49dbcf55235" onclick="selectDefaultPic('default1.png')" class="default-pic">
-            <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/clock-svgrepo-com.png?alt=media&token=332171ae-c786-42c7-ab59-71c9ed0b39bb" onclick="selectDefaultPic('default2.png')" class="default-pic">
-            <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/notebook-1-svgrepo-com.png?alt=media&token=5f948869-ee0b-414d-9a65-18b84f7f3e8a" onclick="selectDefaultPic('default3.png')" class="default-pic">
-        </div>
-    </div>
-    <button onclick="saveProfilePic()">Save</button>
-</div>
-
             </div>
         </div>
     </div>
