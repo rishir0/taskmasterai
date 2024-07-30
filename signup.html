@@ -227,13 +227,15 @@
         // Function to save user data
         const saveUserData = async (user) => {
             try {
-                await setDoc(doc(db, "users", user.uid), {
+                const userData = {
                     uid: user.uid,
                     email: user.email,
                     displayName: user.displayName || "Anonymous",
                     firstName: user.firstName || "",
-                    lastName: user.lastName || ""
-                });
+                    lastName: user.lastName || "",
+                    newUser: true // Add newUser flag here
+                };
+                await setDoc(doc(db, "users", user.uid), userData);
                 console.log("User data saved successfully");
             } catch (error) {
                 console.error("Error saving user data:", error);
