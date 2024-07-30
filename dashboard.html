@@ -1163,7 +1163,8 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
     
- firebase.auth().onAuthStateChanged(user => {
+ // Auth state observer
+  firebase.auth().onAuthStateChanged(user => {
     if (user) {
       const userRef = db.collection('users').doc(user.uid);
 
@@ -1190,14 +1191,55 @@ firebase.auth().onAuthStateChanged((user) => {
     }
   });
 
+    // Sign up a new user
+function signUp(email, password) {
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // New user created
+      const user = userCredential.user;
+      const additionalUserInfo = userCredential.additionalUserInfo;
+
+      if (additionalUserInfo.isNewUser) {
+        // User is new, set splashScreenShown to false in Firestore
+        db.collection('users').doc(user.uid).set({
+          splashScreenShown: false
+        });
+      }
+    })
+    .catch((error) => {
+      console.error('Error signing up:', error);
+    });
+}
+
+
   function showSplashScreen() {
+  // Hide the main dashboard content
+  document.getElementById('mainDashboardContent').style.display = 'none';
+
   fetch('splashscreen.html')
     .then(response => response.text())
     .then(data => {
-      document.body.insertAdjacentHTML('afterbegin', data);
+      const splashScreenDiv = document.createElement('div');
+      splashScreenDiv.id = 'splashScreen';
+      splashScreenDiv.style.position = 'fixed';
+      splashScreenDiv.style.top = '0';
+      splashScreenDiv.style.left = '0';
+      splashScreenDiv.style.width = '100%';
+      splashScreenDiv.style.height = '100%';
+      splashScreenDiv.style.background = '#000';
+      splashScreenDiv.style.zIndex = '10000';
+      splashScreenDiv.style.display = 'flex';
+      splashScreenDiv.style.alignItems = 'center';
+      splashScreenDiv.style.justifyContent = 'center';
+
+      splashScreenDiv.innerHTML = data;
+      document.body.appendChild(splashScreenDiv);
+
+      // Remove splash screen after a delay
       setTimeout(() => {
-        const splashScreen = document.getElementById('splashScreen');
-        splashScreen.style.display = 'none';
+        document.body.removeChild(splashScreenDiv);
+        // Show the main dashboard content again
+        document.getElementById('mainDashboardContent').style.display = 'block';
       }, 3000); // Adjust the delay as needed
     })
     .catch(error => console.error('Error loading splash screen:', error));
