@@ -242,11 +242,11 @@
         };
 
         // Google Sign-In
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new GoogleAuthProvider();
         const googleLoginBtn = document.getElementById('google-login-btn');
         if (googleLoginBtn) {
             googleLoginBtn.addEventListener('click', () => {
-                auth.signInWithPopup(provider)
+                signInWithPopup(auth, provider)
                     .then(async (result) => {
                         // Google Sign-In successful
                         const user = result.user;
