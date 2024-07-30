@@ -241,35 +241,42 @@
             }
         };
 
-        // Google Sign-In
         const provider = new GoogleAuthProvider();
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', () => {
-                signInWithPopup(auth, provider)
-                    .then(async (result) => {
-                        // Google Sign-In successful
-                        const user = result.user;
-                        console.log('Google Sign-In successful:', user);
-                        const userDoc = await db.collection("users").doc(user.uid).get();
-                        if (!userDoc.exists) {
-                            user.firstName = ""; // Google doesn't provide first and last name separately
-                            user.lastName = "";
-                            await saveUserData(user, true); // Save with newUser flag
-                            window.location.href = "splashscreen.html"; // Redirect to splash screen
-                        } else {
-                            await saveUserData(user, false); // Save without newUser flag
-                            window.location.href = "dashboard.html"; // Redirect to dashboard
-                        }
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                        alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-                    });
-            });
+const googleLoginBtn = document.getElementById('google-login-btn');
+
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // Google Sign-In successful
+            const user = result.user;
+            console.log('Google Sign-In successful:', user);
+
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                // User does not exist in Firestore, create a new document
+                const newUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || "", // Handle missing displayName
+                    photoURL: user.photoURL || "",
+                };
+                await setDoc(userDocRef, newUser);
+                window.location.href = "splashscreen.html"; // Redirect to splash screen
+            } else {
+                // User exists in Firestore
+                window.location.href = "dashboard.html"; // Redirect to dashboard
+            }
+        } catch (error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Error with Google Sign-In:', errorCode, errorMessage);
+            alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
         }
+    });
+}
 
         // Sign-Up Form
         const signupForm = document.getElementById('signup-form');
