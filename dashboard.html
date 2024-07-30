@@ -196,14 +196,14 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     margin-right: 10px;
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .user-avatar:hover {
-    background-color: var(--accent-color); /* Change to a different color on hover */
     transform: scale(1.1);
+    color: var(--text-color);
 }
 
 .pomodoro-timer {
@@ -350,8 +350,6 @@ body {
 }
 
 .account-button:hover {
-    color: var(--accent-color); /* Change text color to accent color */
-    background-color: var(--hover-bg); /* Add a subtle background color on hover */
     transform: scale(1.05);
 }
 
@@ -369,7 +367,6 @@ body {
 }
 
 .user-avatar:hover {
-    background-color: var(--secondary-color); /* Change to secondary color on hover */
     transform: scale(1.1);
 }
 
@@ -416,7 +413,7 @@ body {
 #tasks-projects .projects-section button,
 #tasks-projects .goals-section button,
 #tasks-projects .plans-section button {
-    background-color: var(--primary-color);
+    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
     color: var(--text-color);
     border: none;
     padding: 10px 20px;
@@ -458,7 +455,7 @@ body {
 #tasks-projects .project-item button,
 #tasks-projects .goal-item button,
 #tasks-projects .plan-item button {
-    background-color: var(--primary-color);
+    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
     color: var(--text-color);
     border: none;
     padding: 5px 10px;
@@ -473,7 +470,8 @@ body {
 #tasks-projects .project-item button:hover,
 #tasks-projects .goal-item button:hover,
 #tasks-projects .plan-item button:hover {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color); /* Use hover-bg for background on hover */
+    color: var(--text-color);
 }
 
 #tasks-projects #tasks-list,
@@ -519,7 +517,7 @@ body {
 }
 
 .custom-button:hover {
-    background-color: var(--primary-color);
+    background-color: var(--accent-color);
     color: var(--text-color);
 }
 
@@ -556,7 +554,7 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: var(--primary-color);
+    background-color: var(--hover-bg);
     color: var(--text-color);
     border: none;
     padding: 10px;
@@ -570,6 +568,7 @@ body {
     height: 24px;
 }
 
+/* Mobile styles */
 @media (max-width: 768px) {
     .sidebar {
         display: none;
@@ -577,7 +576,13 @@ body {
         left: 0;
         top: 0;
         height: 100%;
+        width: 250px; /* Adjust width as needed */
+        background: rgba(0, 0, 0, 0.7); /* Darker background with transparency */
+        backdrop-filter: blur(10px); /* Glassy effect */
+        color: var(--text-color);
+        padding: 20px; /* Adjust padding as needed */
         z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
     }
     .sidebar.active {
         display: flex;
