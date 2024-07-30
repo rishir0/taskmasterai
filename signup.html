@@ -242,17 +242,25 @@
         };
 
         // Google Sign-In
-        const provider = new GoogleAuthProvider();
+        const provider = new firebase.auth.GoogleAuthProvider();
         const googleLoginBtn = document.getElementById('google-login-btn');
         if (googleLoginBtn) {
             googleLoginBtn.addEventListener('click', () => {
-                signInWithPopup(auth, provider)
+                auth.signInWithPopup(provider)
                     .then(async (result) => {
                         // Google Sign-In successful
                         const user = result.user;
                         console.log('Google Sign-In successful:', user);
-                        await saveUserData(user);
-                        window.location.href = "dashboard.html"; // Redirect to dashboard
+                        const userDoc = await db.collection("users").doc(user.uid).get();
+                        if (!userDoc.exists) {
+                            user.firstName = ""; // Google doesn't provide first and last name separately
+                            user.lastName = "";
+                            await saveUserData(user, true); // Save with newUser flag
+                            window.location.href = "splashscreen.html"; // Redirect to splash screen
+                        } else {
+                            await saveUserData(user, false); // Save without newUser flag
+                            window.location.href = "dashboard.html"; // Redirect to dashboard
+                        }
                     })
                     .catch((error) => {
                         const errorCode = error.code;
