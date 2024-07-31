@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +36,7 @@ body {
 }
 
 body.night-mode {
+    background-color: #333333;
     --primary-color: #121212; /* Darker background */
     --secondary-color: #1E1E1E; /* Darker grayish background */
     --accent-color: #009bf5; /* Adjust if necessary */
@@ -46,38 +45,24 @@ body.night-mode {
     --card-bg: rgba(30, 30, 30, 0.8); /* Darker card background */
     --glass-bg: rgba(18, 18, 18, 0.8); /* Darker frosted glass effect */
     --hover-bg: rgba(30, 30, 30, 0.9); /* Darker hover background */
-    --svg-fill-color: #e0e0e0; /* Lighter fill color for SVGs */
 }
 
-/* General text color adjustments */
-body.night-mode .text-white {
-    color: #d0d0d0; /* Slightly dark gray for legibility */
-}
-
-/* Button styles in dark mode */
+/* Additional styles for buttons and gradients in dark mode */
 body.night-mode .button {
     background-color: var(--secondary-color);
     color: var(--text-color);
 }
 
-/* Gradient background in dark mode */
 body.night-mode .gradient-bg {
     background: linear-gradient(135deg, var(--secondary-color), var(--bg-color));
 }
 
-/* Sidebar styles in dark mode */
 body.night-mode .sidebar {
     background-color: #333333;
 }
 
-/* Menu item styles in dark mode */
 body.night-mode .menu-item {
-    color: var(--text-color);
-}
-
-/* SVG color adjustments in dark mode */
-body.night-mode svg path {
-    fill: var(--svg-fill-color);
+    color: #ffffff;
 }
 
         
