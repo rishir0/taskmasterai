@@ -623,18 +623,6 @@ body {
     </script>
     
     <script>
-        window.addEventListener('error', function(event) {
-            window.location.href = 'error.html';
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                if (document.readyState !== 'complete') {
-                    window.location.href = 'error.html';
-                }
-            }, 5000); // 5 seconds timeout to detect loading failure
-        });
-    </script>
 
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
