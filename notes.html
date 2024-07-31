@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -325,11 +326,10 @@
     </div>
 
     <script>
-        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         const apiKey = "sk-None-zDPXxCFl1nVzHCyXYPFST3BlbkFJlDi2to6RvW3LQOlmJK";
-
         async function generateNote() {
             const inputText = document.getElementById('input-text').value;
             if (!inputText) {
@@ -363,20 +363,64 @@
             }
         }
 
-        function deleteNote(button) {
-            const noteItem = button.parentElement;
-            noteItem.remove();
+
+        function createNote() {
+            const noteInput = document.getElementById('note-input');
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                generateSummary(noteText)
+                    .then(summary => {
+                        const notesList = document.getElementById('notes-list');
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item';
+                        noteDiv.innerHTML = `
+                            <span>${summary}</span>
+                            <button onclick="editNote()">Edit</button>
+                            <button onclick="deleteNote()">Delete</button>
+                        `;
+                        notesList.appendChild(noteDiv);
+                    })
+                    .catch(error => {
+                        console.error('Error generating note:', error);
+                    });
+                noteInput.value = '';
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleButton = document.querySelector('.sidebar-toggle');
-            const sidebar = document.querySelector('.sidebar');
-
-            toggleButton.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
-        });
-
+        async function uploadPDF() {
+            const fileInput = document.getElementById('pdf-upload');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function () {
+                    const typedArray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+                    let pdfText = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        pdfText += pageText + ' ';
+                    }
+                    generateSummary(pdfText)
+                        .then(summary => {
+                            const notesList = document.getElementById('notes-list');
+                            const noteDiv = document.createElement('div');
+                            noteDiv.className = 'note-item';
+                            noteDiv.innerHTML = `
+                                <span>${summary}</span>
+                                <button onclick="editNote()">Edit</button>
+                                <button onclick="deleteNote()">Delete</button>
+                            `;
+                            notesList.appendChild(noteDiv);
+                        })
+                        .catch(error => {
+                            console.error('Error generating note:', error);
+                        });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
     </script>
 </body>
 </html>
