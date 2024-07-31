@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -476,38 +477,26 @@ body.night-mode .upgrade-btn:hover {
     margin-right: 10px;
 }
 
-/* General Button Styles */
-#tasks-projects .task-item button,
-#tasks-projects .project-item button,
-#tasks-projects .goal-item button,
-#tasks-projects .plan-item button {
+#tasks-projects .tasks-section button,
+#tasks-projects .projects-section button,
+#tasks-projects .goals-section button,
+#tasks-projects .plans-section button {
     background-color: var(--hover-bg); /* Use hover-bg for background on hover */
     color: var(--text-color);
     border: none;
-    padding: 5px 10px;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9rem;
-    margin: 0; /* Remove all margin around buttons */
+    font-size: 1rem;
     transition: background-color 0.3s ease;
+    margin-left: 0px;
 }
 
-/* Ensuring Buttons are Inline or Inline-Block */
-.task-item button,
-.project-item button,
-.goal-item button,
-.plan-item button {
-    display: inline-block;
-    margin: 0; /* Ensure no margin between buttons */
-}
-
-/* Button Hover Styles */
-#tasks-projects .task-item button:hover,
-#tasks-projects .project-item button:hover,
-#tasks-projects .goal-item button:hover,
-#tasks-projects .plan-item button:hover {
-    background-color: var(--accent-color); /* Use hover-bg for background on hover */
-    color: var(--text-color);
+#tasks-projects .tasks-section button:hover,
+#tasks-projects .projects-section button:hover,
+#tasks-projects .goals-section button:hover,
+#tasks-projects .plans-section button:hover {
+    background-color: var(--accent-color);
 }
 
 #tasks-projects .task-item,
@@ -532,18 +521,26 @@ body.night-mode .upgrade-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Container for Buttons */
+#tasks-projects .button-container {
+    display: flex;         /* Use Flexbox for the layout */
+    gap: 0px;              /* Remove gap between flex items */
+    align-items: center;   /* Align buttons vertically center */
+}
+
+/* Style for Each Button */
 #tasks-projects .task-item button,
 #tasks-projects .project-item button,
 #tasks-projects .goal-item button,
 #tasks-projects .plan-item button {
-    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
+    background-color: var(--hover-bg);
     color: var(--text-color);
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9rem;
-    margin-left: 2px;
+    margin-left: 0;        /* Ensure no left margin */
     transition: background-color 0.3s ease;
 }
 
@@ -551,8 +548,7 @@ body.night-mode .upgrade-btn:hover {
 #tasks-projects .project-item button:hover,
 #tasks-projects .goal-item button:hover,
 #tasks-projects .plan-item button:hover {
-    background-color: var(--accent-color); /* Use hover-bg for background on hover */
-    color: var(--text-color);
+    background-color: var(--accent-color);
 }
 
 #tasks-projects #tasks-list,
