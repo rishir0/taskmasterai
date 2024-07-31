@@ -1273,11 +1273,25 @@ function signUp(email, password) {
 
     </script>
 
-    <script>
-document.querySelector('.toggle-night-mode').addEventListener('click', function() {
-    document.body.classList.toggle('dark-mode');
-});
+<script>
+    function toggleNightMode() {
+        document.body.classList.toggle('night-mode');
+        // Save the user's preference in localStorage
+        if (document.body.classList.contains('night-mode')) {
+            localStorage.setItem('nightMode', 'enabled');
+        } else {
+            localStorage.setItem('nightMode', 'disabled');
+        }
+    }
+
+    // Check localStorage to see if night mode was enabled previously
+    document.addEventListener('DOMContentLoaded', (event) => {
+        if (localStorage.getItem('nightMode') === 'enabled') {
+            document.body.classList.add('night-mode');
+        }
+    });
 </script>
+
 
 
 <script>
