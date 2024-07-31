@@ -242,26 +242,27 @@
         };
 
         // Google Sign-In
-        const provider = new GoogleAuthProvider();
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', () => {
-                signInWithPopup(auth, provider)
-                    .then(async (result) => {
-                        // Google Sign-In successful
-                        const user = result.user;
-                        console.log('Google Sign-In successful:', user);
-                        await saveUserData(user);
-                        window.location.href = "dashboard.html"; // Redirect to dashboard
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                        alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-                    });
+const provider = new GoogleAuthProvider();
+const googleLoginBtn = document.getElementById('google-login-btn');
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, provider)
+            .then(async (result) => {
+                // Google Sign-In successful
+                const user = result.user;
+                console.log('Google Sign-In successful:', user);
+                await saveUserData(user);
+                window.location.href = "splashscreen.html"; // Redirect to splash screen
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Error with Google Sign-In:', errorCode, errorMessage);
+                alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
             });
-        }
+    });
+}
+
 
         // Sign-Up Form
         const signupForm = document.getElementById('signup-form');
