@@ -36,7 +36,6 @@ body {
 }
 
 body.night-mode {
-    background-color: #333333;
     --primary-color: #121212; /* Darker background */
     --secondary-color: #1E1E1E; /* Darker grayish background */
     --accent-color: #009bf5; /* Adjust if necessary */
@@ -47,16 +46,406 @@ body.night-mode {
     --hover-bg: rgba(30, 30, 30, 0.9); /* Darker hover background */
 }
 
-/* Additional styles for buttons and gradients in dark mode */
-body.night-mode .button {
-    background-color: var(--secondary-color);
+/* Upgrade button in dark mode */
+body.night-mode .upgrade-btn {
+    background: linear-gradient(45deg, var(--accent-color), #FF1493);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode .upgrade-btn svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+body.night-mode .upgrade-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Main content in dark mode */
+body.night-mode .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: transparent;
+}
+
+/* Dashboard header in dark mode */
+body.night-mode .dashboard-header {
+    margin-bottom: 30px;
+}
+
+body.night-mode .dashboard-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
     color: var(--text-color);
 }
 
-body.night-mode .gradient-bg {
-    background: linear-gradient(135deg, var(--secondary-color), var(--bg-color));
+/* Create new section in dark mode */
+body.night-mode .create-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
+/* Item styles in dark mode */
+body.night-mode .item {
+    background-color: var(--glass-bg);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+body.night-mode .item:hover {
+    background-color: var(--hover-bg);
+    transform: scale(1.05);
+    backdrop-filter: blur(10px);
+}
+
+/* User profile in dark mode */
+body.night-mode .user-profile {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+body.night-mode .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-color); /* Initial color is accent color */
+    margin-right: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.night-mode .user-avatar:hover {
+    transform: scale(1.1);
+}
+
+/* Pomodoro timer in dark mode */
+body.night-mode .pomodoro-timer {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+body.night-mode .pomodoro-timer input[type="text"] {
+    width: 100px;
+    padding: 10px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+body.night-mode .pomodoro-timer button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode .pomodoro-timer button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+/* Dropdown menu in dark mode */
+body.night-mode .dropdown-menu {
+    margin-bottom: 20px;
+}
+
+body.night-mode .dropdown-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode .dropdown-header:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+}
+
+body.night-mode .dropdown-icon {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+body.night-mode .dropdown-content {
+    display: none;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: var(--card-bg);
+    margin-top: 10px;
+}
+
+body.night-mode .dropdown-menu.open .dropdown-content {
+    display: block;
+}
+
+body.night-mode .dropdown-menu.open .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+/* Custom timers in dark mode */
+body.night-mode .custom-timers {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+body.night-mode .custom-timers h2 {
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+body.night-mode .custom-timer {
+    margin-bottom: 20px;
+}
+
+body.night-mode .custom-timer input[type="text"],
+body.night-mode .custom-timer input[type="number"] {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+body.night-mode .custom-timer button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode .custom-timer button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+/* Account button in dark mode */
+body.night-mode .account-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.night-mode .account-button:hover {
+    transform: scale(1.05);
+}
+
+body.night-mode .account-button:focus {
+    outline: none;
+}
+
+/* Tasks/projects sections in dark mode */
+body.night-mode #tasks-projects .tasks-section,
+body.night-mode #tasks-projects .projects-section,
+body.night-mode #tasks-projects .goals-section,
+body.night-mode #tasks-projects .plans-section {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    width: 48%;
+    display: inline-block;
+    vertical-align: top;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode #tasks-projects .tasks-section h2,
+body.night-mode #tasks-projects .projects-section h2,
+body.night-mode #tasks-projects .goals-section h2,
+body.night-mode #tasks-projects .plans-section h2 {
+    color: var(--text-color);
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+body.night-mode #tasks-projects .tasks-section input,
+body.night-mode #tasks-projects .projects-section input,
+body.night-mode #tasks-projects .goals-section input,
+body.night-mode #tasks-projects .plans-section input {
+    width: 70%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+body.night-mode #tasks-projects .tasks-section button,
+body.night-mode #tasks-projects .projects-section button,
+body.night-mode #tasks-projects .goals-section button,
+body.night-mode #tasks-projects .plans-section button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode #tasks-projects .tasks-section button:hover,
+body.night-mode #tasks-projects .projects-section button:hover,
+body.night-mode #tasks-projects .goals-section button:hover,
+body.night-mode #tasks-projects .plans-section button:hover {
+    background-color: var(--accent-color);
+}
+
+body.night-mode #tasks-projects .task-item,
+body.night-mode #tasks-projects .project-item,
+body.night-mode #tasks-projects .goal-item,
+body.night-mode #tasks-projects .plan-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode #tasks-projects .task-item:hover,
+body.night-mode #tasks-projects .project-item:hover,
+body.night-mode #tasks-projects .goal-item:hover,
+body.night-mode #tasks-projects .plan-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode #tasks-projects .task-item button,
+body.night-mode #tasks-projects .project-item button,
+body.night-mode #tasks-projects .goal-item button,
+body.night-mode #tasks-projects .plan-item button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 2px;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode #tasks-projects .task-item button:hover,
+body.night-mode #tasks-projects .project-item button:hover,
+body.night-mode #tasks-projects .goal-item button:hover,
+body.night-mode #tasks-projects .plan-item button:hover {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
+
+/* Additional buttons in dark mode */
+body.night-mode .additional-buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+body.night-mode .custom-button {
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background for glass effect */
+    color: var(--text-color);
+    padding: 15px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, color 0.3s ease;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: calc(33.33% - 10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for glass effect */
+    backdrop-filter: blur(10px); /* Optional: add blur effect */
+    border: none; /* Remove any border */
+    outline: none; /* Remove any outline */
+}
+
+body.night-mode .custom-button:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly increase background opacity on hover */
+}
+
+body.night-mode .custom-button span {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+body.night-mode .custom-button p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+/* Sidebar and menu items in dark mode */
 body.night-mode .sidebar {
     background-color: #333333;
 }
