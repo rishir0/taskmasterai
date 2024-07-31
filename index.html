@@ -57,7 +57,7 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-        .container {
+.container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
@@ -88,8 +88,8 @@ body {
         }
 
         .logo svg {
-            width: 50px; /* Increased size */
-            height: 50px; /* Increased size */
+            width: 50px;
+            height: 50px;
             margin-right: 10px;
             transition: transform 0.3s ease;
         }
@@ -261,20 +261,53 @@ body {
 
         .logo-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
         }
 
-        .logo-item img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        .cta-section {
+            padding: 6rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--secondary-color), var(--bg-color));
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: #D1D5DB;
         }
 
         footer {
+            padding: 2rem 0;
             text-align: center;
-            padding: 3rem 0;
-            background-color: var(--card-bg);
-            color: #D1D5DB;
+            background-color: rgba(31, 41, 55, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        footer p {
+            color: #9CA3AF;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .btn:hover {
+            background-color: #0EA5E9;
+            transform: translateY(-2px);
         }
 
         /* Mobile Styles */
