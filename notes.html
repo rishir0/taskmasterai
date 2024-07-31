@@ -325,84 +325,58 @@
     </div>
 
     <script>
-        const apiKey = "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";
-        const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiKey = "sk-None-zDPXxCFl1nVzHCyXYPFST3BlbkFJlDi2to6RvW3LQOlmJK";
 
-        async function generateSummary(text) {
-            const response = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: text })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                return result[0].summary_text; // Adjust based on actual API response structure
-            } else {
-                throw new Error('Error generating summary');
+        async function generateNote() {
+            const inputText = document.getElementById('input-text').value;
+            if (!inputText) {
+                alert('Please enter some text.');
+                return;
             }
-        }
 
-        function createNote() {
-            const noteInput = document.getElementById('note-input');
-            const noteText = noteInput.value.trim();
-            if (noteText) {
-                generateSummary(noteText)
-                    .then(summary => {
-                        const notesList = document.getElementById('notes-list');
-                        const noteDiv = document.createElement('div');
-                        noteDiv.className = 'note-item';
-                        noteDiv.innerHTML = `
-                            <span>${summary}</span>
-                            <button onclick="editNote()">Edit</button>
-                            <button onclick="deleteNote()">Delete</button>
-                        `;
-                        notesList.appendChild(noteDiv);
-                    })
-                    .catch(error => {
-                        console.error('Error generating note:', error);
-                    });
-                noteInput.value = '';
-            }
-        }
-
-        async function uploadPDF() {
-            const fileInput = document.getElementById('pdf-upload');
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async function () {
-                    const typedArray = new Uint8Array(this.result);
-                    const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
-                    let pdfText = '';
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        const pageText = textContent.items.map(item => item.str).join(' ');
-                        pdfText += pageText + ' ';
+            try {
+                const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
+                    prompt: inputText,
+                    max_tokens: 150
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
                     }
-                    generateSummary(pdfText)
-                        .then(summary => {
-                            const notesList = document.getElementById('notes-list');
-                            const noteDiv = document.createElement('div');
-                            noteDiv.className = 'note-item';
-                            noteDiv.innerHTML = `
-                                <span>${summary}</span>
-                                <button onclick="editNote()">Edit</button>
-                                <button onclick="deleteNote()">Delete</button>
-                            `;
-                            notesList.appendChild(noteDiv);
-                        })
-                        .catch(error => {
-                            console.error('Error generating note:', error);
-                        });
-                };
-                reader.readAsArrayBuffer(file);
+                });
+
+                const noteText = response.data.choices[0].text.trim();
+                const notesList = document.getElementById('notes-list');
+                const noteItem = document.createElement('li');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <span>${noteText}</span>
+                    <button onclick="deleteNote(this)">Delete</button>
+                `;
+                notesList.appendChild(noteItem);
+                document.getElementById('input-text').value = '';
+            } catch (error) {
+                console.error('Error generating note:', error);
+                alert('Failed to generate note. Please try again.');
             }
         }
+
+        function deleteNote(button) {
+            const noteItem = button.parentElement;
+            noteItem.remove();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleButton = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            toggleButton.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        });
+
     </script>
 </body>
 </html>
