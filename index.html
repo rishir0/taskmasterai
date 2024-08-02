@@ -1,9 +1,27 @@
 <!DOCTYPE html>
+<script src="api.js"></script>
 <html lang="en">
 <head>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster AI - Your AI-Powered Productivity Assistant</title>
+    <title>TaskMaster AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -288,8 +306,8 @@
             }
 
             .sidebar-toggle svg {
-                width: 35px;
-                height: 35px;
+                width: 40px;
+                height: 40px;
             }
 
             h1 {
@@ -310,8 +328,8 @@
             }
 
             .logo svg {
-                width: 40px; /* Increased size */
-                height: 40px; /* Increased size */
+                width: 40px;
+                height: 40px;
                 margin-right: 10px;
                 transition: transform 0.3s ease;
             }
@@ -344,6 +362,32 @@
                 font-size: 0.8rem;
                 padding: 0.6rem;
             }
+
+            /* Updated styles for mobile Get Started button */
+            .mobile-get-started {
+                display: block;
+                background-color: var(--accent-color);
+                color: var(--text-color);
+                padding: 0.5rem 1rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-right: 1rem;
+            }
+
+            nav {
+                justify-content: space-between;
+            }
+
+            .logo {
+                margin-right: auto;
+            }
+
+            .mobile-menu-container {
+                display: flex;
+                align-items: center;
+            }
         }
 
         /* Hide sidebar toggle on desktop */
@@ -351,7 +395,82 @@
             .sidebar-toggle {
                 display: none;
             }
+
+            .nav-links {
+                background-color: var(--secondary-color);
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                display: none;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                margin: 0.5rem 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .sidebar-toggle {
+                display: block;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                color: var(--primary-color);
+                font-size: 1.4rem;
+                padding: 0.5rem 1rem;
+            }
+
+            /* Hide mobile Get Started button on desktop */
+            .mobile-get-started {
+                display: none;
+            }
+
+            .mobile-menu-container {
+                display: none;
+            }
         }
+
+        /* Desktop Styles - Update these */
+        @media (min-width: 769px) {
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: transparent;
+        position: static;
+        width: auto;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem;
+        margin: 0 0 0 1.5rem;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+
+    .mobile-get-started {
+        display: none;
+    }
+
+    .mobile-menu-container {
+        display: none;
+    }
+
+    .get-started-btn {
+        display: inline-block;
+    }
+}
     </style>
 </head>
 <body>
@@ -403,54 +522,22 @@
                             transition: stroke 0.3s ease;
                         }
                     </style>
-                
-                <button class="sidebar-toggle">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                        <style>
-                        .logo a {
-                            display: flex;
-                            align-items: center;
-                            text-decoration: none;
-                            color: #7e6bf1;
-                            transition: color 0.3s ease;
-                        }
-                    
-                        .logo svg {
-                            width: 40px;
-                            height: 40px;
-                            margin-right: 10px;
-                            transition: transform 0.3s ease;
-                        }
-                    
-                        .logo span {
-                            font-size: 24px;
-                            font-weight: bold;
-                        }
-                    
-                        .logo a:hover {
-                            color: #9f91f5;
-                        }
-                    
-                        .logo a:hover svg {
-                            transform: rotate(15deg) scale(1.1);
-                        }
-                    
-                        .logo a:hover svg path {
-                            stroke: #9f91f5;
-                            transition: stroke 0.3s ease;
-                        }
-                    </style>
-                </button>
-                <div class="nav-links">
+                    <div class="mobile-menu-container">
+                        <a href="signup.html" class="mobile-get-started" id="mobileGetStarted">Get Started</a>
+                        <button class="sidebar-toggle">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="nav-links">
                     <a href="index.html#features">Features</a>
                     <a href="pricing.html">Pricing</a>
                     <a href="#about">About</a>
                     <a href="contact.html">Contact</a>
-                    <a href="signup.html" class="get-started-btn">Get started today</a>
+                    <a href="signup.html" class="get-started-btn" id="get-started-btn">Get started today</a>
                 </div>
             </nav>
         </div>
@@ -461,7 +548,7 @@
             <div class="container">
                 <h1>Smart scheduling, seamless collaboration, personalized reminders, and beyond.</h1>
                 <p>Upload any document, audio, video, or website and transform it into actionable insights!</p>
-                <a href="signup.html" class="cta-button">Start now for free</a>
+                <a href="signup.html" class="cta-button" id="ctaButton">Start now for free</a>
             </div>
         </section>
 
@@ -536,6 +623,71 @@
             }, 5000); // 5 seconds timeout to detect loading failure
         });
     </script>
+
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('getStartedBtn').textContent = "Dashboard";
+                    document.getElementById('getStartedBtn').href = "dashboard.html";
+                    document.getElementById('ctaButton').style.display = 'none';
+                    document.getElementById('mobileGetStarted').textContent = "Dashboard";
+                    document.getElementById('mobileGetStarted').href = "dashboard.html";
+                } else {
+                    document.getElementById('getStartedBtn').textContent = "Get started today";
+                    document.getElementById('getStartedBtn').href = "signup.html";
+                    document.getElementById('ctaButton').style.display = 'inline-block';
+                    document.getElementById('mobileGetStarted').textContent = "Get Started";
+                    document.getElementById('mobileGetStarted').href = "signup.html";
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const getStartedBtn = document.getElementById('get-started-btn');
+            getStartedBtn.textContent = 'Dashboard';
+            getStartedBtn.href = 'dashboard.html';
+        }
+    });
+});
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const ctaBtn = document.getElementById('ctaButton');
+            ctaBtn.style.display = 'none';
+        }
+    });
+});
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const mobileGetStarted = document.getElementById('mobileGetStarted');
+            mobileGetStarted.textContent = 'Dashboard';
+            mobileGetStarted.href = 'dashboard.html';
+        }
+    });
+});
+    </script>
+    
 
 
 </body>
