@@ -153,6 +153,31 @@
                 height: 40px;
             }
 
+            .menu-button {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px;
+                background: var(--glass-bg);
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: background 0.3s, box-shadow 0.3s;
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-180%);
+            }
+
+            .menu-button svg {
+                width: 24px;
+                height: 24px;
+                stroke: var(--text-color);
+            }
+
+            .menu-button:hover {
+                background: var(--hover-bg);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            }
+
             .next-button {
                 display: inline-flex;
                 align-items: center;
@@ -164,7 +189,7 @@
                 position: absolute;
                 right: 0;
                 top: 50%;
-                transform: translateY(-179%);
+                transform: translateY(-180%);
             }
 
             .next-button svg {
@@ -197,12 +222,50 @@
             }
         }
 
+        .menu {
+            display: none;
+            position: absolute;
+            top: 45px;
+            left: 0;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            width: 200px;
+            z-index: 10;
+            text-align: left;
+        }
+
+        .menu.active {
+            display: block;
+        }
+
+        .menu a {
+            display: block;
+            color: var(--text-color);
+            padding: 10px;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: background 0.3s;
+        }
+
+        .menu a:hover {
+            background: var(--hover-bg);
+        }
+
         /* Hide the next button on desktop */
         @media (min-width: 601px) {
             .next-button {
                 display: none;
             }
+
+            .menu-button {
+                display: none;
+            }
         }
+
+        /* Mobile menu styles */
+
     </style>
 </head>
 <body>
@@ -213,24 +276,24 @@
                 <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="next-button" onclick="location.href='dashboard.html'">
-                <svg viewBox="0 -2 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                        <title>next [#998]</title>
-                        <desc>Created with Sketch.</desc>
-                        <defs></defs>
-                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g id="Dribbble-Light-Preview" transform="translate(-144.000000, -3805.000000)" fill="#ffffff">
-                                <g id="icons" transform="translate(56.000000, 160.000000)">
-                                    <path d="M99.684,3649.69353 L95.207,3652.82453 C94.571,3653.25353 94,3652.84553 94,3652.13153 L94,3650.14053 L89.78,3652.82453 C89.145,3653.25353 88,3652.84553 88,3652.13153 L88,3645.86853 C88,3645.15453 89.145,3644.74653 89.78,3645.17453 L94,3647.85953 L94,3645.86853 C94,3645.15453 94.571,3644.74653 95.207,3645.17453 L99.516,3648.30653 C100.03,3648.65353 100.198,3649.34653 99.684,3649.69353" id="next-[#998]"></path>
-                                </g>
-                            </g>
-                        </g>
-                    </g>
-                </svg>
-            </div>
+                <div class="menu-button" onclick="toggleMenu()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 12H8.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M12 12H12.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M16 12H16.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ffffff" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <div class="menu">
+                    <a href="terms.html">Terms and Conditions</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                </div>
+                <div class="next-button" onclick="location.href='dashboard.html'">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
+                        <path d="M17 12H7M17 12L13 8M17 12L13 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </div>                
             <h1>Welcome to TaskMasterAI!</h1>
         </div>
         <p class="intro-text">Here’s what I can do to supercharge your productivity:</p>
@@ -266,5 +329,13 @@
         </div>
         <a href="dashboard.html" class="button">Continue</a>
     </div>
+
+
+    <script>
+        function toggleMenu() {
+            var menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
