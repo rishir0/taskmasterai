@@ -3,6 +3,10 @@
     {
       "source": "/:path*",
       "destination": "/:path*.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
     }
   ],
   "redirects": [
