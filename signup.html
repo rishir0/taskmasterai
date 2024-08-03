@@ -7,30 +7,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #6C63FF;
+        --primary-color: #6C63FF;
             --secondary-color: #3F3D56;
             --accent-color: #F50057;
             --text-color: #F8F9FA;
             --bg-color: #121212;
             --card-bg: #1E1E1E;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
+    --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
+    --border-radius: 15px;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Solid dark background */
+    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
+}
 
         .signup-container {
             background-color: var(--card-bg);
