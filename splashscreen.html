@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ffffff; /* White */
-            --secondary-color: #3F3D56; /* Dark Grayish Blue */
-            --accent-color: #F50057; /* Pink */
-            --text-color: #F8F9FA; /* Light Gray */
-            --bg-color: #121212; /* Dark Background */
-            --card-bg: rgba(30, 30, 30, 0.3); /* Slightly Transparent Dark Background */
-            --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
-            --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
-            --border-radius: 15px;
+        --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+    --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
+    --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
+    --border-radius: 15px;
         }
 
         * {
@@ -28,22 +28,10 @@
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(63, 61, 86, 0.8), rgba(108, 99, 255, 0.8));
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 0 20px;
-        }
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Solid dark background */
+    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         .splash-container {
