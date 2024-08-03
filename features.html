@@ -471,6 +471,33 @@ iframe {
         margin-left: 0;
     }
 }
+
+
+/* Animation for SVG */
+@keyframes rotateIcon {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.theme-icon {
+    display: inline-block;
+    transition: transform 0.5s;
+}
+
+.theme-icon svg {
+    transition: fill 0.5s;
+}
+
+.theme-icon.active svg {
+    animation: rotateIcon 0.5s;
+}
     </style>
 </head>
 <body>
