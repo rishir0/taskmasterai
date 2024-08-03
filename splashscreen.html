@@ -7,15 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-        --primary-color: #6C63FF;
+            --primary-color: #6C63FF;
             --secondary-color: #3F3D56;
             --accent-color: #F50057;
             --text-color: #F8F9FA;
             --bg-color: #121212;
             --card-bg: #1E1E1E;
-    --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
-    --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
-    --border-radius: 15px;
+            --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
+            --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
+            --border-radius: 15px;
         }
 
         * {
@@ -27,10 +27,9 @@
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--bg-color); /* Solid dark background */
-    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
-
+            color: var(--text-color);
+            background-color: var(--bg-color); /* Solid dark background */
+            backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
         }
 
         .splash-container {
@@ -50,7 +49,7 @@
             flex-wrap: wrap;
         }
 
-        .splash-header svg {
+        .splash-header svg.logo {
             width: 40px;
             height: 40px;
             fill: none;
@@ -140,17 +139,48 @@
             }
 
             .splash-header {
-                flex-direction: column;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                position: relative;
             }
 
-            .splash-header h1 {
-                font-size: 1.5rem;
-                margin-top: 10px;
+            .splash-header svg.logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .next-button {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px;
+                background: var(--glass-bg);
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: background 0.3s, box-shadow 0.3s;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-179%);
+            }
+
+            .next-button svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .next-button:hover {
+                background: var(--hover-bg);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             }
 
             .intro-text {
                 font-size: 1rem;
                 margin-bottom: 15px;
+                text-align: center;
             }
 
             .feature-card {
@@ -165,11 +195,12 @@
             .feature-card p {
                 font-size: 0.8rem;
             }
+        }
 
-            .button {
-                margin-top: 20px;
-                padding: 10px 15px;
-                font-size: 1rem;
+        /* Hide the next button on desktop */
+        @media (min-width: 601px) {
+            .next-button {
+                display: none;
             }
         }
     </style>
@@ -177,11 +208,29 @@
 <body>
     <div class="splash-container">
         <div class="splash-header">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+            <div class="next-button" onclick="location.href='dashboard.html'">
+                <svg viewBox="0 -2 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <title>next [#998]</title>
+                        <desc>Created with Sketch.</desc>
+                        <defs></defs>
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Dribbble-Light-Preview" transform="translate(-144.000000, -3805.000000)" fill="#ffffff">
+                                <g id="icons" transform="translate(56.000000, 160.000000)">
+                                    <path d="M99.684,3649.69353 L95.207,3652.82453 C94.571,3653.25353 94,3652.84553 94,3652.13153 L94,3650.14053 L89.78,3652.82453 C89.145,3653.25353 88,3652.84553 88,3652.13153 L88,3645.86853 C88,3645.15453 89.145,3644.74653 89.78,3645.17453 L94,3647.85953 L94,3645.86853 C94,3645.15453 94.571,3644.74653 95.207,3645.17453 L99.516,3648.30653 C100.03,3648.65353 100.198,3649.34653 99.684,3649.69353" id="next-[#998]"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
             <h1>Welcome to TaskMasterAI!</h1>
         </div>
         <p class="intro-text">Here’s what I can do to supercharge your productivity:</p>
