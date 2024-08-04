@@ -758,8 +758,7 @@ body.night-mode {
 document.addEventListener('DOMContentLoaded', function() {
     const applyLightThemeBtn = document.getElementById('apply-light-theme');
     const removeLightThemeBtn = document.getElementById('remove-light-theme');
-    const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
-    const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
+
 
     const lightThemeStyles = `
         :root {
@@ -877,18 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-    applyDarkThemeBtn.addEventListener('click', function() {
-        applyTheme(darkThemeStyles);
-        applyDarkThemeBtn.style.display = 'none';
-        removeDarkThemeBtn.style.display = 'inline-block';
-    });
 
-    removeDarkThemeBtn.addEventListener('click', function() {
-        removeTheme();
-        applyDarkThemeBtn.style.display = 'inline-block';
-        removeDarkThemeBtn.style.display = 'none';
-    });
-});
 
 </script>
 
