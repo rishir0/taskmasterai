@@ -432,15 +432,24 @@ body.night-mode {
 
 /* Advanced Themes Card Styles */
 .card {
-    margin-bottom: 20px;
-    border-radius: var(--border-radius, 15px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-}
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+        }
 
-.card-body {
-    padding: 15px;
-}
+        .card-header {
+            background-color: var(--primary-color);
+            border-bottom: 1px solid var(--secondary-color);
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        #theme-toggle-buttons {
+            margin: 20px;
+        }
 
 .theme-option {
     margin-bottom: 20px;
@@ -561,7 +570,6 @@ body.night-mode {
         document.querySelector('.sidebar').classList.toggle('active');
     });
 </script>
-
 <body>
     <button class="sidebar-toggle">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -754,13 +762,15 @@ body.night-mode {
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
 
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const applyLightThemeBtn = document.getElementById('apply-light-theme');
-    const removeLightThemeBtn = document.getElementById('remove-light-theme');
+    document.addEventListener('DOMContentLoaded', function() {
+        const applyLightThemeBtn = document.getElementById('apply-light-theme');
+        const removeLightThemeBtn = document.getElementById('remove-light-theme');
+        const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
+        const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
 
-
-    const lightThemeStyles = `
+        const lightThemeStyles = `
         :root {
             --primary-color: #ffffff;
             --secondary-color: #3F3D56;
@@ -802,10 +812,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .card-body {
             padding: 15px;
         }
-    `;
+        `;
 
-    const darkThemeStyles = `
-        :root {
+        const darkThemeStyles = `
+:root {
             --primary-color: #000000;
             --secondary-color: #1F1F1F;
             --accent-color: #009bf5;
@@ -846,39 +856,57 @@ document.addEventListener('DOMContentLoaded', function() {
         .card-body {
             padding: 15px;
         }
-    `;
+        `;
 
-    function applyTheme(styles) {
-        let styleSheet = document.createElement("style");
-        styleSheet.type = "text/css";
-        styleSheet.id = "theme-styles";
-        styleSheet.innerText = styles;
-        document.head.appendChild(styleSheet);
-    }
-
-    function removeTheme() {
-        let styleSheet = document.getElementById("theme-styles");
-        if (styleSheet) {
-            styleSheet.remove();
+        function applyTheme(styles) {
+            let styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.id = "theme-styles";
+            styleSheet.innerText = styles;
+            document.head.appendChild(styleSheet);
         }
-    }
 
-    applyLightThemeBtn.addEventListener('click', function() {
-        applyTheme(lightThemeStyles);
-        applyLightThemeBtn.style.display = 'none';
-        removeLightThemeBtn.style.display = 'inline-block';
+        function removeTheme() {
+            let styleSheet = document.getElementById("theme-styles");
+            if (styleSheet) {
+                styleSheet.remove();
+            }
+        }
+
+        applyLightThemeBtn.addEventListener('click', function() {
+            applyTheme(lightThemeStyles);
+            applyLightThemeBtn.style.display = 'none';
+            removeLightThemeBtn.style.display = 'inline-block';
+            applyDarkThemeBtn.style.display = 'inline-block';
+            removeDarkThemeBtn.style.display = 'none';
+        });
+
+        removeLightThemeBtn.addEventListener('click', function() {
+            removeTheme();
+            applyLightThemeBtn.style.display = 'inline-block';
+            removeLightThemeBtn.style.display = 'none';
+            applyDarkThemeBtn.style.display = 'inline-block';
+            removeDarkThemeBtn.style.display = 'none';
+        });
+
+        applyDarkThemeBtn.addEventListener('click', function() {
+            applyTheme(darkThemeStyles);
+            applyLightThemeBtn.style.display = 'inline-block';
+            removeLightThemeBtn.style.display = 'none';
+            applyDarkThemeBtn.style.display = 'none';
+            removeDarkThemeBtn.style.display = 'inline-block';
+        });
+
+        removeDarkThemeBtn.addEventListener('click', function() {
+            removeTheme();
+            applyLightThemeBtn.style.display = 'inline-block';
+            removeLightThemeBtn.style.display = 'none';
+            applyDarkThemeBtn.style.display = 'inline-block';
+            removeDarkThemeBtn.style.display = 'none';
+        });
     });
-
-    removeLightThemeBtn.addEventListener('click', function() {
-        removeTheme();
-        applyLightThemeBtn.style.display = 'inline-block';
-        removeLightThemeBtn.style.display = 'none';
-    });
-});
-
-
-
 </script>
+
 
 
 
