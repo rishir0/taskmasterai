@@ -341,13 +341,10 @@
     <script>
         async function generateSummary(text) {
             try {
-                const response = await axios.post(`https://www.chatbase.co/api/summary`, {
-                    message: text,
-                    chatbotId: "e7lShwiEcfJEfBA0lAy4l"
-                });
+                const response = await axios.post('http://localhost:3000/api/summary', { text });
 
                 if (response.data.success) {
-                    return response.data.summary.trim(); // Adjust based on actual API response structure
+                    return response.data.summary.trim();
                 } else {
                     throw new Error('Error generating summary');
                 }
