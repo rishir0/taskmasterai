@@ -526,11 +526,9 @@ body.night-mode {
             messagingSenderId: "367439182644",
             appId: "1:367439182644:web:304216430df97eff68c361"
         };
-       // Initialize Firebase
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
 
-        
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -543,6 +541,7 @@ body.night-mode {
                 }
             });
         });
+    </script>
 
 <script>
     function toggleNightMode() {
@@ -631,6 +630,5 @@ body.night-mode {
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
-    
 </body>
 </html>
