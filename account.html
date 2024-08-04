@@ -433,12 +433,10 @@ body.night-mode {
 /* Advanced Themes Card Styles */
 .card {
     margin-bottom: 20px;
-    border-radius: 15px;
+    border-radius: var(--border-radius, 15px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
 }
-
-
 
 .card-body {
     padding: 15px;
@@ -456,7 +454,7 @@ body.night-mode {
 .btn {
     border: none;
     padding: 10px 20px;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius, 15px);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -464,22 +462,23 @@ body.night-mode {
 }
 
 .btn-primary {
-    background-color: var(--glass-bg);
-    color: #ffffff;
+    background-color: var(--glass-bg, #3F3D56); /* Fallback color */
+    color: var(--text-color, #ffffff);
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color, #009bf5);
 }
 
 .btn-secondary {
-    background-color: #f0f0f0;
-    color: #333333;
+    background-color: var(--bg-color, #f0f0f0); /* Fallback color */
+    color: var(--text-color, #333333);
 }
 
 .btn-secondary:hover {
-    background-color: #e0e0e0;
+    background-color: var(--hover-bg, #e0e0e0);
 }
+
 
 
     </style>
@@ -663,7 +662,7 @@ body.night-mode {
                             <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
                         </div>
                     </div>
-                </div>                  
+                </div>                               
 
     </script>
 
