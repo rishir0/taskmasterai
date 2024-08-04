@@ -510,7 +510,7 @@ body.night-mode {
 
     const db = firebase.firestore();
     const storage = firebase.storage();
-
+    document.addEventListener('DOMContentLoaded', function() {
     const applyLightThemeBtn = document.getElementById('apply-light-theme');
     const removeLightThemeBtn = document.getElementById('remove-light-theme');
     const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
