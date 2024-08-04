@@ -510,215 +510,6 @@ body.night-mode {
 
     const db = firebase.firestore();
     const storage = firebase.storage();
-    document.addEventListener('DOMContentLoaded', function() {
-    const applyLightThemeBtn = document.getElementById('apply-light-theme');
-    const removeLightThemeBtn = document.getElementById('remove-light-theme');
-    const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
-    const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
-
-    const lightThemeStyles = `
-        :root {
-            --primary-color: #ffffff;
-            --secondary-color: #3F3D56;
-            --accent-color: #009bf5;
-            --text-color: #ffffff;
-            --bg-color: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --hover-bg: rgba(255, 255, 255, 0.1);
-            --border-radius: 15px;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            backdrop-filter: blur(10px);
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .card {
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 10px 15px;
-        }
-
-        .card-body {
-            padding: 15px;
-        }
-    `;
-
-    const darkThemeStyles = `
-        :root {
-            --primary-color: #000000;
-            --secondary-color: #1F1F1F;
-            --accent-color: #009bf5;
-            --text-color: #ffffff;
-            --bg-color: rgba(0, 0, 0, 0.1);
-            --card-bg: rgba(0, 0, 0, 0.1);
-            --glass-bg: rgba(0, 0, 0, 0.1);
-            --hover-bg: rgba(0, 0, 0, 0.1);
-            --border-radius: 15px;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(33, 33, 33, 0.8), rgba(55, 55, 55, 0.8));
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            backdrop-filter: blur(10px);
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .card {
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            background-color: #1F1F1F;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 10px 15px;
-        }
-
-        .card-body {
-            padding: 15px;
-        }
-    `;
-
-    function applyTheme(styles) {
-        let styleSheet = document.createElement("style");
-        styleSheet.type = "text/css";
-        styleSheet.id = "theme-styles";
-        styleSheet.innerText = styles;
-        document.head.appendChild(styleSheet);
-    }
-
-    function removeTheme() {
-        let styleSheet = document.getElementById("theme-styles");
-        if (styleSheet) {
-            styleSheet.remove();
-        }
-    }
-
-    function saveThemePreference(userId, theme) {
-        const themeDoc = db.collection('users').doc(userId);
-        themeDoc.set({ theme: theme }, { merge: true });
-    }
-
-    function loadThemePreference(userId) {
-        const themeDoc = db.collection('users').doc(userId);
-        themeDoc.get().then((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.theme === 'light') {
-                    applyTheme(lightThemeStyles);
-                    applyLightThemeBtn.style.display = 'none';
-                    removeLightThemeBtn.style.display = 'inline-block';
-                    applyDarkThemeBtn.style.display = 'inline-block';
-                    removeDarkThemeBtn.style.display = 'none';
-                } else if (data.theme === 'dark') {
-                    applyTheme(darkThemeStyles);
-                    applyLightThemeBtn.style.display = 'inline-block';
-                    removeLightThemeBtn.style.display = 'none';
-                    applyDarkThemeBtn.style.display = 'none';
-                    removeDarkThemeBtn.style.display = 'inline-block';
-                }
-            }
-        }).catch((error) => {
-            console.error("Error getting document:", error);
-        });
-    }
-
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            const userId = user.uid;
-
-            // Load theme preference on page load
-            loadThemePreference(userId);
-
-            applyLightThemeBtn.addEventListener('click', function() {
-                applyTheme(lightThemeStyles);
-                saveThemePreference(userId, 'light');
-                applyLightThemeBtn.style.display = 'none';
-                removeLightThemeBtn.style.display = 'inline-block';
-                applyDarkThemeBtn.style.display = 'inline-block';
-                removeDarkThemeBtn.style.display = 'none';
-            });
-
-            removeLightThemeBtn.addEventListener('click', function() {
-                removeTheme();
-                saveThemePreference(userId, '');
-                applyLightThemeBtn.style.display = 'inline-block';
-                removeLightThemeBtn.style.display = 'none';
-                applyDarkThemeBtn.style.display = 'inline-block';
-                removeDarkThemeBtn.style.display = 'none';
-            });
-
-            applyDarkThemeBtn.addEventListener('click', function() {
-                applyTheme(darkThemeStyles);
-                saveThemePreference(userId, 'dark');
-                applyLightThemeBtn.style.display = 'inline-block';
-                removeLightThemeBtn.style.display = 'none';
-                applyDarkThemeBtn.style.display = 'none';
-                removeDarkThemeBtn.style.display = 'inline-block';
-            });
-
-            removeDarkThemeBtn.addEventListener('click', function() {
-                removeTheme();
-                saveThemePreference(userId, '');
-                applyLightThemeBtn.style.display = 'inline-block';
-                removeLightThemeBtn.style.display = 'none';
-                applyDarkThemeBtn.style.display = 'inline-block';
-                removeDarkThemeBtn.style.display = 'none';
-            });
-        }
-    });
-
-firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-        const userId = user.uid;
-
-        // Load theme preference on page load
-        loadThemePreference(userId);
-
-        applyLightThemeBtn.addEventListener('click', function() {
-            applyTheme(lightThemeStyles);
-            saveThemePreference(userId, true);
-            applyLightThemeBtn.style.display = 'none';
-            removeLightThemeBtn.style.display = 'inline-block';
-        });
-
-        removeLightThemeBtn.addEventListener('click', function() {
-            removeTheme();
-            saveThemePreference(userId, false);
-            applyLightThemeBtn.style.display = 'inline-block';
-            removeLightThemeBtn.style.display = 'none';
-        });
-    } else {
-        // No user is signed in, redirect to login page
-        window.location.href = "login.html";
-    }
-});
-
 
     function updateAccount() {
         const user = firebase.auth().currentUser;
@@ -961,6 +752,129 @@ firebase.auth().onAuthStateChanged(function(user) {
 
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const applyLightThemeBtn = document.getElementById('apply-light-theme');
+    const removeLightThemeBtn = document.getElementById('remove-light-theme');
+
+    const lightThemeStyles = `
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #3F3D56;
+            --accent-color: #009bf5;
+            --text-color: #ffffff;
+            --bg-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --hover-bg: rgba(255, 255, 255, 0.1);
+            --border-radius: 15px;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+    `;
+
+    const darkThemeStyles = `
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #1F1F1F;
+            --accent-color: #009bf5;
+            --text-color: #ffffff;
+            --bg-color: rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.1);
+            --border-radius: 15px;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(33, 33, 33, 0.8), rgba(55, 55, 55, 0.8));
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #1F1F1F;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+    `;
+
+    function applyTheme(styles) {
+        let styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.id = "theme-styles";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
+    }
+
+    function removeTheme() {
+        let styleSheet = document.getElementById("theme-styles");
+        if (styleSheet) {
+            styleSheet.remove();
+        }
+    }
+
+    applyLightThemeBtn.addEventListener('click', function() {
+        applyTheme(lightThemeStyles);
+        applyLightThemeBtn.style.display = 'none';
+        removeLightThemeBtn.style.display = 'inline-block';
+    });
+
+    removeLightThemeBtn.addEventListener('click', function() {
+        removeTheme();
+        applyLightThemeBtn.style.display = 'inline-block';
+        removeLightThemeBtn.style.display = 'none';
+    });
+});
+
 </script>
 
 
