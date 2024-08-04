@@ -754,195 +754,132 @@ body.night-mode {
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
 
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-        const applyLightThemeBtn = document.getElementById('apply-light-theme');
-        const removeLightThemeBtn = document.getElementById('remove-light-theme');
-        const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
-        const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
+    // TODO: Replace the following with your app's Firebase project configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+        authDomain: "deepworkai-c3419.firebaseapp.com",
+        projectId: "deepworkai-c3419",
+        storageBucket: "deepworkai-c3419.appspot.com",
+        messagingSenderId: "367439182644",
+        appId: "1:367439182644:web:304216430df97eff68c361"
+    };
 
-        const lightThemeStyles = `
-            :root {
-                --primary-color: #ffffff;
-                --secondary-color: #3F3D56;
-                --accent-color: #009bf5;
-                --text-color: #ffffff;
-                --bg-color: rgba(255, 255, 255, 0.1);
-                --card-bg: rgba(255, 255, 255, 0.1);
-                --glass-bg: rgba(255, 255, 255, 0.1);
-                --hover-bg: rgba(255, 255, 255, 0.1);
-                --border-radius: 15px;
+    // Ensure Firebase is initialized only once
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // if already initialized, use that one
+    }
+
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                document.getElementById('name').value = user.displayName;
+                document.getElementById('email').value = user.email;
+
+                // Load the user's theme preference from Firestore
+                const userId = user.uid;
+                db.collection('users').doc(userId).get().then(doc => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        if (userData.theme) {
+                            applyTheme(userData.theme);
+                            updateButtonVisibility(userData.theme);
+                        }
+                    }
+                }).catch(error => {
+                    console.error("Error loading user data:", error);
+                });
+            } else {
+                // No user is signed in.
+                window.location.href = "login.html"; // Redirect to login page
             }
+        });
+    });
 
-            body {
-                font-family: 'Poppins', sans-serif;
-                line-height: 1.6;
-                color: var(--text-color);
-                background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
-                background-size: 400% 400%;
-                animation: gradientBG 10s ease infinite;
-                backdrop-filter: blur(10px);
-            }
+    document.getElementById('apply-light-theme').addEventListener('click', function() {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const userId = user.uid;
+            const lightThemeStyles = `
+                :root {
+                    --primary-color: #ffffff;
+                    --secondary-color: #3F3D56;
+                    --accent-color: #009bf5;
+                    --text-color: #ffffff;
+                    --bg-color: rgba(255, 255, 255, 0.1);
+                    --card-bg: rgba(255, 255, 255, 0.1);
+                    --glass-bg: rgba(255, 255, 255, 0.1);
+                    --hover-bg: rgba(255, 255, 255, 0.1);
+                    --border-radius: 15px;
+                }
+            `;
+            applyTheme(lightThemeStyles);
+            db.collection('users').doc(userId).set({ theme: lightThemeStyles }, { merge: true }).then(() => {
+                updateButtonVisibility('light');
+            }).catch(error => {
+                console.error("Error saving theme:", error);
+            });
+        }
+    });
 
-            @keyframes gradientBG {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
-        `;
+    document.getElementById('remove-light-theme').addEventListener('click', function() {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const userId = user.uid;
+            removeTheme();
+            db.collection('users').doc(userId).set({ theme: firebase.firestore.FieldValue.delete() }, { merge: true }).then(() => {
+                updateButtonVisibility();
+            }).catch(error => {
+                console.error("Error removing theme:", error);
+            });
+        }
+    });
 
-        const darkThemeStyles = `
-            :root {
-                --primary-color: #121212;
-                --secondary-color: #1E1E1E;
-                --accent-color: #009bf5;
-                --text-color: #e0e0e0;
-                --bg-color: rgba(18, 18, 18, 0.8);
-                --card-bg: rgba(30, 30, 30, 0.8);
-                --glass-bg: rgba(18, 18, 18, 0.8);
-                --hover-bg: rgba(30, 30, 30, 0.9);
-                --border-radius: 15px;
-            }
-
-            body {
-                font-family: 'Poppins', sans-serif;
-                line-height: 1.6;
-                color: var(--text-color);
-                background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
-                background-size: 400% 400%;
-                animation: gradientBG 10s ease infinite;
-                backdrop-filter: blur(10px);
-            }
-
-            @keyframes gradientBG {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
-        `;
-
-        function applyTheme(styles) {
-            let styleSheet = document.createElement("style");
+    function applyTheme(styles) {
+        let styleSheet = document.getElementById('theme-styles');
+        if (styleSheet) {
+            styleSheet.innerText = styles;
+        } else {
+            styleSheet = document.createElement("style");
             styleSheet.type = "text/css";
             styleSheet.id = "theme-styles";
             styleSheet.innerText = styles;
             document.head.appendChild(styleSheet);
         }
+    }
 
-        function removeTheme() {
-            let styleSheet = document.getElementById("theme-styles");
-            if (styleSheet) {
-                styleSheet.remove();
-            }
+    function removeTheme() {
+        let styleSheet = document.getElementById("theme-styles");
+        if (styleSheet) {
+            styleSheet.remove();
         }
+    }
 
-        async function loadTheme(userId) {
-            try {
-                const doc = await db.collection('users').doc(userId).get();
-                if (doc.exists) {
-                    const theme = doc.data().theme;
-                    if (theme === 'light-glass') {
-                        applyTheme(lightThemeStyles);
-                        applyLightThemeBtn.style.display = 'none';
-                        removeLightThemeBtn.style.display = 'inline-block';
-                        applyDarkThemeBtn.style.display = 'inline-block';
-                        removeDarkThemeBtn.style.display = 'none';
-                    } else if (theme === 'dark-glass') {
-                        applyTheme(darkThemeStyles);
-                        applyLightThemeBtn.style.display = 'inline-block';
-                        removeLightThemeBtn.style.display = 'none';
-                        applyDarkThemeBtn.style.display = 'none';
-                        removeDarkThemeBtn.style.display = 'inline-block';
-                    } else {
-                        removeTheme();
-                        applyLightThemeBtn.style.display = 'inline-block';
-                        removeLightThemeBtn.style.display = 'none';
-                        applyDarkThemeBtn.style.display = 'inline-block';
-                        removeDarkThemeBtn.style.display = 'none';
-                    }
-                } else {
-                    removeTheme();
-                    applyLightThemeBtn.style.display = 'inline-block';
-                    removeLightThemeBtn.style.display = 'none';
-                    applyDarkThemeBtn.style.display = 'inline-block';
-                    removeDarkThemeBtn.style.display = 'none';
-                }
-            } catch (error) {
-                console.error("Error loading theme: ", error);
-            }
+    function updateButtonVisibility(theme) {
+        const lightThemeBtn = document.getElementById('apply-light-theme');
+        const removeLightThemeBtn = document.getElementById('remove-light-theme');
+
+        if (theme === 'light') {
+            lightThemeBtn.style.display = 'none';
+            removeLightThemeBtn.style.display = 'inline-block';
+        } else {
+            lightThemeBtn.style.display = 'inline-block';
+            removeLightThemeBtn.style.display = 'none';
         }
-
-        async function saveTheme(userId, theme) {
-            try {
-                await db.collection('users').doc(userId).set({
-                    theme: theme
-                }, { merge: true });
-            } catch (error) {
-                console.error("Error saving theme: ", error);
-            }
-        }
-
-        async function removeUserTheme(userId) {
-            try {
-                await db.collection('users').doc(userId).update({
-                    theme: firebase.firestore.FieldValue.delete()
-                });
-            } catch (error) {
-                console.error("Error removing theme: ", error);
-            }
-        }
-
-        auth.onAuthStateChanged(async function(user) {
-            if (user) {
-                const userId = user.uid;
-                await loadTheme(userId);
-
-                applyLightThemeBtn.addEventListener('click', async function() {
-                    applyTheme(lightThemeStyles);
-                    applyLightThemeBtn.style.display = 'none';
-                    removeLightThemeBtn.style.display = 'inline-block';
-                    applyDarkThemeBtn.style.display = 'inline-block';
-                    removeDarkThemeBtn.style.display = 'none';
-                    await saveTheme(userId, 'light-glass');
-                });
-
-                removeLightThemeBtn.addEventListener('click', async function() {
-                    removeTheme();
-                    applyLightThemeBtn.style.display = 'inline-block';
-                    removeLightThemeBtn.style.display = 'none';
-                    applyDarkThemeBtn.style.display = 'inline-block';
-                    removeDarkThemeBtn.style.display = 'none';
-                    await removeUserTheme(userId);
-                });
-
-                applyDarkThemeBtn.addEventListener('click', async function() {
-                    applyTheme(darkThemeStyles);
-                    applyDarkThemeBtn.style.display = 'none';
-                    removeDarkThemeBtn.style.display = 'inline-block';
-                    applyLightThemeBtn.style.display = 'inline-block';
-                    removeLightThemeBtn.style.display = 'none';
-                    await saveTheme(userId, 'dark-glass');
-                });
-
-                removeDarkThemeBtn.addEventListener('click', async function() {
-                    removeTheme();
-                    applyDarkThemeBtn.style.display = 'inline-block';
-                    removeDarkThemeBtn.style.display = 'none';
-                    applyLightThemeBtn.style.display = 'inline-block';
-                    removeLightThemeBtn.style.display = 'none';
-                    await removeUserTheme(userId);
-                });
-            } else {
-                // User is signed out or not authenticated
-                console.log("User is not signed in.");
-                applyLightThemeBtn.style.display = 'none';
-                removeLightThemeBtn.style.display = 'none';
-                applyDarkThemeBtn.style.display = 'none';
-                removeDarkThemeBtn.style.display = 'none';
-            }
-        });
-    });
+    }
 </script>
+
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
