@@ -337,7 +337,7 @@ body.night-mode {
             background-color: var(--accent-color);
         }
 
-        .sign-out-btn {
+.sign-out-btn {
     background-color: var(--hover-bg));
     color: var(--text-color);
     border: none;
@@ -347,6 +347,8 @@ body.night-mode {
     transition: background-color 0.3s ease;
     margin-top: 20px;
 }
+
+
 
 .sign-out-btn:hover {
     background-color: var(--accent-color); /* Use hover-bg for background on hover */
@@ -427,6 +429,59 @@ body.night-mode {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
+
+/* Advanced Themes Card Styles */
+.card {
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+
+
+.card-body {
+    padding: 15px;
+}
+
+.theme-option {
+    margin-bottom: 20px;
+}
+
+.theme-option h5 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--glass-bg);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color);
+}
+
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #333333;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+}
+
+
     </style>
 </head>
 
@@ -595,9 +650,20 @@ body.night-mode {
                 <div class="form-group">
                     <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="theme-option">
+                            <h5>Light Glass Theme</h5>
+                            <button id="apply-light-theme" class="btn btn-primary">Apply</button>
+                            <button id="remove-light-theme" class="btn btn-secondary" style="display: none;">Remove</button>
+                        </div>
+                        <div class="theme-option">
+                            <h5>Dark Glass Theme</h5>
+                            <button id="apply-dark-theme" class="btn btn-primary">Apply</button>
+                            <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
+                        </div>
+                    </div>
+                </div>                  
 
     </script>
 
@@ -687,6 +753,196 @@ body.night-mode {
 
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+        const applyLightThemeBtn = document.getElementById('apply-light-theme');
+        const removeLightThemeBtn = document.getElementById('remove-light-theme');
+        const applyDarkThemeBtn = document.getElementById('apply-dark-theme');
+        const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
+
+        const lightThemeStyles = `
+            :root {
+                --primary-color: #ffffff;
+                --secondary-color: #3F3D56;
+                --accent-color: #009bf5;
+                --text-color: #ffffff;
+                --bg-color: rgba(255, 255, 255, 0.1);
+                --card-bg: rgba(255, 255, 255, 0.1);
+                --glass-bg: rgba(255, 255, 255, 0.1);
+                --hover-bg: rgba(255, 255, 255, 0.1);
+                --border-radius: 15px;
+            }
+
+            body {
+                font-family: 'Poppins', sans-serif;
+                line-height: 1.6;
+                color: var(--text-color);
+                background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+                background-size: 400% 400%;
+                animation: gradientBG 10s ease infinite;
+                backdrop-filter: blur(10px);
+            }
+
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `;
+
+        const darkThemeStyles = `
+            :root {
+                --primary-color: #121212;
+                --secondary-color: #1E1E1E;
+                --accent-color: #009bf5;
+                --text-color: #e0e0e0;
+                --bg-color: rgba(18, 18, 18, 0.8);
+                --card-bg: rgba(30, 30, 30, 0.8);
+                --glass-bg: rgba(18, 18, 18, 0.8);
+                --hover-bg: rgba(30, 30, 30, 0.9);
+                --border-radius: 15px;
+            }
+
+            body {
+                font-family: 'Poppins', sans-serif;
+                line-height: 1.6;
+                color: var(--text-color);
+                background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+                background-size: 400% 400%;
+                animation: gradientBG 10s ease infinite;
+                backdrop-filter: blur(10px);
+            }
+
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `;
+
+        function applyTheme(styles) {
+            let styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.id = "theme-styles";
+            styleSheet.innerText = styles;
+            document.head.appendChild(styleSheet);
+        }
+
+        function removeTheme() {
+            let styleSheet = document.getElementById("theme-styles");
+            if (styleSheet) {
+                styleSheet.remove();
+            }
+        }
+
+        async function loadTheme(userId) {
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                if (doc.exists) {
+                    const theme = doc.data().theme;
+                    if (theme === 'light-glass') {
+                        applyTheme(lightThemeStyles);
+                        applyLightThemeBtn.style.display = 'none';
+                        removeLightThemeBtn.style.display = 'inline-block';
+                        applyDarkThemeBtn.style.display = 'inline-block';
+                        removeDarkThemeBtn.style.display = 'none';
+                    } else if (theme === 'dark-glass') {
+                        applyTheme(darkThemeStyles);
+                        applyLightThemeBtn.style.display = 'inline-block';
+                        removeLightThemeBtn.style.display = 'none';
+                        applyDarkThemeBtn.style.display = 'none';
+                        removeDarkThemeBtn.style.display = 'inline-block';
+                    } else {
+                        removeTheme();
+                        applyLightThemeBtn.style.display = 'inline-block';
+                        removeLightThemeBtn.style.display = 'none';
+                        applyDarkThemeBtn.style.display = 'inline-block';
+                        removeDarkThemeBtn.style.display = 'none';
+                    }
+                } else {
+                    removeTheme();
+                    applyLightThemeBtn.style.display = 'inline-block';
+                    removeLightThemeBtn.style.display = 'none';
+                    applyDarkThemeBtn.style.display = 'inline-block';
+                    removeDarkThemeBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error("Error loading theme: ", error);
+            }
+        }
+
+        async function saveTheme(userId, theme) {
+            try {
+                await db.collection('users').doc(userId).set({
+                    theme: theme
+                }, { merge: true });
+            } catch (error) {
+                console.error("Error saving theme: ", error);
+            }
+        }
+
+        async function removeUserTheme(userId) {
+            try {
+                await db.collection('users').doc(userId).update({
+                    theme: firebase.firestore.FieldValue.delete()
+                });
+            } catch (error) {
+                console.error("Error removing theme: ", error);
+            }
+        }
+
+        auth.onAuthStateChanged(async function(user) {
+            if (user) {
+                const userId = user.uid;
+                await loadTheme(userId);
+
+                applyLightThemeBtn.addEventListener('click', async function() {
+                    applyTheme(lightThemeStyles);
+                    applyLightThemeBtn.style.display = 'none';
+                    removeLightThemeBtn.style.display = 'inline-block';
+                    applyDarkThemeBtn.style.display = 'inline-block';
+                    removeDarkThemeBtn.style.display = 'none';
+                    await saveTheme(userId, 'light-glass');
+                });
+
+                removeLightThemeBtn.addEventListener('click', async function() {
+                    removeTheme();
+                    applyLightThemeBtn.style.display = 'inline-block';
+                    removeLightThemeBtn.style.display = 'none';
+                    applyDarkThemeBtn.style.display = 'inline-block';
+                    removeDarkThemeBtn.style.display = 'none';
+                    await removeUserTheme(userId);
+                });
+
+                applyDarkThemeBtn.addEventListener('click', async function() {
+                    applyTheme(darkThemeStyles);
+                    applyDarkThemeBtn.style.display = 'none';
+                    removeDarkThemeBtn.style.display = 'inline-block';
+                    applyLightThemeBtn.style.display = 'inline-block';
+                    removeLightThemeBtn.style.display = 'none';
+                    await saveTheme(userId, 'dark-glass');
+                });
+
+                removeDarkThemeBtn.addEventListener('click', async function() {
+                    removeTheme();
+                    applyDarkThemeBtn.style.display = 'inline-block';
+                    removeDarkThemeBtn.style.display = 'none';
+                    applyLightThemeBtn.style.display = 'inline-block';
+                    removeLightThemeBtn.style.display = 'none';
+                    await removeUserTheme(userId);
+                });
+            } else {
+                // User is signed out or not authenticated
+                console.log("User is not signed in.");
+                applyLightThemeBtn.style.display = 'none';
+                removeLightThemeBtn.style.display = 'none';
+                applyDarkThemeBtn.style.display = 'none';
+                removeDarkThemeBtn.style.display = 'none';
+            }
+        });
+    });
 </script>
 
     <script>
