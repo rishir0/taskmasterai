@@ -662,8 +662,8 @@ body.night-mode {
                             <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
                         </div>
                     </div>
-                </div>                               
-
+                </div>
+                                    
     </script>
 
 <script>
@@ -754,109 +754,61 @@ body.night-mode {
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
 
-<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<!-- Add Firebase products that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
 <script>
-    // TODO: Replace the following with your app's Firebase project configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-        authDomain: "deepworkai-c3419.firebaseapp.com",
-        projectId: "deepworkai-c3419",
-        storageBucket: "deepworkai-c3419.appspot.com",
-        messagingSenderId: "367439182644",
-        appId: "1:367439182644:web:304216430df97eff68c361"
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    const applyLightThemeBtn = document.getElementById('apply-light-theme');
+    const removeLightThemeBtn = document.getElementById('remove-light-theme');
 
-    // Ensure Firebase is initialized only once
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    } else {
-        firebase.app(); // if already initialized, use that one
-    }
-
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                document.getElementById('name').value = user.displayName;
-                document.getElementById('email').value = user.email;
-
-                // Load the user's theme preference from Firestore
-                const userId = user.uid;
-                db.collection('users').doc(userId).get().then(doc => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        if (userData.theme) {
-                            applyTheme(userData.theme);
-                            updateButtonVisibility(userData.theme);
-                        }
-                    }
-                }).catch(error => {
-                    console.error("Error loading user data:", error);
-                });
-            } else {
-                // No user is signed in.
-                window.location.href = "login.html"; // Redirect to login page
-            }
-        });
-    });
-
-    document.getElementById('apply-light-theme').addEventListener('click', function() {
-        const user = firebase.auth().currentUser;
-        if (user) {
-            const userId = user.uid;
-            const lightThemeStyles = `
-                :root {
-                    --primary-color: #ffffff;
-                    --secondary-color: #3F3D56;
-                    --accent-color: #009bf5;
-                    --text-color: #ffffff;
-                    --bg-color: rgba(255, 255, 255, 0.1);
-                    --card-bg: rgba(255, 255, 255, 0.1);
-                    --glass-bg: rgba(255, 255, 255, 0.1);
-                    --hover-bg: rgba(255, 255, 255, 0.1);
-                    --border-radius: 15px;
-                }
-            `;
-            applyTheme(lightThemeStyles);
-            db.collection('users').doc(userId).set({ theme: lightThemeStyles }, { merge: true }).then(() => {
-                updateButtonVisibility('light');
-            }).catch(error => {
-                console.error("Error saving theme:", error);
-            });
+    const lightThemeStyles = `
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #3F3D56;
+            --accent-color: #009bf5;
+            --text-color: #ffffff;
+            --bg-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --hover-bg: rgba(255, 255, 255, 0.1);
+            --border-radius: 15px;
         }
-    });
-
-    document.getElementById('remove-light-theme').addEventListener('click', function() {
-        const user = firebase.auth().currentUser;
-        if (user) {
-            const userId = user.uid;
-            removeTheme();
-            db.collection('users').doc(userId).set({ theme: firebase.firestore.FieldValue.delete() }, { merge: true }).then(() => {
-                updateButtonVisibility();
-            }).catch(error => {
-                console.error("Error removing theme:", error);
-            });
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            backdrop-filter: blur(10px);
         }
-    });
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+    `;
 
     function applyTheme(styles) {
-        let styleSheet = document.getElementById('theme-styles');
-        if (styleSheet) {
-            styleSheet.innerText = styles;
-        } else {
-            styleSheet = document.createElement("style");
-            styleSheet.type = "text/css";
-            styleSheet.id = "theme-styles";
-            styleSheet.innerText = styles;
-            document.head.appendChild(styleSheet);
-        }
+        let styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.id = "theme-styles";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
     }
 
     function removeTheme() {
@@ -866,19 +818,21 @@ body.night-mode {
         }
     }
 
-    function updateButtonVisibility(theme) {
-        const lightThemeBtn = document.getElementById('apply-light-theme');
-        const removeLightThemeBtn = document.getElementById('remove-light-theme');
+    applyLightThemeBtn.addEventListener('click', function() {
+        applyTheme(lightThemeStyles);
+        applyLightThemeBtn.style.display = 'none';
+        removeLightThemeBtn.style.display = 'inline-block';
+    });
 
-        if (theme === 'light') {
-            lightThemeBtn.style.display = 'none';
-            removeLightThemeBtn.style.display = 'inline-block';
-        } else {
-            lightThemeBtn.style.display = 'inline-block';
-            removeLightThemeBtn.style.display = 'none';
-        }
-    }
+    removeLightThemeBtn.addEventListener('click', function() {
+        removeTheme();
+        applyLightThemeBtn.style.display = 'inline-block';
+        removeLightThemeBtn.style.display = 'none';
+    });
+});
+
 </script>
+
 
 
     <script>
