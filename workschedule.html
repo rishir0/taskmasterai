@@ -250,6 +250,37 @@ body.night-mode {
     color: var(--text-color);
 }
 
+.account-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+.account-button:hover {
+    transform: scale(1.05);
+}
+
+.account-button:focus {
+    outline: none;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-color); /* Initial color is accent color */
+    margin-right: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+}
 
         .main-content {
             flex-grow: 1;
@@ -301,47 +332,53 @@ body.night-mode {
             height: 100%;
             border: none;
         }
-        .sidebar-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
+/* Existing styles */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+}
 
-        .sidebar-toggle svg {
-            width: 24px;
-            height: 24px;
-        }
+.sidebar-toggle svg {
+    width: 24px;
+    height: 24px;
+}
 
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100%;
-                z-index: 1000;
-            }
-
-            .sidebar.active {
-                display: flex;
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-
-            .main-content {
-                padding-left: 20px;
-            }
-        }
+/* Mobile styles */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 250px; /* Adjust width as needed */
+        background-color: #333; /* Solid color, adjust as needed */
+        color: var(--text-color);
+        padding: 20px; /* Adjust padding as needed */
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
+        border-radius: 0; /* No rounded corners */
+    }
+    .sidebar.active {
+        display: flex;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .main-content {
+        padding-left: 20px;
+        margin-left: 0;
+    }
+}
 
         /* Animation for SVG */
 @keyframes rotateIcon {
