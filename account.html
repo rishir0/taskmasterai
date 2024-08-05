@@ -660,12 +660,12 @@ body.night-mode {
                 <div class="card">
                     <div class="card-body">
                         <div class="theme-option">
-                            <h5>Light Glass Theme</h5>
+                            <h5>Light Glass Style</h5>
                             <button id="apply-light-theme" class="btn btn-primary">Apply</button>
                             <button id="remove-light-theme" class="btn btn-secondary" style="display: none;">Remove</button>
                         </div>
                         <div class="theme-option">
-                            <h5>Dark Glass Theme</h5>
+                            <h5>Dark Glass Style</h5>
                             <button id="apply-dark-theme" class="btn btn-primary">Apply</button>
                             <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
                         </div>
@@ -841,13 +841,16 @@ body.night-mode {
         }
         `;
 
-        function applyTheme(styles) {
+        function applyTheme(styles, themeName) {
             removeTheme();
             let styleSheet = document.createElement("style");
             styleSheet.type = "text/css";
             styleSheet.id = "theme-styles";
             styleSheet.innerText = styles;
             document.head.appendChild(styleSheet);
+
+            // Save the theme to localStorage
+            localStorage.setItem('selectedTheme', themeName);
         }
 
         function removeTheme() {
@@ -855,10 +858,32 @@ body.night-mode {
             if (styleSheet) {
                 styleSheet.remove();
             }
+
+            // Remove the theme from localStorage
+            localStorage.removeItem('selectedTheme');
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme) {
+                if (savedTheme === 'light') {
+                    applyTheme(lightThemeStyles, 'light');
+                    applyLightThemeBtn.style.display = 'none';
+                    removeLightThemeBtn.style.display = 'inline-block';
+                    applyDarkThemeBtn.style.display = 'inline-block';
+                    removeDarkThemeBtn.style.display = 'none';
+                } else if (savedTheme === 'dark') {
+                    applyTheme(darkThemeStyles, 'dark');
+                    applyLightThemeBtn.style.display = 'inline-block';
+                    removeLightThemeBtn.style.display = 'none';
+                    applyDarkThemeBtn.style.display = 'none';
+                    removeDarkThemeBtn.style.display = 'inline-block';
+                }
+            }
         }
 
         applyLightThemeBtn.addEventListener('click', function() {
-            applyTheme(lightThemeStyles);
+            applyTheme(lightThemeStyles, 'light');
             applyLightThemeBtn.style.display = 'none';
             removeLightThemeBtn.style.display = 'inline-block';
             applyDarkThemeBtn.style.display = 'inline-block';
@@ -874,7 +899,7 @@ body.night-mode {
         });
 
         applyDarkThemeBtn.addEventListener('click', function() {
-            applyTheme(darkThemeStyles);
+            applyTheme(darkThemeStyles, 'dark');
             applyLightThemeBtn.style.display = 'inline-block';
             removeLightThemeBtn.style.display = 'none';
             applyDarkThemeBtn.style.display = 'none';
@@ -888,6 +913,9 @@ body.night-mode {
             applyDarkThemeBtn.style.display = 'inline-block';
             removeDarkThemeBtn.style.display = 'none';
         });
+
+        // Apply the saved theme when the page loads
+        applySavedTheme();
     });
 </script>
 
