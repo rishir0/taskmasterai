@@ -799,15 +799,15 @@ body.night-mode {
         `;
 
         const darkThemeStyles = `
-        :root {
-    --primary-color: #0D0D0D; /* Darker primary color */
-    --secondary-color: #121212; /* Darker secondary color */
-    --accent-color: #009bf5;
-    --text-color: #e0e0e0; /* Lighter text color for better contrast */
-    --bg-color: rgba(13, 13, 13, 0.9); /* Darker background color */
-    --card-bg: rgba(18, 18, 18, 0.9); /* Darker card background */
-    --glass-bg: rgba(18, 18, 18, 0.9); /* Darker glass background */
-    --hover-bg: rgba(33, 33, 33, 0.3); /* Slightly darker hover background */
+:root {
+    --primary-color: #ffffff; /* Keep primary color white */
+    --secondary-color: #3f3d56; /* Consistent secondary color */
+    --accent-color: #009bf5; /* Consistent accent color */
+    --text-color: #ffffff; /* Keep text color white */
+    --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color */
+    --card-bg: rgba(31, 31, 31, 0.9); /* Darker card background */
+    --glass-bg: rgba(31, 31, 31, 0.9); /* Darker glass background */
+    --hover-bg: rgba(55, 55, 55, 0.9); /* Darker hover background */
     --border-radius: 15px;
 }
 
@@ -815,7 +815,7 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(135deg, rgba(13, 13, 13, 0.9), rgba(18, 18, 18, 0.9), rgba(33, 33, 33, 0.9));
+    background: linear-gradient(135deg, rgba(5, 5, 5, 0.9), rgba(15, 15, 15, 0.9), rgba(25, 25, 25, 0.9));
     background-size: 400% 400%;
     animation: gradientBG 10s ease infinite;
     backdrop-filter: blur(10px);
@@ -828,15 +828,15 @@ body {
 }
 
 .card {
-    background-color: var(--card-bg); /* Apply card background color */
-    color: var(--text-color); /* Ensure text color is consistent */
+    background-color: var(--card-bg);
+    color: var(--text-color);
     margin-bottom: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
 }
 
 .card-header {
-    background-color: var(--secondary-color); /* Use secondary color for header */
+    background-color: var(--secondary-color);
     border-bottom: 1px solid #333333; /* Darker border */
     padding: 10px 15px;
     border-radius: var(--border-radius) var(--border-radius) 0 0; /* Rounded top corners */
@@ -845,20 +845,6 @@ body {
 .card-body {
     padding: 15px;
     border-radius: 0 0 var(--border-radius) var(--border-radius); /* Rounded bottom corners */
-}
-
-button {
-    background-color: var(--secondary-color); /* Consistent button background */
-    color: var(--text-color); /* Button text color */
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: var(--hover-bg); /* Hover effect */
 }
         `;
 
