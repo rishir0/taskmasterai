@@ -251,45 +251,120 @@ body.night-mode {
     color: var(--text-color);
 }
 
-.pomodoro-timer {
-    margin-top: 30px;
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    text-align: center;
-    margin-bottom: 30px;
-}
+.timer-container {
+            display: flex;
+            justify-content: center; /* Center the timers container */
+            align-items: flex-start; /* Align timers to the top */
+            flex-wrap: wrap; /* Allow timers to wrap to the next line if there's not enough space */
+            gap: 20px; /* Space between timers */
+        }
 
-.pomodoro-timer input[type="text"] {
-    width: 100px;
-    padding: 10px;
-    border: none;
-    border-radius: var(--border-radius);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
+        .pomodoro-timer, .custom-timer {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.pomodoro-timer button {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1rem;
-    margin: 5px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
-}
+        .pomodoro-timer h2, .custom-timer h2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
 
-.pomodoro-timer button:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05);
-}
+        .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+            width: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .pomodoro-timer .button-container, .custom-timer .button-container {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px; /* Space above buttons */
+        }
+
+        .pomodoro-timer button, .custom-timer button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pomodoro-timer button:hover, .custom-timer button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        #add-timer {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            width: 32px; /* Ensures the button is round */
+            height: 32px; /* Ensures the button is round */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #add-timer:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .remove-timer {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            width: 32px; /* Ensures the button is round */
+            height: 32px; /* Ensures the button is round */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-timer:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        #custom-timers {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
+        }
 
 .dropdown-menu {
     margin-bottom: 20px;
@@ -772,14 +847,17 @@ margin-right: 0px;}
             <h1>Welcome, <span id="displayName">User</span>!</h1>
             <p>Your personalized dashboard</p>
         </div>
-
-        <div class="pomodoro-timer">
-            <h2>Pomodoro Timer</h2>
-            <input type="text" id="timer" value="25:00" readonly>
-            <br>
-            <button id="start">Start</button>
-            <button id="pause">Pause</button>
-            <button id="reset">Reset</button>
+        <div class="timer-container">
+            <div class="pomodoro-timer">
+                <h2>Pomodoro Timer <button id="add-timer">+</button></h2>
+                <input type="text" id="timer" value="25:00" readonly>
+                <div class="button-container">
+                    <button id="start">Start</button>
+                    <button id="pause">Pause</button>
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+            <div id="custom-timers"></div>
         </div>
         <div class="dropdown-menu">
             <div class="dropdown-header" onclick="toggleDropdown()">
@@ -861,52 +939,181 @@ margin-right: 0px;}
     </div>
 
    
-    <script>
-    let timer;
-    let isRunning = false;
-    let timeLeft = 1500; // 25 minutes
-    
-    const timerDisplay = document.getElementById('timer');
-    const startButton = document.getElementById('start');
-    const pauseButton = document.getElementById('pause');
-    const resetButton = document.getElementById('reset');
-    
-    function startTimer() {
-        if (isRunning) return;
-        isRunning = true;
-        timer = setInterval(() => {
-            timeLeft--;
+<script>
+        let timer;
+        let isRunning = false;
+        let timeLeft = 1500; // 25 minutes
+
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('start');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const addButton = document.getElementById('add-timer');
+        const customTimersDiv = document.getElementById('custom-timers');
+        let customTimerCount = 0; // Track the number of custom timers
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            timeLeft = 1500;
             updateDisplay();
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                isRunning = false;
+        }
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const seconds = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.value = `${minutes}:${seconds}`;
+        }
+
+        function addCustomTimer() {
+            if (customTimerCount >= 3) {
+                alert('You can only create up to 3 custom timers.');
+                return;
             }
-        }, 1000);
-    }
-    
-    function pauseTimer() {
-        clearInterval(timer);
-        isRunning = false;
-    }
-    
-    function resetTimer() {
-        clearInterval(timer);
-        isRunning = false;
-        timeLeft = 1500;
-        updateDisplay();
-    }
-    
-    function updateDisplay() {
-        const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-        const seconds = (timeLeft % 60).toString().padStart(2, '0');
-        timerDisplay.value = `${minutes}:${seconds}`;
-    }
-    
-    startButton.addEventListener('click', startTimer);
-    pauseButton.addEventListener('click', pauseTimer);
-    resetButton.addEventListener('click', resetTimer);
-    
-    updateDisplay();
+
+            const customTimerDiv = document.createElement('div');
+            customTimerDiv.classList.add('custom-timer');
+
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.alignItems = 'center';
+
+            const title = document.createElement('h2');
+            title.contentEditable = true;
+            title.innerText = 'Custom Timer';
+            title.style.flexGrow = '1';
+            title.style.margin = '0';
+
+            const removeButton = document.createElement('button');
+            removeButton.innerText = '-';
+            removeButton.classList.add('remove-timer');
+
+            header.appendChild(title);
+            header.appendChild(removeButton);
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = '00:00';
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('button-container');
+
+            const startButton = document.createElement('button');
+            startButton.innerText = 'Start';
+            startButton.classList.add('start');
+
+            const pauseButton = document.createElement('button');
+            pauseButton.innerText = 'Pause';
+            pauseButton.classList.add('pause');
+
+            const resetButton = document.createElement('button');
+            resetButton.innerText = 'Reset';
+            resetButton.classList.add('reset');
+
+            customTimerDiv.appendChild(header);
+            customTimerDiv.appendChild(input);
+            customTimerDiv.appendChild(buttonContainer);
+            buttonContainer.appendChild(startButton);
+            buttonContainer.appendChild(pauseButton);
+            buttonContainer.appendChild(resetButton);
+
+            customTimersDiv.appendChild(customTimerDiv);
+            customTimerCount++; // Increment the custom timer count
+
+            let customTimeLeft = 0;
+            let customTimer;
+            let isCustomRunning = false;
+
+            function startCustomTimer() {
+                if (isCustomRunning) return;
+                if (!validateAndParseInput()) return; // Validate and parse the input before starting
+                isCustomRunning = true;
+                customTimer = setInterval(() => {
+                    customTimeLeft--;
+                    updateCustomDisplay();
+                    if (customTimeLeft <= 0) {
+                        clearInterval(customTimer);
+                        isCustomRunning = false;
+                    }
+                }, 1000);
+            }
+
+            function pauseCustomTimer() {
+                clearInterval(customTimer);
+                isCustomRunning = false;
+            }
+
+            function resetCustomTimer() {
+                clearInterval(customTimer);
+                isCustomRunning = false;
+                customTimeLeft = 0;
+                updateCustomDisplay();
+            }
+
+            function updateCustomDisplay() {
+                const minutes = Math.floor(customTimeLeft / 60).toString().padStart(2, '0');
+                const seconds = (customTimeLeft % 60).toString().padStart(2, '0');
+                input.value = `${minutes}:${seconds}`;
+            }
+
+            function removeCustomTimer() {
+                customTimersDiv.removeChild(customTimerDiv);
+            }
+
+            function editCustomTimer() {
+                input.readOnly = !input.readOnly;
+                if (!input.readOnly) {
+                    input.focus();
+                } else {
+                    validateAndParseInput();
+                }
+            }
+
+            function validateAndParseInput() {
+                const timeParts = input.value.split(':');
+                if (timeParts.length !== 2) {
+                    alert('Invalid time format. Please use mm:ss.');
+                    return false;
+                }
+                const [newMinutes, newSeconds] = timeParts.map(Number);
+                if (isNaN(newMinutes) || isNaN(newSeconds) || newMinutes < 0 || newSeconds < 0 || newSeconds >= 60) {
+                    alert('Invalid time values. Please ensure minutes and seconds are valid numbers and seconds are less than 60.');
+                    return false;
+                }
+                customTimeLeft = (newMinutes * 60) + newSeconds;
+                updateCustomDisplay();
+                return true;
+            }
+
+            startButton.addEventListener('click', startCustomTimer);
+            pauseButton.addEventListener('click', pauseCustomTimer);
+            resetButton.addEventListener('click', resetCustomTimer);
+            removeButton.addEventListener('click', removeCustomTimer);
+            input.addEventListener('dblclick', editCustomTimer);
+        }
+
+        startButton.addEventListener('click', startTimer);
+        pauseButton.addEventListener('click', pauseTimer);
+        resetButton.addEventListener('click', resetTimer);
+        addButton.addEventListener('click', addCustomTimer);
     </script>
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
