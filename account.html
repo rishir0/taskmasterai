@@ -741,9 +741,22 @@ body.night-mode {
         }, 500); // Duration matches the CSS animation duration
     }
 
+
+    async function getCurrentUserId() {
+        return new Promise((resolve, reject) => {
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    resolve(user.uid);
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+    }
+
     // Check Firestore for night mode preference
     document.addEventListener('DOMContentLoaded', async (event) => {
-        const userId = 'USER_ID'; // Replace with actual user ID
+        const userId = getCurrentUserId(); // Replace with actual user ID
         try {
             const doc = await db.collection('users').doc(userId).get();
             const nightMode = doc.exists ? doc.data().nightMode : null;
@@ -815,7 +828,7 @@ body.night-mode {
         `;
 
         const darkThemeStyles = `
-:root {
+        :root {
             --primary-color: #000000;
             --secondary-color: #1F1F1F;
             --accent-color: #009bf5;
@@ -859,6 +872,7 @@ body.night-mode {
         `;
 
         function applyTheme(styles) {
+            removeTheme();
             let styleSheet = document.createElement("style");
             styleSheet.type = "text/css";
             styleSheet.id = "theme-styles";
