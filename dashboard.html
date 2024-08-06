@@ -685,8 +685,8 @@ margin-right: 0px;}
     }
 
     .pomodoro-timer .button-container, .custom-timer .button-container {
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 5px; /* Reduce space between buttons */
+        flex-direction: row; /* Arrange buttons horizontally */
+        gap: 10px; /* Space between buttons */
     }
 
     .pomodoro-timer button, .custom-timer button {
@@ -705,8 +705,6 @@ margin-right: 0px;}
         gap: 15px; /* Reduce gap between custom timers */
     }
 }
-
-
 
 
 /* Media queries for mobile responsiveness */
@@ -818,6 +816,28 @@ margin-right: 0px;}
     animation: rotateIcon 0.5s;
 }
 
+#timer-sections {
+    display: none; /* Hide timers by default */
+}
+
+#timer-sections.show {
+    display: block; /* Show timers when 'show' class is added */
+}
+
+/* Hide the toggle button on larger screens (desktops) */
+@media (min-width: 601px) {
+    #toggle-timers {
+        display: none; /* Hide the toggle button on desktop */
+    }
+}
+
+/* Ensure the toggle button is visible on mobile screens */
+@media (max-width: 600px) {
+    #toggle-timers {
+        display: block; /* Show the toggle button on mobile */
+    }
+}
+
         
     </style>
 </head>
@@ -829,6 +849,24 @@ margin-right: 0px;}
             <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </button>
+    <button id="toggle-timers">Show Timers</button>
+<div id="timer-sections">
+    <div class="timer-container">
+        <div class="pomodoro-timer custom-timer">
+            <div style="display: flex; align-items: center;">
+                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+                <button id="add-timer">+</button> <!-- Add the + button here -->
+            </div>
+            <input type="text" id="timer" value="25:00" readonly>
+            <div class="button-container">
+                <button id="start">Start</button>
+                <button id="pause">Pause</button>
+                <button id="reset">Reset</button>
+            </div>
+        </div>
+        <div id="custom-timers"></div>
+    </div>
+</div>
     <div class="container">
         <div class="sidebar">
             <div class="logo" onclick="window.location.href='index.html'">
@@ -1647,10 +1685,17 @@ function signUp(email, password) {
 
 
 <script>
-    function toggleDropdown() {
-        var dropdown = document.querySelector('.dropdown-menu');
-        dropdown.classList.toggle('open');
+document.getElementById('toggle-timers').addEventListener('click', function() {
+    var timerSections = document.getElementById('timer-sections');
+    if (timerSections.classList.contains('show')) {
+        timerSections.classList.remove('show');
+        this.textContent = 'Show Timers'; // Change button text to 'Show Timers'
+    } else {
+        timerSections.classList.add('show');
+        this.textContent = 'Hide Timers'; // Change button text to 'Hide Timers'
     }
+});
+    
 </script>
 
     <script>
