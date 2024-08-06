@@ -6,120 +6,253 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
     <style>
-        :root {
-            --primary-color: #6C63FF;
+     :root {
+        --primary-color: #6C63FF;
             --secondary-color: #3F3D56;
             --accent-color: #F50057;
             --text-color: #F8F9FA;
             --bg-color: #121212;
             --card-bg: #1E1E1E;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
+    --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
+    --border-radius: 15px;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-        }
 
-        .container {
-            display: flex;
-            height: 100vh;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .sidebar {
-            width: 250px;
-            background-color: var(--card-bg);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Solid dark background */
+    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
+}
 
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
 
-        .logo svg {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
-        }
+body.night-mode {
+    background-color: #333333;
+    primary-color: #121212; /* Darker background */
+    secondary-color: #1E1E1E; /* Darker grayish background */
+    accent-color: #009bf5; /* Adjust if necessary */
+    text-color: #e0e0e0; /* Lighter text color for dark mode */
+    --bg-color: rgba(18, 18, 18, 0.8); /* Darker background */
+    --card-bg: rgba(30, 30, 30, 0.8); /* Darker card background */
+    --glass-bg: rgba(18, 18, 18, 0.8); /* Darker frosted glass effect */
+    --hover-bg: rgba(30, 30, 30, 0.9); /* Darker hover background */
+}
+}
 
-        .menu-item {
-            margin-bottom: 15px;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
+.menu-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
 
-        .menu-item svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-        }
+.menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
-        .menu-item:hover {
-            color: var(--primary-color);
-        }
+.theme-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
 
-        .upgrade-btn {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
+.theme-icon.active {
+    animation: rotate 0.5s ease-in-out;
+}
 
-        .upgrade-btn svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-        }
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
 
-        .upgrade-btn:hover {
-            background-color: #0EA5E9;
-        }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 20px;
-        }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            margin-right: 10px;
-        }
+.container {
+    display: flex;
+    height: 100vh;
+}
 
-        .menu-dots {
-            cursor: pointer;
-        }
+.sidebar {
+    width: 330px;
+    background: inherit;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
 
-        .account-button {
+.sidebar h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 20px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+    color: var(--primary-color);
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.menu-item {
+    margin-bottom: 15px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.menu-item svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.menu-item:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.upgrade-btn {
+    background: linear-gradient(45deg, var(--accent-color), #FF1493);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-btn svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.upgrade-btn:hover {
+    transform: scale(1.05);
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: transparent;
+}
+
+.dashboard-header {
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.create-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.item {
+    background-color: var(--glass-bg);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.item:hover {
+    background-color: var(--hover-bg);
+    transform: scale(1.05);
+    backdrop-filter: blur(10px);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    margin-right: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+    color: var(--text-color);
+}
+
+.account-button {
     background: none;
     border: none;
     color: var(--text-color);
@@ -127,15 +260,76 @@
     display: flex;
     align-items: center;
     padding: 0;
+    transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+.account-button:hover {
+    transform: scale(1.05);
 }
 
 .account-button:focus {
     outline: none;
 }
 
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-color); /* Initial color is accent color */
+    margin-right: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
 .user-avatar:hover {
-    background-color: #0EA5E9;
     transform: scale(1.1);
+}
+
+/* Existing styles */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.sidebar-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 250px; /* Adjust width as needed */
+        background-color: #333; /* Solid color, adjust as needed */
+        color: var(--text-color);
+        padding: 20px; /* Adjust padding as needed */
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
+        border-radius: 0; /* No rounded corners */
+    }
+    .sidebar.active {
+        display: flex;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .main-content {
+        padding-left: 20px;
+        margin-left: 0;
+    }
 }
 
 .create-new {
@@ -281,7 +475,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                   </svg>
-                Features
+                Distraction Control
             </div>
              <div class="menu-item" onclick="window.location.href='notes.html'">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12H14M12 10V14M19.9592 15H16.6C16.0399 15 15.7599 15 15.546 15.109C15.3578 15.2049 15.2049 15.3578 15.109 15.546C15 15.7599 15 16.0399 15 16.6V19.9592M20 14.1031V7.2C20 6.07989 20 5.51984 19.782 5.09202C19.5903 4.71569 19.2843 4.40973 18.908 4.21799C18.4802 4 17.9201 4 16.8 4H7.2C6.0799 4 5.51984 4 5.09202 4.21799C4.71569 4.40973 4.40973 4.71569 4.21799 5.09202C4 5.51984 4 6.0799 4 7.2V16.8C4 17.9201 4 18.4802 4.21799 18.908C4.40973 19.2843 4.71569 19.5903 5.09202 19.782C5.51984 20 6.0799 20 7.2 20H14.1031C14.5923 20 14.8369 20 15.067 19.9447C15.2711 19.8957 15.4662 19.8149 15.6451 19.7053C15.847 19.5816 16.0199 19.4086 16.3658 19.0627L19.0627 16.3658C19.4086 16.0199 19.5816 15.847 19.7053 15.6451C19.8149 15.4662 19.8957 15.2711 19.9447 15.067C20 14.8369 20 14.5923 20 14.1031Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
@@ -312,45 +506,42 @@
                 </div>
             </div>
         </div>
-    <div class="main-content">
+        <div class="main-content">
         <div class="dashboard-header">
-            <h1>Notes Dashboard</h1>
+            <div class="section">
+                <h2 class="feature-title">
+                    Notes Dashboard
+                    <span class="beta-tag">BETA</span>
+                </h2>
+            </div>
+            <div class="create-new">
+                <textarea id="note-input" placeholder="Enter text to generate notes" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
+                <button onclick="createNote()">Create Note</button>
+                <!-- Add buttons for other actions here if needed -->
+            </div>
+            <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
         </div>
-        <div class="create-new">
-            <input type="text" id="note-input" placeholder="Enter new note">
-            <button onclick="createNote()">Create Note</button>
-            <input type="file" id="pdf-upload" accept="application/pdf" onchange="uploadPDF()">
-        </div>
-        <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
     </div>
 
-    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        window.embeddedChatbotConfig = {
-            chatbotId: "e7lShwiEcfJEfBA0lAy4l",
-            domain: "www.chatbase.co"
-        };
-    </script>
-    <script
-        src="https://www.chatbase.co/embed.min.js"
-        chatbotId="e7lShwiEcfJEfBA0lAy4l"
-        domain="www.chatbase.co"
-        defer>
-    </script>
-    <script>
-        async function generateSummary(text) {
-            try {
-                const response = await axios.post('http://localhost:3000/api/summary', { text });
+        const apiKey = "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";
+        const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
-                if (response.data.success) {
-                    return response.data.summary.trim();
-                } else {
-                    throw new Error('Error generating summary');
-                }
-            } catch (error) {
-                console.error('Error generating summary:', error);
-                throw error;
+        async function generateSummary(text) {
+            const response = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inputs: text })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                return result[0].summary_text; // Adjust based on actual API response structure
+            } else {
+                throw new Error('Error generating summary');
             }
         }
 
@@ -365,8 +556,10 @@
                         noteDiv.className = 'note-item';
                         noteDiv.innerHTML = `
                             <span>${summary}</span>
-                            <button onclick="editNote()">Edit</button>
-                            <button onclick="deleteNote()">Delete</button>
+                            <div>
+                                <button onclick="editNote(this)">Edit</button>
+                                <button onclick="deleteNote(this)">Delete</button>
+                            </div>
                         `;
                         notesList.appendChild(noteDiv);
                     })
@@ -377,48 +570,24 @@
             }
         }
 
-        async function uploadPDF() {
-            const fileInput = document.getElementById('pdf-upload');
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async function () {
-                    const typedArray = new Uint8Array(this.result);
-                    const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
-                    let pdfText = '';
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        const pageText = textContent.items.map(item => item.str).join(' ');
-                        pdfText += pageText + ' ';
-                    }
-                    generateSummary(pdfText)
-                        .then(summary => {
-                            const notesList = document.getElementById('notes-list');
-                            const noteDiv = document.createElement('div');
-                            noteDiv.className = 'note-item';
-                            noteDiv.innerHTML = `
-                                <span>${summary}</span>
-                                <button onclick="editNote()">Edit</button>
-                                <button onclick="deleteNote()">Delete</button>
-                            `;
-                            notesList.appendChild(noteDiv);
-                        })
-                        .catch(error => {
-                            console.error('Error generating note:', error);
-                        });
-                };
-                reader.readAsArrayBuffer(file);
+        function editNote(button) {
+            const noteItem = button.closest('.note-item');
+            const noteText = noteItem.querySelector('span').textContent;
+            const newNoteText = prompt('Edit your note:', noteText);
+            if (newNoteText !== null) {
+                noteItem.querySelector('span').textContent = newNoteText;
             }
         }
 
-        function editNote() {
-            // Implement edit note functionality
-        }
-
-        function deleteNote() {
-            // Implement delete note functionality
+        function deleteNote(button) {
+            const noteItem = button.closest('.note-item');
+            noteItem.remove();
         }
     </script>
-</body>
+            <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+    </body>
 </html>
