@@ -862,7 +862,6 @@ margin-right: 0px;}
             </div>
             <div id="custom-timers"></div>
         </div>
-        
         <div class="additional-buttons">
             <button class="custom-button" onclick="window.location.href='features.html'">
                 <span>Distraction Control</span>
@@ -935,34 +934,6 @@ margin-right: 0px;}
         var db = firebase.firestore();
 
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('displayName').textContent = user.displayName;
-                    loadTasks();
-                    loadProjects();
-                    loadGoals();
-                    loadPlans();
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
- 
 let timer;
 let isRunning = false;
 let timeLeft = 1500; // 25 minutes
@@ -1029,11 +1000,20 @@ function addCustomTimerFromFirestore(timerId, name, time) {
     title.style.margin = '0';
 
     const removeButton = document.createElement('button');
-    removeButton.innerText = '-';
-    removeButton.classList.add('remove-timer');
+removeButton.classList.add('remove-timer');
+removeButton.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path d="M6 12L18 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+    </svg>
+`;
 
-    header.appendChild(title);
-    header.appendChild(removeButton);
+header.appendChild(title);
+header.appendChild(removeButton);
+
 
     const input = document.createElement('input');
     input.type = 'text';
