@@ -1022,6 +1022,8 @@ margin-right: 0px;}
 let timer;
 let isRunning = false;
 let timeLeft = 3600; // 1 hour as default
+const sound = new Audio('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/iOS%2017%20ringtone%20-%20Tilt.mp3?alt=media&token=93ffce89-a4e1-4dbe-a15d-fac169bd624a');
+sound.loop = true;
 
 const timerDisplay = document.getElementById('timer');
 const startButton = document.getElementById('start');
@@ -1034,12 +1036,15 @@ let customTimerCount = 0; // Track the number of custom timers
 function startTimer() {
     if (isRunning) return;
     isRunning = true;
+    startButton.innerText = 'Stop';
+    resetButton.innerText = 'Stop';
     timer = setInterval(() => {
         timeLeft--;
         updateDisplay();
         if (timeLeft <= 0) {
             clearInterval(timer);
             isRunning = false;
+            sound.play();
         }
     }, 1000);
 }
@@ -1054,6 +1059,10 @@ function resetTimer() {
     isRunning = false;
     timeLeft = 3600; // Reset to 1 hour
     updateDisplay();
+    sound.pause();
+    sound.currentTime = 0;
+    startButton.innerText = 'Start';
+    resetButton.innerText = 'Reset';
 }
 
 function updateDisplay() {
@@ -1292,6 +1301,7 @@ firebase.auth().onAuthStateChanged((user) => {
         loadCustomTimers();
     }
 });
+
 
 function createButtonContainer() {
     const container = document.createElement('div');
