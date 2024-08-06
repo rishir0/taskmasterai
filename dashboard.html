@@ -990,33 +990,6 @@ margin-right: 0px;}
         var db = firebase.firestore();
 
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('displayName').textContent = user.displayName;
-                    loadTasks();
-                    loadProjects();
-                    loadGoals();
-                    loadPlans();
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
  
 let timer;
 let isRunning = false;
@@ -1288,78 +1261,47 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 
-        function createTask() {
-            const taskInput = document.getElementById('task-input');
-            const task = taskInput.value.trim();
-            if (task) {
-                db.collection('tasks').add({
-                    task: task,
-                    userId: firebase.auth().currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    console.log('Task created:', task);
-                }).catch((error) => {
-                    console.error('Error creating task:', error);
-                });
-                taskInput.value = '';
-            }
-        }
-
-        function createProject() {
-            const projectInput = document.getElementById('project-input');
-            const project = projectInput.value.trim();
-            if (project) {
-                db.collection('projects').add({
-                    project: project,
-                    userId: firebase.auth().currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    console.log('Project created:', project);
-                }).catch((error) => {
-                    console.error('Error creating project:', error);
-                });
-                projectInput.value = '';
-            }
-        }
-
-        function loadTasks() {
-    db.collection('tasks')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            const tasksList = document.getElementById('tasks-list');
-            tasksList.innerHTML = '';
-            snapshot.forEach(doc => {
-                const task = doc.data();
-                const taskDiv = document.createElement('div');
-                taskDiv.className = 'task-item';
-                taskDiv.textContent = task.task;
-                taskDiv.appendChild(createEditButton(doc.id, 'task'));
-                taskDiv.appendChild(createDeleteButton(doc.id, 'task'));
-                tasksList.appendChild(taskDiv);
-            });
-        });
+function createButtonContainer() {
+    const container = document.createElement('div');
+    container.className = 'button-container';
+    return container;
 }
 
-function loadProjects() {
-    db.collection('projects')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            const projectsList = document.getElementById('projects-list');
-            projectsList.innerHTML = '';
-            snapshot.forEach(doc => {
-                const project = doc.data();
-                const projectDiv = document.createElement('div');
-                projectDiv.className = 'project-item';
-                projectDiv.textContent = project.project;
-                projectDiv.appendChild(createEditButton(doc.id, 'project'));
-                projectDiv.appendChild(createDeleteButton(doc.id, 'project'));
-                projectsList.appendChild(projectDiv);
-            });
+function createTask() {
+    const taskInput = document.getElementById('task-input');
+    const task = taskInput.value.trim();
+    if (task) {
+        db.collection('tasks').add({
+            task: task,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Task created:', task);
+        }).catch((error) => {
+            console.error('Error creating task:', error);
         });
+        taskInput.value = '';
+    }
 }
-        function createGoal() {
+
+function createProject() {
+    const projectInput = document.getElementById('project-input');
+    const project = projectInput.value.trim();
+    if (project) {
+        db.collection('projects').add({
+            project: project,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Project created:', project);
+        }).catch((error) => {
+            console.error('Error creating project:', error);
+        });
+        projectInput.value = '';
+    }
+}
+
+function createGoal() {
     const goalInput = document.getElementById('goal-input');
     const goal = goalInput.value.trim();
     if (goal) {
@@ -1374,25 +1316,6 @@ function loadProjects() {
         });
         goalInput.value = '';
     }
-}
-
-function loadGoals() {
-    db.collection('goals')
-        .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
-        .onSnapshot(snapshot => {
-            const goalsList = document.getElementById('goals-list');
-            goalsList.innerHTML = '';
-            snapshot.forEach(doc => {
-                const goal = doc.data();
-                const goalDiv = document.createElement('div');
-                goalDiv.className = 'goal-item';
-                goalDiv.textContent = goal.goal;
-                goalDiv.appendChild(createEditButton(doc.id, 'goal'));
-                goalDiv.appendChild(createDeleteButton(doc.id, 'goal'));
-                goalsList.appendChild(goalDiv);
-            });
-        });
 }
 
 function createPlan() {
@@ -1412,6 +1335,75 @@ function createPlan() {
     }
 }
 
+function loadTasks() {
+    db.collection('tasks')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const tasksList = document.getElementById('tasks-list');
+            tasksList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const task = doc.data();
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.textContent = task.task;
+
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'task'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
+                
+                taskDiv.appendChild(buttonContainer);
+                tasksList.appendChild(taskDiv);
+            });
+        });
+}
+
+function loadProjects() {
+    db.collection('projects')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const projectsList = document.getElementById('projects-list');
+            projectsList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const project = doc.data();
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'project-item';
+                projectDiv.textContent = project.project;
+
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'project'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'project'));
+
+                projectDiv.appendChild(buttonContainer);
+                projectsList.appendChild(projectDiv);
+            });
+        });
+}
+
+function loadGoals() {
+    db.collection('goals')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const goalsList = document.getElementById('goals-list');
+            goalsList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const goal = doc.data();
+                const goalDiv = document.createElement('div');
+                goalDiv.className = 'goal-item';
+                goalDiv.textContent = goal.goal;
+
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'goal'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'goal'));
+
+                goalDiv.appendChild(buttonContainer);
+                goalsList.appendChild(goalDiv);
+            });
+        });
+}
+
 function loadPlans() {
     db.collection('plans')
         .where('userId', '==', firebase.auth().currentUser.uid)
@@ -1424,63 +1416,62 @@ function loadPlans() {
                 const planDiv = document.createElement('div');
                 planDiv.className = 'plan-item';
                 planDiv.textContent = plan.plan;
-                planDiv.appendChild(createEditButton(doc.id, 'plan'));
-                planDiv.appendChild(createDeleteButton(doc.id, 'plan'));
+
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'plan'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'plan'));
+
+                planDiv.appendChild(buttonContainer);
                 plansList.appendChild(planDiv);
             });
         });
 }
 
-        function createEditButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Edit';
-            button.onclick = () => editItem(id, type);
-            return button;
-        }
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.onclick = () => editItem(id, type);
+    return button;
+}
 
-        function createDeleteButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Delete';
-            button.onclick = () => deleteItem(id, type);
-            return button;
-        }
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
 
-        function editItem(id, type) {
-            const newValue = prompt(`Enter new ${type}:`);
-            if (newValue) {
-                db.collection(type + 's').doc(id).update({
-                    [type]: newValue
-                }).then(() => {
-                    console.log(`${type} updated:`, newValue);
-                }).catch((error) => {
-                    console.error(`Error updating ${type}:`, error);
-                });
-            }
-        }
+function editItem(id, type) {
+    const newValue = prompt(`Enter new ${type}:`);
+    if (newValue) {
+        db.collection(type + 's').doc(id).update({
+            [type]: newValue
+        }).then(() => {
+            console.log(`${type} updated:`, newValue);
+        }).catch((error) => {
+            console.error(`Error updating ${type}:`, error);
+        });
+    }
+}
 
-        function deleteItem(id, type) {
-            db.collection(type + 's').doc(id).delete().then(() => {
-                console.log(`${type} deleted:`, id);
-            }).catch((error) => {
-                console.error(`Error deleting ${type}:`, error);
-            });
-        }
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
 
-
-// Listen for authentication state changes to load tasks
+// Listen for authentication state changes to load tasks and projects
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         loadTasks();
-    }
-});
-
-
-// Listen for authentication state changes to load tasks
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
         loadProjects();
+        loadGoals();
+        loadPlans();
     }
 });
+
     
  // Auth state observer
   firebase.auth().onAuthStateChanged(user => {
