@@ -1169,6 +1169,7 @@ function addCustomTimerFromFirestore(timerId, name, time) {
     function removeCustomTimer() {
         customTimersDiv.removeChild(customTimerDiv);
         deleteCustomTimerFromFirestore(timerId);
+        customTimerCount--; // Decrement the custom timer count when a timer is removed
     }
 
     function editCustomTimer() {
@@ -1255,6 +1256,7 @@ function updateCustomTimerInFirestore(timerId, name, time) {
         console.error('Error updating custom timer:', error);
     });
 }
+
 // Delete the custom timer from Firestore
 function deleteCustomTimerFromFirestore(timerId) {
     db.collection('timers').doc(timerId).delete().then(() => {
@@ -1287,6 +1289,7 @@ firebase.auth().onAuthStateChanged((user) => {
         loadCustomTimers();
     }
 });
+
 
 
 function createButtonContainer() {
