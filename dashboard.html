@@ -252,119 +252,120 @@ body.night-mode {
 }
 
 .timer-container {
-            display: flex;
-            justify-content: center; /* Center the timers container */
-            align-items: flex-start; /* Align timers to the top */
-            flex-wrap: wrap; /* Allow timers to wrap to the next line if there's not enough space */
-            gap: 20px; /* Space between timers */
-        }
+    display: flex;
+    justify-content: center; /* Center the timers container */
+    align-items: flex-start; /* Align timers to the top */
+    flex-wrap: wrap; /* Allow timers to wrap to the next line if there's not enough space */
+    gap: 20px; /* Space between timers */
+}
 
-        .pomodoro-timer, .custom-timer {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+.pomodoro-timer, .custom-timer {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        .pomodoro-timer h2, .custom-timer h2 {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
+.pomodoro-timer h2, .custom-timer h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
 
-        .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
-            width: 100px;
-            padding: 10px;
-            border: none;
-            border-radius: var(--border-radius);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
+.pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+    width: 100px;
+    padding: 10px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
 
-        .pomodoro-timer .button-container, .custom-timer .button-container {
-            display: flex;
-            gap: 10px; /* Space between buttons */
-            margin-top: 10px; /* Space above buttons */
-        }
+.pomodoro-timer .button-container, .custom-timer .button-container {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px; /* Space above buttons */
+}
 
-        .pomodoro-timer button, .custom-timer button {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
+.pomodoro-timer button, .custom-timer button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
-        .pomodoro-timer button:hover, .custom-timer button:hover {
-            background-color: var(--accent-color);
-            transform: scale(1.05);
-        }
+.pomodoro-timer button:hover, .custom-timer button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
 
-        #add-timer {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-left: 10px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.1);
-            width: 32px; /* Ensures the button is round */
-            height: 32px; /* Ensures the button is round */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+#add-timer {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 32px; /* Ensures the button is round */
+    height: 32px; /* Ensures the button is round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        #add-timer:hover {
-            background-color: var(--accent-color);
-            transform: scale(1.05);
-        }
+#add-timer:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
 
-        .remove-timer {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-left: 10px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.1);
-            width: 32px; /* Ensures the button is round */
-            height: 32px; /* Ensures the button is round */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.remove-timer {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 32px; /* Ensures the button is round */
+    height: 32px; /* Ensures the button is round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .remove-timer:hover {
-            background-color: var(--accent-color);
-            transform: scale(1.05);
-        }
+.remove-timer:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
 
-        #custom-timers {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
-        }
+#custom-timers {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
+}
+
 
 .dropdown-menu {
     margin-bottom: 20px;
