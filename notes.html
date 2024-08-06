@@ -439,6 +439,10 @@ body.night-mode {
                 margin-bottom: 10px; /* Adds space between buttons */
             }
 
+            .notes-dashboard-container {
+    display: flex;
+    align-items: center;
+}
             .beta-tag {
     background-color: var(--hover-bg);
     color: var(--text-color);
@@ -450,6 +454,8 @@ body.night-mode {
     vertical-align: middle;
     display: inline-block;
 }
+
+
     </style>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 </head>
@@ -519,12 +525,10 @@ body.night-mode {
         </div>
         <div class="main-content">
         <div class="dashboard-header">
-            <div class="section">
-                <h2 class="feature-title">
-                    Notes Dashboard
-                    <span class="beta-tag">BETA</span>
-                </h2>
-            </div>
+<div class="notes-dashboard-container">
+    <h2>Notes Dashboard</h2>
+    <span class="beta-tag">Beta</span>
+</div>
             <div class="create-new">
                 <textarea id="note-input" placeholder="Enter text to generate notes" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
                 <button onclick="createNote()">Create Note</button>
