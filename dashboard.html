@@ -1150,6 +1150,7 @@ function addCustomTimerFromFirestore(timerId, name, time) {
             if (customTimeLeft <= 0) {
                 clearInterval(customTimer);
                 isCustomRunning = false;
+                sound.play();
             }
         }, 1000);
     }
@@ -1302,6 +1303,17 @@ firebase.auth().onAuthStateChanged((user) => {
         loadCustomTimers();
     }
 });
+
+// Ensure sound is playable after user interaction
+document.addEventListener('click', () => {
+    sound.play().then(() => {
+        sound.pause();
+        sound.currentTime = 0;
+    }).catch((error) => {
+        console.error('Error playing sound:', error);
+    });
+});
+
 
 
 function createButtonContainer() {
