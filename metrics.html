@@ -91,7 +91,7 @@ body.night-mode {
 }
 
 .sidebar {
-    width: 330px;
+    width: 254px;
     background: inherit;
     padding: 20px;
     display: flex;
@@ -249,6 +249,39 @@ body.night-mode {
 .user-avatar:hover {
     transform: scale(1.1);
     color: var(--text-color);
+}
+
+
+.account-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+.account-button:hover {
+    transform: scale(1.05);
+}
+
+.account-button:focus {
+    outline: none;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-color); /* Initial color is accent color */
+    margin-right: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
 }
 
         .main-content {
