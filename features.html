@@ -792,7 +792,7 @@ iframe {
 
 let timer;
 let isRunning = false;
-let timeLeft = 1500; // 25 minutes
+let timeLeft = 3600; // 1 hour as default
 
 const timerDisplay = document.getElementById('timer');
 const startButton = document.getElementById('start');
@@ -823,21 +823,23 @@ function pauseTimer() {
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft = 1500;
+    timeLeft = 3600; // Reset to 1 hour
     updateDisplay();
 }
 
 function updateDisplay() {
-    const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const hours = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
     const seconds = (timeLeft % 60).toString().padStart(2, '0');
-    timerDisplay.value = `${minutes}:${seconds}`;
+    timerDisplay.value = `${hours}:${minutes}:${seconds}`;
 }
 
 // Utility function to format time
 function formatTime(seconds) { 
-    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${minutes}:${secs}`;
+    return `${hours}:${minutes}:${secs}`;
 }
 
 // Add a custom timer from Firestore (to load on page reload)
@@ -932,9 +934,10 @@ function addCustomTimerFromFirestore(timerId, name, time) {
     }
 
     function updateCustomDisplay() {
-        const minutes = Math.floor(customTimeLeft / 60).toString().padStart(2, '0');
+        const hours = Math.floor(customTimeLeft / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((customTimeLeft % 3600) / 60).toString().padStart(2, '0');
         const seconds = (customTimeLeft % 60).toString().padStart(2, '0');
-        input.value = `${minutes}:${seconds}`;
+        input.value = `${hours}:${minutes}:${seconds}`;
     }
 
     function removeCustomTimer() {
@@ -956,16 +959,16 @@ function addCustomTimerFromFirestore(timerId, name, time) {
 
     function validateAndParseInput() {
         const timeParts = input.value.split(':');
-        if (timeParts.length !== 2) {
-            alert('Invalid time format. Please use mm:ss.');
+        if (timeParts.length !== 3) {
+            alert('Invalid time format. Please use hh:mm:ss.');
             return false;
         }
-        const [newMinutes, newSeconds] = timeParts.map(Number);
-        if (isNaN(newMinutes) || isNaN(newSeconds) || newMinutes < 0 || newSeconds < 0 || newSeconds >= 60) {
-            alert('Invalid time values. Please ensure minutes and seconds are valid numbers and seconds are less than 60.');
+        const [newHours, newMinutes, newSeconds] = timeParts.map(Number);
+        if (isNaN(newHours) || isNaN(newMinutes) || isNaN(newSeconds) || newHours < 0 || newMinutes < 0 || newMinutes >= 60 || newSeconds < 0 || newSeconds >= 60) {
+            alert('Invalid time values. Please ensure hours, minutes, and seconds are valid numbers, and minutes/seconds are less than 60.');
             return false;
         }
-        customTimeLeft = (newMinutes * 60) + newSeconds;
+        customTimeLeft = (newHours * 3600) + (newMinutes * 60) + newSeconds;
         updateCustomDisplay();
         return true;
     }
@@ -1044,7 +1047,7 @@ resetButton.addEventListener('click', resetTimer);
 addButton.addEventListener('click', () => {
     if (customTimerCount < 2) { // Ensure the limit for custom timers is respected
         const name = `Custom Timer ${customTimerCount + 1}`;
-        const time = 1500; // Default to 25 minutes for new custom timers
+        const time = 3600; // Default to 1 hour for new custom timers
 
         saveCustomTimerToFirestore(name, time).then((timerId) => {
             addCustomTimerFromFirestore(timerId, name, time);
@@ -1060,6 +1063,7 @@ firebase.auth().onAuthStateChanged((user) => {
         loadCustomTimers();
     }
 });
+
 
             // Load blocked sites on page load
             fetchBlockedSites();
