@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Focus Metrics</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
     <style>
      :root {
-    --primary-color: #ffffff; /* White */
-    --secondary-color: #3F3D56; /* Dark Grayish Blue */
-    --accent-color: #009bf5; /* Pink */
-    --text-color: #ffffff; /* white */
-    --bg-color: rgba(255, 255, 255, 0.1);; /* Dark Background */
-    --card-bg: rgba(255, 255, 255, 0.1); /* Slightly Transparent Dark Background */
+        --primary-color: #6C63FF;
+            --secondary-color: #3F3D56;
+            --accent-color: #F50057;
+            --text-color: #F8F9FA;
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
     --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
     --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
     --border-radius: 15px;
@@ -29,11 +30,10 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
-    backdrop-filter: blur(10px);
+    background-color: var(--bg-color); /* Solid dark background */
+    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
 }
+
 
 body.night-mode {
     background-color: #333333;
@@ -46,65 +46,44 @@ body.night-mode {
     --glass-bg: rgba(18, 18, 18, 0.8); /* Darker frosted glass effect */
     --hover-bg: rgba(30, 30, 30, 0.9); /* Darker hover background */
 }
-
-/* Additional styles for buttons and gradients in dark mode */
-body.night-mode .button {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
 }
 
-body.night-mode .gradient-bg {
-    background: linear-gradient(135deg, var(--secondary-color), var(--bg-color));
-}
-
-body.night-mode .sidebar {
-    background-color: #333333;
-}
-
-body.night-mode .menu-item {
-    color: #ffffff;
-}
-
-/* Upgrade button in dark mode */
-body.night-mode .upgrade-btn {
-    background: linear-gradient(45deg, var(--accent-color), #FF1493);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
-    margin-top: 20px;
-    font-weight: 600;
+.menu-item {
     display: flex;
     align-items: center;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    backdrop-filter: blur(10px);
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.menu-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-body.night-mode .upgrade-btn svg {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+.theme-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
 }
 
-body.night-mode .upgrade-btn:hover {
-    transform: scale(1.05);
+.theme-icon.active {
+    animation: rotate 0.5s ease-in-out;
 }
 
-        
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.toggle-night-mode {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    cursor: pointer;
-}
+
 
 .container {
     display: flex;
@@ -112,7 +91,7 @@ body.night-mode .upgrade-btn:hover {
 }
 
 .sidebar {
-    width: 254px;
+    width: 330px;
     background: inherit;
     padding: 20px;
     display: flex;
@@ -270,38 +249,6 @@ body.night-mode .upgrade-btn:hover {
 .user-avatar:hover {
     transform: scale(1.1);
     color: var(--text-color);
-}
-
-.account-button {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
-}
-
-.account-button:hover {
-    transform: scale(1.05);
-}
-
-.account-button:focus {
-    outline: none;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--accent-color); /* Initial color is accent color */
-    margin-right: 10px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.user-avatar:hover {
-    transform: scale(1.1);
 }
 
         .main-content {
