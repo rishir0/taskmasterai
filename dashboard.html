@@ -816,14 +816,6 @@ margin-right: 0px;}
     animation: rotateIcon 0.5s;
 }
 
-#timer-sections {
-    display: none; /* Hide timers by default */
-}
-
-#timer-sections.show {
-    display: block; /* Show timers when 'show' class is added */
-}
-
 /* Hide the toggle button on larger screens (desktops) */
 @media (min-width: 601px) {
     #toggle-timers {
@@ -849,24 +841,6 @@ margin-right: 0px;}
             <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
     </button>
-    <button id="toggle-timers">Show Timers</button>
-<div id="timer-sections">
-    <div class="timer-container">
-        <div class="pomodoro-timer custom-timer">
-            <div style="display: flex; align-items: center;">
-                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                <button id="add-timer">+</button> <!-- Add the + button here -->
-            </div>
-            <input type="text" id="timer" value="25:00" readonly>
-            <div class="button-container">
-                <button id="start">Start</button>
-                <button id="pause">Pause</button>
-                <button id="reset">Reset</button>
-            </div>
-        </div>
-        <div id="custom-timers"></div>
-    </div>
-</div>
     <div class="container">
         <div class="sidebar">
             <div class="logo" onclick="window.location.href='index.html'">
@@ -1679,10 +1653,6 @@ function signUp(email, password) {
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
-
-
-
-
 
 <script>
 document.getElementById('toggle-timers').addEventListener('click', function() {
