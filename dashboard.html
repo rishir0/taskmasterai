@@ -666,6 +666,49 @@ margin-right: 0px;}
 }
 
 
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .timer-container {
+        flex-direction: column; /* Stack timers vertically */
+        align-items: center; /* Center timers horizontally */
+        gap: 15px; /* Reduce gap between timers */
+    }
+
+    .pomodoro-timer, .custom-timer {
+        width: 100%; /* Full width of the container */
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+
+    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+        width: 80%; /* Adjust width to fit smaller screens */
+        font-size: 1.2rem; /* Slightly smaller text for better fit */
+    }
+
+    .pomodoro-timer .button-container, .custom-timer .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 5px; /* Reduce space between buttons */
+    }
+
+    .pomodoro-timer button, .custom-timer button {
+        padding: 8px 16px; /* Adjust padding for smaller buttons */
+        font-size: 0.9rem; /* Smaller font size for better fit */
+    }
+
+    #add-timer, .remove-timer {
+        width: 28px; /* Adjust size for smaller screens */
+        height: 28px; /* Adjust size for smaller screens */
+        font-size: 0.8rem; /* Adjust font size for better fit */
+    }
+
+    #custom-timers {
+        flex-direction: column; /* Stack custom timers vertically */
+        gap: 15px; /* Reduce gap between custom timers */
+    }
+}
+
+
+
+
 /* Media queries for mobile responsiveness */
 @media (max-width: 768px) {
     .custom-button {
