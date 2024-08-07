@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -307,7 +306,7 @@ body.night-mode {
     text-decoration: underline;
 }
 
-    .sound-options {
+.sound-options {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
@@ -722,7 +721,6 @@ body.night-mode {
 });
 
               
-<script>
     const soundOptions = document.querySelectorAll('.sound-option');
     const playingDisplay = document.getElementById('playing');
     const currentSoundDisplay = document.getElementById('current-sound');
@@ -733,25 +731,33 @@ body.night-mode {
         const sound = option.getAttribute('data-sound');
         const audioElement = document.getElementById(sound);
 
+        console.log(`Clicked on: ${sound}`);
+
         if (currentAudio && currentAudio !== audioElement) {
+          console.log(`Pausing: ${currentAudio.id}`);
           currentAudio.pause();
           currentAudio.currentTime = 0;
         }
 
         if (currentAudio === audioElement && !audioElement.paused) {
+          console.log(`Pausing: ${audioElement.id}`);
           audioElement.pause();
           currentAudio = null;
           playingDisplay.style.display = 'none';
         } else {
-          audioElement.play();
-          currentAudio = audioElement;
-          currentSoundDisplay.textContent = option.textContent;
-          playingDisplay.style.display = 'block';
+          console.log(`Playing: ${audioElement.id}`);
+          audioElement.play().then(() => {
+            currentAudio = audioElement;
+            currentSoundDisplay.textContent = option.textContent;
+            playingDisplay.style.display = 'block';
+          }).catch(error => {
+            console.error(`Error playing ${audioElement.id}:`, error);
+          });
         }
       });
     });
-  </script>
-              </body>
+                
+                </body>
                 <main>
                           
 
