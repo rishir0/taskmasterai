@@ -307,40 +307,33 @@ body.night-mode {
     text-decoration: underline;
 }
 
-.sound-options {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem; /* Space between sound options */
-    margin-top: 2rem; /* Space above sound options */
-}
+    .sound-options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem; /* Space between sound options */
+      margin-top: 2rem; /* Space above sound options */
+    }
 
-.sound-option {
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 1rem 2rem; /* Padding inside each sound option */
-    text-align: center;
-    width: 150px; /* Width of each sound option */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+    .sound-option {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem 2rem; /* Padding inside each sound option */
+      text-align: center;
+      width: 150px; /* Width of each sound option */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-.sound-option:hover {
-    background-color: var(--accent-color); /* Hover effect */
-}
+    .sound-option:hover {
+      background-color: var(--accent-color); /* Hover effect */
+    }
 
-iframe {
-    display: none; /* Hides the iframe */
-    width: 0;
-    height: 0;
-    border: none;
-}
-
-.playing {
-    display: block;
-    margin-top: 2rem; /* Space above the playing indicator */
-    color: var(--primary-color);
-}
+    .playing {
+      display: none;
+      margin-top: 2rem; /* Space above the playing indicator */
+      color: var(--primary-color);
+    }
 
 .timer-container {
     display: flex;
@@ -642,19 +635,27 @@ iframe {
     <p>This feature is currently in beta, so an extension is required.</p>
     <button class="try-now-btn" onclick="window.open('https://chromewebstore.google.com/detail/stayfocusd-block-distract/laankejkbhbdhmipfmgcngdelahlfoji', '_blank')">Try Now</button>
 </div>
-            <div class="section">
-                <h2>Ambient Sounds</h2>
-                <div class="sound-options">
-                    <div class="sound-option" data-sound="white-noise">White Noise</div>
-                    <div class="sound-option" data-sound="nature">Rain Sounds</div>
-                    <div class="sound-option" data-sound="instrumental">Instrumental Music</div>
-                  </div>
-                  <iframe id="white-noise" src="https://www.youtube.com/embed/nMfPqeZjc2c?autoplay=0&loop=1&playlist=nMfPqeZjc2c" allow="autoplay"></iframe>
-                  <iframe id="nature" src="https://www.youtube.com/embed/GqwagDvuWNk?autoplay=0&loop=1&playlist=GqwagDvuWNk" allow="autoplay"></iframe>
-                  <iframe id="instrumental" src="https://www.youtube.com/embed/lBFmdkEZiMQ?autoplay=0&loop=1&playlist=lBFmdkEZiMQ" allow="autoplay"></iframe>
-                  <div id="playing" class="playing" style="display: none;">Now Playing: <span id="current-sound"></span></div>
-                </main>
-
+  <div class="section">
+    <h2>Ambient Sounds</h2>
+    <div class="sound-options">
+      <div class="sound-option" data-sound="white-noise">White Noise</div>
+      <div class="sound-option" data-sound="nature">Rain Sounds</div>
+      <div class="sound-option" data-sound="instrumental">Instrumental Music</div>
+    </div>
+    <audio id="white-noise" loop>
+      <source src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/White%20Noise%20Black%20Screen%2015%20Minutes.mp3?alt=media&token=c77d3ad8-b026-4af5-a32d-da89a83a31d4" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <audio id="nature" loop>
+      <source src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/15%20Minute%20Meditation%20-%20Rain%20on%20a%20Tin%20Roof%20-%20White%20Noise%20Rain.mp3?alt=media&token=7f51372f-73e8-4019-a65d-a05b82756b8a" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <audio id="instrumental" loop>
+      <source src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/instrumental.mp3?alt=media&token=3cb0375b-3e76-4d57-8087-f8eac3e1daaa" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <div id="playing" class="playing">Now Playing: <span id="current-sound"></span></div>
+  </div>
         <div class="timer-container">
             <div class="pomodoro-timer custom-timer">
                 <div style="display: flex; align-items: center;">
@@ -721,36 +722,35 @@ iframe {
 });
 
               
-                  const soundOptions = document.querySelectorAll('.sound-option');
-                  const playingDisplay = document.getElementById('playing');
-                  const currentSoundDisplay = document.getElementById('current-sound');
-                  let currentIframe = null;
-              
-                  soundOptions.forEach(option => {
-                    option.addEventListener('click', () => {
-                      const sound = option.getAttribute('data-sound');
-                      const iframeElement = document.getElementById(sound);
-              
-                      if (currentIframe && currentIframe !== iframeElement) {
-                        currentIframe.src = currentIframe.src.replace("autoplay=1", "autoplay=0"); // Stop current iframe
-                        currentIframe.style.display = 'none';
-                      }
-              
-                      if (currentIframe === iframeElement && iframeElement.style.display === 'block') {
-                        iframeElement.src = iframeElement.src.replace("autoplay=1", "autoplay=0");
-                        iframeElement.style.display = 'none';
-                        currentIframe = null;
-                        playingDisplay.style.display = 'none';
-                      } else {
-                        iframeElement.src = iframeElement.src.replace("autoplay=0", "autoplay=1"); // Start iframe
-                        iframeElement.style.display = 'block';
-                        currentIframe = iframeElement;
-                        currentSoundDisplay.textContent = option.textContent;
-                        playingDisplay.style.display = 'block';
-                      }
-                    });
-                  });
-                </script>
+<script>
+    const soundOptions = document.querySelectorAll('.sound-option');
+    const playingDisplay = document.getElementById('playing');
+    const currentSoundDisplay = document.getElementById('current-sound');
+    let currentAudio = null;
+
+    soundOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const sound = option.getAttribute('data-sound');
+        const audioElement = document.getElementById(sound);
+
+        if (currentAudio && currentAudio !== audioElement) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+
+        if (currentAudio === audioElement && !audioElement.paused) {
+          audioElement.pause();
+          currentAudio = null;
+          playingDisplay.style.display = 'none';
+        } else {
+          audioElement.play();
+          currentAudio = audioElement;
+          currentSoundDisplay.textContent = option.textContent;
+          playingDisplay.style.display = 'block';
+        }
+      });
+    });
+  </script>
               </body>
                 <main>
                           
