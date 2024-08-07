@@ -553,6 +553,47 @@ iframe {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.8); /* Black with opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: var(--card-bg);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid var(--accent-color);
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 600px;
+  border-radius: var(--border-radius);
+  text-align: center;
+  color: var(--text-color);
+}
+
+/* The Close Button */
+.close {
+  color: var(--accent-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--primary-color);
+  text-decoration: none;
+  cursor: pointer;
+}
     </style>
 </head>
 <body>
@@ -671,6 +712,14 @@ iframe {
             </div>
             <div id="custom-timers"></div>
         </div>
+
+          <!-- Custom alert modal -->
+  <div id="custom-alert-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="alert-message"></p>
+    </div>
+  </div>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
@@ -794,7 +843,9 @@ iframe {
 
 let timer;
 let isRunning = false;
-let timeLeft = 3600; // 1 hour as default
+let timeLeft = 1500; // 25 min as default
+const sound = new Audio('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/ios-17-ringtone-tilt-gg8jzmiv_pUhS32fz.mp3?alt=media&token=a0a522e0-8a49-408a-9dfe-17e41d3bc801');
+sound.loop = true;
 
 const timerDisplay = document.getElementById('timer');
 const startButton = document.getElementById('start');
@@ -825,7 +876,7 @@ function pauseTimer() {
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft = 3600; // Reset to 1 hour
+    timeLeft = 1500; // Reset to 1 hour
     updateDisplay();
 }
 
@@ -913,6 +964,7 @@ function addCustomTimerFromFirestore(timerId, name, time) {
             if (customTimeLeft <= 0) {
                 clearInterval(customTimer);
                 isCustomRunning = false;
+                sound.play();
             }
         }, 1000);
     }
@@ -1042,21 +1094,45 @@ function deleteCustomTimerFromFirestore(timerId) {
     });
 }
 
+
+// Get the modal
+const modal = document.getElementById('custom-alert-modal');
+const alertMessage = document.getElementById('alert-message');
+const span = document.getElementsByClassName('close')[0];
+
+// Function to show the modal with a custom message
+function showAlert(message) {
+  alertMessage.textContent = message;
+  modal.style.display = 'block';
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = 'none';
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = 'none';
+  }
+}
+
 // Event listeners for main timer controls
 startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
 addButton.addEventListener('click', () => {
-    if (customTimerCount < 2) { // Ensure the limit for custom timers is respected
-        const name = `Custom Timer ${customTimerCount + 1}`;
-        const time = 3600; // Default to 1 hour for new custom timers
+  if (customTimerCount < 2) { // Ensure the limit for custom timers is respected
+    const name = `Custom Timer ${customTimerCount + 1}`;
+    const time = 3600; // Default to 1 hour for new custom timers
 
-        saveCustomTimerToFirestore(name, time).then((timerId) => {
-            addCustomTimerFromFirestore(timerId, name, time);
-        });
-    } else {
-        alert('You can only create up to 2 custom timers.');
-    }
+    saveCustomTimerToFirestore(name, time).then((timerId) => {
+      addCustomTimerFromFirestore(timerId, name, time);
+    });
+  } else {
+    showAlert('You can only create up to 2 custom timers.');
+  }
 });
 
 // Load existing custom timers on page load
@@ -1066,6 +1142,15 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
+// Ensure sound is playable after user interaction
+document.addEventListener('click', () => {
+    sound.play().then(() => {
+        sound.pause();
+        sound.currentTime = 0;
+    }).catch((error) => {
+        console.error('Error playing sound:', error);
+    });
+});
 
             // Load blocked sites on page load
             fetchBlockedSites();
