@@ -1087,15 +1087,12 @@ let customTimerCount = 0; // Track the number of custom timers
 function startTimer() {
     if (isRunning) return;
     isRunning = true;
-    startButton.innerText = 'Stop';
-    resetButton.innerText = 'Stop';
     timer = setInterval(() => {
         timeLeft--;
         updateDisplay();
         if (timeLeft <= 0) {
             clearInterval(timer);
             isRunning = false;
-            sound.play();
         }
     }, 1000);
 }
@@ -1110,10 +1107,6 @@ function resetTimer() {
     isRunning = false;
     timeLeft = 3600; // Reset to 1 hour
     updateDisplay();
-    sound.pause();
-    sound.currentTime = 0;
-    startButton.innerText = 'Start';
-    resetButton.innerText = 'Reset';
 }
 
 function updateDisplay() {
