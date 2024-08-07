@@ -843,31 +843,26 @@ margin-right: 0px;}
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8); /* Black with opacity */
 }
 
 /* Modal Content/Box */
 .modal-content {
   background-color: var(--card-bg);
+  margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
-  border: 1px solid var(--secondary-color);
+  border: 1px solid var(--accent-color);
   width: 80%; /* Could be more or less, depending on screen size */
   max-width: 600px;
   border-radius: var(--border-radius);
   text-align: center;
   color: var(--text-color);
-  position: relative;
 }
 
 /* The Close Button */
 .close {
-  color: var(--text-color);
-  position: absolute;
-  top: 10px;
-  left: 10px;
+  color: var(--accent-color);
+  float: right;
   font-size: 28px;
   font-weight: bold;
 }
@@ -878,7 +873,6 @@ margin-right: 0px;}
   text-decoration: none;
   cursor: pointer;
 }
-
         
     </style>
 </head>
