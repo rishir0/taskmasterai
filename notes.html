@@ -34,6 +34,21 @@ body {
     backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
 }
 
+        .notes-dashboard-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .beta-tag {
+            background-color: var(--hover-bg);
+            color: var(--text-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
 
 body.night-mode {
     background-color: #333333;
@@ -442,20 +457,7 @@ body.night-mode {
                 margin-bottom: 10px; /* Adds space between buttons */
             }
 
-        .notes-dashboard-container {
-            display: flex;
-            align-items: center;
-        }
 
-        .beta-tag {
-            background-color: var(--hover-bg);
-            color: var(--text-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
 
     /* Animation for SVG */
 @keyframes rotateIcon {
