@@ -669,130 +669,6 @@ margin-right: 0px;}
 }
 
 
-/* Mobile Styles */
-@media (max-width: 600px) {
-    .timer-container {
-        flex-direction: column; /* Stack timers vertically */
-        align-items: center; /* Center timers horizontally */
-        gap: 15px; /* Reduce gap between timers */
-    }
-
-    .pomodoro-timer, .custom-timer {
-        width: 100%; /* Full width of the container */
-        padding: 15px; /* Adjust padding for smaller screens */
-    }
-
-    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
-        width: 80%; /* Adjust width to fit smaller screens */
-        font-size: 1.2rem; /* Slightly smaller text for better fit */
-    }
-
-    .pomodoro-timer .button-container, .custom-timer .button-container {
-        flex-direction: row; /* Arrange buttons horizontally */
-        gap: 10px; /* Space between buttons */
-    }
-
-    .pomodoro-timer button, .custom-timer button {
-        padding: 8px 16px; /* Adjust padding for smaller buttons */
-        font-size: 0.9rem; /* Smaller font size for better fit */
-    }
-
-    #add-timer, .remove-timer {
-        width: 28px; /* Adjust size for smaller screens */
-        height: 28px; /* Adjust size for smaller screens */
-        font-size: 0.8rem; /* Adjust font size for better fit */
-    }
-
-    #custom-timers {
-        flex-direction: column; /* Stack custom timers vertically */
-        gap: 15px; /* Reduce gap between custom timers */
-    }
-}
-
-
-/* Media queries for mobile responsiveness */
-@media (max-width: 768px) {
-    .custom-button {
-        width: 48%;
-        margin-bottom: 10px;
-        max-width: 48%;
-    }
-}
-
-@media (max-width: 480px) {
-    .custom-button {
-        width: 100%;
-        margin-bottom: 10px;
-        max-width: 100%;
-    }
-}
-
-/* Existing styles */
-.sidebar-toggle {
-    display: none;
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--hover-bg);
-    color: var(--text-color);
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
-}
-
-.sidebar-toggle svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .sidebar {
-        display: none;
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 250px; /* Adjust width as needed */
-        background-color: #333; /* Solid color, adjust as needed */
-        color: var(--text-color);
-        padding: 20px; /* Adjust padding as needed */
-        z-index: 1000;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
-        border-radius: 0; /* No rounded corners */
-    }
-    .sidebar.active {
-        display: flex;
-    }
-    .sidebar-toggle {
-        display: block;
-    }
-    .main-content {
-        padding-left: 20px;
-        margin-left: 0;
-    }
-}
-
-@media (max-width: 768px) {
-    #tasks-projects .tasks-section,
-    #tasks-projects .projects-section,
-    #tasks-projects .goals-section,
-    #tasks-projects .plans-section {
-        width: 100%;
-        margin-bottom: 20px; /* Adds space between sections on mobile */
-    }
-    
-    .task-button,
-    .project-button,
-    .goal-button,
-    .plan-button {
-        display: block; /* Stacks buttons vertically on mobile */
-        margin: 10px 0; /* Adds space between buttons */
-    }
-}
-
 /* Animation for SVG */
 @keyframes rotateIcon {
     0% {
@@ -873,6 +749,185 @@ margin-right: 0px;}
   text-decoration: none;
   cursor: pointer;
 }
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .timer-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .pomodoro-timer, .custom-timer {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+        width: 80%;
+        font-size: 1.2rem;
+    }
+
+    .pomodoro-timer .button-container, .custom-timer .button-container {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .pomodoro-timer button, .custom-timer button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    #add-timer, .remove-timer {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    #custom-timers {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* Adjust button sizes for different mobile widths */
+@media (max-width: 768px) {
+    .custom-button {
+        width: 48%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Sidebar and Main Content for Mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 250px;
+        background-color: #333;
+        color: var(--text-color);
+        padding: 20px;
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        border-radius: 0;
+    }
+    .sidebar.active {
+        display: flex;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .main-content {
+        padding-left: 20px;
+        margin-left: 0;
+    }
+}
+
+/* Responsive Layout for Tasks, Projects, Goals, Plans */
+@media (max-width: 768px) {
+    #tasks-projects .tasks-section,
+    #tasks-projects .projects-section,
+    #tasks-projects .goals-section,
+    #tasks-projects .plans-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .task-button,
+    .project-button,
+    .goal-button,
+    .plan-button {
+        display: block;
+        margin: 10px 0;
+    }
+}
+
+/* Desktop Styles */
+@media (min-width: 769px) {
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #333;
+        color: var(--text-color);
+        padding: 20px;
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .main-content {
+        margin-left: 270px; /* Account for sidebar width */
+        padding: 20px;
+        width: calc(100% - 270px); /* Dynamically adjust main content width */
+    }
+    
+    .timer-container {
+        flex-direction: row;
+        gap: 30px;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .pomodoro-timer, .custom-timer {
+        width: 45%;
+        padding: 20px;
+    }
+
+    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+        width: 100%;
+        font-size: 1.4rem;
+    }
+
+    .pomodoro-timer .button-container, .custom-timer .button-container {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .pomodoro-timer button, .custom-timer button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+
+    #add-timer, .remove-timer {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    #custom-timers {
+        flex-direction: row;
+        gap: 30px;
+    }
+
+    #tasks-projects .tasks-section,
+    #tasks-projects .projects-section,
+    #tasks-projects .goals-section,
+    #tasks-projects .plans-section {
+        width: 48%;
+        margin-bottom: 30px;
+    }
+    
+    .task-button,
+    .project-button,
+    .goal-button,
+    .plan-button {
+        display: inline-block;
+        margin: 0 10px 10px 0;
+    }
+}
+
         
     </style>
 </head>
