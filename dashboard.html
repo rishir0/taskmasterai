@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,18 +93,16 @@ body.night-mode {
 
 .sidebar {
     width: 250px;
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 250px; /* Ensure minimum width is always maintained */
+    max-width: 250px; /* Ensure maximum width is always maintained */
     background: inherit;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Ensure sidebar takes full height */
+    height: 100%;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    position: fixed; /* Fix sidebar to left */
-    overflow-y: auto; /* Scroll if content overflows */
 }
 
 .sidebar h1 {
@@ -196,14 +195,8 @@ body.night-mode {
 .main-content {
     flex-grow: 1;
     padding: 20px;
+    overflow-y: auto;
     background: transparent;
-    margin-left: 250px; /* Offset for sidebar */
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    height: 100vh; /* Ensure full viewport height */
-    overflow-x: auto; /* Scroll if content overflows horizontally */
 }
 
 .dashboard-header {
@@ -881,48 +874,6 @@ margin-right: 0px;}
   text-decoration: none;
   cursor: pointer;
 }
-
-/* Task/project sections remain horizontal */
-#tasks-projects {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 100%; /* Prevent wrapping */
-    overflow-x: auto; /* Scroll horizontally if content overflows */
-}
-
-/* Ensure items do not stack vertically */
-#tasks-projects .tasks-section, #tasks-projects .projects-section, #tasks-projects .goals-section, #tasks-projects .plans-section {
-    flex: 0 0 auto;
-    min-width: 300px;
-    max-width: 300px;
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Timer containers should be horizontal */
-.timer-container {
-    flex-wrap: nowrap;
-    gap: 20px;
-    overflow-x: auto;
-}
-
-/* Custom timers container */
-#custom-timers {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-
-/* Adjust individual item sizes */
-.item, .pomodoro-timer, .custom-timer {
-    min-width: 300px;
-    max-width: 300px;
-}
-
         
     </style>
 </head>
