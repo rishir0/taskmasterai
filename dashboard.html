@@ -884,70 +884,77 @@ margin-right: 0px;}
         left: 0;
         top: 0;
         height: 100%;
-        width: 250px; /* Adjust width as needed */
-        background-color: #333; /* Solid color, adjust as needed */
+        width: 300px; /* Adjust width for larger screens */
+        background-color: #333; /* Solid color */
         color: var(--text-color);
-        padding: 20px; /* Adjust padding as needed */
+        padding: 30px; /* Increased padding for larger screens */
         z-index: 1000;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow for better depth */
         border-radius: 0; /* No rounded corners */
     }
-
+    .sidebar.active {
+        display: flex;
+    }
     .sidebar-toggle {
         display: none;
     }
-
     .main-content {
-        margin-left: 250px; /* Offset for the sidebar */
-        padding: 20px; /* Adjust padding for desktop */
+        padding-left: 30px;
+        margin-left: 300px; /* Offset for the expanded sidebar */
     }
+}
 
+@media (min-width: 769px) {
     #tasks-projects .tasks-section,
     #tasks-projects .projects-section,
     #tasks-projects .goals-section,
     #tasks-projects .plans-section {
         width: 100%;
-        margin-bottom: 20px; /* Space between sections */
+        margin-bottom: 30px; /* Adds more space between sections on larger screens */
     }
     
     .task-button,
     .project-button,
     .goal-button,
     .plan-button {
-        display: inline-block; /* Arrange buttons horizontally */
-        margin: 10px; /* Space between buttons */
+        display: inline-block; /* Arranges buttons horizontally on desktop */
+        margin: 15px; /* Adds space between buttons */
     }
+}
 
+@media (min-width: 769px) {
     .custom-button {
         width: auto; /* Adjust width as needed */
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         max-width: none; /* Remove max-width constraint */
     }
+}
 
+@media (min-width: 769px) {
     .timer-container {
-        flex-direction: row; /* Default horizontal layout */
-        align-items: flex-start; /* Align items to the start */
-        gap: 20px; /* Space between timers */
+        flex-direction: row; /* Horizontal layout by default */
+        align-items: flex-start; /* Align timers to the start */
+        gap: 20px; /* Increase gap between timers */
     }
 
     .pomodoro-timer, .custom-timer {
         width: auto; /* Adjust width as needed */
-        padding: 20px; /* Adjust padding for larger screens */
+        padding: 20px; /* Increased padding for larger screens */
     }
 
     .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
         width: 100%; /* Full width of the container */
-        font-size: 1.4rem; /* Larger text for better readability */
+        font-size: 1.5rem; /* Larger text for better readability */
     }
 
     .pomodoro-timer .button-container, .custom-timer .button-container {
         flex-direction: row; /* Arrange buttons horizontally */
-        gap: 20px; /* Space between buttons */
+        gap: 15px; /* Space between buttons */
     }
 
     .pomodoro-timer button, .custom-timer button {
-        padding: 10px 20px; /* Adjust padding for larger buttons */
-        font-size: 1rem; /* Larger font size for better readability */
+        padding: 12px 24px; /* Increased padding for larger buttons */
+        font-size: 1.1rem; /* Larger font size for better readability */
     }
 
     #add-timer, .remove-timer {
@@ -957,9 +964,9 @@ margin-right: 0px;}
     }
 
     #custom-timers {
-        flex-direction: row; /* Arrange custom timers horizontally */
+        flex-direction: row; /* Horizontal layout for custom timers */
         flex-wrap: wrap; /* Allow wrapping of timers */
-        gap: 20px; /* Space between custom timers */
+        gap: 20px; /* Increased gap between custom timers */
     }
 }
         
