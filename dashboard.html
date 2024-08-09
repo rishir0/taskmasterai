@@ -197,7 +197,9 @@ body.night-mode {
     padding: 20px;
     overflow-y: auto;
     background: transparent;
-}
+    margin-left: 250px; /* Account for sidebar width */
+    min-width: calc(100% - 250px); /* Ensure minimum width accounts for sidebar */
+    max-width: calc(100% - 250px); /* Ensure maximum width accounts for sidebar */
 
 .dashboard-header {
     margin-bottom: 30px;
