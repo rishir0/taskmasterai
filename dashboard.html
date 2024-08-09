@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -874,100 +872,6 @@ margin-right: 0px;}
   color: var(--primary-color);
   text-decoration: none;
   cursor: pointer;
-}
-
-/* Desktop Styles */
-@media (min-width: 769px) {
-    .sidebar {
-        display: block;
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 300px; /* Adjust width for larger screens */
-        background-color: #333; /* Solid color */
-        color: var(--text-color);
-        padding: 30px; /* Increased padding for larger screens */
-        z-index: 1000;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow for better depth */
-        border-radius: 0; /* No rounded corners */
-    }
-    .sidebar.active {
-        display: flex;
-    }
-    .sidebar-toggle {
-        display: none;
-    }
-    .main-content {
-        padding-left: 30px;
-        margin-left: 300px; /* Offset for the expanded sidebar */
-    }
-}
-
-@media (min-width: 769px) {
-    #tasks-projects .tasks-section,
-    #tasks-projects .projects-section,
-    #tasks-projects .goals-section,
-    #tasks-projects .plans-section {
-        width: 100%;
-        margin-bottom: 30px; /* Adds more space between sections on larger screens */
-    }
-    
-    .task-button,
-    .project-button,
-    .goal-button,
-    .plan-button {
-        display: inline-block; /* Arranges buttons horizontally on desktop */
-        margin: 15px; /* Adds space between buttons */
-    }
-}
-
-@media (min-width: 769px) {
-    .custom-button {
-        width: auto; /* Adjust width as needed */
-        margin-bottom: 15px;
-        max-width: none; /* Remove max-width constraint */
-    }
-}
-
-@media (min-width: 769px) {
-    .timer-container {
-        flex-direction: row; /* Horizontal layout by default */
-        align-items: flex-start; /* Align timers to the start */
-        gap: 20px; /* Increase gap between timers */
-    }
-
-    .pomodoro-timer, .custom-timer {
-        width: auto; /* Adjust width as needed */
-        padding: 20px; /* Increased padding for larger screens */
-    }
-
-    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
-        width: 100%; /* Full width of the container */
-        font-size: 1.5rem; /* Larger text for better readability */
-    }
-
-    .pomodoro-timer .button-container, .custom-timer .button-container {
-        flex-direction: row; /* Arrange buttons horizontally */
-        gap: 15px; /* Space between buttons */
-    }
-
-    .pomodoro-timer button, .custom-timer button {
-        padding: 12px 24px; /* Increased padding for larger buttons */
-        font-size: 1.1rem; /* Larger font size for better readability */
-    }
-
-    #add-timer, .remove-timer {
-        width: 40px; /* Larger size for better visibility */
-        height: 40px; /* Larger size for better visibility */
-        font-size: 1rem; /* Larger font size for better readability */
-    }
-
-    #custom-timers {
-        flex-direction: row; /* Horizontal layout for custom timers */
-        flex-wrap: wrap; /* Allow wrapping of timers */
-        gap: 20px; /* Increased gap between custom timers */
-    }
 }
         
     </style>
