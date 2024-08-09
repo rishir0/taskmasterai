@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,9 +89,7 @@ body.night-mode {
 
 .container {
     display: flex;
-    height: 100vh; /* Full viewport height */
-    width: 100%;
-    overflow: hidden; /* Prevent overflow */
+    height: 100vh;
 }
 
 .sidebar {
@@ -105,10 +104,6 @@ body.night-mode {
     border-radius: var(--border-radius);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    position: fixed; /* Fix sidebar position */
-    top: 0;
-    left: 0;
-    z-index: 1000; /* Ensure it is above other content */
 }
 
 .sidebar h1 {
@@ -203,12 +198,7 @@ body.night-mode {
     padding: 20px;
     overflow-y: auto;
     background: transparent;
-    margin-left: 250px; /* Leave space for the sidebar */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a box-shadow */
-    border-radius: var(--border-radius); /* Match sidebar border-radius */
-    backdrop-filter: blur(10px); /* Match sidebar backdrop-filter */
 }
-
 
 .dashboard-header {
     margin-bottom: 30px;
@@ -884,6 +874,93 @@ margin-right: 0px;}
   color: var(--primary-color);
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Desktop Styles */
+@media (min-width: 769px) {
+    .sidebar {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 250px; /* Adjust width as needed */
+        background-color: #333; /* Solid color, adjust as needed */
+        color: var(--text-color);
+        padding: 20px; /* Adjust padding as needed */
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
+        border-radius: 0; /* No rounded corners */
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 250px; /* Offset for the sidebar */
+        padding: 20px; /* Adjust padding for desktop */
+    }
+
+    #tasks-projects .tasks-section,
+    #tasks-projects .projects-section,
+    #tasks-projects .goals-section,
+    #tasks-projects .plans-section {
+        width: 100%;
+        margin-bottom: 20px; /* Space between sections */
+    }
+    
+    .task-button,
+    .project-button,
+    .goal-button,
+    .plan-button {
+        display: inline-block; /* Arrange buttons horizontally */
+        margin: 10px; /* Space between buttons */
+    }
+
+    .custom-button {
+        width: auto; /* Adjust width as needed */
+        margin-bottom: 10px;
+        max-width: none; /* Remove max-width constraint */
+    }
+
+    .timer-container {
+        flex-direction: row; /* Default horizontal layout */
+        align-items: flex-start; /* Align items to the start */
+        gap: 20px; /* Space between timers */
+    }
+
+    .pomodoro-timer, .custom-timer {
+        width: auto; /* Adjust width as needed */
+        padding: 20px; /* Adjust padding for larger screens */
+    }
+
+    .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
+        width: 100%; /* Full width of the container */
+        font-size: 1.4rem; /* Larger text for better readability */
+    }
+
+    .pomodoro-timer .button-container, .custom-timer .button-container {
+        flex-direction: row; /* Arrange buttons horizontally */
+        gap: 20px; /* Space between buttons */
+    }
+
+    .pomodoro-timer button, .custom-timer button {
+        padding: 10px 20px; /* Adjust padding for larger buttons */
+        font-size: 1rem; /* Larger font size for better readability */
+    }
+
+    #add-timer, .remove-timer {
+        width: 40px; /* Larger size for better visibility */
+        height: 40px; /* Larger size for better visibility */
+        font-size: 1rem; /* Larger font size for better readability */
+    }
+
+    #custom-timers {
+        flex-direction: row; /* Arrange custom timers horizontally */
+        flex-wrap: wrap; /* Allow wrapping of timers */
+        gap: 20px; /* Space between custom timers */
+    }
 }
         
     </style>
