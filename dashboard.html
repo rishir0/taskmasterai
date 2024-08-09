@@ -88,7 +88,9 @@ body.night-mode {
 
 .container {
     display: flex;
-    height: 100vh;
+    height: 100vh; /* Full viewport height */
+    width: 100%;
+    overflow: hidden; /* Prevent overflow */
 }
 
 .sidebar {
@@ -103,6 +105,10 @@ body.night-mode {
     border-radius: var(--border-radius);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
+    position: fixed; /* Fix sidebar position */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensure it is above other content */
 }
 
 .sidebar h1 {
@@ -197,9 +203,12 @@ body.night-mode {
     padding: 20px;
     overflow-y: auto;
     background: transparent;
-    margin-left: 250px; /* Account for sidebar width */
-    min-width: calc(100% - 250px); /* Ensure minimum width accounts for sidebar */
-    max-width: calc(100% - 250px); /* Ensure maximum width accounts for sidebar */
+    margin-left: 250px; /* Leave space for the sidebar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a box-shadow */
+    border-radius: var(--border-radius); /* Match sidebar border-radius */
+    backdrop-filter: blur(10px); /* Match sidebar backdrop-filter */
+}
+
 
 .dashboard-header {
     margin-bottom: 30px;
