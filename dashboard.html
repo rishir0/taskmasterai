@@ -368,6 +368,99 @@ body.night-mode {
     flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
 }
 
+
+.dropdown-menu {
+    margin-bottom: 20px;
+}
+
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-header:hover {
+    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
+    color: var(--text-color);
+}
+
+.dropdown-icon {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-content {
+    display: none;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: var(--card-bg);
+    margin-top: 10px;
+}
+
+.dropdown-menu.open .dropdown-content {
+    display: block;
+}
+
+.dropdown-menu.open .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.custom-timers {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.custom-timers h2 {
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.custom-timer {
+    margin-bottom: 20px;
+}
+
+.custom-timer input[type="text"],
+.custom-timer input[type="number"] {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.custom-timer button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-timer button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+
 .account-button {
     background: none;
     border: none;
