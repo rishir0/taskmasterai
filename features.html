@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -345,16 +343,16 @@ iframe {
 
 .timer-container {
     display: flex;
-    justify-content: center; /* Center the timers container */
-    align-items: flex-start; /* Align timers to the top */
-    flex-wrap: wrap; /* Allow timers to wrap to the next line if there's not enough space */
-    gap: 20px; /* Space between timers */
-    margin: 1rem; /* Optional: Add margin around the timers container */
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px; /* Reduced space between timers */
+    margin: 0.5rem; /* Reduced margin around the timers container */
 }
 
 .pomodoro-timer, .custom-timer {
     background-color: var(--card-bg);
-    padding: 20px;
+    padding: 10px; /* Reduced padding */
     border-radius: var(--border-radius);
     text-align: center;
     display: flex;
@@ -366,73 +364,64 @@ iframe {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px; /* Space below the heading */
+    margin-bottom: 5px; /* Reduced space below the heading */
+    font-size: 1rem; /* Reduced font size */
 }
 
 .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
-    width: 100px;
-    padding: 10px;
+    width: 80px; /* Reduced width */
+    padding: 5px; /* Reduced padding */
     border: none;
     border-radius: var(--border-radius);
     background-color: var(--bg-color);
     color: var(--text-color);
     text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 20px; /* Space below the input */
+    font-size: 1rem; /* Reduced font size */
+    margin-bottom: 10px; /* Reduced space below the input */
 }
 
 .pomodoro-timer .button-container, .custom-timer .button-container {
     display: flex;
-    gap: 10px; /* Space between buttons */
-    margin-top: 10px; /* Space above buttons */
+    gap: 5px; /* Reduced space between buttons */
+    margin-top: 5px; /* Reduced space above buttons */
 }
 
 .pomodoro-timer button, .custom-timer button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    padding: 10px 20px;
+    padding: 5px 10px; /* Reduced padding */
     border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.8rem; /* Reduced font size */
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-.pomodoro-timer button:hover, .custom-timer button:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05);
 }
 
 #add-timer, .remove-timer {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    padding: 5px 10px;
+    padding: 3px 6px; /* Reduced padding */
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
-    margin-left: 10px; /* Space between the add/remove button and its adjacent elements */
+    font-size: 0.8rem; /* Reduced font size */
+    margin-left: 5px; /* Reduced space between the add/remove button and its adjacent elements */
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
-    width: 32px; /* Ensures the button is round */
-    height: 32px; /* Ensures the button is round */
+    width: 24px; /* Reduced size */
+    height: 24px; /* Reduced size */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#add-timer:hover, .remove-timer:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05);
-}
-
 #custom-timers {
     display: flex;
-    gap: 20px; /* Space between custom timers */
-    flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
+    gap: 15px; /* Reduced space between custom timers */
+    flex-wrap: wrap;
 }
 
 .beta-tag {
