@@ -509,19 +509,30 @@ body.night-mode {
                 </div>
             </div>
         </div>
-        <div class="main-content">
-       <div class="notes-dashboard-container">
+<div class="main-content">
+    <div class="notes-dashboard-container">
         <h1>Notes Dashboard</h1>
         <span class="beta-tag">BETA</span>
     </div>
-            <div class="create-new">
-                <textarea id="note-input" placeholder="Enter text to generate notes" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
-                <button onclick="createNote()">Create Note</button>
-                <!-- Add buttons for other actions here if needed -->
+    <div class="create-new">
+        <textarea id="note-input" placeholder="Enter text to generate notes" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
+        <button onclick="createNote()">Create Note</button>
+        <!-- Add buttons for other actions here if needed -->
+    </div>
+    <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
+
+    <div id="your-notes" class="section">
+        <div class="notes-section">
+            <h2>Your Notes</h2>
+            <div class="note-card">
+                <textarea id="note-input-manual" placeholder="Enter new note" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
+                <button onclick="createManualNote()">Create Note</button>
             </div>
-            <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
+            <div id="notes-list-manual"></div> <!-- Manual notes will be added here dynamically -->
         </div>
     </div>
+</div>
+
 
 
 
@@ -617,7 +628,97 @@ body.night-mode {
             const noteItem = button.closest('.note-item');
             noteItem.remove();
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            document.getElementById('displayName').textContent = user.displayName;
+            loadNotes();
+            loadManualNotes();
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+});
+
+function createManualNote() {
+    const noteInput = document.getElementById('note-input-manual');
+    const note = noteInput.value.trim();
+    if (note) {
+        db.collection('manualNotes').add({
+            note: note,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Note created:', note);
+        }).catch((error) => {
+            console.error('Error creating note:', error);
+        });
+        noteInput.value = '';
+    }
+}
+
+function loadManualNotes() {
+    db.collection('manualNotes')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const notesList = document.getElementById('notes-list-manual');
+            notesList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const note = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.textContent = note.note;
+
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualNote'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualNote'));
+
+                noteDiv.appendChild(buttonContainer);
+                notesList.appendChild(noteDiv);
+            });
+        });
+}
+
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.onclick = () => editItem(id, type);
+    return button;
+}
+
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
+
+function editItem(id, type) {
+    const newValue = prompt(`Enter new ${type}:`);
+    if (newValue) {
+        db.collection(type + 's').doc(id).update({
+            [type]: newValue
+        }).then(() => {
+            console.log(`${type} updated:`, newValue);
+        }).catch((error) => {
+            console.error(`Error updating ${type}:`, error);
+        });
+    }
+}
+
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
+
     </script>
+
+    
             <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
