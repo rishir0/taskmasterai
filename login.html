@@ -230,21 +230,21 @@
         const auth = getAuth();
         const db = getFirestore();
 
-        // Function to save user data and set online status
-const saveUserData = async (user) => {
-    try {
-        await setDoc(doc(db, "users", user.uid), {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || "Anonymous",
-            online: true,
-            lastSeen: firebase.firestore.FieldValue.serverTimestamp() // Use server timestamp
-        }, { merge: true });
-        console.log("User data saved and online status updated successfully");
-    } catch (error) {
-        console.error("Error saving user data:", error);
-    }
-};
+
+    const saveUserData = async (user) => {
+        try {
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || "Anonymous",
+                online: true,
+                lastSeen: serverTimestamp() // Use server timestamp
+            }, { merge: true });
+            console.log("User data saved and online status updated successfully");
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
+    };
 
         // Function to handle sign-in
         const handleSignIn = async (user) => {
@@ -252,48 +252,48 @@ const saveUserData = async (user) => {
             window.location.href = "dashboard.html"; // Redirect to dashboard
         };
 
-        // Google Sign-In
-        const provider = new GoogleAuthProvider();
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', () => {
-                signInWithPopup(auth, provider)
-                    .then(async (result) => {
-                        // Google Sign-In successful
-                        const user = result.user;
-                        console.log('Google Sign-In successful:', user);
-                        await handleSignIn(user);
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                        alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-                    });
-            });
-        }
 
-        // Sign-In Form
-        const signinForm = document.getElementById('signin-form');
-        if (signinForm) {
-            signinForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                try {
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    // Signed in
+    const provider = new GoogleAuthProvider();
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    console.log('Google Sign-In successful:', user);
+                    await saveUserData(user);
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error('Error with Google Sign-In:', errorCode, errorMessage);
+                    alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
+                });
+        });
+    }
+
+    const signinForm = document.getElementById('signin-form');
+    if (signinForm) {
+        signinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
                     const user = userCredential.user;
                     console.log('Sign-In successful:', user);
-                    await handleSignIn(user);
-                } catch (error) {
+                    await saveUserData(user);
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     console.error('Error signing in:', errorCode, errorMessage);
                     alert(`Error signing in: ${errorCode} - ${errorMessage}`);
-                }
-            });
-        }
+                });
+        });
+    }
     </script>
 </body>
 </html>
