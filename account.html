@@ -545,15 +545,32 @@ body.night-mode {
         }
     }
 
-    function signOut() {
-        firebase.auth().signOut().then(function() {
-            // Sign-out successful.
+function signOut() {
+    const user = firebase.auth().currentUser;
+    
+    if (user) {
+        const userRef = db.collection('users').doc(user.uid);
+
+        // Set the user's online status to false
+        userRef.set({
+            online: false,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).then(function() {
+            // After updating the status, sign the user out
+            return firebase.auth().signOut();
+        }).then(function() {
+            // Sign-out successful, redirect to login page
             window.location.href = "login.html";
         }).catch(function(error) {
-            // An error happened.
+            // Handle any errors
             console.error("Error signing out:", error);
         });
+    } else {
+        // If no user is logged in, simply redirect to login page
+        window.location.href = "login.html";
     }
+}
+
 
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
