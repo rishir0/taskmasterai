@@ -614,10 +614,9 @@ function addFriend() {
     const currentUser = firebase.auth().currentUser;
 
     if (friendEmail && currentUser) {
-        // Get current user ID
         const userId = currentUser.uid;
 
-        // Check if the email already exists in the 'users' collection
+        // Check if the email exists in the 'users' collection
         db.collection('users').where('email', '==', friendEmail).get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
@@ -625,7 +624,6 @@ function addFriend() {
                     return;
                 }
 
-                // Get recipient user data
                 const recipientDoc = querySnapshot.docs[0];
                 const recipientId = recipientDoc.id;
 
@@ -633,12 +631,12 @@ function addFriend() {
                 db.collection('friendRequests').add({
                     senderId: userId,
                     recipientId: recipientId,
-                    status: 'pending', // Pending status for new requests
+                    status: 'pending',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     console.log('Friend request sent!');
                     // Notify the recipient
-                    notifyRecipient(recipientId, currentUser.email);
+                    // (Do this in real-time if needed)
                 }).catch((error) => {
                     console.error('Error sending friend request:', error);
                 });
@@ -648,6 +646,7 @@ function addFriend() {
             });
     }
 }
+
 
 // Function to notify recipient about the friend request
 function notifyRecipient(recipientId, senderEmail) {
@@ -753,7 +752,7 @@ function notifyRecipient(recipientId, senderEmail) {
     }
 
 
-    // Function to listen for friend requests
+// Function to listen for friend requests
 function listenForFriendRequests() {
     const currentUser = firebase.auth().currentUser;
 
@@ -766,13 +765,20 @@ function listenForFriendRequests() {
                     if (change.type === 'added') {
                         const friendRequest = change.doc.data();
                         if (friendRequest.status === 'pending') {
-                            const senderEmail = getUserEmail(friendRequest.senderId);
-                            alert(`You have a new friend request from ${senderEmail}`);
+                            displayNotification(friendRequest.senderId);
                         }
                     }
                 });
             });
     }
+}
+
+// Function to display notification
+function displayNotification(senderId) {
+    getUserEmail(senderId).then((email) => {
+        alert(`You have a new friend request from ${email}`);
+        // Optionally, update the UI with a more persistent notification
+    });
 }
 
 // Function to get user email by userId
@@ -786,6 +792,7 @@ function getUserEmail(userId) {
 document.addEventListener('DOMContentLoaded', function() {
     listenForFriendRequests();
 });
+
 
 </script>
 
