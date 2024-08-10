@@ -1080,6 +1080,49 @@ margin-right: 0px;}
         var db = firebase.firestore();
 
 
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const userRef = db.collection('users').doc(user.uid);
+            const realTimeUserRef = firebase.database().ref('/status/' + user.uid);
+
+            // Set Firestore online status to true and update last seen
+            userRef.set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // Monitor the Realtime Database for disconnection
+            realTimeUserRef.set({
+                online: true
+            });
+
+            realTimeUserRef.onDisconnect().set({
+                online: false
+            }).then(() => {
+                // Update Firestore when the user disconnects
+                userRef.set({
+                    online: false,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            });
+
+            // Display the username
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            document.getElementById('displayName').textContent = username;
+
+            // Load online friends
+            loadOnlineFriends();
+
+        } else {
+            // No user is signed in, redirect to login page
+            window.location.href = "login.html";
+        }
+    });
+});
+
+
                 document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -1108,37 +1151,7 @@ margin-right: 0px;}
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            const userRef = db.collection('users').doc(user.uid);
 
-            // Set online status to true and handle disconnection
-            userRef.set({
-                online: true,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-            // Set online status to false on disconnect
-            userRef.onDisconnect().set({
-                online: false,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-            // Display the username
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-            document.getElementById('displayName').textContent = username;
-
-            // Load online friends
-            loadOnlineFriends();
-
-        } else {
-            // No user is signed in, redirect to login page
-            window.location.href = "login.html";
-        }
-    });
-});
 
 // Function to load online friends
 function loadOnlineFriends() {
