@@ -434,6 +434,49 @@ body.night-mode {
             margin: 0; 
         }
 
+        .notes-section {
+    margin-top: 20px;
+}
+
+.note-card {
+    margin-bottom: 20px;
+}
+
+.note-card textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.note-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+
+
     </style>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 </head>
@@ -517,7 +560,6 @@ body.night-mode {
     <div class="create-new">
         <textarea id="note-input" placeholder="Enter text to generate notes" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
         <button onclick="createNote()">Create Note</button>
-        <!-- Add buttons for other actions here if needed -->
     </div>
     <div id="notes-list"></div> <!-- Notes will be added here dynamically -->
 
@@ -525,13 +567,14 @@ body.night-mode {
         <div class="notes-section">
             <h2>Your Notes</h2>
             <div class="note-card">
-                <textarea id="note-input-manual" placeholder="Enter new note" rows="3" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
+                <textarea id="note-input-manual" placeholder="Enter new note" rows="3"></textarea>
                 <button onclick="createManualNote()">Create Note</button>
             </div>
             <div id="notes-list-manual"></div> <!-- Manual notes will be added here dynamically -->
         </div>
     </div>
 </div>
+
 
 
 
@@ -641,11 +684,22 @@ body.night-mode {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            document.getElementById('displayName').textContent = user.displayName;
+            loadManualNotes(); // Load the manual notes when the user is authenticated
+        } else {
+            window.location.href = "login.html"; // Redirect to login page if not authenticated
+        }
+    });
+});
+
 function createManualNote() {
     const noteInput = document.getElementById('note-input-manual');
     const note = noteInput.value.trim();
     if (note) {
-        db.collection('manualNotes').add({
+        db.collection('manualnotes').add({
             note: note,
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -659,7 +713,7 @@ function createManualNote() {
 }
 
 function loadManualNotes() {
-    db.collection('manualNotes')
+    db.collection('manualnotes')
         .where('userId', '==', firebase.auth().currentUser.uid)
         .orderBy('createdAt')
         .onSnapshot(snapshot => {
@@ -672,13 +726,19 @@ function loadManualNotes() {
                 noteDiv.textContent = note.note;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'manualNote'));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualNote'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
 
                 noteDiv.appendChild(buttonContainer);
                 notesList.appendChild(noteDiv);
             });
         });
+}
+
+function createButtonContainer() {
+    const container = document.createElement('div');
+    container.className = 'button-container';
+    return container;
 }
 
 function createEditButton(id, type) {
@@ -715,6 +775,7 @@ function deleteItem(id, type) {
         console.error(`Error deleting ${type}:`, error);
     });
 }
+
 
     </script>
 
