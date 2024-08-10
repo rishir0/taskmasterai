@@ -1108,6 +1108,56 @@ margin-right: 0px;}
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const userRef = db.collection('users').doc(user.uid);
+
+            // Set online status to true and handle disconnection
+            userRef.set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // Set online status to false on disconnect
+            userRef.onDisconnect().set({
+                online: false,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // Display the username
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            document.getElementById('displayName').textContent = username;
+
+            // Load online friends
+            loadOnlineFriends();
+
+        } else {
+            // No user is signed in, redirect to login page
+            window.location.href = "login.html";
+        }
+    });
+});
+
+// Function to load online friends
+function loadOnlineFriends() {
+    db.collection('users').where('online', '==', true)
+        .onSnapshot((querySnapshot) => {
+            const onlineFriendsList = document.getElementById('onlineFriends');
+            onlineFriendsList.innerHTML = ''; // Clear the list first
+            querySnapshot.forEach((doc) => {
+                const friend = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = friend.email;
+                listItem.onclick = () => openChat(friend.email);
+                onlineFriendsList.appendChild(listItem);
+            });
+        });
+}
+
+    
+
  
 let timer;
 let isRunning = false;
