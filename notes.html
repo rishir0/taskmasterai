@@ -673,86 +673,106 @@ button:hover {
             noteItem.remove();
         }
 
-        function createManualNote() {
-            const noteInput = document.getElementById('note-input-manual');
-            const note = noteInput.value.trim();
-            if (note) {
-                db.collection('manualnotes').add({
-                    note: note,
-                    userId: firebase.auth().currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    console.log('Note created:', note);
-                }).catch((error) => {
-                    console.error('Error creating note:', error);
-                });
-                noteInput.value = '';
-            }
-        }
+// Function to create a manual note
+function createManualNote() {
+    const noteInput = document.getElementById('note-input-manual');
+    const note = noteInput.value.trim();
+    if (note) {
+        db.collection('manualnotes').add({
+            note: note,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Note created:', note);
+            loadManualNotes(); // Reload notes after creation
+        }).catch((error) => {
+            console.error('Error creating note:', error);
+        });
+        noteInput.value = '';
+    }
+}
 
-        function loadManualNotes() {
-            db.collection('manualnotes')
-                .where('userId', '==', firebase.auth().currentUser.uid)
-                .orderBy('createdAt')
-                .onSnapshot(snapshot => {
-                    const notesList = document.getElementById('notes-list-manual');
-                    notesList.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const note = doc.data();
-                        const noteDiv = document.createElement('div');
-                        noteDiv.className = 'note-item';
-                        noteDiv.textContent = note.note;
+// Function to load manual notes from Firestore
+function loadManualNotes() {
+    db.collection('manualnotes')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const notesList = document.getElementById('notes-list-manual');
+            notesList.innerHTML = ''; // Clear the list before adding notes
+            snapshot.forEach(doc => {
+                const note = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.textContent = note.note;
 
-                        const buttonContainer = createButtonContainer();
-                        buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
-                        buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
 
-                        noteDiv.appendChild(buttonContainer);
-                        notesList.appendChild(noteDiv);
-                    });
-                });
-        }
-
-        function createButtonContainer() {
-            const container = document.createElement('div');
-            container.className = 'button-container';
-            return container;
-        }
-
-        function createEditButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Edit';
-            button.onclick = () => editItem(id, type);
-            return button;
-        }
-
-        function createDeleteButton(id, type) {
-            const button = document.createElement('button');
-            button.textContent = 'Delete';
-            button.onclick = () => deleteItem(id, type);
-            return button;
-        }
-
-        function editItem(id, type) {
-            const newValue = prompt(`Enter new ${type}:`);
-            if (newValue) {
-                db.collection(type + 's').doc(id).update({
-                    [type]: newValue
-                }).then(() => {
-                    console.log(`${type} updated:`, newValue);
-                }).catch((error) => {
-                    console.error(`Error updating ${type}:`, error);
-                });
-            }
-        }
-
-        function deleteItem(id, type) {
-            db.collection(type + 's').doc(id).delete().then(() => {
-                console.log(`${type} deleted:`, id);
-            }).catch((error) => {
-                console.error(`Error deleting ${type}:`, error);
+                noteDiv.appendChild(buttonContainer);
+                notesList.appendChild(noteDiv);
             });
+        });
+}
+
+// Function to create a container for buttons (Edit and Delete)
+function createButtonContainer() {
+    const container = document.createElement('div');
+    container.className = 'button-container';
+    return container;
+}
+
+// Function to create an Edit button
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.onclick = () => editItem(id, type);
+    return button;
+}
+
+// Function to create a Delete button
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
+
+// Function to edit an existing note
+function editItem(id, type) {
+    const newValue = prompt(`Enter new ${type}:`);
+    if (newValue) {
+        db.collection(type + 's').doc(id).update({
+            [type]: newValue
+        }).then(() => {
+            console.log(`${type} updated:`, newValue);
+        }).catch((error) => {
+            console.error(`Error updating ${type}:`, error);
+        });
+    }
+}
+
+// Function to delete an existing note
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
+
+// Load notes when the page is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            loadManualNotes(); // Load manual notes when the user is authenticated
+        } else {
+            window.location.href = "login.html"; // Redirect to login page if not authenticated
         }
+    });
+});
+
     </script>
     
             <script>
