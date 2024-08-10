@@ -609,9 +609,7 @@ button:hover {
                 }
             });
         });
-    </script>
 
-    <script>
         const apiKey = "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";
         const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
@@ -684,16 +682,6 @@ button:hover {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            document.getElementById('displayName').textContent = user.displayName;
-            loadManualNotes(); // Load the manual notes when the user is authenticated
-        } else {
-            window.location.href = "login.html"; // Redirect to login page if not authenticated
-        }
-    });
-});
 
 function createManualNote() {
     const noteInput = document.getElementById('note-input-manual');
