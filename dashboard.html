@@ -1080,7 +1080,7 @@ margin-right: 0px;}
         var db = firebase.firestore();
 
 
-        document.addEventListener('DOMContentLoaded', function() {
+       document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             const userRef = db.collection('users').doc(user.uid);
@@ -1092,19 +1092,24 @@ margin-right: 0px;}
                 lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            // Monitor the Realtime Database for disconnection
+            // Set Realtime Database online status to true
             realTimeUserRef.set({
-                online: true
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+            // Handle user disconnection
             realTimeUserRef.onDisconnect().set({
-                online: false
+                online: false,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 // Update Firestore when the user disconnects
                 userRef.set({
                     online: false,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
+            }).catch((error) => {
+                console.error('Error handling disconnection:', error);
             });
 
             // Display the username
@@ -1121,6 +1126,7 @@ margin-right: 0px;}
         }
     });
 });
+
 
 
                 document.addEventListener('DOMContentLoaded', function() {
