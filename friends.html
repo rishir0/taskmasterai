@@ -551,29 +551,29 @@ body.night-mode {
             </div>
         </div>  
         <div class="main-content">
-            <div class="dashboard-header">
-                <h1>Friends</h1>
-            </div>
-            <div class="friends-list">
-                <h2>Online Friends</h2>
-                <ul id="onlineFriends">
-                    <!-- Friends will be dynamically added here -->
-                </ul>
-            </div>
-            <div class="add-friend">
-                <input type="text" id="friendEmail" placeholder="Enter friend's email">
-                <button onclick="addFriend()">Add Friend</button>
-            </div>
-            <div class="chat-window">
-                <h2>Chat</h2>
-                <div id="chatMessages">
-                    <!-- Chat messages will be displayed here -->
-                </div>
-                <input type="text" id="chatInput" placeholder="Type a message">
-                <button onclick="sendMessage()">Send</button>
-            </div>
-        </div>
+    <div class="dashboard-header">
+        <h1>Friends</h1>
     </div>
+    <div class="friends-list">
+        <h2>Online Friends</h2>
+        <ul id="onlineFriends">
+            <!-- Friends will be dynamically added here -->
+        </ul>
+    </div>
+    <div class="add-friend">
+        <input type="text" id="friendEmail" placeholder="Enter friend's email">
+        <button onclick="addFriend()">Add Friend</button>
+    </div>
+    <div class="chat-window">
+        <h2>Chat</h2>
+        <div id="chatMessages">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <input type="text" id="chatInput" placeholder="Type a message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
 
 </body>
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -611,21 +611,74 @@ body.night-mode {
     // Function to add a friend
     function addFriend() {
         const friendEmail = document.getElementById('friendEmail').value;
-        if (friendEmail) {
+        const user = firebase.auth().currentUser;
+        if (friendEmail && user) {
             db.collection('friends').add({
                 email: friendEmail,
-                online: false // Default to offline
+                online: false, // Default to offline
+                requestStatus: 'pending', // Track request status
+                requester: user.email
             }).then(() => {
-                console.log('Friend added!');
+                console.log('Friend request sent!');
+                // Check if the friend is online
+                checkFriendOnlineStatus(friendEmail);
             }).catch((error) => {
                 console.error('Error adding friend: ', error);
             });
         }
     }
 
+    // Function to check if the friend is online and show a popup if they are
+    function checkFriendOnlineStatus(friendEmail) {
+        db.collection('users').where('email', '==', friendEmail).get().then(querySnapshot => {
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0];
+                const userData = userDoc.data();
+                if (userData.online) {
+                    // Show popup for friend request acceptance
+                    showAcceptPopup(friendEmail);
+                }
+            }
+        }).catch(error => {
+            console.error('Error checking online status:', error);
+        });
+    }
+
+    // Function to show an accept popup
+    function showAcceptPopup(friendEmail) {
+        if (confirm(`You have a new friend request from ${friendEmail}. Do you want to accept it?`)) {
+            // Handle friend request acceptance
+            handleFriendRequestAcceptance(friendEmail);
+        } else {
+            console.log('Friend request declined');
+        }
+    }
+
+    // Function to handle friend request acceptance
+    function handleFriendRequestAcceptance(friendEmail) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            db.collection('friends').where('email', '==', friendEmail)
+                .where('requester', '==', user.email).get().then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        doc.ref.update({
+                            requestStatus: 'accepted'
+                        }).then(() => {
+                            console.log('Friend request accepted!');
+                            // Optionally notify the requester
+                        }).catch(error => {
+                            console.error('Error updating friend request status:', error);
+                        });
+                    });
+                }).catch(error => {
+                    console.error('Error finding friend request:', error);
+                });
+        }
+    }
+
     // Function to display online friends
     function loadOnlineFriends() {
-        db.collection('friends').where('online', '==', true)
+        db.collection('users').where('online', '==', true)
             .onSnapshot((querySnapshot) => {
                 const onlineFriendsList = document.getElementById('onlineFriends');
                 onlineFriendsList.innerHTML = ''; // Clear the list first
