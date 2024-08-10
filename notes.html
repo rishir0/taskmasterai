@@ -34,21 +34,6 @@ body {
     backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
 }
 
-        .notes-dashboard-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .beta-tag {
-            background-color: var(--hover-bg);
-            color: var(--text-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
 
 body.night-mode {
     background-color: #333333;
@@ -107,6 +92,8 @@ body.night-mode {
 
 .sidebar {
     width: 250px;
+    min-width: 250px; /* Ensure minimum width is always maintained */
+    max-width: 250px; /* Ensure maximum width is always maintained */
     background: inherit;
     padding: 20px;
     display: flex;
@@ -298,7 +285,6 @@ body.night-mode {
     transform: scale(1.1);
 }
 
-
 /* Existing styles */
 .sidebar-toggle {
     display: none;
@@ -346,6 +332,50 @@ body.night-mode {
         margin-left: 0;
     }
 }
+
+/* Animation for SVG */
+@keyframes rotateIcon {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.theme-icon {
+    display: inline-block;
+    transition: transform 0.5s;
+}
+
+.theme-icon svg {
+    transition: fill 0.5s;
+}
+
+.theme-icon.active svg {
+    animation: rotateIcon 0.5s;
+}
+
+        .notes-dashboard-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .beta-tag {
+            background-color: var(--hover-bg);
+            color: var(--text-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+
+
 
 .create-new {
             display: flex;
@@ -403,85 +433,6 @@ body.night-mode {
             padding: 0; 
             margin: 0; 
         }
-
-        .sidebar-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        .sidebar-toggle svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100%;
-                z-index: 1000;
-            }
-
-            .sidebar.active {
-                display: flex;
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .create-new {
-                flex-direction: column;
-            }
-
-            .create-new button {
-                margin-bottom: 10px; /* Adds space between buttons */
-            }
-
-
-
-    /* Animation for SVG */
-@keyframes rotateIcon {
-    0% {
-        transform: rotate(0deg);
-    }
-    50% {
-        transform: rotate(180deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.theme-icon {
-    display: inline-block;
-    transition: transform 0.5s;
-}
-
-.theme-icon svg {
-    transition: fill 0.5s;
-}
-
-.theme-icon.active svg {
-    animation: rotateIcon 0.5s;
-}
 
     </style>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
