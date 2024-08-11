@@ -274,10 +274,11 @@ body.night-mode {
 .chat-window {
     display: flex;
     flex-direction: column;
-    height: 300px;
+    height: calc(100vh - 200px); /* Increased height to reach closer to the bottom of the page */
     background: var(--glass-bg);
     border-radius: var(--border-radius);
     padding: 15px;
+    max-height: 600px; /* Ensures the chat window doesn't overflow the page */
 }
 
 #chatMessages {
@@ -288,7 +289,8 @@ body.night-mode {
 }
 
 #chatMessages div {
-    background: #fff;
+    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
+    color: var(--text-color);
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
@@ -321,7 +323,7 @@ body.night-mode {
 
 .chat-window button:hover {
     background-color: #3b7bce;
-} 
+}
 
 .create-new {
     display: grid;
