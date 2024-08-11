@@ -360,132 +360,161 @@ body.night-mode {
 }
 
 .calendar {
-            width: 80%;
-            max-width: 900px;
-            margin: 40px auto;
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
 
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-        }
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: var(--text-color);
+    border-bottom: 1px solid var(--hover-bg);
+}
 
-        .calendar-header button {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 1rem;
-        }
+.calendar-header button {
+    background-color: var(--glass-bg);
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
 
-        .calendar-header button:hover {
-            background-color: var(--hover-bg);
-        }
+.calendar-header button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-gap: 1px;
-            background-color: var(--secondary-color);
-        }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--secondary-color);
+}
 
-        .calendar-grid div {
-            background-color: var(--card-bg);
-            padding: 20px;
-            text-align: center;
-            border-radius: var(--border-radius);
-        }
+.calendar-grid .day-header {
+    font-weight: bold;
+    padding: 15px;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+}
 
-        .calendar-grid .day-header {
-            font-weight: bold;
-        }
+.calendar-grid .day {
+    background-color: var(--card-bg);
+    padding: 20px;
+    text-align: center;
+    border-radius: var(--border-radius);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.3s, transform 0.3s;
+}
 
-        .day {
-            cursor: pointer;
-            position: relative;
-        }
+.calendar-grid .day.current-day {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: var(--text-color);
+    font-weight: bold;
+    box-shadow: 0 0 10px var(--accent-color);
+}
 
-        .day:hover {
-            background-color: var(--hover-bg);
-        }
+.calendar-grid .day:hover {
+    background-color: var(--hover-bg);
+    transform: scale(1.05);
+}
 
-        .event {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            padding: 5px;
-            border-radius: 5px;
-            margin-top: 5px;
-            font-size: 0.8rem;
-        }
+.event {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 0.8rem;
+}
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
 
-        .modal-content {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            max-width: 500px;
-            width: 90%;
-        }
+.modal-content {
+    background-color: var(--glass-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-        .modal-header button {
-            background-color: transparent;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-        }
+.modal-header button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s;
+}
 
-        .modal-body input,
-        .modal-body textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--secondary-color);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
+.modal-header button:hover {
+    color: var(--accent-color);
+}
 
-        .modal-footer button {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            padding: 10px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-        }
+.modal-body input,
+.modal-body textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--secondary-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
 
-        .modal-footer button:hover {
-            background-color: var(--hover-bg);
-        }
+.modal-footer button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-footer button:hover {
+    background-color: var(--hover-bg);
+}
+
+
+
 
 </style>
 
@@ -569,17 +598,17 @@ body.night-mode {
                 <button id="nextMonth">Next &gt;</button>
             </div>
             <div class="calendar-grid">
-                <div class="day-header">Sun</div>
                 <div class="day-header">Mon</div>
                 <div class="day-header">Tue</div>
                 <div class="day-header">Wed</div>
                 <div class="day-header">Thu</div>
                 <div class="day-header">Fri</div>
                 <div class="day-header">Sat</div>
+                <div class="day-header">Sun</div>
                 <!-- Calendar days will be injected here -->
             </div>
         </div>
-    
+        
         <!-- Event Modal -->
         <div class="modal" id="eventModal">
             <div class="modal-content">
@@ -597,6 +626,8 @@ body.night-mode {
                 </div>
             </div>
         </div>
+
+ 
     
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -604,126 +635,194 @@ body.night-mode {
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
 <script>
-    // Firebase project configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-        authDomain: "deepworkai-c3419.firebaseapp.com",
-        projectId: "deepworkai-c3419",
-        storageBucket: "deepworkai-c3419.appspot.com",
-        messagingSenderId: "367439182644",
-        appId: "1:367439182644:web:304216430df97eff68c361"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+// Firebase project configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+    authDomain: "deepworkai-c3419.firebaseapp.com",
+    projectId: "deepworkai-c3419",
+    storageBucket: "deepworkai-c3419.appspot.com",
+    messagingSenderId: "367439182644",
+    appId: "1:367439182644:web:304216430df97eff68c361"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-    // Initialize Firestore
-    const db = firebase.firestore();
+// Initialize Firestore
+const db = firebase.firestore();
 
-    // Calendar data and basic logic
-    const calendarGrid = document.querySelector('.calendar-grid');
-    const eventModal = document.getElementById('eventModal');
-    const closeModal = document.getElementById('closeModal');
-    const saveEvent = document.getElementById('saveEvent');
-    const modalTitle = document.getElementById('modalTitle');
-    const eventTitleInput = document.getElementById('eventTitle');
-    const eventDescriptionInput = document.getElementById('eventDescription');
-    const eventDateTimeInput = document.getElementById('eventDateTime');
+const calendarGrid = document.querySelector('.calendar-grid');
+const eventModal = document.getElementById('eventModal');
+const closeModal = document.getElementById('closeModal');
+const saveEvent = document.getElementById('saveEvent');
+const modalTitle = document.getElementById('modalTitle');
+const eventTitleInput = document.getElementById('eventTitle');
+const eventDescriptionInput = document.getElementById('eventDescription');
+const eventDateTimeInput = document.getElementById('eventDateTime');
+const currentMonthElement = document.getElementById('currentMonth');
+let events = {}; // Local cache for events
+let selectedDate = null;
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
 
-    let events = {}; // Local cache for events
-    let selectedDate = null;
+// Check authentication state
+firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+        window.location.href = 'login.html'; // Redirect to login if not authenticated
+    } else {
+        // Initialize the calendar and load events for the authenticated user
+        updateCalendarHeader();
+        loadEvents();
+    }
+});
 
-    function createCalendar() {
-        calendarGrid.innerHTML = '';
-        const daysInMonth = new Date(2024, 8, 0).getDate(); // Example for August 2024
+function updateCalendarHeader() {
+    const monthNames = ["January", "February", "March", "April", "May", "June", 
+                        "July", "August", "September", "October", "November", "December"];
+    currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+}
 
-        for (let i = 1; i <= daysInMonth; i++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('day');
-            dayDiv.textContent = i;
-            dayDiv.addEventListener('click', () => openEventModal(i));
-            
-            // Display events for the day
-            if (events[i]) {
-                events[i].forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('event');
-                    eventDiv.textContent = event.title;
-                    dayDiv.appendChild(eventDiv);
-                });
-            }
+function createCalendar() {
+    calendarGrid.innerHTML = '';
+    const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-            calendarGrid.appendChild(dayDiv);
-        }
+    // Adjust firstDayIndex to start from Monday
+    const daysFromPrevMonth = (firstDayIndex === 0 ? 6 : firstDayIndex - 1);
+
+    // Fill in the blanks for the previous month's days
+    for (let i = 0; i < daysFromPrevMonth; i++) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.classList.add('day');
+        emptyDiv.style.visibility = 'hidden';
+        calendarGrid.appendChild(emptyDiv);
     }
 
-    function openEventModal(day) {
-        selectedDate = day;
-        modalTitle.textContent = `Add Event on August ${day}, 2024`;
-        eventTitleInput.value = '';
-        eventDescriptionInput.value = '';
-        eventDateTimeInput.value = '';
-        eventModal.style.display = 'flex';
-    }
+    // Display days of the current month
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = i;
 
-    closeModal.addEventListener('click', () => {
-        eventModal.style.display = 'none';
-    });
-
-    saveEvent.addEventListener('click', async () => {
-        const title = eventTitleInput.value;
-        const description = eventDescriptionInput.value;
-        const dateTime = eventDateTimeInput.value;
-
-        if (!events[selectedDate]) {
-            events[selectedDate] = [];
+        // Highlight the current day
+        const today = new Date();
+        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+            dayDiv.classList.add('current-day');
         }
 
-        const event = {
-            title,
-            description,
-            dateTime,
-            day: selectedDate
-        };
+        dayDiv.addEventListener('click', () => openEventModal(i));
 
-        // Save to Firestore
-        try {
-            await db.collection('events').add(event);
-            events[selectedDate].push(event);
-            eventModal.style.display = 'none';
-            createCalendar();
-        } catch (error) {
-            console.error("Error adding event: ", error);
-        }
-    });
-
-    async function loadEvents() {
-        try {
-            const snapshot = await db.collection('events').get();
-            snapshot.forEach(doc => {
-                const event = doc.data();
-                const day = event.day;
-                if (!events[day]) {
-                    events[day] = [];
-                }
-                events[day].push(event);
+        // Display events for the day
+        if (events[i]) {
+            events[i].forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = event.title;
+                dayDiv.appendChild(eventDiv);
             });
-            createCalendar();
-        } catch (error) {
-            console.error("Error loading events: ", error);
         }
+
+        calendarGrid.appendChild(dayDiv);
+    }
+}
+
+function openEventModal(day) {
+    selectedDate = day;
+    modalTitle.textContent = `Add Event on ${day} ${currentMonthElement.textContent}`;
+    eventTitleInput.value = '';
+    eventDescriptionInput.value = '';
+    eventDateTimeInput.value = '';
+    eventModal.style.display = 'flex';
+}
+
+closeModal.addEventListener('click', () => {
+    eventModal.style.display = 'none';
+});
+
+saveEvent.addEventListener('click', async () => {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
     }
 
-    document.getElementById('prevMonth').addEventListener('click', () => {
-        // Logic for previous month
-    });
+    const title = eventTitleInput.value;
+    const description = eventDescriptionInput.value;
+    const dateTime = eventDateTimeInput.value;
 
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        // Logic for next month
-    });
+    if (!events[selectedDate]) {
+        events[selectedDate] = [];
+    }
 
-    // Initialize the calendar and load events from Firestore
+    const event = {
+        title,
+        description,
+        dateTime,
+        day: selectedDate,
+        month: currentMonth,
+        year: currentYear,
+        uid: user.uid // Include the user's UID
+    };
+
+    // Save to Firestore
+    try {
+        await db.collection('events').add(event);
+        events[selectedDate].push(event);
+        eventModal.style.display = 'none';
+        createCalendar();
+    } catch (error) {
+        console.error("Error adding event: ", error);
+    }
+});
+
+async function loadEvents() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    try {
+        const snapshot = await db.collection('events')
+            .where("month", "==", currentMonth)
+            .where("year", "==", currentYear)
+            .where("uid", "==", user.uid) // Filter by the user's UID
+            .get();
+
+        snapshot.forEach(doc => {
+            const event = doc.data();
+            const day = event.day;
+            if (!events[day]) {
+                events[day] = [];
+            }
+            events[day].push(event);
+        });
+        createCalendar();
+    } catch (error) {
+        console.error("Error loading events: ", error);
+    }
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    updateCalendarHeader();
     loadEvents();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    updateCalendarHeader();
+    loadEvents();
+});
 </script>
+
 
     </body>
     </html>
