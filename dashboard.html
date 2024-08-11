@@ -1291,9 +1291,12 @@ function pauseTimer() {
 function resetTimer() {
     clearInterval(timer);
     isRunning = false;
-    timeLeft = 1500; // Reset to 1 hour
+    timeLeft = 1500; // Reset to 25 minutes
     updateDisplay();
+    sound.pause();  // Stop the sound
+    sound.currentTime = 0;  // Reset the sound to the beginning
 }
+
 
 function updateDisplay() {
     const hours = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
@@ -1390,12 +1393,15 @@ function startCustomTimer() {
         isCustomRunning = false;
     }
 
-    function resetCustomTimer() {
-        clearInterval(customTimer);
-        isCustomRunning = false;
-        customTimeLeft = time;  // Reset to the original time from Firestore
-        updateCustomDisplay();
-    }
+function resetCustomTimer() {
+    clearInterval(customTimer);
+    isCustomRunning = false;
+    customTimeLeft = time;  // Reset to the original time from Firestore
+    updateCustomDisplay();
+    sound.pause();  // Stop the sound
+    sound.currentTime = 0;  // Reset the sound to the beginning
+}
+
 
     function saveCustomTimerTime() {
         if (validateAndParseInput()) {
