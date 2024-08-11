@@ -1555,16 +1555,6 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-// Ensure sound is playable after user interaction
-document.addEventListener('click', () => {
-    sound.play().then(() => {
-        sound.pause();
-        sound.currentTime = 0;
-    }).catch((error) => {
-        console.error('Error playing sound:', error);
-    });
-});
-
 
 
 // Function to create a button container
