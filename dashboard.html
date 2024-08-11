@@ -1277,9 +1277,11 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timer);
             isRunning = false;
+            sound.play();  // Play the sound when the timer ends
         }
     }, 1000);
 }
+
 
 function pauseTimer() {
     clearInterval(timer);
@@ -1368,19 +1370,20 @@ function addCustomTimerFromFirestore(timerId, name, time) {
     let customTimer;
     let isCustomRunning = false;
 
-    function startCustomTimer() {
-        if (isCustomRunning) return;
-        isCustomRunning = true;
-        customTimer = setInterval(() => {
-            customTimeLeft--;
-            updateCustomDisplay();
-            if (customTimeLeft <= 0) {
-                clearInterval(customTimer);
-                isCustomRunning = false;
-                sound.play();
-            }
-        }, 1000);
-    }
+function startCustomTimer() {
+    if (isCustomRunning) return;
+    isCustomRunning = true;
+    customTimer = setInterval(() => {
+        customTimeLeft--;
+        updateCustomDisplay();
+        if (customTimeLeft <= 0) {
+            clearInterval(customTimer);
+            isCustomRunning = false;
+            sound.play();  // Play the sound when the custom timer ends
+        }
+    }, 1000);
+}
+
 
     function pauseCustomTimer() {
         clearInterval(customTimer);
