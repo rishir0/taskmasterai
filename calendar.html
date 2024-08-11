@@ -514,7 +514,69 @@ body.night-mode {
 }
 
 
+@media (max-width: 768px) {
+    .calendar {
+        margin: 20px auto;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+    }
 
+    .calendar-header {
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .calendar-header button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-grid .day-header {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-grid .day {
+        padding: 10px;
+        height: 80px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        padding: 15px;
+    }
+
+    .modal-header {
+        margin-bottom: 8px;
+    }
+
+    .modal-header button {
+        font-size: 1.2rem;
+    }
+
+    .modal-body input,
+    .modal-body textarea {
+        padding: 8px;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .modal-footer button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
 
 </style>
 
@@ -839,6 +901,10 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 });
 </script>
 
-
+    <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
     </body>
     </html>
