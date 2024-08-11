@@ -590,6 +590,21 @@ body.night-mode {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+    
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -680,20 +695,46 @@ body.night-mode {
         }
     }
 
-    function loadOnlineFriends() {
-        db.collection('users').where('online', '==', true)
-            .onSnapshot((querySnapshot) => {
-                const onlineFriendsList = document.getElementById('onlineFriends');
-                onlineFriendsList.innerHTML = ''; 
-                querySnapshot.forEach((doc) => {
-                    const friend = doc.data();
-                    const listItem = document.createElement('li');
-                    listItem.textContent = friend.email;
-                    listItem.onclick = () => openChat(friend.email);
-                    onlineFriendsList.appendChild(listItem);
+// Function to display online friends
+function loadOnlineFriends() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+
+        // Get the list of current user's friends
+        db.collection('friends')
+            .where('users', 'array-contains', currentUserId)
+            .where('status', '==', 'accepted')
+            .get()
+            .then((querySnapshot) => {
+                const friendsIds = querySnapshot.docs.map(doc => {
+                    const users = doc.data().users;
+                    return users.find(uid => uid !== currentUserId);
                 });
+
+                // Now, get the online friends among the user's friends
+                db.collection('users')
+                    .where(firebase.firestore.FieldPath.documentId(), 'in', friendsIds)
+                    .where('online', '==', true)
+                    .onSnapshot((querySnapshot) => {
+                        const onlineFriendsList = document.getElementById('onlineFriends');
+                        onlineFriendsList.innerHTML = ''; // Clear the list first
+
+                        querySnapshot.forEach((doc) => {
+                            const friend = doc.data();
+                            const listItem = document.createElement('li');
+                            listItem.textContent = friend.email;
+                            listItem.onclick = () => openChat(friend.email);
+                            onlineFriendsList.appendChild(listItem);
+                        });
+                    });
+            })
+            .catch((error) => {
+                console.error('Error loading friends:', error);
             });
     }
+}
 
     function sendMessage() {
         const chatInput = document.getElementById('chatInput').value;
