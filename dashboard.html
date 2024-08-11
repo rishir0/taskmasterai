@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -623,6 +622,74 @@ body.night-mode {
     display: inline-block;
 margin-right: 0px;}
 
+/* Modal container */
+.edit-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal content */
+.edit-modal-content {
+    background-color: var(--card-bg);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--accent-color);
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Close button */
+.close {
+    color: var(--text-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--accent-color);
+}
+
+/* Modal input */
+#edit-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Modal button */
+.edit-modal-content button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.edit-modal-content button:hover {
+    background-color: var(--accent-color);
+}
+
+
 .additional-buttons {
     display: flex;
     justify-content: flex-start;
@@ -1059,6 +1126,17 @@ margin-right: 0px;}
         </div>
     </div>
 
+            <!-- Edit Modal -->
+<div id="edit-modal" class="edit-modal">
+    <div class="edit-modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Edit <span id="edit-item-type"></span></h2>
+        <input type="text" id="edit-input" placeholder="Enter new value">
+        <button onclick="saveEdit()">Save</button>
+    </div>
+</div>
+
+
 
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1492,12 +1570,14 @@ document.addEventListener('click', () => {
 
 
 
+// Function to create a button container
 function createButtonContainer() {
     const container = document.createElement('div');
     container.className = 'button-container';
     return container;
 }
 
+// Functions to create new tasks, projects, goals, and plans
 function createTask() {
     const taskInput = document.getElementById('task-input');
     const task = taskInput.value.trim();
@@ -1566,6 +1646,7 @@ function createPlan() {
     }
 }
 
+// Functions to load existing tasks, projects, goals, and plans
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
@@ -1582,7 +1663,7 @@ function loadTasks() {
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(doc.id, 'task'));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-                
+
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
@@ -1658,10 +1739,11 @@ function loadPlans() {
         });
 }
 
+// Functions to create Edit and Delete buttons
 function createEditButton(id, type) {
     const button = document.createElement('button');
     button.textContent = 'Edit';
-    button.onclick = () => editItem(id, type);
+    button.onclick = () => openEditModal(id, type);
     return button;
 }
 
@@ -1672,19 +1754,41 @@ function createDeleteButton(id, type) {
     return button;
 }
 
-function editItem(id, type) {
-    const newValue = prompt(`Enter new ${type}:`);
-    if (newValue) {
-        db.collection(type + 's').doc(id).update({
-            [type]: newValue
-        }).then(() => {
-            console.log(`${type} updated:`, newValue);
-        }).catch((error) => {
-            console.error(`Error updating ${type}:`, error);
-        });
-    }
+// Function to open the edit modal
+function openEditModal(id, type) {
+    const modal = document.getElementById('editModal');
+    const closeBtn = document.querySelector('.close');
+    const saveBtn = document.getElementById('save-edit-btn');
+    const editInput = document.getElementById('edit-input');
+
+    modal.style.display = 'block';
+
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    saveBtn.onclick = function () {
+        const newValue = editInput.value.trim();
+        if (newValue) {
+            db.collection(type + 's').doc(id).update({
+                [type]: newValue
+            }).then(() => {
+                console.log(`${type} updated:`, newValue);
+                modal.style.display = 'none';
+            }).catch((error) => {
+                console.error(`Error updating ${type}:`, error);
+            });
+        }
+    };
 }
 
+// Function to delete an item
 function deleteItem(id, type) {
     db.collection(type + 's').doc(id).delete().then(() => {
         console.log(`${type} deleted:`, id);
@@ -1693,7 +1797,7 @@ function deleteItem(id, type) {
     });
 }
 
-// Listen for authentication state changes to load tasks and projects
+// Listen for authentication state changes to load tasks, projects, goals, and plans
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         loadTasks();
