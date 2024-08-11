@@ -288,6 +288,34 @@ body.night-mode {
     margin-bottom: 15px;
 }
 
+#chatMessages .message {
+    max-width: 70%; /* Limit width for better readability */
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    clear: both;
+}
+
+#chatMessages .message.sent {
+    background: var(--primary-color); /* Customize color for sent messages */
+    color: #fff;
+    align-self: flex-end;
+    float: right;
+    text-align: right;
+    border-top-right-radius: 0; /* Square the top-right corner */
+}
+
+#chatMessages .message.received {
+    background: var(--message-bg); /* Customize color for received messages */
+    color: var(--text-color);
+    align-self: flex-start;
+    float: left;
+    text-align: left;
+    border-top-left-radius: 0; /* Square the top-left corner */
+}
+
+
 #chatMessages div {
     background: var(--message-bg); /* Adjusted to use a custom variable for message background */
     color: var(--text-color);
@@ -728,48 +756,39 @@ function loadOnlineFriends() {
     }
 
 function openChat(friendEmail) {
-    const chatWithSpan = document.getElementById('chatWith');
+    currentChatFriend = friendEmail;
+    getFriendDisplayName(friendEmail).then(displayName => {
+        document.getElementById('chatWith').textContent = displayName;
+    });
+
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
-    // Get friend's displayName
-    db.collection('users').where('email', '==', friendEmail).get()
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const friendDoc = querySnapshot.docs[0];
-                const friendDisplayName = friendDoc.data().displayName || friendEmail;
-
-                // Update the "Chat with" section to display the friend's displayName
-                chatWithSpan.textContent = friendDisplayName;
-
-                // Load chat messages
-                db.collection('chats').doc(chatId).collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((querySnapshot) => {
-                        chatWindow.innerHTML = ''; 
-                        querySnapshot.forEach((doc) => {
-                            const message = doc.data();
-                            const senderEmail = message.sender;
-                            
-                            // Get sender's displayName
-                            db.collection('users').where('email', '==', senderEmail).get()
-                                .then((querySnapshot) => {
-                                    const senderDoc = querySnapshot.docs[0];
-                                    const senderDisplayName = senderDoc.data().displayName || senderEmail;
-                                    
-                                    const messageDiv = document.createElement('div');
-                                    messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
-                                    chatWindow.appendChild(messageDiv);
-                                });
-                        });
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp', 'asc')
+        .onSnapshot((querySnapshot) => {
+            chatWindow.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const message = doc.data();
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                
+                if (message.sender === currentUser.email) {
+                    messageDiv.classList.add('sent');
+                } else {
+                    getFriendDisplayName(message.sender).then(senderName => {
+                        messageDiv.textContent = `${senderName}: ${message.message}`;
+                        messageDiv.classList.add('received');
                     });
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching user data:', error);
+                }
+                
+                messageDiv.textContent = `${message.sender}: ${message.message}`;
+                chatWindow.appendChild(messageDiv);
+            });
         });
 }
+
 
 
     function getChatId(userEmail, friendEmail) {
