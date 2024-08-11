@@ -1131,7 +1131,7 @@ margin-right: 0px;}
         <span class="close" onclick="closeEditModal()">&times;</span>
         <h2>Edit <span id="edit-item-type"></span></h2>
         <input type="text" id="edit-input" placeholder="Enter new value">
-        <button id="save-edit-btn">Save</button>
+        <button onclick="saveEdit()">Save</button>
     </div>
 </div>
 
@@ -1751,39 +1751,55 @@ function createDeleteButton(id, type) {
     return button;
 }
 
-// Function to open the edit modal
-function openEditModal(id, type) {
-    const modal = document.getElementById('editModal');
-    const closeBtn = document.querySelector('.close');
-    const saveBtn = document.getElementById('save-edit-btn');
+// Function to open the edit modal and populate it with the current value
+function openEditModal(id, type, currentValue) {
+    const modal = document.getElementById('edit-modal');
+    const itemTypeSpan = document.getElementById('edit-item-type');
     const editInput = document.getElementById('edit-input');
+    
+    if (modal && itemTypeSpan && editInput) {
+        itemTypeSpan.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+        editInput.value = currentValue;
+        
+        modal.style.display = 'block';
+        
+        // Store the item ID and type for later use
+        window.currentEdit = { id, type };
+    } else {
+        console.error('Edit modal elements not found.');
+    }
+}
 
-    modal.style.display = 'block';
-
-    closeBtn.onclick = function () {
+// Function to close the edit modal
+function closeEditModal() {
+    const modal = document.getElementById('edit-modal');
+    if (modal) {
         modal.style.display = 'none';
-    };
+    }
+}
 
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
-
-    saveBtn.onclick = function () {
+// Function to save the edited value
+function saveEdit() {
+    const editInput = document.getElementById('edit-input');
+    if (editInput && window.currentEdit) {
+        const { id, type } = window.currentEdit;
         const newValue = editInput.value.trim();
+        
         if (newValue) {
             db.collection(type + 's').doc(id).update({
                 [type]: newValue
             }).then(() => {
                 console.log(`${type} updated:`, newValue);
-                modal.style.display = 'none';
+                closeEditModal(); // Close the modal after saving
             }).catch((error) => {
                 console.error(`Error updating ${type}:`, error);
             });
         }
-    };
+    } else {
+        console.error('Edit input or current edit information not found.');
+    }
 }
+
 
 // Function to delete an item
 function deleteItem(id, type) {
