@@ -361,89 +361,92 @@ body.night-mode {
 
 .calendar {
     width: 100%;
-    max-width: 900px;
-    margin: 40px auto;
-    background: var(--glass-bg);
-    border-radius: var(--border-radius);
-    backdrop-filter: blur(10px);
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white; /* White background for the whole calendar */
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.302), 0 4px 8px rgba(60, 64, 67, 0.149);
+    border: 1px solid #dadce0;
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: var(--text-color);
-    border-bottom: 1px solid var(--hover-bg);
+    padding: 10px 20px;
+    background: #f1f3f4; /* Light gray background */
+    color: #202124; /* Dark text color */
+    border-bottom: 1px solid #dadce0;
 }
 
 .calendar-header button {
-    background-color: var(--glass-bg);
-    color: var(--text-color);
-    border: 1px solid var(--accent-color);
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
+    background-color: #ffffff;
+    color: #202124;
+    border: 1px solid #dadce0;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s, transform 0.3s;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
 }
 
 .calendar-header button:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05);
+    background-color: #f1f3f4;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background: var(--secondary-color);
+    background: white;
+    border-top: 1px solid #dadce0;
 }
 
 .calendar-grid .day-header {
-    font-weight: bold;
-    padding: 15px;
+    font-weight: 500;
+    padding: 10px;
     text-align: center;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border-radius: var(--border-radius);
+    background-color: #f1f3f4;
+    color: #5f6368;
+    border-bottom: 1px solid #dadce0;
 }
 
 .calendar-grid .day {
-    background-color: var(--card-bg);
-    padding: 20px;
+    padding: 8px;
     text-align: center;
-    border-radius: var(--border-radius);
-    height: 120px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    transition: background-color 0.3s, transform 0.3s;
+    border-right: 1px solid #dadce0;
+    border-bottom: 1px solid #dadce0;
+    cursor: pointer;
 }
 
 .calendar-grid .day.current-day {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: var(--text-color);
-    font-weight: bold;
-    box-shadow: 0 0 10px var(--accent-color);
+    background-color: #1a73e8;
+    color: white;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    line-height: 40px;
 }
 
 .calendar-grid .day:hover {
-    background-color: var(--hover-bg);
-    transform: scale(1.05);
+    background-color: #e8f0fe;
 }
 
 .event {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    padding: 5px;
-    border-radius: 5px;
-    margin-top: 5px;
-    font-size: 0.8rem;
+    background-color: #d1e4fd;
+    color: #1a73e8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    text-align: left;
 }
 
 .modal {
@@ -453,19 +456,18 @@ body.night-mode {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(10px);
 }
 
 .modal-content {
-    background-color: var(--glass-bg);
+    background-color: #ffffff;
     padding: 20px;
-    border-radius: var(--border-radius);
-    max-width: 500px;
+    border-radius: 8px;
+    max-width: 400px;
     width: 90%;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.302), 0 4px 8px rgba(60, 64, 67, 0.149);
 }
 
 .modal-header {
@@ -479,13 +481,8 @@ body.night-mode {
     background-color: transparent;
     border: none;
     font-size: 1.5rem;
-    color: var(--text-color);
+    color: #5f6368;
     cursor: pointer;
-    transition: color 0.3s;
-}
-
-.modal-header button:hover {
-    color: var(--accent-color);
 }
 
 .modal-body input,
@@ -493,27 +490,24 @@ body.night-mode {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--secondary-color);
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    border-radius: 4px;
+    border: 1px solid #dadce0;
+    background-color: #f8f9fa;
+    color: #202124;
 }
 
 .modal-footer button {
-    background-color: var(--accent-color);
-    color: var(--text-color);
+    background-color: #1a73e8;
+    color: white;
     border: none;
     padding: 10px;
-    border-radius: var(--border-radius);
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .modal-footer button:hover {
-    background-color: var(--hover-bg);
+    background-color: #165fc9;
 }
-
-
 
 
 </style>
@@ -774,6 +768,8 @@ saveEvent.addEventListener('click', async () => {
     }
 });
 
+
+// Function to load events (as shown earlier)
 async function loadEvents() {
     const user = firebase.auth().currentUser;
     if (!user) {
@@ -821,8 +817,13 @@ document.getElementById('nextMonth').addEventListener('click', () => {
     updateCalendarHeader();
     loadEvents();
 });
-</script>
 
+// Initialize the calendar and load events from Firestore
+updateCalendarHeader();
+loadEvents();
+
+
+</script>
 
     </body>
     </html>
