@@ -565,7 +565,7 @@ body.night-mode {
         <button onclick="addFriend()">Add Friend</button>
     </div>
     <div class="chat-window">
-        <h2>Chat</h2>
+        <h2>Chat with <span id="chatWith"></span></h2>
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
@@ -588,6 +588,7 @@ body.night-mode {
     };
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
+    let currentChatFriend = null;
 
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
@@ -599,21 +600,6 @@ body.night-mode {
             }
         });
     });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
 
     function addFriend() {
         const friendEmail = document.getElementById('friendEmail').value;
@@ -711,8 +697,14 @@ body.night-mode {
 
     function sendMessage() {
         const chatInput = document.getElementById('chatInput').value;
-        if (chatInput) {
-            db.collection('messages').add({
+        const currentUser = firebase.auth().currentUser;
+
+        if (chatInput && currentChatFriend && currentUser) {
+            const chatId = getChatId(currentUser.email, currentChatFriend);
+
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
                 message: chatInput,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
@@ -725,18 +717,28 @@ body.night-mode {
     }
 
     function openChat(friendEmail) {
+        currentChatFriend = friendEmail;
+        document.getElementById('chatWith').textContent = friendEmail;
+
         const chatWindow = document.getElementById('chatMessages');
-        db.collection('messages').where('recipient', '==', friendEmail)
+        const currentUser = firebase.auth().currentUser;
+        const chatId = getChatId(currentUser.email, friendEmail);
+
+        db.collection('chats').doc(chatId).collection('messages')
             .orderBy('timestamp', 'asc')
             .onSnapshot((querySnapshot) => {
                 chatWindow.innerHTML = ''; 
                 querySnapshot.forEach((doc) => {
                     const message = doc.data();
                     const messageDiv = document.createElement('div');
-                    messageDiv.textContent = message.message;
+                    messageDiv.textContent = `${message.sender}: ${message.message}`;
                     chatWindow.appendChild(messageDiv);
                 });
             });
+    }
+
+    function getChatId(userEmail, friendEmail) {
+        return [userEmail, friendEmail].sort().join('_');
     }
 
     function getUserEmail(userId) {
@@ -745,7 +747,7 @@ body.night-mode {
         });
     }
 </script>
-
+        
 <script>
     function toggleNightMode() {
         document.body.classList.toggle('night-mode');
