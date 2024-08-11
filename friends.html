@@ -668,22 +668,53 @@ body.night-mode {
         }
     }
 
-    function acceptFriendRequest(requestId, senderEmail) {
-        const currentUser = firebase.auth().currentUser;
+function acceptFriendRequest(requestId, senderEmail) {
+    const currentUser = firebase.auth().currentUser;
 
-        if (currentUser) {
-            db.collection('friendRequests').doc(requestId).update({
-                status: 'accepted'
-            }).then(() => {
-                console.log('Friend request accepted!');
-                openChat(senderEmail);
-            }).catch((error) => {
-                console.error('Error accepting friend request:', error);
-            });
-        }
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+
+        // First, update the friend request status to 'accepted'
+        db.collection('friendRequests').doc(requestId).update({
+            status: 'accepted'
+        }).then(() => {
+            console.log('Friend request accepted!');
+
+            // Get the sender's user ID using their email
+            db.collection('users').where('email', '==', senderEmail).get()
+                .then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        const senderDoc = querySnapshot.docs[0];
+                        const senderId = senderDoc.id;
+
+                        // Add both users as friends in the 'friends' collection
+                        const friendData = {
+                            users: [currentUserId, senderId],
+                            status: 'accepted',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+
+                        db.collection('friends').add(friendData)
+                            .then(() => {
+                                console.log('Friends added successfully!');
+                                loadOnlineFriends(); // Reload the online friends list
+                                openChat(senderEmail); // Open chat with the new friend
+                            })
+                            .catch((error) => {
+                                console.error('Error adding friends:', error);
+                            });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching sender data:', error);
+                });
+        }).catch((error) => {
+            console.error('Error accepting friend request:', error);
+        });
     }
+}
 
-// Function to display online friends
+
 function loadOnlineFriends() {
     const currentUser = firebase.auth().currentUser;
 
@@ -700,35 +731,40 @@ function loadOnlineFriends() {
 
                 querySnapshot.forEach(doc => {
                     const users = doc.data().users;
-                    // Add the friend's UID to the array
                     const friendId = users.find(uid => uid !== currentUserId);
                     if (friendId) {
                         friendsIds.push(friendId);
                     }
                 });
 
-                // Now, get the online friends among the user's friends
+                console.log('Friends IDs:', friendsIds);
+
                 if (friendsIds.length > 0) {
                     db.collection('users')
-                        .where(firebase.firestore.FieldPath.documentId(), 'in', friendsIds)
+                        .where(firebase.firestore.FieldPath.documentId(), 'in', friendsIds.slice(0, 10)) // Limiting to 10 IDs for now
                         .where('online', '==', true)
                         .onSnapshot((querySnapshot) => {
                             const onlineFriendsList = document.getElementById('onlineFriends');
                             onlineFriendsList.innerHTML = ''; // Clear the list first
 
-                            querySnapshot.forEach((doc) => {
-                                const friend = doc.data();
-                                const listItem = document.createElement('li');
-                                listItem.textContent = friend.email;
-                                listItem.onclick = () => openChat(friend.email);
-                                onlineFriendsList.appendChild(listItem);
-                            });
-
                             if (querySnapshot.empty) {
+                                console.log('No online friends found');
                                 onlineFriendsList.innerHTML = '<li>No online friends</li>';
+                            } else {
+                                querySnapshot.forEach((doc) => {
+                                    const friend = doc.data();
+                                    console.log('Online Friend:', friend.email);
+                                    const listItem = document.createElement('li');
+                                    listItem.textContent = friend.email;
+                                    listItem.onclick = () => openChat(friend.email);
+                                    onlineFriendsList.appendChild(listItem);
+                                });
                             }
+                        }, (error) => {
+                            console.error('Error fetching online friends:', error);
                         });
                 } else {
+                    console.log('No friends found');
                     document.getElementById('onlineFriends').innerHTML = '<li>No friends found</li>';
                 }
             })
