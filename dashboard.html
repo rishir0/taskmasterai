@@ -1090,53 +1090,50 @@ margin-right: 0px;}
                 <p>Provides AI-driven conversations for instant assistance and personalized support.</p>
             </button>
         </div>
-        <div id="tasks-projects" class="section">
-            <div class="tasks-section">
-                <h2>Tasks</h2>
-                <div class="goal-card">
-                    <input type="text" id="task-input" placeholder="Enter new task">
-                    <button onclick="createTask()">Create Task</button>
-                </div>
-                <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
-            </div>
-            <div class="goals-section">
-                <h2>Goals</h2>
-                <div class="goal-card">
-                    <input type="text" id="goal-input" placeholder="Enter new goal">
-                    <button onclick="createGoal()">Create Goal</button>
-                </div>
-                <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
-            </div>
-            <div class="projects-section">
-                <h2>Projects</h2>
-                <div class="goal-card">
-                    <input type="text" id="project-input" placeholder="Enter new project">
-                    <button onclick="createProject()">Create Project</button>
-                </div>
-                <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
-            </div>
-            <div class="plans-section">
-                <h2>Plans</h2>
-                <div class="goal-card">
-                    <input type="text" id="plan-input" placeholder="Enter new plan">
-                    <button onclick="createPlan()">Create Plan</button>
-                </div>
-                <div id="plans-list"></div> <!-- Plan items will be added here dynamically -->
-            </div>
+<div id="tasks-projects" class="section">
+    <div class="tasks-section">
+        <h2>Tasks</h2>
+        <div class="goal-card">
+            <input type="text" id="task-input" placeholder="Enter new task">
+            <button onclick="createTask()">Create Task</button>
         </div>
+        <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
+    <div class="goals-section">
+        <h2>Goals</h2>
+        <div class="goal-card">
+            <input type="text" id="goal-input" placeholder="Enter new goal">
+            <button onclick="createGoal()">Create Goal</button>
+        </div>
+        <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
+    </div>
+    <div class="projects-section">
+        <h2>Projects</h2>
+        <div class="goal-card">
+            <input type="text" id="project-input" placeholder="Enter new project">
+            <button onclick="createProject()">Create Project</button>
+        </div>
+        <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
+    </div>
+    <div class="plans-section">
+        <h2>Plans</h2>
+        <div class="goal-card">
+            <input type="text" id="plan-input" placeholder="Enter new plan">
+            <button onclick="createPlan()">Create Plan</button>
+        </div>
+        <div id="plans-list"></div> <!-- Plan items will be added here dynamically -->
+    </div>
+</div>
 
-            <!-- Edit Modal -->
+<!-- Edit Modal -->
 <div id="edit-modal" class="edit-modal">
     <div class="edit-modal-content">
         <span class="close" onclick="closeEditModal()">&times;</span>
         <h2>Edit <span id="edit-item-type"></span></h2>
         <input type="text" id="edit-input" placeholder="Enter new value">
-        <button onclick="saveEdit()">Save</button>
+        <button id="save-edit-btn">Save</button>
     </div>
 </div>
-
-
 
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
