@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -493,13 +494,6 @@ body.night-mode {
     transform: scale(1.1);
 }
 
-/* Container for Tasks, Projects, Goals, and Plans */
-#tasks-projects {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
 /* Updated Sections */
 #tasks-projects .tasks-section,
 #tasks-projects .projects-section,
@@ -516,18 +510,6 @@ body.night-mode {
     transition: background-color 0.3s ease;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    #tasks-projects .tasks-section,
-    #tasks-projects .projects-section,
-    #tasks-projects .goals-section,
-    #tasks-projects .plans-section {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-}
-
-/* Headers */
 #tasks-projects .tasks-section h2,
 #tasks-projects .projects-section h2,
 #tasks-projects .goals-section h2,
@@ -537,26 +519,25 @@ body.night-mode {
     font-weight: bold;
 }
 
-/* Inputs */
 #tasks-projects .tasks-section input,
 #tasks-projects .projects-section input,
 #tasks-projects .goals-section input,
 #tasks-projects .plans-section input {
-    width: calc(70% - 10px);
+    width: 70%;
     padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin-bottom: 10px;
+    margin-right: 10px;
 }
 
-/* Buttons */
 #tasks-projects .tasks-section button,
 #tasks-projects .projects-section button,
 #tasks-projects .goals-section button,
 #tasks-projects .plans-section button {
-    background-color: var(--hover-bg);
+    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
     color: var(--text-color);
     border: none;
     padding: 10px 20px;
@@ -564,6 +545,7 @@ body.night-mode {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
+    margin-right: 0px;
 }
 
 #tasks-projects .tasks-section button:hover,
@@ -573,7 +555,6 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
-/* Task, Project, Goal, and Plan Items */
 #tasks-projects .task-item,
 #tasks-projects .project-item,
 #tasks-projects .goal-item,
@@ -586,9 +567,9 @@ body.night-mode {
     justify-content: space-between;
     align-items: center;
     transition: background-color 0.3s ease;
+    margin-right: 0px;
 }
 
-/* Hover Effects */
 #tasks-projects .task-item:hover,
 #tasks-projects .project-item:hover,
 #tasks-projects .goal-item:hover,
@@ -596,14 +577,14 @@ body.night-mode {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Button Container */
+/* Container for Buttons */
 #tasks-projects .button-container {
-    display: flex;
-    gap: 5px;
-    align-items: center;
+    display: flex;         /* Use Flexbox for the layout */
+    gap: 5px;              /* Remove gap between flex items */
+    align-items: center;   /* Align buttons vertically center */
 }
 
-/* Individual Buttons */
+/* Style for Each Button */
 #tasks-projects .task-item button,
 #tasks-projects .project-item button,
 #tasks-projects .goal-item button,
@@ -615,6 +596,7 @@ body.night-mode {
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9rem;
+    margin-right: 0;        /* Ensure no left margin */
     transition: background-color 0.3s ease;
 }
 
@@ -625,7 +607,6 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
-/* Lists */
 #tasks-projects #tasks-list,
 #tasks-projects #projects-list,
 #tasks-projects #goals-list,
@@ -635,7 +616,12 @@ body.night-mode {
     margin: 0;
 }
 
-
+.task-item button,
+.project-item button,
+.goal-item button,
+.plan-item button {
+    display: inline-block;
+margin-right: 0px;}
 
 .additional-buttons {
     display: flex;
@@ -1173,6 +1159,7 @@ body.night-mode {
         });
 
 
+
 // Function to load online friends
 function loadOnlineFriends() {
     db.collection('users').where('online', '==', true)
@@ -1513,126 +1500,71 @@ function createButtonContainer() {
 
 function createTask() {
     const taskInput = document.getElementById('task-input');
-    const priorityInput = document.getElementById('priority-input'); // Add priority input
-    const dueDateInput = document.getElementById('due-date-input'); // Add due date input
-    const tagsInput = document.getElementById('tags-input'); // Add tags input
-
     const task = taskInput.value.trim();
-    const priority = priorityInput.value;
-    const dueDate = dueDateInput.value ? new Date(dueDateInput.value) : null;
-    const tags = tagsInput.value.split(',').map(tag => tag.trim()); // Convert tags to an array
-
     if (task) {
         db.collection('tasks').add({
             task: task,
-            priority: priority,
-            dueDate: dueDate,
-            tags: tags,
             userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'Not Started', // Default status
-            subtasks: [], // Initialize as empty array
-            attachments: [],
-            comments: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             console.log('Task created:', task);
         }).catch((error) => {
             console.error('Error creating task:', error);
         });
         taskInput.value = '';
-        priorityInput.value = 'Medium'; // Reset to default
-        dueDateInput.value = '';
-        tagsInput.value = '';
     }
 }
 
-
 function createProject() {
     const projectInput = document.getElementById('project-input');
-    const phasesInput = document.getElementById('phases-input'); // New input for project phases
-    const budgetInput = document.getElementById('budget-input'); // New input for budget tracking
-
     const project = projectInput.value.trim();
-    const phases = phasesInput.value.split(',').map(phase => phase.trim()); // Convert phases to an array
-    const budget = parseFloat(budgetInput.value) || 0;
-
     if (project) {
         db.collection('projects').add({
             project: project,
-            phases: phases,
-            budget: budget,
-            team: [], // Initialize as empty array for collaboration
             userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             console.log('Project created:', project);
         }).catch((error) => {
             console.error('Error creating project:', error);
         });
         projectInput.value = '';
-        phasesInput.value = '';
-        budgetInput.value = '';
     }
 }
 
-
 function createGoal() {
     const goalInput = document.getElementById('goal-input');
-    const milestonesInput = document.getElementById('milestones-input'); // New input for milestones
-    const collaborativeInput = document.getElementById('collaborative-input'); // New input for collaborative goals
-
     const goal = goalInput.value.trim();
-    const milestones = milestonesInput.value.split(',').map(milestone => milestone.trim()); // Convert milestones to an array
-    const collaborative = collaborativeInput.checked; // Boolean for collaborative goals
-
     if (goal) {
         db.collection('goals').add({
             goal: goal,
-            milestones: milestones,
-            collaborative: collaborative,
-            progress: 0, // Initialize progress to 0%
-            dependencies: [], // Initialize as empty array
             userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             console.log('Goal created:', goal);
         }).catch((error) => {
             console.error('Error creating goal:', error);
         });
         goalInput.value = '';
-        milestonesInput.value = '';
-        collaborativeInput.checked = false;
     }
 }
 
-
 function createPlan() {
     const planInput = document.getElementById('plan-input');
-    const templateInput = document.getElementById('template-input'); // New input for templates
-    const timelineInput = document.getElementById('timeline-input'); // New input for timeline
-
     const plan = planInput.value.trim();
-    const template = templateInput.value;
-    const timeline = timelineInput.value ? new Date(timelineInput.value) : null;
-
     if (plan) {
         db.collection('plans').add({
             plan: plan,
-            template: template,
-            timeline: timeline,
             userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             console.log('Plan created:', plan);
         }).catch((error) => {
             console.error('Error creating plan:', error);
         });
         planInput.value = '';
-        templateInput.value = '';
-        timelineInput.value = '';
     }
 }
-
 
 function loadTasks() {
     db.collection('tasks')
@@ -1645,44 +1577,17 @@ function loadTasks() {
                 const task = doc.data();
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
-
-                // Display task details
-                taskDiv.innerHTML = `
-                    <p>${task.task}</p>
-                    <p>Priority: ${task.priority}</p>
-                    <p>Due Date: ${task.dueDate ? task.dueDate.toDate().toLocaleDateString() : 'No due date'}</p>
-                    <p>Status: ${task.status}</p>
-                    <p>Tags: ${task.tags.join(', ')}</p>
-                `;
+                taskDiv.textContent = task.task;
 
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(doc.id, 'task'));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-                buttonContainer.appendChild(createCompleteButton(doc.id, task.status)); // Add completion status button
                 
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
         });
 }
-
-function createCompleteButton(id, status) {
-    const button = document.createElement('button');
-    button.textContent = status === 'Completed' ? 'Undo' : 'Complete';
-    button.onclick = () => updateTaskStatus(id, status === 'Completed' ? 'In Progress' : 'Completed');
-    return button;
-}
-
-function updateTaskStatus(id, newStatus) {
-    db.collection('tasks').doc(id).update({
-        status: newStatus
-    }).then(() => {
-        console.log('Task status updated:', newStatus);
-    }).catch((error) => {
-        console.error('Error updating task status:', error);
-    });
-}
-
 
 function loadProjects() {
     db.collection('projects')
