@@ -593,6 +593,9 @@ body.night-mode {
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
+                const username = user.displayName || user.email;
+                document.getElementById('username').textContent = username;
+                document.getElementById('displayName').textContent = username;
                 loadOnlineFriends();
                 listenForFriendRequests();
             } else {
@@ -693,33 +696,48 @@ function loadOnlineFriends() {
             .where('status', '==', 'accepted')
             .get()
             .then((querySnapshot) => {
-                const friendsIds = querySnapshot.docs.map(doc => {
+                const friendsIds = [];
+
+                querySnapshot.forEach(doc => {
                     const users = doc.data().users;
-                    return users.find(uid => uid !== currentUserId);
+                    // Add the friend's UID to the array
+                    const friendId = users.find(uid => uid !== currentUserId);
+                    if (friendId) {
+                        friendsIds.push(friendId);
+                    }
                 });
 
                 // Now, get the online friends among the user's friends
-                db.collection('users')
-                    .where(firebase.firestore.FieldPath.documentId(), 'in', friendsIds)
-                    .where('online', '==', true)
-                    .onSnapshot((querySnapshot) => {
-                        const onlineFriendsList = document.getElementById('onlineFriends');
-                        onlineFriendsList.innerHTML = ''; // Clear the list first
+                if (friendsIds.length > 0) {
+                    db.collection('users')
+                        .where(firebase.firestore.FieldPath.documentId(), 'in', friendsIds)
+                        .where('online', '==', true)
+                        .onSnapshot((querySnapshot) => {
+                            const onlineFriendsList = document.getElementById('onlineFriends');
+                            onlineFriendsList.innerHTML = ''; // Clear the list first
 
-                        querySnapshot.forEach((doc) => {
-                            const friend = doc.data();
-                            const listItem = document.createElement('li');
-                            listItem.textContent = friend.email;
-                            listItem.onclick = () => openChat(friend.email);
-                            onlineFriendsList.appendChild(listItem);
+                            querySnapshot.forEach((doc) => {
+                                const friend = doc.data();
+                                const listItem = document.createElement('li');
+                                listItem.textContent = friend.email;
+                                listItem.onclick = () => openChat(friend.email);
+                                onlineFriendsList.appendChild(listItem);
+                            });
+
+                            if (querySnapshot.empty) {
+                                onlineFriendsList.innerHTML = '<li>No online friends</li>';
+                            }
                         });
-                    });
+                } else {
+                    document.getElementById('onlineFriends').innerHTML = '<li>No friends found</li>';
+                }
             })
             .catch((error) => {
                 console.error('Error loading friends:', error);
             });
     }
 }
+
 
     function sendMessage() {
         const chatInput = document.getElementById('chatInput').value;
