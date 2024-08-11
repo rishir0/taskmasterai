@@ -631,84 +631,84 @@ body.night-mode {
         });
     });
 
-    function addFriend() {
-        const friendEmail = document.getElementById('friendEmail').value;
-        const currentUser = firebase.auth().currentUser;
+function addFriend() {
+    const friendEmail = document.getElementById('friendEmail').value;
+    const currentUser = firebase.auth().currentUser;
 
-        if (friendEmail && currentUser) {
-            const userId = currentUser.uid;
+    if (friendEmail && currentUser) {
+        const userId = currentUser.uid;
 
-            db.collection('users').where('email', '==', friendEmail).get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        console.error('User with this email does not exist.');
-                        return;
-                    }
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    console.error('User with this email does not exist.');
+                    return;
+                }
 
-                    const recipientDoc = querySnapshot.docs[0];
-                    const recipientId = recipientDoc.id;
+                const recipientDoc = querySnapshot.docs[0];
+                const recipientId = recipientDoc.id;
 
-                    db.collection('friendRequests').add({
-                        senderId: userId,
-                        recipientId: recipientId,
-                        status: 'pending',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        console.log('Friend request sent!');
-                    }).catch((error) => {
-                        console.error('Error sending friend request:', error);
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching user data:', error);
+                db.collection('friendRequests').add({
+                    senderId: userId,
+                    recipientId: recipientId,
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Friend request sent!');
+                }).catch((error) => {
+                    console.error('Error sending friend request:', error);
                 });
-        }
-    }
-
-    function listenForFriendRequests() {
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            const userId = currentUser.uid;
-
-            db.collection('friendRequests').where('recipientId', '==', userId)
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === 'added') {
-                            const friendRequest = change.doc.data();
-                            if (friendRequest.status === 'pending') {
-                                getUserEmail(friendRequest.senderId).then((email) => {
-                                    showAcceptPopup(email, change.doc.id);
-                                });
-                            }
-                        }
-                    });
-                });
-        }
-    }
-
-    function showAcceptPopup(senderEmail, requestId) {
-        if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
-            acceptFriendRequest(requestId, senderEmail);
-        } else {
-            console.log('Friend request declined');
-        }
-    }
-
-    function acceptFriendRequest(requestId, senderEmail) {
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            db.collection('friendRequests').doc(requestId).update({
-                status: 'accepted'
-            }).then(() => {
-                console.log('Friend request accepted!');
-                openChat(senderEmail);
-            }).catch((error) => {
-                console.error('Error accepting friend request:', error);
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
             });
-        }
     }
+}
+
+function listenForFriendRequests() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const userId = currentUser.uid;
+
+        db.collection('friendRequests').where('recipientId', '==', userId)
+            .onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const friendRequest = change.doc.data();
+                        if (friendRequest.status === 'pending') {
+                            getUserEmail(friendRequest.senderId).then((email) => {
+                                showAcceptPopup(email, change.doc.id);
+                            });
+                        }
+                    }
+                });
+            });
+    }
+}
+
+function showAcceptPopup(senderEmail, requestId) {
+    if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
+        acceptFriendRequest(requestId, senderEmail);
+    } else {
+        console.log('Friend request declined');
+    }
+}
+
+function acceptFriendRequest(requestId, senderEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        db.collection('friendRequests').doc(requestId).update({
+            status: 'accepted'
+        }).then(() => {
+            console.log('Friend request accepted!');
+            openChat(senderEmail);
+        }).catch((error) => {
+            console.error('Error accepting friend request:', error);
+        });
+    }
+}
 
 function loadOnlineFriends() {
     const currentUser = firebase.auth().currentUser;
@@ -732,34 +732,34 @@ function loadOnlineFriends() {
     }
 }
 
+function sendMessage() {
+    const chatInput = document.getElementById('chatInput').value;
+    const currentUser = firebase.auth().currentUser;
 
+    if (chatInput && currentChatFriend && currentUser) {
+        const chatId = getChatId(currentUser.email, currentChatFriend);
 
-    function sendMessage() {
-        const chatInput = document.getElementById('chatInput').value;
-        const currentUser = firebase.auth().currentUser;
-
-        if (chatInput && currentChatFriend && currentUser) {
-            const chatId = getChatId(currentUser.email, currentChatFriend);
-
-            db.collection('chats').doc(chatId).collection('messages').add({
-                sender: currentUser.email,
-                recipient: currentChatFriend,
-                message: chatInput,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                console.log('Message sent!');
-                document.getElementById('chatInput').value = ''; 
-            }).catch((error) => {
-                console.error('Error sending message: ', error);
-            });
-        }
+        db.collection('chats').doc(chatId).collection('messages').add({
+            sender: currentUser.email,
+            recipient: currentChatFriend,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Message sent!');
+            document.getElementById('chatInput').value = ''; 
+        }).catch((error) => {
+            console.error('Error sending message: ', error);
+        });
     }
+}
 
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
+
+    currentChatFriend = friendEmail; // Set the current chat friend
 
     // Get friend's displayName
     db.collection('users').where('email', '==', friendEmail).get()
@@ -786,7 +786,7 @@ function openChat(friendEmail) {
                             // Align messages based on sender
                             if (senderEmail === currentUser.email) {
                                 messageDiv.classList.add('message', 'sent');
-                                messageDiv.textContent = `You: ${message.message}`;
+                                messageDiv.textContent = `${message.message}`;
                             } else {
                                 messageDiv.classList.add('message', 'received');
                                 
@@ -809,15 +809,15 @@ function openChat(friendEmail) {
         });
 }
 
-    function getChatId(userEmail, friendEmail) {
-        return [userEmail, friendEmail].sort().join('_');
-    }
+function getChatId(userEmail, friendEmail) {
+    return [userEmail, friendEmail].sort().join('_');
+}
 
-    function getUserEmail(userId) {
-        return db.collection('users').doc(userId).get().then((doc) => {
-            return doc.data().email;
-        });
-    }
+function getUserEmail(userId) {
+    return db.collection('users').doc(userId).get().then((doc) => {
+        return doc.data().email;
+    });
+}
 </script>
         
 <script>
