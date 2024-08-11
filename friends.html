@@ -593,9 +593,6 @@ body.night-mode {
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                const username = user.displayName || user.email;
-                document.getElementById('username').textContent = username;
-                document.getElementById('displayName').textContent = username;
                 loadOnlineFriends();
                 listenForFriendRequests();
             } else {
