@@ -684,7 +684,7 @@ body.night-mode {
 
 function loadOnlineFriends() {
     const currentUser = firebase.auth().currentUser;
-    
+
     if (currentUser) {
         db.collection('users').where('online', '==', true)
             .onSnapshot((querySnapshot) => {
@@ -695,7 +695,7 @@ function loadOnlineFriends() {
                     const friend = doc.data();
                     if (friend.email !== currentUser.email) { // Exclude current user
                         const listItem = document.createElement('li');
-                        listItem.textContent = friend.username || friend.email; // Display username if available
+                        listItem.textContent = friend.displayName || friend.email; // Display displayName if available
                         listItem.onclick = () => openChat(friend.email);
                         onlineFriendsList.appendChild(listItem);
                     }
@@ -703,6 +703,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 
     function sendMessage() {
