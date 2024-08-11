@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -650,6 +649,22 @@ firebase.initializeApp(firebaseConfig);
 
 // Initialize Firestore
 const db = firebase.firestore();
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+                    loadNotes();        // Load AI notes
+                    loadManualNotes();  // Load manual notes
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
 
 const calendarGrid = document.querySelector('.calendar-grid');
 const eventModal = document.getElementById('eventModal');
