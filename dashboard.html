@@ -1643,7 +1643,6 @@ function createPlan() {
     }
 }
 
-// Functions to load existing tasks, projects, goals, and plans
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
@@ -1658,9 +1657,9 @@ function loadTasks() {
                 taskDiv.textContent = task.task;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'task'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-
+                
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
@@ -1681,7 +1680,7 @@ function loadProjects() {
                 projectDiv.textContent = project.project;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'project'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'project', project.project));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'project'));
 
                 projectDiv.appendChild(buttonContainer);
@@ -1704,7 +1703,7 @@ function loadGoals() {
                 goalDiv.textContent = goal.goal;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'goal'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'goal', goal.goal));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'goal'));
 
                 goalDiv.appendChild(buttonContainer);
@@ -1727,7 +1726,7 @@ function loadPlans() {
                 planDiv.textContent = plan.plan;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'plan'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'plan', plan.plan));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'plan'));
 
                 planDiv.appendChild(buttonContainer);
@@ -1737,12 +1736,13 @@ function loadPlans() {
 }
 
 // Functions to create Edit and Delete buttons
-function createEditButton(id, type) {
+function createEditButton(id, type, currentValue) {
     const button = document.createElement('button');
     button.textContent = 'Edit';
-    button.onclick = () => openEditModal(id, type);
+    button.onclick = () => openEditModal(id, type, currentValue);
     return button;
 }
+
 
 function createDeleteButton(id, type) {
     const button = document.createElement('button');
@@ -1759,7 +1759,7 @@ function openEditModal(id, type, currentValue) {
     
     if (modal && itemTypeSpan && editInput) {
         itemTypeSpan.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-        editInput.value = currentValue;
+        editInput.value = currentValue || '';  // Default to an empty string if currentValue is undefined
         
         modal.style.display = 'block';
         
@@ -1769,6 +1769,7 @@ function openEditModal(id, type, currentValue) {
         console.error('Edit modal elements not found.');
     }
 }
+
 
 // Function to close the edit modal
 function closeEditModal() {
