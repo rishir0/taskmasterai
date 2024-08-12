@@ -225,33 +225,55 @@
         const db = getFirestore();
 
 
-        // Function to save user data
-        const saveUserData = async (user) => {
-            try {
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName || "Anonymous",
-                    firstName: user.firstName || "",
-                    lastName: user.lastName || ""
-                });
-                console.log("User data saved successfully");
-            } catch (error) {
-                console.error("Error saving user data:", error);
-            }
-        };
+    // Function to save or update user data
+    const saveUserData = async (user, onlineStatus) => {
+        try {
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || "Anonymous",
+                online: onlineStatus,
+                lastSeen: serverTimestamp() // Use server timestamp
+            }, { merge: true });
+            console.log(`User data saved and online status set to ${onlineStatus}`);
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
+    };
 
-        // Google Sign-In
-const provider = new GoogleAuthProvider();
-const googleLoginBtn = document.getElementById('google-login-btn');
-if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', () => {
-        signInWithPopup(auth, provider)
-            .then(async (result) => {
-                // Google Sign-In successful
-                const user = result.user;
-                console.log('Google Sign-In successful:', user);
-                await saveUserData(user);
+    // Update online status when the user is logged in
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            saveUserData(user, true); // Set status to online
+
+            // Set status to offline when the tab or browser is closed
+            window.addEventListener('beforeunload', () => {
+                saveUserData(user, false); // Set status to offline
+            });
+
+            // Set status to offline when the user explicitly logs out
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    await saveUserData(user, false);
+                    await auth.signOut();
+                    window.location.href = "signin.html"; // Redirect to sign-in page after logging out
+                });
+            }
+        }
+    });
+
+
+    // Google Sign-In
+    const provider = new GoogleAuthProvider();
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    console.log('Google Sign-In successful:', user);
+                await saveUserData(user, true);
                 window.location.href = "splashscreen.html"; // Redirect to splash screen
             })
             .catch((error) => {
