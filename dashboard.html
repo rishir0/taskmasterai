@@ -1176,14 +1176,6 @@ margin-right: 0px;}
                 console.error('Error updating online status:', error);
             });
 
-            // Handle the user going offline only when the tab is closed or navigated away
-            window.addEventListener('beforeunload', function() {
-                db.collection('users').doc(user.uid).set({
-                    online: false,
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            });
-
             // Keep the user online even when switching tabs except for specific pages
             document.addEventListener('visibilitychange', function() {
                 const excludedPages = [
