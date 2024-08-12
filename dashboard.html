@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1137,9 +1138,10 @@ margin-right: 0px;}
       
 </body>
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 <script>
     // Your Firebase configuration
     var firebaseConfig = {
@@ -1159,29 +1161,42 @@ margin-right: 0px;}
     document.addEventListener('DOMContentLoaded', function() {
         auth.onAuthStateChanged(function(user) {
             if (user) {
-                // Reference to the user's status document in Firestore
-                const userStatusRef = db.collection('userStatus').doc(user.uid);
+                // Update the UI with the user's display name
+                const username = user.displayName || user.email;
+                document.getElementById('username').textContent = username;
+                document.getElementById('displayName').textContent = username;
 
-                // Set online status to true
-                userStatusRef.set({
+                // Set Firestore online status to true and update last seen
+                db.collection('users').doc(user.uid).set({
                     online: true,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                }, { merge: true }).then(() => {
+                    console.log('User online status updated to true');
+                }).catch((error) => {
+                    console.error('Error updating online status:', error);
+                });
 
-                // Handle tab close event to set offline status
-                window.addEventListener('beforeunload', () => {
-                    userStatusRef.set({
+                // Handle the user going offline only when the tab is closed or navigated away
+                window.addEventListener('beforeunload', function() {
+                    db.collection('users').doc(user.uid).set({
                         online: false,
                         lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
                 });
 
-                // Display the username
-                const username = user.displayName || user.email;
-                document.getElementById('username').textContent = username;
-                document.getElementById('displayName').textContent = username;
+                // Keep the user online even when switching tabs
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') {
+                        db.collection('users').doc(user.uid).set({
+                            online: true,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).then(() => {
+                            console.log('User came back online');
+                        });
+                    }
+                });
 
-                // Load other data
+                // Load other app-specific data
                 loadTasks();
                 loadProjects();
                 loadGoals();
@@ -1192,7 +1207,6 @@ margin-right: 0px;}
             }
         });
     });
-
 
 
 // Function to load online friends
