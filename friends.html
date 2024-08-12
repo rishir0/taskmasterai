@@ -353,6 +353,34 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+.unfriend-button {
+    position: absolute;
+    right: 10px; /* Adjust as needed to position the button */
+    top: 50%;
+    transform: translateY(-50%); /* Center the button vertically */
+    padding: 5px 10px;
+    background-color: var(--danger-color); /* Use a variable or color of your choice */
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.unfriend-button:hover {
+    background-color: var(--danger-hover-color); /* Darker color when hovered */
+}
+
+.unfriend-button:focus {
+    outline: none; /* Remove default focus outline */
+}
+
+.unfriend-button:active {
+    background-color: var(--danger-active-color); /* Even darker color when button is pressed */
+}
+
+
 #onlineFriends li {
     position: relative; /* Required for absolute positioning of the button */
     display: flex;
@@ -545,6 +573,7 @@ body.night-mode {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
+
 
 
     </style>
@@ -876,7 +905,11 @@ function loadOnlineFriends() {
                                     // Create Unfriend button
                                     const unfriendButton = document.createElement('button');
                                     unfriendButton.textContent = 'Unfriend';
-                                    unfriendButton.onclick = () => unfriendUser(friendEmail);
+                                    unfriendButton.className = 'unfriend-button'; // Add a class for styling
+                                    unfriendButton.onclick = (event) => {
+                                        event.stopPropagation(); // Prevent click event from propagating to list item
+                                        unfriendUser(friendEmail);
+                                    };
                                     
                                     listItem.appendChild(unfriendButton);
                                     onlineFriendsList.appendChild(listItem);
@@ -890,6 +923,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 
 function unfriendUser(friendEmail) {
