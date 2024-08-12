@@ -697,8 +697,20 @@ body.night-mode {
         });
     });
 
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(function(clientList) {
+            if (clientList.length > 0) {
+                return clientList[0].focus();
+            }
+            return clients.openWindow('/chat.html'); // Or the URL of your chat page
+        })
+    );
+});
+
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Request permission to show notifications
     if (Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
@@ -709,6 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 
 
 function addFriend() {
@@ -974,19 +987,15 @@ function openChat(friendEmail) {
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
-    currentChatFriend = friendEmail; // Set the current chat friend
+    currentChatFriend = friendEmail;
 
-    // Get friend's displayName
     db.collection('users').where('email', '==', friendEmail).get()
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 const friendDoc = querySnapshot.docs[0];
                 const friendDisplayName = friendDoc.data().displayName || friendEmail;
-
-                // Update the "Chat with" section to display the friend's displayName
                 chatWithSpan.textContent = friendDisplayName;
 
-                // Load chat messages
                 db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
                     .onSnapshot((querySnapshot) => {
@@ -994,33 +1003,26 @@ function openChat(friendEmail) {
                         querySnapshot.forEach((doc) => {
                             const message = doc.data();
                             const senderEmail = message.sender;
-
-                            // Create message div
                             const messageDiv = document.createElement('div');
 
-                            // Align messages based on sender
                             if (senderEmail === currentUser.email) {
                                 messageDiv.classList.add('message', 'sent');
                                 messageDiv.textContent = `${message.message}`;
                             } else {
                                 messageDiv.classList.add('message', 'received');
-                                
-                                // Get sender's displayName
                                 db.collection('users').where('email', '==', senderEmail).get()
                                     .then((querySnapshot) => {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = senderDoc.data().displayName || senderEmail;
-                                        
                                         messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
-                                    });
 
-                                // Show notification if the user is on another tab
-                                if (document.visibilityState !== 'visible' && Notification.permission === 'granted') {
-                                    new Notification(`New message from ${friendDisplayName}`, {
-                                        body: message.message,
-                                        icon: '/path/to/icon.png' // You can customize this with your own icon
+                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                                            new Notification(`New message from ${senderDisplayName}`, {
+                                                body: message.message,
+                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
+                                            });
+                                        }
                                     });
-                                }
                             }
                             chatWindow.appendChild(messageDiv);
                         });
@@ -1031,6 +1033,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 
 function getChatId(userEmail, friendEmail) {
