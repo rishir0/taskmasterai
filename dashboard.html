@@ -1141,6 +1141,7 @@ margin-right: 0px;}
 <!-- Add Firebase products that you want to use -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 <script>
     // Your Firebase configuration
     var firebaseConfig = {
@@ -1156,6 +1157,7 @@ margin-right: 0px;}
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var auth = firebase.auth();
+    var realtimeDb = firebase.database();
 
     document.addEventListener('DOMContentLoaded', function() {
         auth.onAuthStateChanged(function(user) {
@@ -1165,32 +1167,42 @@ margin-right: 0px;}
                 document.getElementById('username').textContent = username;
                 document.getElementById('displayName').textContent = username;
 
+                // Reference to the user's document in Firestore
+                const userRef = db.collection('users').doc(user.uid);
+
+                // Reference to the user's status in the Realtime Database
+                const userStatusRef = realtimeDb.ref('status/' + user.uid);
+
                 // Set Firestore online status to true and update last seen
-                db.collection('users').doc(user.uid).set({
+                userRef.set({
                     online: true,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }).then(() => {
-                    console.log('User online status updated to true');
-                }).catch((error) => {
-                    console.error('Error updating online status:', error);
-                });
+                }, { merge: true });
 
-                // Handle the user going offline only when the tab is closed or navigated away
-                window.addEventListener('beforeunload', function() {
-                    db.collection('users').doc(user.uid).set({
-                        online: false,
-                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                });
-
-                // Keep the user online even when switching tabs
-                document.addEventListener('visibilitychange', function() {
-                    if (document.visibilityState === 'visible') {
-                        db.collection('users').doc(user.uid).set({
+                // Monitor connection state in Realtime Database
+                const connectedRef = realtimeDb.ref('.info/connected');
+                connectedRef.on('value', function(snapshot) {
+                    if (snapshot.val() === true) {
+                        // Set Realtime Database status to true
+                        userStatusRef.set({
                             online: true,
-                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true }).then(() => {
-                            console.log('User came back online');
+                            lastSeen: firebase.database.ServerValue.TIMESTAMP
+                        });
+
+                        // Handle user disconnection
+                        userStatusRef.onDisconnect().set({
+                            online: false,
+                            lastSeen: firebase.database.ServerValue.TIMESTAMP
+                        });
+
+                        // Optionally, update Firestore when disconnected
+                        userStatusRef.onDisconnect().set({
+                            online: false
+                        }).then(() => {
+                            userRef.set({
+                                online: false,
+                                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                            }, { merge: true });
                         });
                     }
                 });
