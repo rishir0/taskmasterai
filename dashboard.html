@@ -1187,14 +1187,14 @@ margin-right: 0px;}
             // Keep the user online even when switching tabs except for specific pages
             document.addEventListener('visibilitychange', function() {
                 const excludedPages = [
-                    'taskmaster.one/account.html', 
-                    'taskmaster.one/notes.html', 
-                    'taskmaster.one/calendar.html', 
-                    'taskmaster.one/friends.html', 
-                    'taskmaster.one/dashboard.html', 
-                    'taskmaster.one/features.html', 
-                    'taskmaster.one/workschedule.html', 
-                    'taskmaster.one/metrics.html'
+                    'https://www.taskmaster.one/account', 
+                    'https://www.taskmaster.one/notes', 
+                    'https://www.taskmaster.one/calendar', 
+                    'https://www.taskmaster.one/friends', 
+                    'https://www.taskmaster.one/dashboard', 
+                    'https://www.taskmaster.one/features', 
+                    'https://www.taskmaster.one/workschedule', 
+                    'https://www.taskmaster.one/metrics'
                 ];
 
                 // Check if the current page URL is in the list of excluded pages
