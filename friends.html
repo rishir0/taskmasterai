@@ -763,18 +763,15 @@ function loadOnlineFriends() {
 
     if (currentUser) {
         const currentUserEmail = currentUser.email;
+        const acceptedFriends = new Set();
 
-        // Query the friend requests collection to get the list of accepted friends
+        // Fetch accepted friend requests first
         db.collection('friendRequests').where('status', '==', 'accepted')
-            .where('users', 'array-contains', currentUserEmail)
             .get()
             .then((querySnapshot) => {
-                const acceptedFriends = new Set();
-
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     if (data.users) {
-                        console.log("Friend Request Data:", data); // Log friend request data
                         data.users.forEach((userEmail) => {
                             if (userEmail !== currentUserEmail) {
                                 acceptedFriends.add(userEmail);
@@ -783,9 +780,7 @@ function loadOnlineFriends() {
                     }
                 });
 
-                console.log("Accepted Friends Set:", Array.from(acceptedFriends)); // Log the accepted friends set
-
-                // Query users who are online
+                // Now fetch online users
                 db.collection('users').where('online', '==', true)
                     .onSnapshot((querySnapshot) => {
                         const onlineFriendsList = document.getElementById('onlineFriends');
@@ -794,7 +789,6 @@ function loadOnlineFriends() {
                         querySnapshot.forEach((doc) => {
                             const friend = doc.data();
                             const friendEmail = friend.email;
-                            console.log("Checking Friend:", friendEmail); // Log each friend's email
                             if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                 const listItem = document.createElement('li');
                                 listItem.textContent = friend.displayName || friend.email; // Display displayName if available
@@ -809,7 +803,6 @@ function loadOnlineFriends() {
             });
     }
 }
-
 
 
 function sendMessage() {
