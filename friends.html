@@ -354,10 +354,6 @@ body.night-mode {
 }
 
 .unfriend-button {
-    position: absolute;
-    right: 10px; /* Adjust as needed to position the button */
-    top: 50%;
-    transform: translateY(-50%); /* Center the button vertically */
     padding: 5px 10px;
     background-color: var(--danger-color); /* Use a variable or color of your choice */
     color: #fff;
@@ -366,6 +362,7 @@ body.night-mode {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
+    margin-left: 10px; /* Space between name and button */
 }
 
 .unfriend-button:hover {
@@ -381,45 +378,7 @@ body.night-mode {
 }
 
 
-#onlineFriends li {
-    position: relative; /* Required for absolute positioning of the button */
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Space between friend name and button */
-    background: var(--glass-bg);
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s;
-}
 
-#onlineFriends li button {
-    position: absolute;
-    right: 10px; /* Adjust as needed to position the button */
-    top: 50%;
-    transform: translateY(-50%); /* Center the button vertically */
-    padding: 5px 10px;
-    background-color: var(--danger-color); /* Use a variable or color of your choice */
-    color: #fff;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-#onlineFriends li button:hover {
-    background-color: var(--danger-hover-color); /* Darker color when hovered */
-}
-
-#onlineFriends li button:focus {
-    outline: none; /* Remove default focus outline */
-}
-
-#onlineFriends li button:active {
-    background-color: var(--danger-active-color); /* Even darker color when button is pressed */
-}
 
 
 .create-new {
@@ -905,11 +864,7 @@ function loadOnlineFriends() {
                                     // Create Unfriend button
                                     const unfriendButton = document.createElement('button');
                                     unfriendButton.textContent = 'Unfriend';
-                                    unfriendButton.className = 'unfriend-button'; // Add a class for styling
-                                    unfriendButton.onclick = (event) => {
-                                        event.stopPropagation(); // Prevent click event from propagating to list item
-                                        unfriendUser(friendEmail);
-                                    };
+                                    unfriendButton.onclick = () => unfriendUser(friendEmail);
                                     
                                     listItem.appendChild(unfriendButton);
                                     onlineFriendsList.appendChild(listItem);
@@ -962,6 +917,7 @@ function unfriendUser(friendEmail) {
             });
     }
 }
+
 
 
 
