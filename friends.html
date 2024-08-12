@@ -963,6 +963,7 @@ function unfriendUser(friendEmail) {
 document.addEventListener("DOMContentLoaded", function() {
     const chatInputElement = document.getElementById('chatInput');
     const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
 
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
@@ -979,10 +980,15 @@ document.addEventListener("DOMContentLoaded", function() {
             }).then(() => {
                 console.log('Message sent!');
                 chatInputElement.value = ''; // Clear the input field after sending
+                scrollToBottom(); // Scroll to the bottom after sending
             }).catch((error) => {
                 console.error('Error sending message: ', error);
             });
         }
+    }
+
+    function scrollToBottom() {
+        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
     }
 
     // Send message when the "Send" button is clicked
@@ -995,7 +1001,20 @@ document.addEventListener("DOMContentLoaded", function() {
             sendMessage();
         }
     });
+
+    // Scroll to the bottom whenever a new message is added
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    // Code to display the message
+                    scrollToBottom(); // Scroll to the bottom when a new message is added
+                }
+            });
+        });
 });
+
 
 
 function openChat(friendEmail) {
