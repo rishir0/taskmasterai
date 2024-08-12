@@ -847,11 +847,21 @@ function loadOnlineFriends() {
                                 const friendEmail = friend.email;
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     const listItem = document.createElement('li');
-                                    listItem.textContent = friend.displayName || friend.email; // Display displayName if available
                                     listItem.classList.add('friend-item');
+
+                                    // Create a span for the friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.textContent = friend.displayName || friend.email; // Display displayName if available
+                                    friendName.classList.add('friend-name');
 
                                     // Create and append Unfriend button
                                     const unfriendButton = createUnfriendButton(friendEmail);
+
+                                    // Add click event to open chat
+                                    friendName.onclick = () => openChat(friendEmail);
+
+                                    // Append the friend's name and Unfriend button to the list item
+                                    listItem.appendChild(friendName);
                                     listItem.appendChild(unfriendButton);
 
                                     onlineFriendsList.appendChild(listItem);
@@ -865,6 +875,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 
 
