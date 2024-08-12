@@ -1185,21 +1185,7 @@ margin-right: 0px;}
             });
         });
 
-            // Function to save or update user data
-    const saveUserData = async (user, onlineStatus) => {
-        try {
-            await db.collection("users").doc(user.uid).set({
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName || "Anonymous",
-                online: onlineStatus,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-            console.log(`User data saved and online status set to ${onlineStatus}`);
-        } catch (error) {
-            console.error("Error saving user data:", error);
-        }
-    };
+
 
     // Handle user online status
     auth.onAuthStateChanged((user) => {
