@@ -754,12 +754,49 @@ function acceptFriendRequest(requestId, senderEmail) {
             status: 'accepted'
         }).then(() => {
             console.log('Friend request accepted!');
+            // Add both users to accepted friends
+            addToAcceptedFriends(userId, senderEmail);
             openChat(senderEmail);
         }).catch((error) => {
             console.error('Error accepting friend request:', error);
         });
     }
 }
+
+function addToAcceptedFriends(userId, senderEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+        
+        // Fetch the recipient's user document
+        db.collection('users').where('email', '==', senderEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const recipientDoc = querySnapshot.docs[0];
+                    const recipientId = recipientDoc.id;
+                    
+                    // Add sender to recipient's accepted friends
+                    db.collection('users').doc(recipientId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
+                    }).catch((error) => {
+                        console.error('Error updating recipient’s accepted friends list:', error);
+                    });
+                    
+                    // Add recipient to sender's accepted friends
+                    db.collection('users').doc(currentUserId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayUnion(senderEmail)
+                    }).catch((error) => {
+                        console.error('Error updating sender’s accepted friends list:', error);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching recipient data:', error);
+            });
+    }
+}
+
 
 
 function loadOnlineFriends() {
@@ -769,52 +806,44 @@ function loadOnlineFriends() {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
 
-        // Fetch friend requests where the current user is either the sender or recipient
-        db.collection('friendRequests').where('status', '==', 'accepted')
-            .get()
+        // Fetch the current user's accepted friends
+        db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.senderId === currentUser.uid || data.recipientId === currentUser.uid) {
-                        // Find the other party in the request
-                        const otherUserId = data.senderId === currentUser.uid ? data.recipientId : data.senderId;
-
-                        // Fetch user data for the other party
-                        db.collection('users').doc(otherUserId).get()
-                            .then((userDoc) => {
-                                if (userDoc.exists) {
-                                    acceptedFriends.add(userDoc.data().email);
-                                }
-                            })
-                            .catch((error) => {
-                                console.error("Error fetching user data for accepted friends: ", error);
-                            });
-                    }
-                });
-
-                // Now fetch online users
-                db.collection('users').where('online', '==', true)
-                    .onSnapshot((querySnapshot) => {
-                        const onlineFriendsList = document.getElementById('onlineFriends');
-                        onlineFriendsList.innerHTML = '';
-
-                        querySnapshot.forEach((doc) => {
-                            const friend = doc.data();
-                            const friendEmail = friend.email;
-                            if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                const listItem = document.createElement('li');
-                                listItem.textContent = friend.displayName || friend.email; // Display displayName if available
-                                listItem.onclick = () => openChat(friendEmail);
-                                onlineFriendsList.appendChild(listItem);
-                            }
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const data = userDoc.data();
+                    
+                    if (data.acceptedFriends) {
+                        data.acceptedFriends.forEach((email) => {
+                            acceptedFriends.add(email);
                         });
-                    });
+                    }
+                    
+                    // Now fetch online users
+                    db.collection('users').where('online', '==', true)
+                        .onSnapshot((querySnapshot) => {
+                            const onlineFriendsList = document.getElementById('onlineFriends');
+                            onlineFriendsList.innerHTML = '';
+
+                            querySnapshot.forEach((doc) => {
+                                const friend = doc.data();
+                                const friendEmail = friend.email;
+                                if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                    const listItem = document.createElement('li');
+                                    listItem.textContent = friend.displayName || friend.email; // Display displayName if available
+                                    listItem.onclick = () => openChat(friendEmail);
+                                    onlineFriendsList.appendChild(listItem);
+                                }
+                            });
+                        });
+                }
             })
             .catch((error) => {
-                console.error("Error fetching friend requests: ", error);
+                console.error("Error fetching user data for accepted friends: ", error);
             });
     }
 }
+
 
 
 function sendMessage() {
