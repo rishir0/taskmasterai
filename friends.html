@@ -822,6 +822,7 @@ function loadOnlineFriends() {
     if (currentUser) {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
+        const displayNameMap = new Map(); // To store the display names of friends
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -833,6 +834,7 @@ function loadOnlineFriends() {
                     if (data.acceptedFriends) {
                         data.acceptedFriends.forEach((email) => {
                             acceptedFriends.add(email);
+                            displayNameMap.set(email, null); // Initialize with null
                         });
                     }
                     
@@ -845,26 +847,33 @@ function loadOnlineFriends() {
                             querySnapshot.forEach((doc) => {
                                 const friend = doc.data();
                                 const friendEmail = friend.email;
+                                const friendDisplayName = friend.displayName || friend.email;
+
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                    const listItem = document.createElement('li');
-                                    listItem.classList.add('friend-item');
+                                    if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                                        // Update display name if changed
+                                        displayNameMap.set(friendEmail, friendDisplayName);
 
-                                    // Create a span for the friend's name
-                                    const friendName = document.createElement('span');
-                                    friendName.textContent = friend.displayName || friend.email; // Display displayName if available
-                                    friendName.classList.add('friend-name');
+                                        const listItem = document.createElement('li');
+                                        listItem.classList.add('friend-item');
 
-                                    // Create and append Unfriend button
-                                    const unfriendButton = createUnfriendButton(friendEmail);
+                                        // Create or update a span for the friend's name
+                                        const friendName = document.createElement('span');
+                                        friendName.textContent = friendDisplayName;
+                                        friendName.classList.add('friend-name');
 
-                                    // Add click event to open chat
-                                    friendName.onclick = () => openChat(friendEmail);
+                                        // Create and append Unfriend button
+                                        const unfriendButton = createUnfriendButton(friendEmail);
 
-                                    // Append the friend's name and Unfriend button to the list item
-                                    listItem.appendChild(friendName);
-                                    listItem.appendChild(unfriendButton);
+                                        // Add click event to open chat
+                                        friendName.onclick = () => openChat(friendEmail);
 
-                                    onlineFriendsList.appendChild(listItem);
+                                        // Append the friend's name and Unfriend button to the list item
+                                        listItem.appendChild(friendName);
+                                        listItem.appendChild(unfriendButton);
+
+                                        onlineFriendsList.appendChild(listItem);
+                                    }
                                 }
                             });
                         });
@@ -875,9 +884,6 @@ function loadOnlineFriends() {
             });
     }
 }
-
-
-
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
