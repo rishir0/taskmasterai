@@ -960,26 +960,43 @@ function unfriendUser(friendEmail) {
 
 
 
-function sendMessage() {
-    const chatInput = document.getElementById('chatInput').value;
-    const currentUser = firebase.auth().currentUser;
+document.addEventListener("DOMContentLoaded", function() {
+    const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
 
-    if (chatInput && currentChatFriend && currentUser) {
-        const chatId = getChatId(currentUser.email, currentChatFriend);
+    function sendMessage() {
+        const chatInput = chatInputElement.value.trim();
+        const currentUser = firebase.auth().currentUser;
 
-        db.collection('chats').doc(chatId).collection('messages').add({
-            sender: currentUser.email,
-            recipient: currentChatFriend,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Message sent!');
-            document.getElementById('chatInput').value = ''; 
-        }).catch((error) => {
-            console.error('Error sending message: ', error);
-        });
+        if (chatInput && currentChatFriend && currentUser) {
+            const chatId = getChatId(currentUser.email, currentChatFriend);
+
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log('Message sent!');
+                chatInputElement.value = ''; // Clear the input field after sending
+            }).catch((error) => {
+                console.error('Error sending message: ', error);
+            });
+        }
     }
-}
+
+    // Send message when the "Send" button is clicked
+    sendButton.addEventListener('click', sendMessage);
+
+    // Send message when the "Enter" key is pressed
+    chatInputElement.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of the "Enter" key
+            sendMessage();
+        }
+    });
+});
+
 
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
@@ -1025,6 +1042,9 @@ function openChat(friendEmail) {
                                     });
                             }
                             chatWindow.appendChild(messageDiv);
+
+                            // Scroll to the bottom of the chat window after a new message is added
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
                     });
             }
@@ -1033,7 +1053,6 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
-
 
 
 function getChatId(userEmail, friendEmail) {
