@@ -762,23 +762,50 @@ function loadOnlineFriends() {
     const currentUser = firebase.auth().currentUser;
 
     if (currentUser) {
-        db.collection('users').where('online', '==', true)
-            .onSnapshot((querySnapshot) => {
-                const onlineFriendsList = document.getElementById('onlineFriends');
-                onlineFriendsList.innerHTML = ''; 
-                
+        const currentUserEmail = currentUser.email;
+
+        // Query the friend requests collection to get the list of accepted friends
+        db.collection('friendRequests').where('status', '==', 'accepted')
+            .where('users', 'array-contains', currentUserEmail)
+            .get()
+            .then((querySnapshot) => {
+                const acceptedFriends = new Set();
+
                 querySnapshot.forEach((doc) => {
-                    const friend = doc.data();
-                    if (friend.email !== currentUser.email) { // Exclude current user
-                        const listItem = document.createElement('li');
-                        listItem.textContent = friend.displayName || friend.email; // Display displayName if available
-                        listItem.onclick = () => openChat(friend.email);
-                        onlineFriendsList.appendChild(listItem);
+                    const data = doc.data();
+                    if (data.users) {
+                        data.users.forEach((userEmail) => {
+                            if (userEmail !== currentUserEmail) {
+                                acceptedFriends.add(userEmail);
+                            }
+                        });
                     }
                 });
+
+                // Query users who are online
+                db.collection('users').where('online', '==', true)
+                    .onSnapshot((querySnapshot) => {
+                        const onlineFriendsList = document.getElementById('onlineFriends');
+                        onlineFriendsList.innerHTML = '';
+
+                        querySnapshot.forEach((doc) => {
+                            const friend = doc.data();
+                            const friendEmail = friend.email;
+                            if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                const listItem = document.createElement('li');
+                                listItem.textContent = friend.displayName || friend.email; // Display displayName if available
+                                listItem.onclick = () => openChat(friendEmail);
+                                onlineFriendsList.appendChild(listItem);
+                            }
+                        });
+                    });
+            })
+            .catch((error) => {
+                console.error("Error fetching friend requests: ", error);
             });
     }
 }
+
 
 function sendMessage() {
     const chatInput = document.getElementById('chatInput').value;
