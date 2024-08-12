@@ -964,6 +964,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const chatInputElement = document.getElementById('chatInput');
     const sendButton = document.querySelector('.chat-window button');
     const chatMessagesElement = document.getElementById('chatMessages');
+    let currentChatFriend = null;
 
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
@@ -1002,77 +1003,63 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Scroll to the bottom whenever a new message is added
-    db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('timestamp')
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    // Code to display the message
-                    scrollToBottom(); // Scroll to the bottom when a new message is added
-                }
-            });
-        });
-});
+    // Function to open a chat and load messages
+    function openChat(friendEmail) {
+        const chatWithSpan = document.getElementById('chatWith');
+        const currentUser = firebase.auth().currentUser;
+        const chatId = getChatId(currentUser.email, friendEmail);
 
+        currentChatFriend = friendEmail;
 
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const friendDoc = querySnapshot.docs[0];
+                    const friendDisplayName = friendDoc.data().displayName || friendEmail;
+                    chatWithSpan.textContent = friendDisplayName;
 
-function openChat(friendEmail) {
-    const chatWithSpan = document.getElementById('chatWith');
-    const chatWindow = document.getElementById('chatMessages');
-    const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, friendEmail);
+                    db.collection('chats').doc(chatId).collection('messages')
+                        .orderBy('timestamp', 'asc')
+                        .onSnapshot((querySnapshot) => {
+                            chatMessagesElement.innerHTML = '';
+                            querySnapshot.forEach((doc) => {
+                                const message = doc.data();
+                                const senderEmail = message.sender;
+                                const messageDiv = document.createElement('div');
 
-    currentChatFriend = friendEmail;
+                                if (senderEmail === currentUser.email) {
+                                    messageDiv.classList.add('message', 'sent');
+                                    messageDiv.textContent = `${message.message}`;
+                                } else {
+                                    messageDiv.classList.add('message', 'received');
+                                    db.collection('users').where('email', '==', senderEmail).get()
+                                        .then((querySnapshot) => {
+                                            const senderDoc = querySnapshot.docs[0];
+                                            const senderDisplayName = senderDoc.data().displayName || senderEmail;
+                                            messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
 
-    db.collection('users').where('email', '==', friendEmail).get()
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const friendDoc = querySnapshot.docs[0];
-                const friendDisplayName = friendDoc.data().displayName || friendEmail;
-                chatWithSpan.textContent = friendDisplayName;
-
-                db.collection('chats').doc(chatId).collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((querySnapshot) => {
-                        chatWindow.innerHTML = '';
-                        querySnapshot.forEach((doc) => {
-                            const message = doc.data();
-                            const senderEmail = message.sender;
-                            const messageDiv = document.createElement('div');
-
-                            if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
-                                messageDiv.textContent = `${message.message}`;
-                            } else {
-                                messageDiv.classList.add('message', 'received');
-                                db.collection('users').where('email', '==', senderEmail).get()
-                                    .then((querySnapshot) => {
-                                        const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = senderDoc.data().displayName || senderEmail;
-                                        messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
-
-                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                            new Notification(`New message from ${senderDisplayName}`, {
-                                                body: message.message,
-                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                            });
-                                        }
-                                    });
-                            }
-                            chatWindow.appendChild(messageDiv);
-
-                            // Scroll to the bottom of the chat window after a new message is added
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                                            if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                                                new Notification(`New message from ${senderDisplayName}`, {
+                                                    body: message.message,
+                                                    icon: '/path/to/icon.png' // Optional: Add an icon if desired
+                                                });
+                                            }
+                                        });
+                                }
+                                chatMessagesElement.appendChild(messageDiv);
+                            });
+                            scrollToBottom(); // Scroll to the bottom after loading messages
                         });
-                    });
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching user data:', error);
-        });
-}
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+            });
+    }
 
+    // Example of calling openChat when you need to open a chat with a friend
+    // openChat('friend@example.com');
+});
 
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
@@ -1083,6 +1070,7 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
+
 </script>
         
 <script>
