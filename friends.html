@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,6 +218,23 @@ body.night-mode {
     font-weight: 500;
     margin-bottom: 15px;
 }
+
+.unfriend-button {
+    padding: 5px 10px;
+    background-color: #e74c3c; /* Red color for the unfriend button */
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    margin-left: 10px; /* Space between name and button */
+}
+
+.unfriend-button:hover {
+    background-color: #c0392b;
+}
+
 
 #onlineFriends {
     list-style: none;
@@ -832,13 +848,12 @@ function loadOnlineFriends() {
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     const listItem = document.createElement('li');
                                     listItem.textContent = friend.displayName || friend.email; // Display displayName if available
+                                    listItem.classList.add('friend-item');
 
-                                    // Create Unfriend button
-                                    const unfriendButton = document.createElement('button');
-                                    unfriendButton.textContent = 'Unfriend';
-                                    unfriendButton.onclick = () => unfriendUser(friendEmail);
-                                    
+                                    // Create and append Unfriend button
+                                    const unfriendButton = createUnfriendButton(friendEmail);
                                     listItem.appendChild(unfriendButton);
+
                                     onlineFriendsList.appendChild(listItem);
                                 }
                             });
@@ -851,6 +866,15 @@ function loadOnlineFriends() {
     }
 }
 
+
+
+function createUnfriendButton(friendEmail) {
+    const button = document.createElement('button');
+    button.textContent = 'Unfriend';
+    button.className = 'unfriend-button';
+    button.onclick = () => unfriendUser(friendEmail);
+    return button;
+}
 
 function unfriendUser(friendEmail) {
     const currentUser = firebase.auth().currentUser;
