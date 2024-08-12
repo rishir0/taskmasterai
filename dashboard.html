@@ -1137,11 +1137,9 @@ margin-right: 0px;}
       
 </body>
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<!-- Add Firebase products that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"></script>
 <script>
     // Your Firebase configuration
     var firebaseConfig = {
@@ -1157,57 +1155,33 @@ margin-right: 0px;}
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
     var auth = firebase.auth();
-    var realtimeDb = firebase.database();
 
     document.addEventListener('DOMContentLoaded', function() {
         auth.onAuthStateChanged(function(user) {
             if (user) {
-                // Update the UI with the user's display name
-                const username = user.displayName || user.email;
-                document.getElementById('username').textContent = username;
-                document.getElementById('displayName').textContent = username;
+                // Reference to the user's status document in Firestore
+                const userStatusRef = db.collection('userStatus').doc(user.uid);
 
-                // Reference to the user's document in Firestore
-                const userRef = db.collection('users').doc(user.uid);
-
-                // Reference to the user's status in the Realtime Database
-                const userStatusRef = realtimeDb.ref('status/' + user.uid);
-
-                // Set Firestore online status to true and update last seen
-                userRef.set({
+                // Set online status to true
+                userStatusRef.set({
                     online: true,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                // Monitor connection state in Realtime Database
-                const connectedRef = realtimeDb.ref('.info/connected');
-                connectedRef.on('value', function(snapshot) {
-                    if (snapshot.val() === true) {
-                        // Set Realtime Database status to true
-                        userStatusRef.set({
-                            online: true,
-                            lastSeen: firebase.database.ServerValue.TIMESTAMP
-                        });
-
-                        // Handle user disconnection
-                        userStatusRef.onDisconnect().set({
-                            online: false,
-                            lastSeen: firebase.database.ServerValue.TIMESTAMP
-                        });
-
-                        // Optionally, update Firestore when disconnected
-                        userStatusRef.onDisconnect().set({
-                            online: false
-                        }).then(() => {
-                            userRef.set({
-                                online: false,
-                                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                            }, { merge: true });
-                        });
-                    }
+                // Handle tab close event to set offline status
+                window.addEventListener('beforeunload', () => {
+                    userStatusRef.set({
+                        online: false,
+                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
                 });
 
-                // Load other app-specific data
+                // Display the username
+                const username = user.displayName || user.email;
+                document.getElementById('username').textContent = username;
+                document.getElementById('displayName').textContent = username;
+
+                // Load other data
                 loadTasks();
                 loadProjects();
                 loadGoals();
@@ -1218,6 +1192,7 @@ margin-right: 0px;}
             }
         });
     });
+
 
 
 // Function to load online friends
