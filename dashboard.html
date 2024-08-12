@@ -1157,10 +1157,27 @@ margin-right: 0px;}
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+            // Function to save or update user data
+    const saveUserData = async (user, onlineStatus) => {
+        try {
+            await db.collection("users").doc(user.uid).set({
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || "Anonymous",
+                online: onlineStatus,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            console.log(`User data saved and online status set to ${onlineStatus}`);
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
+    };
 
-       document.addEventListener('DOMContentLoaded', function() {
-    firebase.auth().onAuthStateChanged(function(user) {
+    // Handle user online status
+    auth.onAuthStateChanged((user) => {
         if (user) {
+            saveUserData(user, true); // Set status to online
+
             const userRef = db.collection('users').doc(user.uid);
             const realTimeUserRef = firebase.database().ref('/status/' + user.uid);
 
@@ -1173,13 +1190,13 @@ margin-right: 0px;}
             // Set Realtime Database online status to true
             realTimeUserRef.set({
                 online: true,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                lastSeen: firebase.database.ServerValue.TIMESTAMP
             });
 
             // Handle user disconnection
             realTimeUserRef.onDisconnect().set({
                 online: false,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                lastSeen: firebase.database.ServerValue.TIMESTAMP
             }).then(() => {
                 // Update Firestore when the user disconnects
                 userRef.set({
@@ -1190,22 +1207,26 @@ margin-right: 0px;}
                 console.error('Error handling disconnection:', error);
             });
 
-            // Display the username
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-            document.getElementById('displayName').textContent = username;
+            // Set status to offline when the tab or browser is closed
+            window.addEventListener('beforeunload', () => {
+                saveUserData(user, false); // Set status to offline
+            });
 
-            // Load online friends
-            loadOnlineFriends();
+            // Set status to offline when the user explicitly logs out
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    await saveUserData(user, false);
+                    await auth.signOut();
+                    window.location.href = "login.html"; // Redirect to sign-in page after logging out
+                });
+            }
 
         } else {
             // No user is signed in, redirect to login page
             window.location.href = "login.html";
         }
     });
-});
-
-
 
                 document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
@@ -1236,47 +1257,7 @@ margin-right: 0px;}
         });
 
 
-        // Function to save or update user data
-    const saveUserData = async (user, onlineStatus) => {
-        try {
-            await setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName || "Anonymous",
-                online: onlineStatus,
-                lastSeen: serverTimestamp() // Use server timestamp
-            }, { merge: true });
-            console.log(`User data saved and online status set to ${onlineStatus}`);
-        } catch (error) {
-            console.error("Error saving user data:", error);
-        }
-    };
-
-    // Handle user online status
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            saveUserData(user, true); // Set status to online
-
-            // Set status to offline when the tab or browser is closed
-            window.addEventListener('beforeunload', () => {
-                saveUserData(user, false); // Set status to offline
-            });
-
-            // Set status to offline when the user explicitly logs out
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await saveUserData(user, false);
-                    await auth.signOut();
-                    window.location.href = "login.html"; // Redirect to sign-in page after logging out
-                });
-            }
-        }
-    });
-
-
-
-
+     
 // Function to load online friends
 function loadOnlineFriends() {
     db.collection('users').where('online', '==', true)
