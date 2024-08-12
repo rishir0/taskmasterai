@@ -771,12 +771,20 @@ function loadOnlineFriends() {
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    if (data.users) {
-                        data.users.forEach((userEmail) => {
-                            if (userEmail !== currentUserEmail) {
-                                acceptedFriends.add(userEmail);
-                            }
-                        });
+                    if (data.senderId === currentUser.uid || data.recipientId === currentUser.uid) {
+                        // Find the other party in the request
+                        const otherUserId = data.senderId === currentUser.uid ? data.recipientId : data.senderId;
+
+                        // Fetch user data for the other party
+                        db.collection('users').doc(otherUserId).get()
+                            .then((userDoc) => {
+                                if (userDoc.exists) {
+                                    acceptedFriends.add(userDoc.data().email);
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching user data for accepted friends: ", error);
+                            });
                     }
                 });
 
@@ -803,7 +811,6 @@ function loadOnlineFriends() {
             });
     }
 }
-
 
 function sendMessage() {
     const chatInput = document.getElementById('chatInput').value;
