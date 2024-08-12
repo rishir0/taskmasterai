@@ -1135,7 +1135,7 @@ margin-right: 0px;}
     </div>
 </div>
       
- </body>
+</body>
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 <!-- Add Firebase products that you want to use -->
@@ -1175,12 +1175,24 @@ margin-right: 0px;}
                     console.error('Error updating online status:', error);
                 });
 
-                // Handle the user going offline when the tab is closed or navigated away
+                // Handle the user going offline only when the tab is closed or navigated away
                 window.addEventListener('beforeunload', function() {
                     db.collection('users').doc(user.uid).set({
                         online: false,
                         lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
+                });
+
+                // Keep the user online even when switching tabs
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') {
+                        db.collection('users').doc(user.uid).set({
+                            online: true,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).then(() => {
+                            console.log('User came back online');
+                        });
+                    }
                 });
 
                 // Load other app-specific data
@@ -1194,6 +1206,7 @@ margin-right: 0px;}
             }
         });
     });
+
 
 // Function to load online friends
 function loadOnlineFriends() {
