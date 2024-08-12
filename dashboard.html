@@ -1143,8 +1143,6 @@ margin-right: 0px;}
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-        import { initializeUserStatus } from "./userStatus.js"; // Adjust the path as needed
         
         // TODO: Replace the following with your app's Firebase project configuration
         var firebaseConfig = {
@@ -1158,6 +1156,44 @@ margin-right: 0px;}
        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
+
+            // Function to save or update user data
+    const saveUserData = async (user, onlineStatus) => {
+        try {
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || "Anonymous",
+                online: onlineStatus,
+                lastSeen: serverTimestamp() // Use server timestamp
+            }, { merge: true });
+            console.log(`User data saved and online status set to ${onlineStatus}`);
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
+    };
+
+    // Handle user online status
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            saveUserData(user, true); // Set status to online
+
+            // Set status to offline when the tab or browser is closed
+            window.addEventListener('beforeunload', () => {
+                saveUserData(user, false); // Set status to offline
+            });
+
+            // Set status to offline when the user explicitly logs out
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    await saveUserData(user, false);
+                    await auth.signOut();
+                    window.location.href = "login.html"; // Redirect to sign-in page after logging out
+                });
+            }
+        }
+    });
 
 
        document.addEventListener('DOMContentLoaded', function() {
