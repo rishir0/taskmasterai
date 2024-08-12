@@ -831,7 +831,13 @@ function loadOnlineFriends() {
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     const listItem = document.createElement('li');
                                     listItem.textContent = friend.displayName || friend.email; // Display displayName if available
-                                    listItem.onclick = () => openChat(friendEmail);
+
+                                    // Create Unfriend button
+                                    const unfriendButton = document.createElement('button');
+                                    unfriendButton.textContent = 'Unfriend';
+                                    unfriendButton.onclick = () => unfriendUser(friendEmail);
+                                    
+                                    listItem.appendChild(unfriendButton);
                                     onlineFriendsList.appendChild(listItem);
                                 }
                             });
@@ -840,6 +846,44 @@ function loadOnlineFriends() {
             })
             .catch((error) => {
                 console.error("Error fetching user data for accepted friends: ", error);
+            });
+    }
+}
+
+
+function unfriendUser(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+
+        // Fetch the friend's user document
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const friendDoc = querySnapshot.docs[0];
+                    const friendId = friendDoc.id;
+
+                    // Update current user's accepted friends list
+                    db.collection('users').doc(currentUserId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayRemove(friendEmail)
+                    }).catch((error) => {
+                        console.error('Error removing from current user’s accepted friends list:', error);
+                    });
+
+                    // Update friend's accepted friends list
+                    db.collection('users').doc(friendId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
+                    }).catch((error) => {
+                        console.error('Error removing from friend’s accepted friends list:', error);
+                    });
+
+                    // Refresh the list of online friends
+                    loadOnlineFriends();
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching friend data:', error);
             });
     }
 }
