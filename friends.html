@@ -624,6 +624,19 @@ body.night-mode {
         var db = firebase.firestore();
         var auth = firebase.auth();
 
+        function updateOnlineStatus(isOnline) {
+            if (auth.currentUser) {
+                db.collection('users').doc(auth.currentUser.uid).set({
+                    online: isOnline,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).then(() => {
+                    console.log(`User online status updated to ${isOnline}`);
+                }).catch((error) => {
+                    console.error('Error updating online status:', error);
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.onAuthStateChanged(function(user) {
                 if (user) {
@@ -632,39 +645,18 @@ body.night-mode {
                     document.getElementById('username').textContent = username;
                     document.getElementById('displayName').textContent = username;
 
-                    // Set Firestore online status to true and update last seen
-                    db.collection('users').doc(user.uid).set({
-                        online: true,
-                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true }).then(() => {
-                        console.log('User online status updated to true');
-                    }).catch((error) => {
-                        console.error('Error updating online status:', error);
-                    });
+                    // Set Firestore online status to true when the user is authenticated
+                    updateOnlineStatus(true);
 
                     // Handle the user going offline only when the tab is closed or navigated away
                     window.addEventListener('beforeunload', function() {
-                        db.collection('users').doc(user.uid).set({
-                            online: false,
-                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true }).then(() => {
-                            console.log('User online status updated to false');
-                        }).catch((error) => {
-                            console.error('Error updating online status:', error);
-                        });
+                        updateOnlineStatus(false);
                     });
 
-                    // Keep the user online even when switching tabs
+                    // Handle tab visibility change
                     document.addEventListener('visibilitychange', function() {
                         if (document.visibilityState === 'visible') {
-                            db.collection('users').doc(user.uid).set({
-                                online: true,
-                                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                            }, { merge: true }).then(() => {
-                                console.log('User came back online');
-                            }).catch((error) => {
-                                console.error('Error updating online status:', error);
-                            });
+                            updateOnlineStatus(true);
                         }
                     });
 
