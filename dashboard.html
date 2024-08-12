@@ -1157,21 +1157,7 @@ margin-right: 0px;}
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
-
-            // Handle user online status
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // Set Firestore online status to true and update last seen
-            db.collection('users').doc(user.uid).set({
-                online: true,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }).then(() => {
-                console.log('User online status updated to true');
-            }).catch((error) => {
-                console.error('Error updating online status:', error);
-            });
-        }
-    });
+        
                 document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -1199,6 +1185,21 @@ margin-right: 0px;}
                 }
             });
         });
+
+  document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+            // Set Firestore online status to true and update last seen
+            db.collection('users').doc(user.uid).set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => {
+                console.log('User online status updated to true');
+            }).catch((error) => {
+                console.error('Error updating online status:', error);
+            });
+        }
+    });
 
 
      
