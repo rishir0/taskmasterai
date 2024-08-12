@@ -1159,54 +1159,69 @@ margin-right: 0px;}
     var auth = firebase.auth();
 
     document.addEventListener('DOMContentLoaded', function() {
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                // Update the UI with the user's display name
-                const username = user.displayName || user.email;
-                document.getElementById('username').textContent = username;
-                document.getElementById('displayName').textContent = username;
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // Update the UI with the user's display name
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            document.getElementById('displayName').textContent = username;
 
-                // Set Firestore online status to true and update last seen
+            // Set Firestore online status to true and update last seen
+            db.collection('users').doc(user.uid).set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => {
+                console.log('User online status updated to true');
+            }).catch((error) => {
+                console.error('Error updating online status:', error);
+            });
+
+            // Handle the user going offline only when the tab is closed or navigated away
+            window.addEventListener('beforeunload', function() {
                 db.collection('users').doc(user.uid).set({
-                    online: true,
+                    online: false,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }).then(() => {
-                    console.log('User online status updated to true');
-                }).catch((error) => {
-                    console.error('Error updating online status:', error);
-                });
+                }, { merge: true });
+            });
 
-                // Handle the user going offline only when the tab is closed or navigated away
-                window.addEventListener('beforeunload', function() {
+            // Keep the user online even when switching tabs except for specific pages
+            document.addEventListener('visibilitychange', function() {
+                const excludedPages = [
+                    'account.html', 
+                    'notes.html', 
+                    'calendar.html', 
+                    'friends.html', 
+                    'dashboard.html', 
+                    'features.html', 
+                    'workschedule.html', 
+                    'metrics.html'
+                ];
+
+                // Check if the current page URL is in the list of excluded pages
+                const currentPage = window.location.pathname.split('/').pop();
+                
+                if (document.visibilityState === 'visible' && !excludedPages.includes(currentPage)) {
                     db.collection('users').doc(user.uid).set({
-                        online: false,
+                        online: true,
                         lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                });
+                    }, { merge: true }).then(() => {
+                        console.log('User came back online');
+                    });
+                }
+            });
 
-                // Keep the user online even when switching tabs
-                document.addEventListener('visibilitychange', function() {
-                    if (document.visibilityState === 'visible') {
-                        db.collection('users').doc(user.uid).set({
-                            online: true,
-                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true }).then(() => {
-                            console.log('User came back online');
-                        });
-                    }
-                });
-
-                // Load other app-specific data
-                loadTasks();
-                loadProjects();
-                loadGoals();
-                loadPlans();
-            } else {
-                // No user is signed in, redirect to login page
-                window.location.href = "login.html";
-            }
-        });
+            // Load other app-specific data
+            loadTasks();
+            loadProjects();
+            loadGoals();
+            loadPlans();
+        } else {
+            // No user is signed in, redirect to login page
+            window.location.href = "login.html";
+        }
     });
+});
+
 
 
 // Function to load online friends
