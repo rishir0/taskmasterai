@@ -604,69 +604,81 @@ body.night-mode {
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-<script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-        authDomain: "deepworkai-c3419.firebaseapp.com",
-        projectId: "deepworkai-c3419",
-        storageBucket: "deepworkai-c3419.appspot.com",
-        messagingSenderId: "367439182644",
-        appId: "1:367439182644:web:304216430df97eff68c361"
-    };
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
-    let currentChatFriend = null;
+ <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var auth = firebase.auth();
 
         document.addEventListener('DOMContentLoaded', function() {
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                // Update the UI with the user's display name
-                const username = user.displayName || user.email;
-                document.getElementById('username').textContent = username;
-                document.getElementById('displayName').textContent = username;
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    // Update the UI with the user's display name
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
 
-                // Set Firestore online status to true and update last seen
-                db.collection('users').doc(user.uid).set({
-                    online: true,
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }).then(() => {
-                    console.log('User online status updated to true');
-                }).catch((error) => {
-                    console.error('Error updating online status:', error);
-                });
-
-                // Handle the user going offline only when the tab is closed or navigated away
-                window.addEventListener('beforeunload', function() {
+                    // Set Firestore online status to true and update last seen
                     db.collection('users').doc(user.uid).set({
-                        online: false,
+                        online: true,
                         lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                });
+                    }, { merge: true }).then(() => {
+                        console.log('User online status updated to true');
+                    }).catch((error) => {
+                        console.error('Error updating online status:', error);
+                    });
 
-                // Keep the user online even when switching tabs
-                document.addEventListener('visibilitychange', function() {
-                    if (document.visibilityState === 'visible') {
+                    // Handle the user going offline only when the tab is closed or navigated away
+                    window.addEventListener('beforeunload', function() {
                         db.collection('users').doc(user.uid).set({
-                            online: true,
+                            online: false,
                             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                         }, { merge: true }).then(() => {
-                            console.log('User came back online');
+                            console.log('User online status updated to false');
+                        }).catch((error) => {
+                            console.error('Error updating online status:', error);
                         });
-                    }
-                });
+                    });
 
-                // Load other app-specific data
-                loadOnlineFriends();
-                listenForFriendRequests();
-            } else {
-                // No user is signed in, redirect to login page
-                window.location.href = "login.html";
-            }
+                    // Keep the user online even when switching tabs
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'visible') {
+                            db.collection('users').doc(user.uid).set({
+                                online: true,
+                                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                            }, { merge: true }).then(() => {
+                                console.log('User came back online');
+                            }).catch((error) => {
+                                console.error('Error updating online status:', error);
+                            });
+                        }
+                    });
+
+                    // Load online friends and listen for friend requests
+                    loadOnlineFriends();
+                    listenForFriendRequests();
+
+                } else {
+                    // No user is signed in, redirect to login page
+                    window.location.href = "login.html";
+                }
+            });
         });
-    });
+
 
 function addFriend() {
     const friendEmail = document.getElementById('friendEmail').value;
