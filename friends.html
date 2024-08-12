@@ -354,6 +354,7 @@ body.night-mode {
 }
 
 #onlineFriends li {
+    position: relative; /* Required for absolute positioning of the button */
     display: flex;
     align-items: center;
     justify-content: space-between; /* Space between friend name and button */
@@ -366,6 +367,10 @@ body.night-mode {
 }
 
 #onlineFriends li button {
+    position: absolute;
+    right: 10px; /* Adjust as needed to position the button */
+    top: 50%;
+    transform: translateY(-50%); /* Center the button vertically */
     padding: 5px 10px;
     background-color: var(--danger-color); /* Use a variable or color of your choice */
     color: #fff;
