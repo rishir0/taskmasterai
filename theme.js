@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
-        --primary-color: rgba(255, 255, 255, 0.1);;
+        --primary-color: #40E0D0;
         --secondary-color: #3F3D56;
         --accent-color: #009bf5;
         --text-color: #ffffff;
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const darkThemeStyles = `
 :root {
-    --primary-color: #ffffff; /* Keep primary color white */
+    --primary-color: rgba(255, 255, 255, 0.1); /* Keep primary color white */
     --secondary-color: #3f3d56; /* Consistent secondary color */
     --accent-color: #009bf5; /* Consistent accent color */
     --text-color: #ffffff; /* Keep text color white */
