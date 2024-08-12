@@ -1157,6 +1157,34 @@ margin-right: 0px;}
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+                document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    document.getElementById('displayName').textContent = user.displayName;
+                    loadTasks();
+                    loadProjects();
+                    loadGoals();
+                    loadPlans();
+                } else {
+                    // No user is signed in.
+                    window.location.href = "login.html"; // Redirect to login page
+                }
+            });
+        });
+
             // Function to save or update user data
     const saveUserData = async (user, onlineStatus) => {
         try {
@@ -1227,35 +1255,6 @@ margin-right: 0px;}
             window.location.href = "login.html";
         }
     });
-
-                document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    document.getElementById('displayName').textContent = user.displayName;
-                    loadTasks();
-                    loadProjects();
-                    loadGoals();
-                    loadPlans();
-                } else {
-                    // No user is signed in.
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
-        });
-
 
      
 // Function to load online friends
