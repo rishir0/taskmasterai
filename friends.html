@@ -353,6 +353,42 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+#onlineFriends li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between friend name and button */
+    background: var(--glass-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#onlineFriends li button {
+    padding: 5px 10px;
+    background-color: var(--danger-color); /* Use a variable or color of your choice */
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#onlineFriends li button:hover {
+    background-color: var(--danger-hover-color); /* Darker color when hovered */
+}
+
+#onlineFriends li button:focus {
+    outline: none; /* Remove default focus outline */
+}
+
+#onlineFriends li button:active {
+    background-color: var(--danger-active-color); /* Even darker color when button is pressed */
+}
+
+
 .create-new {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
