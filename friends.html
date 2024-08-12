@@ -697,6 +697,19 @@ body.night-mode {
         });
     });
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Request permission to show notifications
+    if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+            } else {
+                console.log('Notification permission denied.');
+            }
+        });
+    }
+});
+
 
 function addFriend() {
     const friendEmail = document.getElementById('friendEmail').value;
@@ -1000,6 +1013,14 @@ function openChat(friendEmail) {
                                         
                                         messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
                                     });
+
+                                // Show notification if the user is on another tab
+                                if (document.visibilityState !== 'visible' && Notification.permission === 'granted') {
+                                    new Notification(`New message from ${friendDisplayName}`, {
+                                        body: message.message,
+                                        icon: '/path/to/icon.png' // You can customize this with your own icon
+                                    });
+                                }
                             }
                             chatWindow.appendChild(messageDiv);
                         });
@@ -1010,6 +1031,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
