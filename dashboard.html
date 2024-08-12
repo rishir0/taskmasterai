@@ -1157,6 +1157,21 @@ margin-right: 0px;}
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+
+            // Handle user online status
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // Set Firestore online status to true and update last seen
+            db.collection('users').doc(user.uid).set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => {
+                console.log('User online status updated to true');
+            }).catch((error) => {
+                console.error('Error updating online status:', error);
+            });
+        }
+    });
                 document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -1185,62 +1200,6 @@ margin-right: 0px;}
             });
         });
 
-
-
-    // Handle user online status
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            saveUserData(user, true); // Set status to online
-
-            const userRef = db.collection('users').doc(user.uid);
-            const realTimeUserRef = firebase.database().ref('/status/' + user.uid);
-
-            // Set Firestore online status to true and update last seen
-            userRef.set({
-                online: true,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-            // Set Realtime Database online status to true
-            realTimeUserRef.set({
-                online: true,
-                lastSeen: firebase.database.ServerValue.TIMESTAMP
-            });
-
-            // Handle user disconnection
-            realTimeUserRef.onDisconnect().set({
-                online: false,
-                lastSeen: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                // Update Firestore when the user disconnects
-                userRef.set({
-                    online: false,
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            }).catch((error) => {
-                console.error('Error handling disconnection:', error);
-            });
-
-            // Set status to offline when the tab or browser is closed
-            window.addEventListener('beforeunload', () => {
-                saveUserData(user, false); // Set status to offline
-            });
-
-            // Set status to offline when the user explicitly logs out
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await saveUserData(user, false);
-                    await auth.signOut();
-                    window.location.href = "login.html"; // Redirect to sign-in page after logging out
-                });
-            }
-
-        } else {
-            // No user is signed in, redirect to login page
-            window.location.href = "login.html";
-        }
-    });
 
      
 // Function to load online friends
