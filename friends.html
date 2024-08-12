@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -353,34 +354,6 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.unfriend-button {
-    padding: 5px 10px;
-    background-color: var(--danger-color); /* Use a variable or color of your choice */
-    color: #fff;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-    margin-left: 10px; /* Space between name and button */
-}
-
-.unfriend-button:hover {
-    background-color: var(--danger-hover-color); /* Darker color when hovered */
-}
-
-.unfriend-button:focus {
-    outline: none; /* Remove default focus outline */
-}
-
-.unfriend-button:active {
-    background-color: var(--danger-active-color); /* Even darker color when button is pressed */
-}
-
-
-
-
-
 .create-new {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -532,7 +505,6 @@ body.night-mode {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
-
 
 
     </style>
@@ -880,7 +852,6 @@ function loadOnlineFriends() {
 }
 
 
-
 function unfriendUser(friendEmail) {
     const currentUser = firebase.auth().currentUser;
 
@@ -917,7 +888,6 @@ function unfriendUser(friendEmail) {
             });
     }
 }
-
 
 
 
