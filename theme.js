@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
-        --primary-color: #ffffff;
+        --primary-color: rgba(255, 255, 255, 0.1);;
         --secondary-color: #3F3D56;
         --accent-color: #009bf5;
         --text-color: #ffffff;
