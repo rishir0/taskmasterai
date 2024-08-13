@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://apis.google.com;">
     <title>Calendar</title>
     <!-- Include Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -766,19 +767,21 @@ body.night-mode {
     let currentYear = new Date().getFullYear();
 
     // Initialize Google API Client
-    function initClient() {
+function initClient() {
+    gapi.load('client:auth2', () => {
         gapi.client.init({
             clientId: '671266290399-d5skqeu7c9kb086jrsbqr352cgek9irk.apps.googleusercontent.com',
-            apiKey: 'AIzaSyB90Bt4Ko01oCUtM7BWtlWBEwkrJQjWqNE', // Add your Google API key here
             scope: 'https://www.googleapis.com/auth/calendar',
         }).then(() => {
-            // Check if the user is signed in to Google
+            console.log('Google API client initialized successfully');
             gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
             updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        }).catch(error => {
-            console.error("Error initializing Google API client:", error);
+        }).catch((error) => {
+            console.error('Error initializing Google API client:', error);
         });
-    }
+    });
+}
+
 
     function updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
