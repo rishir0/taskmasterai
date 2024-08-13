@@ -972,13 +972,23 @@ document.addEventListener("DOMContentLoaded", function() {
     const chatInputElement = document.getElementById('chatInput');
     const sendButton = document.querySelector('.chat-window button');
     const chatMessagesElement = document.getElementById('chatMessages');
+    
+    let chatId = ''; // Define chatId variable here
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        setupMessageListener(); // Set up message listener with the new chatId
+    }
 
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
         const currentUser = firebase.auth().currentUser;
 
         if (chatInput && currentChatFriend && currentUser) {
-            const chatId = getChatId(currentUser.email, currentChatFriend);
+            if (!chatId) {
+                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+            }
 
             db.collection('chats').doc(chatId).collection('messages').add({
                 sender: currentUser.email,
@@ -988,7 +998,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }).then(() => {
                 console.log('Message sent!');
                 chatInputElement.value = ''; // Clear the input field after sending
-                scrollToBottom(); // Scroll to the bottom after sending
             }).catch((error) => {
                 console.error('Error sending message: ', error);
             });
@@ -997,6 +1006,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+    }
+
+    function setupMessageListener() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
+                        }
+                    });
+                });
+        }
     }
 
     // Send message when the "Send" button is clicked
@@ -1010,19 +1034,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Scroll to the bottom whenever a new message is added
-    db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('timestamp')
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    // Code to display the message
-                    scrollToBottom(); // Scroll to the bottom when a new message is added
-                }
-            });
-        });
-});
+    // Example function to start or switch chats
+    function startChat(friendEmail) {
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser) {
+            updateChatId(currentUser.email, friendEmail);
+        }
+    }
 
+    // Use startChat(friendEmail) when starting or switching chats
+});
 
 
 function openChat(friendEmail) {
