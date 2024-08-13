@@ -1215,6 +1215,45 @@ margin-right: 0px;}
 });
 
 
+function updateDisplayNameIfAnonymous() {
+    const user = firebase.auth().currentUser;
+
+    if (user) {
+        // Fetch user data from Firestore
+        db.collection('users').doc(user.uid).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    const displayName = user.displayName;
+                    const firstName = userData.firstName;
+                    const lastName = userData.lastName;
+
+                    // Check if displayName is "Anonymous"
+                    if (displayName === "Anonymous" && firstName && lastName) {
+                        // Update the displayName to "FirstName LastName"
+                        const newDisplayName = `${firstName} ${lastName}`;
+
+                        user.updateProfile({
+                            displayName: newDisplayName
+                        }).then(function() {
+                            // Update the Firestore document with the new displayName
+                            return db.collection('users').doc(user.uid).update({
+                                displayName: newDisplayName
+                            });
+                        }).then(function() {
+                            console.log("Display name updated successfully!");
+                        }).catch(function(error) {
+                            console.error("Error updating display name:", error);
+                        });
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data:", error);
+            });
+    }
+}
+
 
 // Function to load online friends
 function loadOnlineFriends() {
@@ -1231,6 +1270,7 @@ function loadOnlineFriends() {
             });
         });
 }
+
 
     
 
