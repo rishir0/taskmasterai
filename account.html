@@ -521,29 +521,34 @@ body.night-mode {
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    function updateAccount() {
-        const user = firebase.auth().currentUser;
-        const newName = document.getElementById('name').value;
-        const newPassword = document.getElementById('password').value;
+function updateAccount() {
+    const user = firebase.auth().currentUser;
+    const newName = document.getElementById('name').value;
+    const newPassword = document.getElementById('password').value;
 
-        if (newName) {
-            user.updateProfile({
+    if (newName) {
+        user.updateProfile({
+            displayName: newName
+        }).then(function() {
+            // Update the Firestore document with the new displayName
+            return db.collection('users').doc(user.uid).update({
                 displayName: newName
-            }).then(function() {
-                alert("Name updated successfully!");
-            }).catch(function(error) {
-                console.error("Error updating name:", error);
             });
-        }
-
-        if (newPassword) {
-            user.updatePassword(newPassword).then(function() {
-                alert("Password updated successfully!");
-            }).catch(function(error) {
-                console.error("Error updating password:", error);
-            });
-        }
+        }).then(function() {
+            alert("Name updated successfully!");
+        }).catch(function(error) {
+            console.error("Error updating name:", error);
+        });
     }
+
+    if (newPassword) {
+        user.updatePassword(newPassword).then(function() {
+            alert("Password updated successfully!");
+        }).catch(function(error) {
+            console.error("Error updating password:", error);
+        });
+    }
+}
 
 function signOut() {
     const user = firebase.auth().currentUser;
