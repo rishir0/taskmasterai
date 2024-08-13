@@ -883,7 +883,7 @@ function loadOnlineFriends() {
                             querySnapshot.forEach((doc) => {
                                 const friend = doc.data();
                                 const friendEmail = friend.email;
-                                const friendDisplayName = friend.displayName || friend.email;
+                                const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     if (displayNameMap.get(friendEmail) !== friendDisplayName) {
@@ -920,6 +920,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
