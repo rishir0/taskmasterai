@@ -1059,7 +1059,7 @@ function openChat(friendEmail) {
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 const friendDoc = querySnapshot.docs[0];
-                const friendDisplayName = friendDoc.data().displayName || friendEmail;
+                const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
                 chatWithSpan.textContent = friendDisplayName;
 
                 db.collection('chats').doc(chatId).collection('messages')
@@ -1079,8 +1079,8 @@ function openChat(friendEmail) {
                                 db.collection('users').where('email', '==', senderEmail).get()
                                     .then((querySnapshot) => {
                                         const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = senderDoc.data().displayName || senderEmail;
-                                        messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                        messageDiv.textContent = `${message.message}`;
 
                                         if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
                                             new Notification(`New message from ${senderDisplayName}`, {
