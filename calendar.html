@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar</title>
+    <!-- Include Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <!-- Include Google API Client Library -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="theme.js"></script>
     <style>
@@ -359,25 +365,84 @@ body.night-mode {
     animation: rotateIcon 0.5s;
 }
 
-/* Ensure the calendar grid fits the parent container */
+.calendar {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: var(--text-color);
+    border-bottom: 1px solid var(--hover-bg);
+}
+
+.calendar-header button {
+    background-color: var(--glass-bg);
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.calendar-header button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
     background: var(--secondary-color);
-    padding: 10px; /* Add padding if necessary */
 }
 
-/* Improve visibility for current day events */
+.calendar-grid .day-header {
+    font-weight: bold;
+    padding: 15px;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+}
+
+.calendar-grid .day {
+    background-color: var(--card-bg);
+    padding: 20px;
+    text-align: center;
+    border-radius: var(--border-radius);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
 .calendar-grid .day.current-day {
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: var(--text-color);
     font-weight: bold;
     box-shadow: 0 0 10px var(--accent-color);
-    position: relative; /* Ensure positioning for event overlay */
 }
 
-/* Style for event elements */
+.calendar-grid .day:hover {
+    background-color: var(--hover-bg);
+    transform: scale(1.05);
+}
+
 .event {
     background-color: var(--primary-color);
     color: var(--text-color);
@@ -385,10 +450,21 @@ body.night-mode {
     border-radius: 5px;
     margin-top: 5px;
     font-size: 0.8rem;
-    display: block; /* Ensure events are block elements for better display */
 }
 
-/* Style adjustments for the modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
 .modal-content {
     background-color: var(--glass-bg);
     padding: 20px;
@@ -396,10 +472,28 @@ body.night-mode {
     max-width: 500px;
     width: 90%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    overflow: auto; /* Add overflow if content is too large */
 }
 
-/* Ensure input fields are visually appealing */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-header button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.modal-header button:hover {
+    color: var(--accent-color);
+}
+
 .modal-body input,
 .modal-body textarea {
     width: 100%;
@@ -409,9 +503,86 @@ body.night-mode {
     border: 1px solid var(--secondary-color);
     background-color: var(--bg-color);
     color: var(--text-color);
-    box-sizing: border-box; /* Ensure padding doesn't overflow */
 }
 
+.modal-footer button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-footer button:hover {
+    background-color: var(--hover-bg);
+}
+
+
+@media (max-width: 768px) {
+    .calendar {
+        margin: 20px auto;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .calendar-header {
+        padding: 15px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .calendar-header button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-grid .day-header {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-grid .day {
+        padding: 10px;
+        height: 80px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        padding: 15px;
+    }
+
+    .modal-header {
+        margin-bottom: 8px;
+    }
+
+    .modal-header button {
+        font-size: 1.2rem;
+    }
+
+    .modal-body input,
+    .modal-body textarea {
+        padding: 8px;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .modal-footer button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
 
 </style>
 
@@ -538,7 +709,6 @@ body.night-mode {
         <div class="day-header">Fri</div>
         <div class="day-header">Sat</div>
         <div class="day-header">Sun</div>
-        <!-- Days will be populated here by JavaScript -->
     </div>
 </div>
 
@@ -559,7 +729,6 @@ body.night-mode {
         </div>
     </div>
 </div>
-
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
