@@ -236,24 +236,32 @@ body.night-mode {
 }
 
 
- #onlineFriends {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+#onlineFriends {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-    #onlineFriends .friend-item {
-        background-color: var(--glass-bg);
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+#onlineFriends li {
+    background: var(--glass-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: space-between; /* Ensure the friend name and unfriend button are spaced out */
+    align-items: center; /* Align items in the center vertically */
+}
 
-    #onlineFriends .friend-item:hover {
-        background-color: var(--hover-bg);
-    }
+#onlineFriends li:hover {
+    background: var(--hover-bg);
+}
+
+.friend-name {
+    flex-grow: 1; /* Make the friend name take up remaining space */
+    margin-right: 10px; /* Add some spacing between the name and the button */
+}
 
 .add-friend {
     display: flex;
@@ -844,71 +852,74 @@ function addToAcceptedFriends(userId, senderEmail) {
 
 
 
- function loadOnlineFriends() {
-        const currentUser = firebase.auth().currentUser;
+function loadOnlineFriends() {
+    const currentUser = firebase.auth().currentUser;
 
-        if (currentUser) {
-            const currentUserEmail = currentUser.email;
-            const acceptedFriends = new Set();
-            const displayNameMap = new Map(); // To store the display names of friends
+    if (currentUser) {
+        const currentUserEmail = currentUser.email;
+        const acceptedFriends = new Set();
+        const displayNameMap = new Map(); // To store the display names of friends
 
-            // Fetch the current user's accepted friends
-            db.collection('users').where('email', '==', currentUserEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const userDoc = querySnapshot.docs[0];
-                        const data = userDoc.data();
-
-                        if (data.acceptedFriends) {
-                            data.acceptedFriends.forEach((email) => {
-                                acceptedFriends.add(email);
-                                displayNameMap.set(email, null); // Initialize with null
-                            });
-                        }
-
-                        // Now fetch online users
-                        db.collection('users').where('online', '==', true)
-                            .onSnapshot((querySnapshot) => {
-                                const onlineFriendsList = document.getElementById('onlineFriends');
-                                onlineFriendsList.innerHTML = '';
-
-                                querySnapshot.forEach((doc) => {
-                                    const friend = doc.data();
-                                    const friendEmail = friend.email;
-                                    const friendDisplayName = friend.displayName || friend.email;
-
-                                    if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                        if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                            // Update display name if changed
-                                            displayNameMap.set(friendEmail, friendDisplayName);
-
-                                            const listItem = document.createElement('li');
-                                            listItem.classList.add('friend-item');
-
-                                            // Create a span for the friend's name
-                                            const friendName = document.createElement('span');
-                                            friendName.textContent = friendDisplayName;
-                                            friendName.classList.add('friend-name');
-
-                                            // Add click event to open chat
-                                            listItem.onclick = () => openChat(friendEmail);
-
-                                            // Append the friend's name to the list item
-                                            listItem.appendChild(friendName);
-
-                                            // Append the list item to the online friends list
-                                            onlineFriendsList.appendChild(listItem);
-                                        }
-                                    }
-                                });
-                            });
+        // Fetch the current user's accepted friends
+        db.collection('users').where('email', '==', currentUserEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const data = userDoc.data();
+                    
+                    if (data.acceptedFriends) {
+                        data.acceptedFriends.forEach((email) => {
+                            acceptedFriends.add(email);
+                            displayNameMap.set(email, null); // Initialize with null
+                        });
                     }
-                })
-                .catch((error) => {
-                    console.error("Error fetching user data for accepted friends: ", error);
-                });
-        }
+                    
+                    // Now fetch online users
+                    db.collection('users').where('online', '==', true)
+                        .onSnapshot((querySnapshot) => {
+                            const onlineFriendsList = document.getElementById('onlineFriends');
+                            onlineFriendsList.innerHTML = '';
+
+                            querySnapshot.forEach((doc) => {
+                                const friend = doc.data();
+                                const friendEmail = friend.email;
+                                const friendDisplayName = friend.displayName || friend.email;
+
+                                if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                    if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                                        // Update display name if changed
+                                        displayNameMap.set(friendEmail, friendDisplayName);
+
+                                        const listItem = document.createElement('li');
+                                        listItem.classList.add('friend-item');
+
+                                        // Create or update a span for the friend's name
+                                        const friendName = document.createElement('span');
+                                        friendName.textContent = friendDisplayName;
+                                        friendName.classList.add('friend-name');
+
+                                        // Create and append Unfriend button
+                                        const unfriendButton = createUnfriendButton(friendEmail);
+
+                                        // Add click event to open chat
+                                        friendName.onclick = () => openChat(friendEmail);
+
+                                        // Append the friend's name and Unfriend button to the list item
+                                        listItem.appendChild(friendName);
+                                        listItem.appendChild(unfriendButton);
+
+                                        onlineFriendsList.appendChild(listItem);
+                                    }
+                                }
+                            });
+                        });
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data for accepted friends: ", error);
+            });
     }
+}
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
@@ -961,7 +972,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const chatInputElement = document.getElementById('chatInput');
     const sendButton = document.querySelector('.chat-window button');
     const chatMessagesElement = document.getElementById('chatMessages');
-    let currentChatFriend = null;
 
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
@@ -1000,73 +1010,87 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Function to open a chat and load messages
-    function openChat(friendEmail) {
-        const chatWithSpan = document.getElementById('chatWith');
-        const currentUser = firebase.auth().currentUser;
-        const chatId = getChatId(currentUser.email, friendEmail);
-
-        db.collection('users').where('email', '==', friendEmail).get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    const friendDoc = querySnapshot.docs[0];
-                    const friendDisplayName = friendDoc.data().displayName || friendEmail;
-                    chatWithSpan.textContent = friendDisplayName;
-
-                    db.collection('chats').doc(chatId).collection('messages')
-                        .orderBy('timestamp', 'asc')
-                        .onSnapshot((querySnapshot) => {
-                            const chatMessagesElement = document.getElementById('chatMessages');
-                            chatMessagesElement.innerHTML = '';
-                            querySnapshot.forEach((doc) => {
-                                const message = doc.data();
-                                const senderEmail = message.sender;
-                                const messageDiv = document.createElement('div');
-
-                                if (senderEmail === currentUser.email) {
-                                    messageDiv.classList.add('message', 'sent');
-                                    messageDiv.textContent = `${message.message}`;
-                                } else {
-                                    messageDiv.classList.add('message', 'received');
-                                    db.collection('users').where('email', '==', senderEmail).get()
-                                        .then((querySnapshot) => {
-                                            const senderDoc = querySnapshot.docs[0];
-                                            const senderDisplayName = senderDoc.data().displayName || senderEmail;
-                                            messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
-
-                                            if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                                new Notification(`New message from ${senderDisplayName}`, {
-                                                    body: message.message,
-                                                    icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                                });
-                                            }
-                                        });
-                                }
-                                chatMessagesElement.appendChild(messageDiv);
-                            });
-                            chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight; // Scroll to the bottom
-                        });
+    // Scroll to the bottom whenever a new message is added
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    // Code to display the message
+                    scrollToBottom(); // Scroll to the bottom when a new message is added
                 }
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
             });
-    }
+        });
+});
 
-    function getChatId(userEmail, friendEmail) {
-        return [userEmail, friendEmail].sort().join('_');
-    }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const chatInputElement = document.getElementById('chatInput');
-        const sendButton = document.querySelector('.chat-window button');
+
+function openChat(friendEmail) {
+    const chatWithSpan = document.getElementById('chatWith');
+    const chatWindow = document.getElementById('chatMessages');
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, friendEmail);
+
+    currentChatFriend = friendEmail;
+
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const friendDoc = querySnapshot.docs[0];
+                const friendDisplayName = friendDoc.data().displayName || friendEmail;
+                chatWithSpan.textContent = friendDisplayName;
+
+                db.collection('chats').doc(chatId).collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((querySnapshot) => {
+                        chatWindow.innerHTML = '';
+                        querySnapshot.forEach((doc) => {
+                            const message = doc.data();
+                            const senderEmail = message.sender;
+                            const messageDiv = document.createElement('div');
+
+                            if (senderEmail === currentUser.email) {
+                                messageDiv.classList.add('message', 'sent');
+                                messageDiv.textContent = `${message.message}`;
+                            } else {
+                                messageDiv.classList.add('message', 'received');
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = senderDoc.data().displayName || senderEmail;
+                                        messageDiv.textContent = `${senderDisplayName}: ${message.message}`;
+
+                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                                            new Notification(`New message from ${senderDisplayName}`, {
+                                                body: message.message,
+                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
+                                            });
+                                        }
+                                    });
+                            }
+                            chatWindow.appendChild(messageDiv);
+
+                            // Scroll to the bottom of the chat window after a new message is added
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                        });
+                    });
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching user data:', error);
+        });
+}
+
+
+function getChatId(userEmail, friendEmail) {
+    return [userEmail, friendEmail].sort().join('_');
+}
 
 function getUserEmail(userId) {
     return db.collection('users').doc(userId).get().then((doc) => {
         return doc.data().email;
     });
 }
-
 </script>
         
 <script>
