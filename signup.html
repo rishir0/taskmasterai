@@ -289,33 +289,41 @@
     }
 
 
-        // Sign-Up Form
-        const signupForm = document.getElementById('signup-form');
-        if (signupForm) {
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const firstName = document.getElementById('firstname').value;
-                const lastName = document.getElementById('lastname').value;
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(async (userCredential) => {
-                        // Signed up
-                        const user = userCredential.user;
-                        user.firstName = firstName;
-                        user.lastName = lastName;
-                        console.log('Sign-Up successful:', user);
-                        await saveUserData(user, true); // Save with newUser flag
-                        window.location.href = "splashscreen.html"; // Redirect to splash screen
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        console.error('Error signing up:', errorCode, errorMessage);
-                        alert(`Error signing up: ${errorCode} - ${errorMessage}`);
-                    });
+// Sign-Up Form
+const signupForm = document.getElementById('signup-form');
+if (signupForm) {
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const firstName = document.getElementById('firstname').value;
+        const lastName = document.getElementById('lastname').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+                // Signed up
+                const user = userCredential.user;
+                const displayName = `${firstName} ${lastName}`;
+
+                // Update user's profile
+                await updateProfile(user, { displayName: displayName });
+
+                console.log('Sign-Up successful:', user);
+
+                // Save user data with the new user flag
+                await saveUserData(user, true);
+
+                // Redirect to splash screen
+                window.location.href = "splashscreen.html";
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Error signing up:', errorCode, errorMessage);
+                alert(`Error signing up: ${errorCode} - ${errorMessage}`);
             });
-        }
+}
+
     </script>
 </body>
 </html>
