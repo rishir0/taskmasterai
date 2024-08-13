@@ -205,7 +205,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
     // Your web app's Firebase configuration
@@ -222,7 +222,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
 
     // Function to save or update user data
     const saveUserData = async (user, onlineStatus) => {
@@ -262,7 +261,6 @@
         }
     });
 
-
     // Google Sign-In
     const provider = new GoogleAuthProvider();
     const googleLoginBtn = document.getElementById('google-login-btn');
@@ -288,42 +286,41 @@
         });
     }
 
+    // Sign-Up Form
+    const signupForm = document.getElementById('signup-form');
+    if (signupForm) {
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const firstName = document.getElementById('firstname').value;
+            const lastName = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-// Sign-Up Form
-const signupForm = document.getElementById('signup-form');
-if (signupForm) {
-    signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const firstName = document.getElementById('firstname').value;
-        const lastName = document.getElementById('lastname').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    // Signed up
+                    const user = userCredential.user;
+                    const displayName = `${firstName} ${lastName}`;
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(async (userCredential) => {
-                // Signed up
-                const user = userCredential.user;
-                const displayName = `${firstName} ${lastName}`;
+                    // Update user's profile
+                    await updateProfile(user, { displayName: displayName });
 
-                // Update user's profile
-                await updateProfile(user, { displayName: displayName });
+                    console.log('Sign-Up successful:', user);
 
-                console.log('Sign-Up successful:', user);
+                    // Save user data with the new user flag
+                    await saveUserData(user, true);
 
-                // Save user data with the new user flag
-                await saveUserData(user, true);
-
-                // Redirect to splash screen
-                window.location.href = "splashscreen.html";
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error('Error signing up:', errorCode, errorMessage);
-                alert(`Error signing up: ${errorCode} - ${errorMessage}`);
-            });
-}
-
+                    // Redirect to splash screen
+                    window.location.href = "splashscreen.html";
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error('Error signing up:', errorCode, errorMessage);
+                    alert(`Error signing up: ${errorCode} - ${errorMessage}`);
+                });
+        });
+    }
     </script>
 </body>
 </html>
