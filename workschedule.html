@@ -527,17 +527,25 @@ body.night-mode {
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script>
-        // TODO: Replace the following with your app's Firebase project configuration
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        // Initialize Firebase
+    // TODO: Replace the following with your app's Firebase project configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+        authDomain: "deepworkai-c3419.firebaseapp.com",
+        projectId: "deepworkai-c3419",
+        storageBucket: "deepworkai-c3419.appspot.com",
+        messagingSenderId: "367439182644",
+        appId: "1:367439182644:web:304216430df97eff68c361"
+    };
+
+    // Ensure Firebase is initialized only once
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // if already initialized, use that one
+    }
+
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
