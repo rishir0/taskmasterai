@@ -546,6 +546,7 @@ body.night-mode {
 
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const auth = firebase.auth();
 
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
