@@ -740,17 +740,14 @@ body.night-mode {
 document.addEventListener('DOMContentLoaded', function() {
     auth.onAuthStateChanged(function(user) {
         if (user) {
-            // Existing functionality here
             loadOnlineFriends();
             listenForFriendRequests();
-            listenForTypingStatus(); // Ensures it's only added once
+            listenForTypingStatus(user); // Pass the user object here
 
-            // Update chat when switching users
             document.getElementById('toggleNightMode').addEventListener('click', function() {
                 document.body.classList.toggle('night-mode');
             });
 
-            // Initialize night mode if previously enabled
             if (localStorage.getItem('nightMode') === 'enabled') {
                 document.body.classList.add('night-mode');
             }
@@ -765,6 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 
 
 function addFriend() {
@@ -1148,6 +1146,15 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
+        
+function startChat(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        currentChatFriend = friendEmail;
+        updateChatId(currentUser.email, friendEmail);
+        listenForTypingStatus(); // Setup typing listener after starting the chat
+    }
+}
 
 function setTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
@@ -1201,22 +1208,35 @@ document.addEventListener('DOMContentLoaded', listenForTypingStatus);
 
 function listenForTypingStatus() {
     const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser || !currentChatFriend) {
+        console.error("Current user or chat friend is not set.");
+        return;
+    }
+
     const chatId = getChatId(currentUser.email, currentChatFriend);
 
+    if (!chatId) {
+        console.error("Chat ID is not set.");
+        return;
+    }
+
     db.collection('chats').doc(chatId).onSnapshot((doc) => {
+        if (!doc.exists) {
+            console.warn("Chat document does not exist.");
+            return;
+        }
+
         const data = doc.data();
         const typingStatus = data && data[`${currentChatFriend}_typing`];
 
         const typingIndicator = document.getElementById('typingIndicator');
-        if (typingStatus) {
-            typingIndicator.style.display = 'block';
-        } else {
-            typingIndicator.style.display = 'none';
+        if (typingIndicator) {
+            typingIndicator.style.display = typingStatus ? 'block' : 'none';
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', listenForTypingStatus);
 </script>
         
 <script>
