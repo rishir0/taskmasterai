@@ -1212,11 +1212,20 @@ function listenForTypingStatus() {
 
         const data = doc.data();
         const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
-        const typingStatus = data && data[`${sanitizedFriendEmail}_typing`];
+        const sanitizedUserEmail = currentUser.email.replace(/[@.]/g, '_');
+
+        const friendTypingStatus = data && data[`${sanitizedFriendEmail}_typing`];
+        const userTypingStatus = data && data[`${sanitizedUserEmail}_typing`];
 
         const typingIndicator = document.getElementById('typingIndicator');
+
+        // Show the typing indicator only if the friend is typing and the current user is not typing
         if (typingIndicator) {
-            typingIndicator.style.display = typingStatus ? 'block' : 'none';
+            if (friendTypingStatus && !userTypingStatus) {
+                typingIndicator.style.display = 'block';
+            } else {
+                typingIndicator.style.display = 'none';
+            }
         }
     });
 }
