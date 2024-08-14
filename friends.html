@@ -737,42 +737,34 @@ body.night-mode {
             });
         });
 
-            document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                loadOnlineFriends();
-                listenForFriendRequests();
-            } else {
-                window.location.href = "login.html";
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // Existing functionality here
+            loadOnlineFriends();
+            listenForFriendRequests();
+            listenForTypingStatus(); // Ensures it's only added once
+
+            // Update chat when switching users
+            document.getElementById('toggleNightMode').addEventListener('click', function() {
+                document.body.classList.toggle('night-mode');
+            });
+
+            // Initialize night mode if previously enabled
+            if (localStorage.getItem('nightMode') === 'enabled') {
+                document.body.classList.add('night-mode');
             }
-        });
+        } else {
+            window.location.href = "login.html";
+        }
     });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow('/chat.html'); // Or the URL of your chat page
-        })
-    );
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
     if (Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('Notification permission granted.');
-            } else {
-                console.log('Notification permission denied.');
-            }
+            console.log(`Notification permission ${permission}`);
         });
     }
 });
-
 
 
 function addFriend() {
