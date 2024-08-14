@@ -647,18 +647,24 @@ body.night-mode {
     <div class="dashboard-header">
         <h1>Friends</h1>
     </div>
+
     <div class="friends-list">
         <h2>Online Friends</h2>
         <ul id="onlineFriends">
             <!-- Friends will be dynamically added here -->
         </ul>
     </div>
+
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
         <button onclick="addFriend()">Add Friend</button>
     </div>
+
     <div class="chat-window">
         <h2>Chat with <span id="chatWith"></span></h2>
+        <div id="typingIndicator" style="display: none; color: gray; font-style: italic;">
+            The other user is typing...
+        </div>
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
@@ -666,6 +672,7 @@ body.night-mode {
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
+
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -1149,6 +1156,75 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
+
+function setTypingStatus(isTyping) {
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, currentChatFriend);
+
+    if (currentUser && currentChatFriend) {
+        db.collection('chats').doc(chatId).update({
+            [`${currentUser.email}_typing`]: isTyping
+        }).catch((error) => {
+            console.error('Error updating typing status:', error);
+        });
+    }
+}
+
+document.getElementById('chatInput').addEventListener('focus', function() {
+    setTypingStatus(true);
+});
+
+document.getElementById('chatInput').addEventListener('blur', function() {
+    setTypingStatus(false);
+});
+
+document.getElementById('chatInput').addEventListener('keydown', function() {
+    setTypingStatus(true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(function() {
+        setTypingStatus(false);
+    }, 2000); // Stop typing after 2 seconds of inactivity
+});
+
+var typingTimeout;
+
+function listenForTypingStatus() {
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, currentChatFriend);
+
+    db.collection('chats').doc(chatId).onSnapshot((doc) => {
+        const data = doc.data();
+        const typingStatus = data && data[`${currentChatFriend}_typing`];
+
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingStatus) {
+            typingIndicator.style.display = 'block';
+        } else {
+            typingIndicator.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', listenForTypingStatus);
+
+function listenForTypingStatus() {
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, currentChatFriend);
+
+    db.collection('chats').doc(chatId).onSnapshot((doc) => {
+        const data = doc.data();
+        const typingStatus = data && data[`${currentChatFriend}_typing`];
+
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingStatus) {
+            typingIndicator.style.display = 'block';
+        } else {
+            typingIndicator.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', listenForTypingStatus);
 </script>
         
 <script>
