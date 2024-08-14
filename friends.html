@@ -1168,28 +1168,25 @@ function setTypingStatus(isTyping) {
     const chatId = getChatId(currentUser.email, currentChatFriend);
     const chatRef = db.collection('chats').doc(chatId);
 
-    chatRef.get().then((doc) => {
-        if (!doc.exists) {
-            // If the document doesn't exist, create it with a basic structure
-            chatRef.set({
-                [`${currentUser.email}_typing`]: isTyping,
-            }).then(() => {
-                console.log("Chat document created and typing status set.");
-            }).catch((error) => {
-                console.error("Error creating chat document: ", error);
-            });
-        } else {
-            // If the document exists, just update the typing status
-            chatRef.update({
-                [`${currentUser.email}_typing`]: isTyping
-            }).catch((error) => {
-                console.error("Error updating typing status: ", error);
-            });
-        }
+    db.runTransaction((transaction) => {
+        return transaction.get(chatRef).then((doc) => {
+            if (!doc.exists) {
+                transaction.set(chatRef, {
+                    [`${currentUser.email}_typing`]: isTyping,
+                });
+            } else {
+                transaction.update(chatRef, {
+                    [`${currentUser.email}_typing`]: isTyping
+                });
+            }
+        });
+    }).then(() => {
+        console.log("Typing status set successfully.");
     }).catch((error) => {
-        console.error("Error fetching chat document: ", error);
+        console.error("Error setting typing status: ", error);
     });
 }
+
 
 var typingTimeout;
 
