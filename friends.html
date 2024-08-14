@@ -1158,6 +1158,7 @@ function startChat(friendEmail) {
     }
 }
 
+// Function to set typing status in Firestore
 function setTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
     if (!currentUser || !currentChatFriend) {
@@ -1168,6 +1169,7 @@ function setTypingStatus(isTyping) {
     const chatId = getChatId(currentUser.email, currentChatFriend);
     const chatRef = db.collection('chats').doc(chatId);
 
+    // Update the typing status in Firestore
     db.runTransaction((transaction) => {
         return transaction.get(chatRef).then((doc) => {
             if (!doc.exists) {
@@ -1187,9 +1189,7 @@ function setTypingStatus(isTyping) {
     });
 }
 
-
-var typingTimeout;
-
+// Function to listen for typing status updates
 function listenForTypingStatus() {
     const currentUser = firebase.auth().currentUser;
 
@@ -1216,7 +1216,41 @@ function listenForTypingStatus() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', listenForTypingStatus);
+// Event listeners for chat input to detect typing activity
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInputElement = document.getElementById('chatInput');
+
+    // Listen for keypress to set typing status
+    chatInputElement.addEventListener('keypress', function() {
+        setTypingStatus(true);
+
+        // Reset typing status after a delay if the user stops typing
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            setTypingStatus(false);
+        }, 3000);  // 3 seconds of inactivity
+    });
+
+    // Listen for focus and blur to manage typing status more accurately
+    chatInputElement.addEventListener('focus', function() {
+        setTypingStatus(true);
+    });
+
+    chatInputElement.addEventListener('blur', function() {
+        setTypingStatus(false);
+    });
+});
+
+// Ensure the typing status listener is set up after starting a chat
+function startChat(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        currentChatFriend = friendEmail;
+        updateChatId(currentUser.email, friendEmail);
+        listenForTypingStatus(); // Setup typing listener after starting the chat
+    }
+}
+
 
 </script>
         
