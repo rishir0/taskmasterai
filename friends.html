@@ -1149,6 +1149,9 @@ function getUserEmail(userId) {
     });
 }
         
+let typingTimeout; // Declare typingTimeout globally
+
+// Function to start a chat with a friend
 function startChat(friendEmail) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
@@ -1241,15 +1244,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Ensure the typing status listener is set up after starting a chat
-function startChat(friendEmail) {
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser) {
-        currentChatFriend = friendEmail;
-        updateChatId(currentUser.email, friendEmail);
-        listenForTypingStatus(); // Setup typing listener after starting the chat
-    }
-}
 
 
 </script>
