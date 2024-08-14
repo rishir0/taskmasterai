@@ -1172,17 +1172,18 @@ function setTypingStatus(isTyping) {
     const chatId = getChatId(currentUser.email, currentChatFriend);
     const chatRef = db.collection('chats').doc(chatId);
 
+    // Prepare the fields object to update the typing status
+    const fieldsToUpdate = {};
+    const sanitizedEmail = currentUser.email.replace(/[@.]/g, '_'); // Replace @ and . with _
+    fieldsToUpdate[`${sanitizedEmail}_typing`] = isTyping;
+
     // Update the typing status in Firestore
     db.runTransaction((transaction) => {
         return transaction.get(chatRef).then((doc) => {
             if (!doc.exists) {
-                transaction.set(chatRef, {
-                    [`${currentUser.email}_typing`]: isTyping,
-                });
+                transaction.set(chatRef, fieldsToUpdate);
             } else {
-                transaction.update(chatRef, {
-                    [`${currentUser.email}_typing`]: isTyping
-                });
+                transaction.update(chatRef, fieldsToUpdate);
             }
         });
     }).then(() => {
