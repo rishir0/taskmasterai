@@ -1137,6 +1137,8 @@ function openChat(friendEmail) {
 }
 
 
+let currentChatFriend = null;
+
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
 }
@@ -1158,53 +1160,38 @@ function startChat(friendEmail) {
 
 function setTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, currentChatFriend);
-
-    if (currentUser && currentChatFriend) {
-        db.collection('chats').doc(chatId).update({
-            [`${currentUser.email}_typing`]: isTyping
-        }).catch((error) => {
-            console.error('Error updating typing status:', error);
-        });
+    if (!currentUser || !currentChatFriend) {
+        console.error("Current user or chat friend is not set.");
+        return;
     }
-}
 
-document.getElementById('chatInput').addEventListener('focus', function() {
-    setTypingStatus(true);
-});
-
-document.getElementById('chatInput').addEventListener('blur', function() {
-    setTypingStatus(false);
-});
-
-document.getElementById('chatInput').addEventListener('keydown', function() {
-    setTypingStatus(true);
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(function() {
-        setTypingStatus(false);
-    }, 2000); // Stop typing after 2 seconds of inactivity
-});
-
-var typingTimeout;
-
-function listenForTypingStatus() {
-    const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, currentChatFriend);
+    const chatRef = db.collection('chats').doc(chatId);
 
-    db.collection('chats').doc(chatId).onSnapshot((doc) => {
-        const data = doc.data();
-        const typingStatus = data && data[`${currentChatFriend}_typing`];
-
-        const typingIndicator = document.getElementById('typingIndicator');
-        if (typingStatus) {
-            typingIndicator.style.display = 'block';
+    chatRef.get().then((doc) => {
+        if (!doc.exists) {
+            // If the document doesn't exist, create it with a basic structure
+            chatRef.set({
+                [`${currentUser.email}_typing`]: isTyping,
+            }).then(() => {
+                console.log("Chat document created and typing status set.");
+            }).catch((error) => {
+                console.error("Error creating chat document: ", error);
+            });
         } else {
-            typingIndicator.style.display = 'none';
+            // If the document exists, just update the typing status
+            chatRef.update({
+                [`${currentUser.email}_typing`]: isTyping
+            }).catch((error) => {
+                console.error("Error updating typing status: ", error);
+            });
         }
+    }).catch((error) => {
+        console.error("Error fetching chat document: ", error);
     });
 }
 
-document.addEventListener('DOMContentLoaded', listenForTypingStatus);
+var typingTimeout;
 
 function listenForTypingStatus() {
     const currentUser = firebase.auth().currentUser;
@@ -1215,11 +1202,6 @@ function listenForTypingStatus() {
     }
 
     const chatId = getChatId(currentUser.email, currentChatFriend);
-
-    if (!chatId) {
-        console.error("Chat ID is not set.");
-        return;
-    }
 
     db.collection('chats').doc(chatId).onSnapshot((doc) => {
         if (!doc.exists) {
@@ -1236,6 +1218,8 @@ function listenForTypingStatus() {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', listenForTypingStatus);
 
 </script>
         
