@@ -1026,34 +1026,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-// Function to handle typing status
-function handleTyping(isTyping, chatId, sender, recipient) {
-    const messagesRef = db.collection('chats').doc(chatId).collection('messages');
+let typingTimeout;
+const TYPING_INDICATOR_DELAY = 1000; // Time in milliseconds to wait before sending typing status
 
-    if (isTyping) {
-        // Create a message with "..." when the user starts typing
-        messagesRef.add({
-            message: '...',
-            sender: sender,
-            recipient: recipient,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            isTypingIndicator: true // Adding a flag to identify the typing indicator message
-        });
-    } else {
-        // Remove the "..." message when typing stops
-        messagesRef.where('sender', '==', sender)
-            .where('recipient', '==', recipient)
-            .where('isTypingIndicator', '==', true)
-            .get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    doc.ref.delete();
-                });
-            });
-    }
-}
-
-// Function to send the actual message
 function sendMessage() {
     const chatInput = document.getElementById('chatInput').value.trim();
     const currentUser = firebase.auth().currentUser;
@@ -1073,7 +1048,7 @@ function sendMessage() {
 
             // Reset typing status after sending a message
             db.collection('chats').doc(chatId).update({
-                typing: firebase.firestore.FieldValue.delete() // Clear typing status
+                typing: null // Set typing to null or false when the message is sent
             });
         }).catch((error) => {
             console.error('Error sending message: ', error);
@@ -1083,47 +1058,76 @@ function sendMessage() {
 
 function updateTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
-
-    if (currentChatFriend && currentUser) {
+    if (currentUser && currentChatFriend) {
         const chatId = getChatId(currentUser.email, currentChatFriend);
-
+        
         if (isTyping) {
-            // Check if the typing indicator already exists
-            db.collection('chats').doc(chatId).collection('messages')
-                .where('message', '==', '...')
-                .where('sender', '==', currentUser.email) // Only for the current user
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.empty) {
-                        // Create a typing indicator if it doesn't exist
+            // Create or update the typing indicator
+            db.collection('chats').doc(chatId).collection('messages').where('message', '==', '...')
+                .get().then(snapshot => {
+                    if (snapshot.empty) {
+                        // No existing typing indicator, create a new one
                         db.collection('chats').doc(chatId).collection('messages').add({
                             sender: currentUser.email,
                             recipient: currentChatFriend,
                             message: '...',
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            typing: true // Mark this message as a typing indicator
                         });
                     }
+                }).catch(error => {
+                    console.error('Error checking typing indicator: ', error);
                 });
         } else {
-            // Remove the typing indicator when the user stops typing
-            db.collection('chats').doc(chatId).collection('messages')
-                .where('message', '==', '...')
-                .where('sender', '==', currentUser.email)
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        doc.ref.delete();
+            // Remove the typing indicator
+            db.collection('chats').doc(chatId).collection('messages').where('message', '==', '...')
+                .get().then(snapshot => {
+                    snapshot.forEach(doc => {
+                        doc.ref.delete().catch(error => {
+                            console.error('Error removing typing indicator: ', error);
+                        });
                     });
+                }).catch(error => {
+                    console.error('Error checking typing indicator: ', error);
                 });
         }
     }
 }
 
-// Call this function when the user types
-document.getElementById('chatInput').addEventListener('input', function () {
-    updateTypingStatus(this.value.length > 0);
-});
+function handleTyping() {
+    clearTimeout(typingTimeout);
 
+    const typingInput = document.getElementById('chatInput');
+    const isTyping = typingInput.value.trim().length > 0;
+    
+    if (isTyping) {
+        updateTypingStatus(true);
+        typingTimeout = setTimeout(() => {
+            updateTypingStatus(false);
+        }, TYPING_INDICATOR_DELAY);
+    } else {
+        updateTypingStatus(false);
+    }
+}
+
+// Event listener for typing
+document.getElementById('chatInput').addEventListener('input', handleTyping);
+
+// Listener for updates to the chat
+db.collection('chats').doc(chatId).collection('messages').onSnapshot(snapshot => {
+    const currentUser = firebase.auth().currentUser;
+    snapshot.docChanges().forEach(change => {
+        if (change.type === 'added') {
+            const message = change.doc.data();
+            if (message.message === '...' && message.sender !== currentUser.email) {
+                // Display typing indicator
+                // Ensure that only one `...` message is displayed
+            } else if (message.message !== '...') {
+                // Display the actual message
+            }
+        }
+    });
+});
 
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
