@@ -678,10 +678,18 @@ body.night-mode {
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
+
+        <!-- Area to show the message being replied to -->
+        <div id="replyingTo" style="display: none; font-style: italic; color: gray; margin-bottom: 5px;">
+            Replying to: <span id="replyingToText"></span>
+            <button onclick="clearReply()" style="margin-left: 10px;">Clear</button>
+        </div>
+
         <input type="text" id="chatInput" placeholder="Type a message">
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
+
 
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1017,37 +1025,62 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendButton = document.querySelector('.chat-window button');
     const chatMessagesElement = document.getElementById('chatMessages');
     
-    let chatId = ''; // Define chatId variable here
+    let chatId = ''; // Chat ID based on the users involved
+    let currentChatFriend = ''; // The current chat friend
+    let replyToMessageId = ''; // The ID of the message being replied to
+
 
     // Function to update chatId based on the current chat
     function updateChatId(userEmail, chatFriend) {
         chatId = getChatId(userEmail, chatFriend);
         setupMessageListener(); // Set up message listener with the new chatId
     }
+    
 
-    function sendMessage() {
-        const chatInput = chatInputElement.value.trim();
-        const currentUser = firebase.auth().currentUser;
+    // Function to set the message being replied to
+    function replyToMessage(messageId, messageText) {
+    replyToMessageId = messageId;
+    document.getElementById('replyingToText').textContent = messageText;
+    document.getElementById('replyingTo').style.display = 'block';
+}
 
-        if (chatInput && currentChatFriend && currentUser) {
-            if (!chatId) {
-                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            }
+    // Function to clear the reply selection
+    function clearReply() {
+    replyToMessageId = '';
+    document.getElementById('replyingTo').style.display = 'none';
+}
 
-            db.collection('chats').doc(chatId).collection('messages').add({
-                sender: currentUser.email,
-                recipient: currentChatFriend,
-                message: chatInput,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                console.log('Message sent!');
-                chatInputElement.value = ''; // Clear the input field after sending
-            }).catch((error) => {
-                console.error('Error sending message: ', error);
-            });
+function sendMessage() {
+    const chatInput = document.getElementById('chatInput').value.trim();
+    const currentUser = firebase.auth().currentUser;
+
+    if (chatInput && currentChatFriend && currentUser) {
+        if (!chatId) {
+            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
         }
-    }
 
+        // Prepare the message object
+        let messageData = {
+            sender: currentUser.email,
+            recipient: currentChatFriend,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+
+        // If replying to a specific message, add the reference
+        if (replyToMessageId) {
+            messageData.replyTo = replyToMessageId;
+        }
+
+        db.collection('chats').doc(chatId).collection('messages').add(messageData).then(() => {
+            console.log('Message sent!');
+            document.getElementById('chatInput').value = ''; // Clear the input field
+            clearReply(); // Clear the reply state after sending the message
+        }).catch((error) => {
+            console.error('Error sending message: ', error);
+        });
+    }
+}
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
     }
@@ -1094,7 +1127,7 @@ function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, friendEmail);
+    chatId = getChatId(currentUser.email, friendEmail);
 
     currentChatFriend = friendEmail;
 
@@ -1114,25 +1147,18 @@ function openChat(friendEmail) {
                             const senderEmail = message.sender;
                             const messageDiv = document.createElement('div');
 
-                            if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
-                                messageDiv.textContent = `${message.message}`;
-                            } else {
-                                messageDiv.classList.add('message', 'received');
-                                db.collection('users').where('email', '==', senderEmail).get()
-                                    .then((querySnapshot) => {
-                                        const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                        messageDiv.textContent = `${message.message}`;
+                            messageDiv.classList.add(senderEmail === currentUser.email ? 'message' : 'received');
+                            messageDiv.textContent = message.message;
+                            messageDiv.onclick = () => replyToMessage(doc.id, message.message);
 
-                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                            new Notification(`New message from ${senderDisplayName}`, {
-                                                body: message.message,
-                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                            });
-                                        }
-                                    });
+                            if (message.replyTo) {
+                                // Display the original message being replied to
+                                const replyDiv = document.createElement('div');
+                                replyDiv.classList.add('reply');
+                                replyDiv.textContent = `Replying to: ${message.replyTo}`;
+                                messageDiv.appendChild(replyDiv);
                             }
+
                             chatWindow.appendChild(messageDiv);
 
                             // Scroll to the bottom of the chat window after a new message is added
