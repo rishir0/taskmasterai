@@ -1144,8 +1144,6 @@ function openChat(friendEmail) {
 }
 
 
-let currentChatFriend = null;
-
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
 }
@@ -1156,13 +1154,17 @@ function getUserEmail(userId) {
     });
 }
         
+let currentChatFriend = null;
 let typingTimeout;
+
+function getChatId(userEmail, friendEmail) {
+    return [userEmail, friendEmail].sort().join('_');
+}
 
 function startChat(friendEmail) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
         currentChatFriend = friendEmail;
-        updateChatId(currentUser.email, friendEmail);
         listenForTypingStatus(); // Setup typing listener after starting the chat
     }
 }
@@ -1196,49 +1198,25 @@ function setTypingStatus(isTyping) {
 // Function to listen for typing status updates
 function listenForTypingStatus() {
     const currentUser = firebase.auth().currentUser;
-
     if (!currentUser || !currentChatFriend) {
         console.error("Current user or chat friend is not set.");
         return;
     }
 
     const chatId = getChatId(currentUser.email, currentChatFriend);
+    const chatRef = db.collection('chats').doc(chatId);
 
-    db.collection('chats').doc(chatId).onSnapshot((doc) => {
-        if (!doc.exists) {
-            console.warn("Chat document does not exist.");
-            return;
-        }
+    chatRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
+            const isTyping = data[`${sanitizedFriendEmail}_typing`] || false;
 
-        const data = doc.data();
-        console.log('Document data:', data);  // Log the entire document data
-
-        // Sanitize email addresses to match Firestore field names
-        const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
-        const sanitizedUserEmail = currentUser.email.replace(/[@.]/g, '_');
-
-        // Retrieve typing statuses
-        const friendTypingStatus = data && data[`${sanitizedFriendEmail}_typing`];
-        const userTypingStatus = data && data[`${sanitizedUserEmail}_typing`];
-
-        console.log(`Friend typing status: ${friendTypingStatus}`);
-        console.log(`User typing status: ${userTypingStatus}`);
-
-        const typingIndicator = document.getElementById('typingIndicator');
-
-        // Show the typing indicator only if the friend is typing and the current user is not typing
-        if (typingIndicator) {
-            if (friendTypingStatus === true && userTypingStatus === false) {
-                typingIndicator.style.display = 'block';
-                console.log('Typing indicator displayed.');
-            } else {
-                typingIndicator.style.display = 'none';
-                console.log('Typing indicator hidden.');
-            }
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.style.display = isTyping ? 'block' : 'none';
         }
     });
 }
-
 
 // Event listeners for chat input to detect typing activity
 document.addEventListener('DOMContentLoaded', function () {
@@ -1264,7 +1242,6 @@ document.addEventListener('DOMContentLoaded', function () {
         setTypingStatus(false);
     });
 });
-
 
 </script>
         
