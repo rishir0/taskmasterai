@@ -1213,9 +1213,11 @@ function listenForTypingStatus() {
         const data = doc.data();
         console.log('Document data:', data);  // Log the entire document data
 
+        // Sanitize email addresses to match Firestore field names
         const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
         const sanitizedUserEmail = currentUser.email.replace(/[@.]/g, '_');
 
+        // Retrieve typing statuses
         const friendTypingStatus = data && data[`${sanitizedFriendEmail}_typing`];
         const userTypingStatus = data && data[`${sanitizedUserEmail}_typing`];
 
@@ -1226,7 +1228,7 @@ function listenForTypingStatus() {
 
         // Show the typing indicator only if the friend is typing and the current user is not typing
         if (typingIndicator) {
-            if (friendTypingStatus && !userTypingStatus) {
+            if (friendTypingStatus === true && userTypingStatus === false) {
                 typingIndicator.style.display = 'block';
                 console.log('Typing indicator displayed.');
             } else {
@@ -1236,6 +1238,7 @@ function listenForTypingStatus() {
         }
     });
 }
+
 
 // Event listeners for chat input to detect typing activity
 document.addEventListener('DOMContentLoaded', function () {
