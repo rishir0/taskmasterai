@@ -1156,87 +1156,70 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
-        
+
 let currentChatFriend = null;
 let typingTimeout;
-
-function getChatId(userEmail, friendEmail) {
-    return [userEmail, friendEmail].sort().join('_');
-}
 
 function startChat(friendEmail) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
         currentChatFriend = friendEmail;
-        listenForTypingStatus(); // Setup typing listener after starting the chat
+        listenForTypingStatus(); // Listen for typing status for this chat
+        // Ensure chat ID is updated or created
+        updateChatId(currentUser.email, friendEmail);
     }
 }
 
 // Function to set typing status in Firestore
 function setTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
-    console.log('setTypingStatus called with:', currentUser, currentChatFriend);
-    if (!currentUser || !currentChatFriend) {
-        console.error("Current user or chat friend is not set.");
-        return;
+    if (currentUser && currentChatFriend) {
+        const chatId = getChatId(currentUser.email, currentChatFriend);
+        db.collection('chats').doc(chatId).set({
+            typing: isTyping ? currentUser.email : ""
+        }, { merge: true });
     }
-
-    const chatId = getChatId(currentUser.email, currentChatFriend);
-    const chatRef = db.collection('chats').doc(chatId);
-
-    // Sanitize email to avoid special character issues in Firestore
-    const sanitizedEmail = currentUser.email.replace(/[@.]/g, '_');
-    const updateData = {
-        [`${sanitizedEmail}_typing`]: isTyping
-    };
-
-    chatRef.set(updateData, { merge: true })
-        .then(() => {
-            console.log("Typing status set successfully.");
-        })
-        .catch((error) => {
-            console.error("Error setting typing status: ", error);
-        });
 }
 
 // Function to listen for typing status updates
 function listenForTypingStatus() {
-    const currentUser = firebase.auth().currentUser;
-    console.log('listenForTypingStatus called with:', currentUser, currentChatFriend);
-    if (!currentUser || !currentChatFriend) {
-        console.error("Current user or chat friend is not set.");
-        return;
-    }
+    if (currentChatFriend) {
+        const currentUser = firebase.auth().currentUser;
+        const chatId = getChatId(currentUser.email, currentChatFriend);
+        const chatWindow = document.getElementById('chatMessages');
 
-    const chatId = getChatId(currentUser.email, currentChatFriend);
-    const chatRef = db.collection('chats').doc(chatId);
-
-    chatRef.onSnapshot((doc) => {
-        if (doc.exists) {
+        db.collection('chats').doc(chatId).onSnapshot((doc) => {
             const data = doc.data();
-            const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
-            const isTyping = data[`${sanitizedFriendEmail}_typing`] || false;
-
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.style.display = isTyping ? 'block' : 'none';
-        }
-    });
+            if (data && data.typing && data.typing !== currentUser.email) {
+                // Create a typing indicator if it doesn't exist
+                if (!document.getElementById('typing-indicator')) {
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.id = 'typing-indicator';
+                    typingIndicator.classList.add('message', 'received');
+                    typingIndicator.textContent = '...';
+                    chatWindow.appendChild(typingIndicator);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            } else {
+                // Remove the typing indicator if the other user stops typing
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        });
+    }
 }
+
+document.getElementById('chatInput').addEventListener('input', function() {
+    setTypingStatus(true);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => setTypingStatus(false), 2000); // Stop typing after 2 seconds of inactivity
+});
 
 // Event listeners for chat input to detect typing activity
 document.addEventListener('DOMContentLoaded', function () {
     const chatInputElement = document.getElementById('chatInput');
-
-    // Listen for keypress to set typing status
-    chatInputElement.addEventListener('keypress', function () {
-        setTypingStatus(true);
-
-        // Reset typing status after a delay if the user stops typing
-        clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(() => {
-            setTypingStatus(false);
-        }, 3000);  // 3 seconds of inactivity
-    });
 
     // Listen for focus and blur to manage typing status more accurately
     chatInputElement.addEventListener('focus', function () {
