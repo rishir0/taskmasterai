@@ -1061,18 +1061,6 @@ function sendMessage() {
     if (chatInput && currentChatFriend && currentUser) {
         const chatId = getChatId(currentUser.email, currentChatFriend);
 
-        // Remove the typing indicator before sending the actual message
-        db.collection('chats').doc(chatId).collection('messages')
-            .where('sender', '==', currentUser.email)
-            .where('recipient', '==', currentChatFriend)
-            .where('isTypingIndicator', '==', true)
-            .get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    doc.ref.delete();
-                });
-            });
-
         // Send the actual message
         db.collection('chats').doc(chatId).collection('messages').add({
             sender: currentUser.email,
@@ -1084,22 +1072,58 @@ function sendMessage() {
             document.getElementById('chatInput').value = ''; // Clear the input field after sending
 
             // Reset typing status after sending a message
-            handleTyping(false, chatId, currentUser.email, currentChatFriend);
+            db.collection('chats').doc(chatId).update({
+                typing: firebase.firestore.FieldValue.delete() // Clear typing status
+            });
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
     }
 }
 
-// Example usage: Call handleTyping(true/false) based on user typing status
-document.getElementById('chatInput').addEventListener('input', function() {
+function updateTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
-    if (currentUser && currentChatFriend) {
+
+    if (currentChatFriend && currentUser) {
         const chatId = getChatId(currentUser.email, currentChatFriend);
-        const isTyping = this.value.trim().length > 0;
-        handleTyping(isTyping, chatId, currentUser.email, currentChatFriend);
+
+        if (isTyping) {
+            // Check if the typing indicator already exists
+            db.collection('chats').doc(chatId).collection('messages')
+                .where('message', '==', '...')
+                .where('sender', '==', currentChatFriend) // The other user is typing
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        // Create a typing indicator if it doesn't exist
+                        db.collection('chats').doc(chatId).collection('messages').add({
+                            sender: currentChatFriend,
+                            recipient: currentUser.email,
+                            message: '...',
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                });
+        } else {
+            // Remove the typing indicator when the user stops typing
+            db.collection('chats').doc(chatId).collection('messages')
+                .where('message', '==', '...')
+                .where('sender', '==', currentChatFriend)
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        doc.ref.delete();
+                    });
+                });
+        }
     }
+}
+
+// Call this function when the user types
+document.getElementById('chatInput').addEventListener('input', function () {
+    updateTypingStatus(this.value.length > 0);
 });
+
 
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
