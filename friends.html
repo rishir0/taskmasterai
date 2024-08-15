@@ -1091,14 +1091,14 @@ function updateTypingStatus(isTyping) {
             // Check if the typing indicator already exists
             db.collection('chats').doc(chatId).collection('messages')
                 .where('message', '==', '...')
-                .where('sender', '==', currentChatFriend) // The other user is typing
+                .where('sender', '==', currentUser.email) // Only for the current user
                 .get()
                 .then(querySnapshot => {
                     if (querySnapshot.empty) {
                         // Create a typing indicator if it doesn't exist
                         db.collection('chats').doc(chatId).collection('messages').add({
-                            sender: currentChatFriend,
-                            recipient: currentUser.email,
+                            sender: currentUser.email,
+                            recipient: currentChatFriend,
                             message: '...',
                             timestamp: firebase.firestore.FieldValue.serverTimestamp()
                         });
@@ -1108,7 +1108,7 @@ function updateTypingStatus(isTyping) {
             // Remove the typing indicator when the user stops typing
             db.collection('chats').doc(chatId).collection('messages')
                 .where('message', '==', '...')
-                .where('sender', '==', currentChatFriend)
+                .where('sender', '==', currentUser.email)
                 .get()
                 .then(querySnapshot => {
                     querySnapshot.forEach(doc => {
