@@ -235,6 +235,7 @@ body.night-mode {
     background-color: #c0392b;
 }
 
+
 #onlineFriends {
     list-style: none;
     padding: 0;
@@ -295,6 +296,7 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+
 .chat-window {
     display: flex;
     flex-direction: column;
@@ -315,12 +317,10 @@ body.night-mode {
 #chatMessages .message {
     max-width: 70%; /* Limit width for better readability */
     padding: 10px;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     clear: both;
-    position: relative;
-    font-size: 16px;
 }
 
 #chatMessages .message.sent {
@@ -332,18 +332,6 @@ body.night-mode {
     border-top-right-radius: 0; /* Square the top-right corner */
 }
 
-#chatMessages .message.sent:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -10px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid var(--primary-color);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-}
-
 #chatMessages .message.received {
     background: var(--accent-color); /* Customize color for received messages */
     color: var(--text-color);
@@ -353,16 +341,14 @@ body.night-mode {
     border-top-left-radius: 0; /* Square the top-left corner */
 }
 
-#chatMessages .message.received:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border-right: 10px solid var(--accent-color);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
+
+#chatMessages div {
+    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #chatInput {
@@ -377,6 +363,7 @@ body.night-mode {
     background-color: var(--card-bg);
     color: var(--text-color);
 }
+
 
 .chat-window button {
     padding: 10px;
@@ -394,30 +381,14 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-#typingIndicator {
+#typingIndicator{
     background: var(--accent-color); /* Customize color for received messages */
     color: var(--text-color);
     align-self: flex-start;
     float: left;
     text-align: left;
     border-top-left-radius: 0; /* Square the top-left corner */
-    padding: 10px;
-    border-radius: 15px;
-    position: relative;
 }
-
-#typingIndicator:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border-right: 10px solid var(--accent-color);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-}
-
 
 .create-new {
     display: grid;
@@ -707,407 +678,484 @@ body.night-mode {
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
-
-        <!-- Area to show the message being replied to -->
-        <div id="replyingTo" style="display: none; font-style: italic; color: gray; margin-bottom: 5px;">
-            Replying to: <span id="replyingToText"></span>
-            <button onclick="clearReply()" style="margin-left: 10px;">Clear</button>
-        </div>
-
         <input type="text" id="chatInput" placeholder="Type a message">
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
 
 
+ <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var auth = firebase.auth();
 
-<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<!-- Add Firebase products that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-<script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-        authDomain: "deepworkai-c3419.firebaseapp.com",
-        projectId: "deepworkai-c3419",
-        storageBucket: "deepworkai-c3419.appspot.com",
-        messagingSenderId: "367439182644",
-        appId: "1:367439182644:web:304216430df97eff68c361"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
-    var auth = firebase.auth();
-
-    document.addEventListener('DOMContentLoaded', function () {
-        auth.onAuthStateChanged(function (user) {
-            if (user) {
-                setupUserInterface(user);
-                loadOnlineFriends();
-                listenForFriendRequests();
-                listenForTypingStatus(user);
-
-                document.getElementById('toggleNightMode').addEventListener('click', function () {
-                    document.body.classList.toggle('night-mode');
-                    localStorage.setItem('nightMode', document.body.classList.contains('night-mode') ? 'enabled' : 'disabled');
+        function updateOnlineStatus(isOnline) {
+            if (auth.currentUser) {
+                db.collection('users').doc(auth.currentUser.uid).set({
+                    online: isOnline,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).then(() => {
+                    console.log(`User online status updated to ${isOnline}`);
+                }).catch((error) => {
+                    console.error('Error updating online status:', error);
                 });
+            }
+        }
 
-                if (localStorage.getItem('nightMode') === 'enabled') {
-                    document.body.classList.add('night-mode');
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    // Update the UI with the user's display name
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
 
-                if (Notification.permission === 'default') {
-                    Notification.requestPermission().then(permission => {
-                        console.log(`Notification permission ${permission}`);
+                    // Set Firestore online status to true when the user is authenticated
+                    updateOnlineStatus(true);
+
+                    // Handle the user going offline only when the tab is closed or navigated away
+                    window.addEventListener('beforeunload', function() {
+                        updateOnlineStatus(false);
                     });
+
+                    // Handle tab visibility change
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'visible') {
+                            updateOnlineStatus(true);
+                        }
+                    });
+
+                } else {
+                    // No user is signed in, redirect to login page
+                    window.location.href = "login.html";
                 }
+            });
+        });
 
-            } else {
-                window.location.href = "login.html";
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            loadOnlineFriends();
+            listenForFriendRequests();
+            listenForTypingStatus(user); // Pass the user object here
+
+            document.getElementById('toggleNightMode').addEventListener('click', function() {
+                document.body.classList.toggle('night-mode');
+            });
+
+            if (localStorage.getItem('nightMode') === 'enabled') {
+                document.body.classList.add('night-mode');
             }
-        });
-
-        window.addEventListener('beforeunload', function () {
-            updateOnlineStatus(false);
-        });
-
-        document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible') {
-                updateOnlineStatus(true);
-            }
-        });
+        } else {
+            window.location.href = "login.html";
+        }
     });
 
-    function setupUserInterface(user) {
-        const username = user.displayName || user.email;
-        document.getElementById('username').textContent = username;
-        document.getElementById('displayName').textContent = username;
+    if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            console.log(`Notification permission ${permission}`);
+        });
+    }
+});
 
-        updateOnlineStatus(true);
+
+
+function addFriend() {
+    const friendEmail = document.getElementById('friendEmail').value;
+    const currentUser = firebase.auth().currentUser;
+
+    if (friendEmail && currentUser) {
+        const userId = currentUser.uid;
+
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    console.error('User with this email does not exist.');
+                    return;
+                }
+
+                const recipientDoc = querySnapshot.docs[0];
+                const recipientId = recipientDoc.id;
+
+                db.collection('friendRequests').add({
+                    senderId: userId,
+                    recipientId: recipientId,
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log('Friend request sent!');
+                }).catch((error) => {
+                    console.error('Error sending friend request:', error);
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+            });
+    }
+}
+
+function listenForFriendRequests() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const userId = currentUser.uid;
+
+        db.collection('friendRequests').where('recipientId', '==', userId)
+            .onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const friendRequest = change.doc.data();
+                        if (friendRequest.status === 'pending') {
+                            getUserEmail(friendRequest.senderId).then((email) => {
+                                showAcceptPopup(email, change.doc.id);
+                            });
+                        }
+                    }
+                });
+            });
+    }
+}
+
+function showAcceptPopup(senderEmail, requestId) {
+    if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
+        acceptFriendRequest(requestId, senderEmail);
+    } else {
+        console.log('Friend request declined');
+    }
+}
+
+function acceptFriendRequest(requestId, senderEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const userId = currentUser.uid;
+
+        // Update the friend request status to accepted
+        db.collection('friendRequests').doc(requestId).update({
+            status: 'accepted'
+        }).then(() => {
+            console.log('Friend request accepted!');
+            // Add both users to accepted friends
+            addToAcceptedFriends(userId, senderEmail);
+            openChat(senderEmail);
+        }).catch((error) => {
+            console.error('Error accepting friend request:', error);
+        });
+    }
+}
+
+function addToAcceptedFriends(userId, senderEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+        
+        // Fetch the recipient's user document
+        db.collection('users').where('email', '==', senderEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const recipientDoc = querySnapshot.docs[0];
+                    const recipientId = recipientDoc.id;
+                    
+                    // Add sender to recipient's accepted friends
+                    db.collection('users').doc(recipientId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
+                    }).catch((error) => {
+                        console.error('Error updating recipient’s accepted friends list:', error);
+                    });
+                    
+                    // Add recipient to sender's accepted friends
+                    db.collection('users').doc(currentUserId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayUnion(senderEmail)
+                    }).catch((error) => {
+                        console.error('Error updating sender’s accepted friends list:', error);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching recipient data:', error);
+            });
+    }
+}
+
+
+
+function loadOnlineFriends() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserEmail = currentUser.email;
+        const acceptedFriends = new Set();
+        const displayNameMap = new Map(); // To store the display names of friends
+
+        // Fetch the current user's accepted friends
+        db.collection('users').where('email', '==', currentUserEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const data = userDoc.data();
+                    
+                    if (data.acceptedFriends) {
+                        data.acceptedFriends.forEach((email) => {
+                            acceptedFriends.add(email);
+                            displayNameMap.set(email, null); // Initialize with null
+                        });
+                    }
+                    
+                    // Now fetch online users
+                    db.collection('users').where('online', '==', true)
+                        .onSnapshot((querySnapshot) => {
+                            const onlineFriendsList = document.getElementById('onlineFriends');
+                            onlineFriendsList.innerHTML = '';
+
+                            querySnapshot.forEach((doc) => {
+                                const friend = doc.data();
+                                const friendEmail = friend.email;
+                                const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+
+                                if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                    if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                                        // Update display name if changed
+                                        displayNameMap.set(friendEmail, friendDisplayName);
+
+                                        const listItem = document.createElement('li');
+                                        listItem.classList.add('friend-item');
+
+                                        // Create or update a span for the friend's name
+                                        const friendName = document.createElement('span');
+                                        friendName.textContent = friendDisplayName;
+                                        friendName.classList.add('friend-name');
+
+                                        // Create and append Unfriend button
+                                        const unfriendButton = createUnfriendButton(friendEmail);
+
+                                        // Add click event to open chat
+                                        friendName.onclick = () => openChat(friendEmail);
+
+                                        // Append the friend's name and Unfriend button to the list item
+                                        listItem.appendChild(friendName);
+                                        listItem.appendChild(unfriendButton);
+
+                                        onlineFriendsList.appendChild(listItem);
+                                    }
+                                }
+                            });
+                        });
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data for accepted friends: ", error);
+            });
+    }
+}
+
+
+function createUnfriendButton(friendEmail) {
+    const button = document.createElement('button');
+    button.textContent = 'Unfriend';
+    button.className = 'unfriend-button';
+    button.onclick = () => unfriendUser(friendEmail);
+    return button;
+}
+
+function unfriendUser(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserId = currentUser.uid;
+
+        // Fetch the friend's user document
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const friendDoc = querySnapshot.docs[0];
+                    const friendId = friendDoc.id;
+
+                    // Update current user's accepted friends list
+                    db.collection('users').doc(currentUserId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayRemove(friendEmail)
+                    }).catch((error) => {
+                        console.error('Error removing from current user’s accepted friends list:', error);
+                    });
+
+                    // Update friend's accepted friends list
+                    db.collection('users').doc(friendId).update({
+                        acceptedFriends: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
+                    }).catch((error) => {
+                        console.error('Error removing from friend’s accepted friends list:', error);
+                    });
+
+                    // Refresh the list of online friends
+                    loadOnlineFriends();
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching friend data:', error);
+            });
+    }
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
+    
+    let chatId = ''; // Define chatId variable here
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        setupMessageListener(); // Set up message listener with the new chatId
     }
 
-    function updateOnlineStatus(isOnline) {
-        if (auth.currentUser) {
-            db.collection('users').doc(auth.currentUser.uid).set({
-                online: isOnline,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }).then(() => {
-                console.log(`User online status updated to ${isOnline}`);
+    function sendMessage() {
+        const chatInput = chatInputElement.value.trim();
+        const currentUser = firebase.auth().currentUser;
+
+        if (chatInput && currentChatFriend && currentUser) {
+            if (!chatId) {
+                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+            }
+
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log('Message sent!');
+                chatInputElement.value = ''; // Clear the input field after sending
             }).catch((error) => {
-                console.error('Error updating online status:', error);
+                console.error('Error sending message: ', error);
             });
         }
     }
 
-    function loadOnlineFriends() {
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            const currentUserEmail = currentUser.email;
-            const acceptedFriends = new Set();
-            const displayNameMap = new Map();
-
-            db.collection('users').where('email', '==', currentUserEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const userDoc = querySnapshot.docs[0];
-                        const data = userDoc.data();
-
-                        if (data.acceptedFriends) {
-                            data.acceptedFriends.forEach((email) => {
-                                acceptedFriends.add(email);
-                                displayNameMap.set(email, null);
-                            });
-                        }
-
-                        db.collection('users').where('online', '==', true)
-                            .onSnapshot((querySnapshot) => {
-                                const onlineFriendsList = document.getElementById('onlineFriends');
-                                onlineFriendsList.innerHTML = '';
-
-                                querySnapshot.forEach((doc) => {
-                                    const friend = doc.data();
-                                    const friendEmail = friend.email;
-                                    const friendDisplayName = friend.displayName === 'Anonymous' ? friendEmail : friend.displayName;
-
-                                    if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                        if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                            displayNameMap.set(friendEmail, friendDisplayName);
-
-                                            const listItem = document.createElement('li');
-                                            listItem.classList.add('friend-item');
-
-                                            const friendName = document.createElement('span');
-                                            friendName.textContent = friendDisplayName;
-                                            friendName.classList.add('friend-name');
-                                            friendName.onclick = () => openChat(friendEmail);
-
-                                            const unfriendButton = createUnfriendButton(friendEmail);
-
-                                            listItem.appendChild(friendName);
-                                            listItem.appendChild(unfriendButton);
-
-                                            onlineFriendsList.appendChild(listItem);
-                                        }
-                                    }
-                                });
-                            });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching user data for accepted friends: ", error);
-                });
-        }
+    function scrollToBottom() {
+        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
     }
 
-    function createUnfriendButton(friendEmail) {
-        const button = document.createElement('button');
-        button.textContent = 'Unfriend';
-        button.className = 'unfriend-button';
-        button.onclick = () => unfriendUser(friendEmail);
-        return button;
-    }
-
-    function unfriendUser(friendEmail) {
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            const currentUserId = currentUser.uid;
-
-            db.collection('users').where('email', '==', friendEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const friendDoc = querySnapshot.docs[0];
-                        const friendId = friendDoc.id;
-
-                        db.collection('users').doc(currentUserId).update({
-                            acceptedFriends: firebase.firestore.FieldValue.arrayRemove(friendEmail)
-                        }).catch((error) => {
-                            console.error('Error removing from current user’s accepted friends list:', error);
-                        });
-
-                        db.collection('users').doc(friendId).update({
-                            acceptedFriends: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
-                        }).catch((error) => {
-                            console.error('Error removing from friend’s accepted friends list:', error);
-                        });
-
-                        loadOnlineFriends();
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching friend data:', error);
-                });
-        }
-    }
-
-    function listenForFriendRequests() {
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            const userId = currentUser.uid;
-
-            db.collection('friendRequests').where('recipientId', '==', userId)
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
+    function setupMessageListener() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
                         if (change.type === 'added') {
-                            const friendRequest = change.doc.data();
-                            if (friendRequest.status === 'pending') {
-                                getUserEmail(friendRequest.senderId).then((email) => {
-                                    showAcceptPopup(email, change.doc.id);
-                                });
-                            }
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
                         }
                     });
                 });
         }
     }
 
-    function showAcceptPopup(senderEmail, requestId) {
-        if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
-            acceptFriendRequest(requestId, senderEmail);
-        } else {
-            console.log('Friend request declined');
+    // Send message when the "Send" button is clicked
+    sendButton.addEventListener('click', sendMessage);
+
+    // Send message when the "Enter" key is pressed
+    chatInputElement.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of the "Enter" key
+            sendMessage();
+        }
+    });
+
+    // Example function to start or switch chats
+    function startChat(friendEmail) {
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser) {
+            updateChatId(currentUser.email, friendEmail);
         }
     }
 
-    function acceptFriendRequest(requestId, senderEmail) {
-        const currentUser = firebase.auth().currentUser;
+    // Use startChat(friendEmail) when starting or switching chats
+});
 
-        if (currentUser) {
-            const userId = currentUser.uid;
 
-            db.collection('friendRequests').doc(requestId).update({
-                status: 'accepted'
-            }).then(() => {
-                console.log('Friend request accepted!');
-                addToAcceptedFriends(userId, senderEmail);
-                openChat(senderEmail);
-            }).catch((error) => {
-                console.error('Error accepting friend request:', error);
-            });
-        }
-    }
+function openChat(friendEmail) {
+    const chatWithSpan = document.getElementById('chatWith');
+    const chatWindow = document.getElementById('chatMessages');
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, friendEmail);
 
-    function addToAcceptedFriends(userId, senderEmail) {
-        const currentUser = firebase.auth().currentUser;
+    currentChatFriend = friendEmail;
 
-        if (currentUser) {
-            const currentUserId = currentUser.uid;
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const friendDoc = querySnapshot.docs[0];
+                const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
+                chatWithSpan.textContent = friendDisplayName;
 
-            db.collection('users').where('email', '==', senderEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const recipientDoc = querySnapshot.docs[0];
-                        const recipientId = recipientDoc.id;
+                db.collection('chats').doc(chatId).collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((querySnapshot) => {
+                        chatWindow.innerHTML = '';
+                        querySnapshot.forEach((doc) => {
+                            const message = doc.data();
+                            const senderEmail = message.sender;
+                            const messageDiv = document.createElement('div');
 
-                        db.collection('users').doc(recipientId).update({
-                            acceptedFriends: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
-                        }).catch((error) => {
-                            console.error('Error updating recipient’s accepted friends list:', error);
+                            if (senderEmail === currentUser.email) {
+                                messageDiv.classList.add('message', 'sent');
+                                messageDiv.textContent = `${message.message}`;
+                            } else {
+                                messageDiv.classList.add('message', 'received');
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                        messageDiv.textContent = `${message.message}`;
+
+                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                                            new Notification(`New message from ${senderDisplayName}`, {
+                                                body: message.message,
+                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
+                                            });
+                                        }
+                                    });
+                            }
+                            chatWindow.appendChild(messageDiv);
+
+                            // Scroll to the bottom of the chat window after a new message is added
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
-
-                        db.collection('users').doc(currentUserId).update({
-                            acceptedFriends: firebase.firestore.FieldValue.arrayUnion(senderEmail)
-                        }).catch((error) => {
-                            console.error('Error updating sender’s accepted friends list:', error);
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching recipient data:', error);
-                });
-        }
-    }
-
-    function openChat(friendEmail) {
-        const chatWithSpan = document.getElementById('chatWith');
-        const chatWindow = document.getElementById('chatMessages');
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            const chatId = getChatId(currentUser.email, friendEmail);
-
-            currentChatFriend = friendEmail;
-
-            db.collection('users').where('email', '==', friendEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const friendDoc = querySnapshot.docs[0];
-                        const friendData = friendDoc.data();
-                        chatWithSpan.textContent = friendData.displayName === 'Anonymous' ? friendEmail : friendData.displayName;
-
-                        db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp')
-                            .onSnapshot((snapshot) => {
-                                chatWindow.innerHTML = '';
-
-                                snapshot.forEach((doc) => {
-                                    const message = doc.data();
-                                    const isCurrentUser = message.sender === currentUser.email;
-
-                                    const bubble = document.createElement('div');
-                                    bubble.classList.add('message-bubble', isCurrentUser ? 'sent' : 'received');
-                                    bubble.textContent = message.content;
-
-                                    chatWindow.appendChild(bubble);
-                                });
-
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
-                            });
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching friend data:', error);
-                });
-        }
-    }
-
-    function listenForTypingStatus(user) {
-        const chatInput = document.getElementById('chatInput');
-        const friendTypingIndicator = document.getElementById('friendTypingIndicator');
-
-        chatInput.addEventListener('input', () => {
-            setTypingStatus(true);
-            clearTimeout(typingTimeout);
-
-            typingTimeout = setTimeout(() => {
-                setTypingStatus(false);
-            }, 1000);
+                    });
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching user data:', error);
         });
+}
 
-        const friendId = getUserIdByEmail(currentChatFriend);
-        if (friendId) {
-            db.collection('users').doc(friendId).onSnapshot((doc) => {
-                const data = doc.data();
-                if (data && data.typing && data.typing[currentChatFriend]) {
-                    friendTypingIndicator.style.display = 'block';
-                } else {
-                    friendTypingIndicator.style.display = 'none';
-                }
-            });
-        }
-    }
 
-    function setTypingStatus(isTyping) {
-        const user = firebase.auth().currentUser;
+function getChatId(userEmail, friendEmail) {
+    return [userEmail, friendEmail].sort().join('_');
+}
 
-        if (user) {
-            const typingRef = db.collection('users').doc(user.uid);
-            typingRef.set({
-                typing: {
-                    [currentChatFriend]: isTyping
-                }
-            }, { merge: true });
-        }
-    }
-
-    function sendMessage(content) {
-        const chatId = getChatId(firebase.auth().currentUser.email, currentChatFriend);
-
-        db.collection('chats').doc(chatId).collection('messages').add({
-            sender: firebase.auth().currentUser.email,
-            content: content,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Message sent successfully!');
-            setTypingStatus(false);
-            document.getElementById('chatInput').value = '';
-        }).catch((error) => {
-            console.error('Error sending message:', error);
-        });
-    }
-
-    function getChatId(email1, email2) {
-        return [email1, email2].sort().join('_');
-    }
-
-    function getUserIdByEmail(email) {
-        return db.collection('users').where('email', '==', email).get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    return querySnapshot.docs[0].id;
-                } else {
-                    throw new Error('No user found with email: ' + email);
-                }
-            }).catch((error) => {
-                console.error('Error fetching user ID by email:', error);
-            });
-    }
-
-    function getUserEmail(userId) {
-        return db.collection('users').doc(userId).get()
-            .then((doc) => {
-                if (doc.exists) {
-                    return doc.data().email;
-                } else {
-                    throw new Error('No user found with ID: ' + userId);
-                }
-            }).catch((error) => {
-                console.error('Error fetching user email:', error);
-            });
-    }
+function getUserEmail(userId) {
+    return db.collection('users').doc(userId).get().then((doc) => {
+        return doc.data().email;
+    });
+}
         
 let currentChatFriend = null;
 let typingTimeout;
