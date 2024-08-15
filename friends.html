@@ -296,12 +296,6 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-#typingIndicator {
-    display: none;
-    color: gray;
-    font-style: italic;
-    margin-bottom: 10px; /* Ensure there's space between typing indicator and chat messages */
-}
 
 .chat-window {
     display: flex;
@@ -385,6 +379,15 @@ body.night-mode {
 
 .chat-window button:hover {
     background-color: #3b7bce;
+}
+
+#typingIndicator{
+    background: var(--accent-color); /* Customize color for received messages */
+    color: var(--text-color);
+    align-self: flex-start;
+    float: left;
+    text-align: left;
+    border-top-left-radius: 0; /* Square the top-left corner */
 }
 
 .create-new {
