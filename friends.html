@@ -1207,34 +1207,53 @@ function listenForTypingStatus(user) {
     const currentUser = user;
     const chatId = getChatId(currentUser.email, currentChatFriend);
 
-    db.collection('chats').doc(chatId).onSnapshot((doc) => {
-        const data = doc.data();
-        const isOtherUserTyping = data.typing && data.typing !== currentUser.email; // Check if the other user is typing
+ // Listen for the other user's typing status
+    db.collection('chats').doc(chatId).collection('typingStatus')
+        .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added" || change.type === "modified") {
+                    const typingData = change.doc.data();
+                    const otherUser = typingData.user;
+                    const isTyping = typingData.isTyping;
 
-        const typingIndicatorElement = document.getElementById('typingIndicator');
+                    if (otherUser !== currentUser.email) {
+                        updateTypingIndicator(isTyping);
+                    }
+                }
+            });
+        });
 
-        if (isOtherUserTyping) {
-            // Check if the '...' message already exists
-            const existingTypingMessage = document.getElementById('typingMessage');
-            if (!existingTypingMessage) {
-                // Create a new received message with '...' to indicate typing
-                const messageDiv = document.createElement('div');
-                messageDiv.id = 'typingMessage';
-                messageDiv.classList.add('message', 'received');
-                messageDiv.textContent = '...';
-                document.getElementById('chatMessages').appendChild(messageDiv);
-                typingIndicatorElement.style.display = 'block';
-                scrollToBottom(); // Scroll to the bottom to make sure the message is visible
-            }
-        } else {
-            // Remove the '...' message if the other user stops typing
-            const typingMessage = document.getElementById('typingMessage');
-            if (typingMessage) {
-                typingMessage.remove();
-                typingIndicatorElement.style.display = 'none';
-            }
+    // Update typing status when the current user types
+    const messageInput = document.getElementById('messageInput');
+    messageInput.addEventListener('input', () => {
+        db.collection('chats').doc(chatId).collection('typingStatus').doc(currentUser.uid).set({
+            user: currentUser.email,
+            isTyping: messageInput.value.length > 0
+        });
+    });
+
+    // Reset typing status when the message is sent
+    messageInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage(currentUser, messageInput.value);
+            db.collection('chats').doc(chatId).collection('typingStatus').doc(currentUser.uid).set({
+                user: currentUser.email,
+                isTyping: false
+            });
+            messageInput.value = '';
         }
     });
+}
+
+// Update the UI to show/hide the typing indicator
+function updateTypingIndicator(isTyping) {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (isTyping) {
+        typingIndicator.style.display = 'block';
+    } else {
+        typingIndicator.style.display = 'none';
+    }
 }
 
 // Event listeners for chat input to detect typing activity
