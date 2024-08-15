@@ -1028,19 +1028,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // Function to handle typing status
-function handleTyping() {
-    clearTimeout(typingTimeout);
+function handleTyping(isTyping, chatId, sender, recipient) {
+    const messagesRef = db.collection('chats').doc(chatId).collection('messages');
 
-    const typingInput = document.getElementById('chatInput');
-    const isTyping = typingInput.value.trim().length > 0;
-    
     if (isTyping) {
-        updateTypingStatus(true);
-        typingTimeout = setTimeout(() => {
-            updateTypingStatus(false);
-        }, TYPING_INDICATOR_DELAY);
+        // Create a message with "..." when the user starts typing
+        messagesRef.add({
+            message: '...',
+            sender: sender,
+            recipient: recipient,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            isTypingIndicator: true // Adding a flag to identify the typing indicator message
+        });
     } else {
-        updateTypingStatus(false);
+        // Remove the "..." message when typing stops
+        messagesRef.where('sender', '==', sender)
+            .where('recipient', '==', recipient)
+            .where('isTypingIndicator', '==', true)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    doc.ref.delete();
+                });
+            });
     }
 }
 
@@ -1064,7 +1074,7 @@ function sendMessage() {
 
             // Reset typing status after sending a message
             db.collection('chats').doc(chatId).update({
-                typing: null // Set typing to null or false when the message is sent
+                typing: firebase.firestore.FieldValue.delete() // Clear typing status
             });
         }).catch((error) => {
             console.error('Error sending message: ', error);
