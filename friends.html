@@ -1025,13 +1025,55 @@ document.addEventListener("DOMContentLoaded", function() {
         setupMessageListener(); // Set up message listener with the new chatId
     }
 
-    function sendMessage() {
+
+// Function to handle typing status
+function handleTyping(isTyping, chatId, sender, recipient) {
+    const messagesRef = db.collection('chats').doc(chatId).collection('messages');
+
+    if (isTyping) {
+        // Create a message with "..." when the user starts typing
+        messagesRef.add({
+            message: '...',
+            sender: sender,
+            recipient: recipient,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            isTypingIndicator: true // Adding a flag to identify the typing indicator message
+        });
+    } else {
+        // Remove the "..." message when typing stops
+        messagesRef.where('sender', '==', sender)
+            .where('recipient', '==', recipient)
+            .where('isTypingIndicator', '==', true)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    doc.ref.delete();
+                });
+            });
+    }
+}
+
+// Function to send the actual message
+function sendMessage() {
     const chatInput = document.getElementById('chatInput').value.trim();
     const currentUser = firebase.auth().currentUser;
 
     if (chatInput && currentChatFriend && currentUser) {
         const chatId = getChatId(currentUser.email, currentChatFriend);
 
+        // Remove the typing indicator before sending the actual message
+        db.collection('chats').doc(chatId).collection('messages')
+            .where('sender', '==', currentUser.email)
+            .where('recipient', '==', currentChatFriend)
+            .where('isTypingIndicator', '==', true)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    doc.ref.delete();
+                });
+            });
+
+        // Send the actual message
         db.collection('chats').doc(chatId).collection('messages').add({
             sender: currentUser.email,
             recipient: currentChatFriend,
@@ -1042,14 +1084,22 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('chatInput').value = ''; // Clear the input field after sending
 
             // Reset typing status after sending a message
-            db.collection('chats').doc(chatId).update({
-                typing: null // Set typing to null or false when the message is sent
-            });
+            handleTyping(false, chatId, currentUser.email, currentChatFriend);
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
     }
 }
+
+// Example usage: Call handleTyping(true/false) based on user typing status
+document.getElementById('chatInput').addEventListener('input', function() {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser && currentChatFriend) {
+        const chatId = getChatId(currentUser.email, currentChatFriend);
+        const isTyping = this.value.trim().length > 0;
+        handleTyping(isTyping, chatId, currentUser.email, currentChatFriend);
+    }
+});
 
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
