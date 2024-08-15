@@ -1172,6 +1172,7 @@ function startChat(friendEmail) {
 // Function to set typing status in Firestore
 function setTypingStatus(isTyping) {
     const currentUser = firebase.auth().currentUser;
+    console.log('setTypingStatus called with:', currentUser, currentChatFriend);
     if (!currentUser || !currentChatFriend) {
         console.error("Current user or chat friend is not set.");
         return;
@@ -1198,6 +1199,7 @@ function setTypingStatus(isTyping) {
 // Function to listen for typing status updates
 function listenForTypingStatus() {
     const currentUser = firebase.auth().currentUser;
+    console.log('listenForTypingStatus called with:', currentUser, currentChatFriend);
     if (!currentUser || !currentChatFriend) {
         console.error("Current user or chat friend is not set.");
         return;
