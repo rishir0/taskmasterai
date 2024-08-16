@@ -889,75 +889,62 @@ function addToAcceptedFriends(userId, senderEmail) {
 
 
 
-function loadOnlineFriends() {
-    const currentUser = firebase.auth().currentUser;
+        function loadOnlineFriends() {
+            const currentUser = firebase.auth().currentUser;
 
-    if (currentUser) {
-        const currentUserEmail = currentUser.email;
-        const acceptedFriends = new Set();
-        const displayNameMap = new Map(); // To store the display names of friends
+            if (currentUser) {
+                const currentUserEmail = currentUser.email;
+                const acceptedFriends = new Set();
+                const displayNameMap = new Map(); // To store the display names of friends
 
-        // Fetch the current user's accepted friends
-        db.collection('users').where('email', '==', currentUserEmail).get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0];
-                    const data = userDoc.data();
-                    
-                    if (data.acceptedFriends) {
-                        data.acceptedFriends.forEach((email) => {
-                            acceptedFriends.add(email);
-                            displayNameMap.set(email, null); // Initialize with null
-                        });
-                    }
-                    
-                    // Now fetch online users
-                    db.collection('users').where('online', '==', true)
-                        .onSnapshot((querySnapshot) => {
-                            const onlineFriendsList = document.getElementById('onlineFriends');
-                            onlineFriendsList.innerHTML = '';
+                // Fetch the current user's accepted friends
+                db.collection('users').where('email', '==', currentUserEmail).get()
+                    .then((querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            const userDoc = querySnapshot.docs[0];
+                            const data = userDoc.data();
+                            
+                            if (data.acceptedFriends) {
+                                data.acceptedFriends.forEach((email) => {
+                                    acceptedFriends.add(email);
+                                    displayNameMap.set(email, null); // Initialize with null
+                                });
+                            }
+                            
+                            // Now fetch online users
+                            db.collection('users').where('online', '==', true)
+                                .onSnapshot((querySnapshot) => {
+                                    const onlineFriendsList = document.getElementById('onlineFriends');
+                                    onlineFriendsList.innerHTML = '';
 
-                            querySnapshot.forEach((doc) => {
-                                const friend = doc.data();
-                                const friendEmail = friend.email;
-                                const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+                                    querySnapshot.forEach((doc) => {
+                                        const friend = doc.data();
+                                        const friendEmail = friend.email;
+                                        const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-                                if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                    if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                        // Update display name if changed
-                                        displayNameMap.set(friendEmail, friendDisplayName);
+                                        if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                            if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                                                // Update display name if changed
+                                                displayNameMap.set(friendEmail, friendDisplayName);
+                                            }
 
-                                        const listItem = document.createElement('li');
-                                        listItem.classList.add('friend-item');
-
-                                        // Create or update a span for the friend's name
-                                        const friendName = document.createElement('span');
-                                        friendName.textContent = friendDisplayName;
-                                        friendName.classList.add('friend-name');
-
-                                        // Create and append Unfriend button
-                                        const unfriendButton = createUnfriendButton(friendEmail);
-
-                                        // Add click event to open chat
-                                        friendName.onclick = () => openChat(friendEmail);
-
-                                        // Append the friend's name and Unfriend button to the list item
-                                        listItem.appendChild(friendName);
-                                        listItem.appendChild(unfriendButton);
-
-                                        onlineFriendsList.appendChild(listItem);
-                                    }
-                                }
-                            });
-                        });
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching user data for accepted friends: ", error);
-            });
-    }
-}
-
+                                            const friendElement = document.createElement('div');
+                                            friendElement.textContent = friendDisplayName;
+                                            friendElement.classList.add('online-friend');
+                                            friendElement.addEventListener('click', function() {
+                                                openChat(friendEmail);
+                                            });
+                                            onlineFriendsList.appendChild(friendElement);
+                                        }
+                                    });
+                                });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user data:', error);
+                    });
+            }
+        }
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
@@ -1090,67 +1077,71 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function openChat(friendEmail) {
-        const chatWithSpan = document.getElementById('chatWith');
-        const chatWindow = document.getElementById('chatMessages');
-        const currentUser = firebase.auth().currentUser;
 
-        if (currentUser) {
-            const chatId = getChatId(currentUser.email, friendEmail);
+        function openChat(friendEmail) {
+            const chatWithSpan = document.getElementById('chatWith');
+            const chatWindow = document.getElementById('chatMessages');
+            const currentUser = firebase.auth().currentUser;
 
-            db.collection('users').where('email', '==', friendEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const friendDoc = querySnapshot.docs[0];
-                        const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
-                        chatWithSpan.textContent = friendDisplayName;
+            if (currentUser) {
+                const chatId = getChatId(currentUser.email, friendEmail);
 
-                        // Reinitialize message listener for the new chat
-                        updateChatId(currentUser.email, friendEmail);
+                db.collection('users').where('email', '==', friendEmail).get()
+                    .then((querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            const friendDoc = querySnapshot.docs[0];
+                            const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
+                            chatWithSpan.textContent = friendDisplayName;
 
-                        // Fetch and display messages
-                        db.collection('chats').doc(chatId).collection('messages')
-                            .orderBy('timestamp', 'asc')
-                            .get()
-                            .then((querySnapshot) => {
-                                chatWindow.innerHTML = '';
-                                querySnapshot.forEach((doc) => {
-                                    const message = doc.data();
-                                    const senderEmail = message.sender;
-                                    const messageDiv = document.createElement('div');
+                            // Reinitialize message listener for the new chat
+                            updateChatId(currentUser.email, friendEmail);
 
-                                    if (senderEmail === currentUser.email) {
-                                        messageDiv.classList.add('message', 'sent');
-                                    } else {
-                                        messageDiv.classList.add('message', 'received');
-                                        db.collection('users').where('email', '==', senderEmail).get()
-                                            .then((querySnapshot) => {
-                                                const senderDoc = querySnapshot.docs[0];
-                                                const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                                messageDiv.textContent = `${message.message}`;
+                            // Fetch and display messages
+                            db.collection('chats').doc(chatId).collection('messages')
+                                .orderBy('timestamp', 'asc')
+                                .get()
+                                .then((querySnapshot) => {
+                                    chatWindow.innerHTML = '';
+                                    querySnapshot.forEach((doc) => {
+                                        const message = doc.data();
+                                        const senderEmail = message.sender;
+                                        const messageDiv = document.createElement('div');
 
-                                                if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                                    new Notification(`New message from ${senderDisplayName}`, {
-                                                        body: message.message,
-                                                        icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                                    });
-                                                }
-                                            });
-                                    }
-                                    messageDiv.textContent = message.message;
-                                    chatWindow.appendChild(messageDiv);
+                                        if (senderEmail === currentUser.email) {
+                                            messageDiv.classList.add('message', 'sent');
+                                        } else {
+                                            messageDiv.classList.add('message', 'received');
+                                            db.collection('users').where('email', '==', senderEmail).get()
+                                                .then((querySnapshot) => {
+                                                    const senderDoc = querySnapshot.docs[0];
+                                                    const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                                    messageDiv.textContent = `${message.message}`;
 
-                                    // Scroll to the bottom of the chat window after a new message is added
-                                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                                                    if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+                                                        new Notification(`New message from ${senderDisplayName}`, {
+                                                            body: message.message,
+                                                            icon: '/path/to/icon.png' // Optional: Add an icon if desired
+                                                        });
+                                                    }
+                                                });
+                                        }
+                                        messageDiv.textContent = message.message;
+                                        chatWindow.appendChild(messageDiv);
+
+                                        // Scroll to the bottom of the chat window after a new message is added
+                                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                                    });
                                 });
-                            });
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user data:', error);
-                });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user data:', error);
+                    });
+            }
         }
-    }
+
+
+
 
     function getChatId(userEmail, friendEmail) {
         return [userEmail, friendEmail].sort().join('_');
@@ -1163,6 +1154,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+        // Load online friends when the page loads
+        window.onload = loadOnlineFriends;
 
 </script>
         
