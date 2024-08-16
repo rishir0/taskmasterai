@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1120,9 +1118,6 @@ function getUserEmail(userId) {
 let currentChatFriend = null;
 let typingTimeout;
 
-function getChatId(userEmail, friendEmail) {
-    return [userEmail, friendEmail].sort().join('_');
-}
 
 function startChat(friendEmail) {
     const currentUser = firebase.auth().currentUser;
