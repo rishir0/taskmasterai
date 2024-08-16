@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -296,6 +298,7 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+
 .chat-window {
     display: flex;
     flex-direction: column;
@@ -378,6 +381,15 @@ body.night-mode {
 
 .chat-window button:hover {
     background-color: #3b7bce;
+}
+
+#typingIndicator{
+    background: var(--accent-color); /* Customize color for received messages */
+    color: var(--text-color);
+    align-self: flex-start;
+    float: left;
+    text-align: left;
+    border-top-left-radius: 0; /* Square the top-left corner */
 }
 
 .create-new {
@@ -574,13 +586,49 @@ body.night-mode {
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12H14M12 10V14M19.9592 15H16.6C16.0399 15 15.7599 15 15.546 15.109C15.3578 15.2049 15.2049 15.3578 15.109 15.546C15 15.7599 15 16.0399 15 16.6V19.9592M20 14.1031V7.2C20 6.07989 20 5.51984 19.782 5.09202C19.5903 4.71569 19.2843 4.40973 18.908 4.21799C18.4802 4 17.9201 4 16.8 4H7.2C6.0799 4 5.51984 4 5.09202 4.21799C4.71569 4.40973 4.40973 4.71569 4.21799 5.09202C4 5.51984 4 6.0799 4 7.2V16.8C4 17.9201 4 18.4802 4.21799 18.908C4.40973 19.2843 4.71569 19.5903 5.09202 19.782C5.51984 20 6.0799 20 7.2 20H14.1031C14.5923 20 14.8369 20 15.067 19.9447C15.2711 19.8957 15.4662 19.8149 15.6451 19.7053C15.847 19.5816 16.0199 19.4086 16.3658 19.0627L19.0627 16.3658C19.4086 16.0199 19.5816 15.847 19.7053 15.6451C19.8149 15.4662 19.8957 15.2711 19.9447 15.067C20 14.8369 20 14.5923 20 14.1031Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
                 Notes
             </div>
-            <div class="menu-item" onclick="window.location.href='academics.html'">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 11.4999H7M6 15.4999H7M17 15.4999H18M17 11.4999H18M11.5 11.4999H12.5M10 20.9999V16.9999C10 15.8954 10.8954 14.9999 12 14.9999C13.1046 14.9999 14 15.8954 14 16.9999V20.9999M17 7.49995L18.5761 7.89398C19.4428 8.11064 19.8761 8.21898 20.1988 8.46057C20.4834 8.67373 20.7061 8.95895 20.8439 9.28682C21 9.65843 21 10.1051 21 10.9984V17.7999C21 18.9201 21 19.4801 20.782 19.9079C20.5903 20.2843 20.2843 20.5902 19.908 20.782C19.4802 20.9999 18.9201 20.9999 17.8 20.9999H6.2C5.0799 20.9999 4.51984 20.9999 4.09202 20.782C3.71569 20.5902 3.40973 20.2843 3.21799 19.9079C3 19.4801 3 18.9201 3 17.7999V10.9984C3 10.1051 3 9.65843 3.15613 9.28682C3.29388 8.95895 3.51657 8.67373 3.80124 8.46057C4.12389 8.21898 4.55722 8.11064 5.42388 7.89398L7 7.49995L9.85931 4.92657C10.6159 4.2456 10.9943 3.90512 11.4221 3.77598C11.799 3.66224 12.201 3.66224 12.5779 3.77598C13.0057 3.90512 13.3841 4.2456 14.1407 4.92657L17 7.49995Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                Academics
+            <div class="menu-item" onclick="window.location.href='calendar.html'">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M3 9H21M7 3V5M17 3V5M6 12H8M11 12H13M16 12H18M6 15H8M11 15H13M16 15H18M6 18H8M11 18H13M16 18H18M6.2 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4802 21 18.9201 21 17.8V8.2C21 7.07989 21 6.51984 20.782 6.09202C20.5903 5.71569 20.2843 5.40973 19.908 5.21799C19.4802 5 18.9201 5 17.8 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V17.8C3 18.9201 3 19.4802 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> </g></svg>
+                Calendar
             </div>
             <div class="menu-item" onclick="window.location.href='academics.html'">
                 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="4.672" stroke="#ffffff" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><circle cx="29.22" cy="16.28" r="11.14"></circle><path d="M41.32,35.69c-2.69-1.95-8.34-3.25-12.1-3.25h0A22.55,22.55,0,0,0,6.67,55h29.9"></path><circle cx="45.38" cy="46.92" r="11.94"></circle><line x1="45.98" y1="39.8" x2="45.98" y2="53.8"></line><line x1="38.98" y1="46.8" x2="52.98" y2="46.8"></line></g></svg>
                 Friends
+            </div>
+            <div class="menu-item" onclick="window.location.href='features.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  </svg>
+                Distraction Control
+            </div>
+            <div class="menu-item" onclick="window.location.href='workschedule.html'">
+    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" stroke="none">
+        <g id="SVGRepo_bgCarrier" stroke-width="0" fill="none"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier" fill="#ffffff">
+            <title>ai</title>
+            <g id="Layer_2" data-name="Layer 2">
+                <g id="invisible_box" data-name="invisible box">
+                    <rect width="48" height="48" fill="none"></rect>
+                </g>
+                <g id="Q3_icons" data-name="Q3 icons">
+                    <g>
+                        <path d="M45.6,18.7,41,14.9V7.5a1,1,0,0,0-.6-.9L30.5,2.1h-.4l-.6.2L24,5.9,18.5,2.2,17.9,2h-.4L7.6,6.6a1,1,0,0,0-.6.9v7.4L2.4,18.7a.8.8,0,0,0-.4.8v9H2a.8.8,0,0,0,.4.8L7,33.1v7.4a1,1,0,0,0,.6.9l9.9,4.5h.4l.6-.2L24,42.1l5.5,3.7.6.2h.4l9.9-4.5a1,1,0,0,0,.6-.9V33.1l4.6-3.8a.8.8,0,0,0,.4-.7V19.4h0A.8.8,0,0,0,45.6,18.7Zm-5.1,6.8H42v1.6l-3.5,2.8-.4.3-.4-.2a1.4,1.4,0,0,0-2,.7,1.5,1.5,0,0,0,.6,2l.7.3h0v5.4l-6.6,3.1-4.2-2.8-.7-.5V25.5H27a1.5,1.5,0,0,0,0-3H25.5V9.7l.7-.5,4.2-2.8L37,9.5v5.4h0l-.7.3a1.5,1.5,0,0,0-.6,2,1.4,1.4,0,0,0,1.3.9l.7-.2.4-.2.4.3L42,20.9v1.6H40.5a1.5,1.5,0,0,0,0,3ZM21,25.5h1.5V38.3l-.7.5-4.2,2.8L11,38.5V33.1h0l.7-.3a1.5,1.5,0,0,0,.6-2,1.4,1.4,0,0,0-2-.7l-.4.2-.4-.3L6,27.1V25.5H7.5a1.5,1.5,0,0,0,0-3H6V20.9l3.5-2.8.4-.3.4.2.7.2a1.4,1.4,0,0,0,1.3-.9,1.5,1.5,0,0,0-.6-2L11,15h0V9.5l6.6-3.1,4.2,2.8.7.5V22.5H21a1.5,1.5,0,0,0,0,3Z"></path>
+                        <path d="M13.9,9.9a1.8,1.8,0,0,0,0,2.2l2.6,2.5v2.8l-4,4v5.2l4,4v2.8l-2.6,2.5a1.8,1.8,0,0,0,0,2.2,1.5,1.5,0,0,0,1.1.4,1.5,1.5,0,0,0,1.1-.4l3.4-3.5V29.4l-4-4V22.6l4-4V13.4L16.1,9.9A1.8,1.8,0,0,0,13.9,9.9Z"></path>
+                        <path d="M31.5,14.6l2.6-2.5a1.8,1.8,0,0,0,0-2.2,1.8,1.8,0,0,0-2.2,0l-3.4,3.5v5.2l4,4v2.8l-4,4v5.2l3.4,3.5a1.7,1.7,0,0,0,2.2,0,1.8,1.8,0,0,0,0-2.2l-2.6-2.5V30.6l4-4V21.4l-4-4Z"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </svg>
+    AI Chat Bot
+</div>
+            <div class="menu-item" onclick="window.location.href='metrics.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                    <path d="M12 18c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"/>
+                    <path d="M12 14c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z"/>
+                  </svg>
+                Focus Metrics
             </div>
             <button class="upgrade-btn" onclick="window.location.href='pricing.html'">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -611,18 +659,24 @@ body.night-mode {
     <div class="dashboard-header">
         <h1>Friends</h1>
     </div>
+
     <div class="friends-list">
         <h2>Online Friends</h2>
         <ul id="onlineFriends">
             <!-- Friends will be dynamically added here -->
         </ul>
     </div>
+
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
         <button onclick="addFriend()">Add Friend</button>
     </div>
+
     <div class="chat-window">
         <h2>Chat with <span id="chatWith"></span></h2>
+        <div id="typingIndicator" style="display: none; color: gray; font-style: italic;">
+            The other user is typing...
+        </div>
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
@@ -630,6 +684,7 @@ body.night-mode {
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
+
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -694,38 +749,28 @@ body.night-mode {
             });
         });
 
-            document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                loadOnlineFriends();
-                listenForFriendRequests();
-            } else {
-                window.location.href = "login.html";
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            loadOnlineFriends();
+            listenForFriendRequests();
+            listenForTypingStatus(user); // Pass the user object here
+
+            document.getElementById('toggleNightMode').addEventListener('click', function() {
+                document.body.classList.toggle('night-mode');
+            });
+
+            if (localStorage.getItem('nightMode') === 'enabled') {
+                document.body.classList.add('night-mode');
             }
-        });
+        } else {
+            window.location.href = "login.html";
+        }
     });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow('/chat.html'); // Or the URL of your chat page
-        })
-    );
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
     if (Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('Notification permission granted.');
-            } else {
-                console.log('Notification permission denied.');
-            }
+            console.log(`Notification permission ${permission}`);
         });
     }
 });
@@ -976,134 +1021,92 @@ document.addEventListener("DOMContentLoaded", function() {
     
     let chatId = ''; // Define chatId variable here
 
-    // Function to update chatId based on the current chat
-    function updateChatId(userEmail, chatFriend) {
-        chatId = getChatId(userEmail, chatFriend);
-        setupMessageListener(); // Set up message listener with the new chatId
-    }
+// Function to update chatId based on the current chat
+function updateChatId(userEmail, chatFriend) {
+    chatId = getChatId(userEmail, chatFriend);
+    setupMessageListener(); // Set up message listener with the new chatId
+}
 
-    function sendMessage() {
-        const chatInput = chatInputElement.value.trim();
-        const currentUser = firebase.auth().currentUser;
+// Function to send a message
+function sendMessage() {
+    const chatInput = chatInputElement.value.trim();
+    const currentUser = firebase.auth().currentUser;
 
-        if (chatInput && currentChatFriend && currentUser) {
-            if (!chatId) {
-                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            }
-
-            db.collection('chats').doc(chatId).collection('messages').add({
-                sender: currentUser.email,
-                recipient: currentChatFriend,
-                message: chatInput,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                console.log('Message sent!');
-                chatInputElement.value = ''; // Clear the input field after sending
-            }).catch((error) => {
-                console.error('Error sending message: ', error);
-            });
+    if (chatInput && currentChatFriend && currentUser) {
+        // Ensure chatId is set for the current chat
+        if (!chatId) {
+            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
         }
+
+        db.collection('chats').doc(chatId).collection('messages').add({
+            sender: currentUser.email,
+            recipient: currentChatFriend,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Message sent!');
+            chatInputElement.value = ''; // Clear the input field after sending
+        }).catch((error) => {
+            console.error('Error sending message: ', error);
+        });
     }
+}
 
-    function scrollToBottom() {
-        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+// Example function to start or switch chats
+function startChat(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        currentChatFriend = friendEmail; // Update currentChatFriend
+        updateChatId(currentUser.email, friendEmail); // Ensure chatId is updated
     }
+}
 
-    function setupMessageListener() {
-        if (chatId) {
-            db.collection('chats').doc(chatId).collection('messages')
-                .orderBy('timestamp')
-                .onSnapshot(snapshot => {
-                    snapshot.docChanges().forEach(change => {
-                        if (change.type === 'added') {
-                            // Code to display the message
-                            scrollToBottom(); // Scroll to the bottom when a new message is added
-                        }
-                    });
-                });
-        }
-    }
-
-    // Send message when the "Send" button is clicked
-    sendButton.addEventListener('click', sendMessage);
-
-    // Send message when the "Enter" key is pressed
-    chatInputElement.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevents the default behavior of the "Enter" key
-            sendMessage();
-        }
-    });
-
-    // Example function to start or switch chats
-    function startChat(friendEmail) {
-        const currentUser = firebase.auth().currentUser;
-        if (currentUser) {
-            updateChatId(currentUser.email, friendEmail);
-        }
-    }
-
-    // Use startChat(friendEmail) when starting or switching chats
-});
-
-
+// Function to open a chat
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, friendEmail);
 
-    currentChatFriend = friendEmail;
+    if (currentUser) {
+        currentChatFriend = friendEmail;
+        const chatId = getChatId(currentUser.email, friendEmail);
 
-    db.collection('users').where('email', '==', friendEmail).get()
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const friendDoc = querySnapshot.docs[0];
-                const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
-                chatWithSpan.textContent = friendDisplayName;
+        // Update chat window header
+        db.collection('users').where('email', '==', friendEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const friendDoc = querySnapshot.docs[0];
+                    const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
+                    chatWithSpan.textContent = friendDisplayName;
+                }
+            });
 
-                db.collection('chats').doc(chatId).collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((querySnapshot) => {
-                        chatWindow.innerHTML = '';
-                        querySnapshot.forEach((doc) => {
-                            const message = doc.data();
-                            const senderEmail = message.sender;
-                            const messageDiv = document.createElement('div');
+        // Load messages
+        db.collection('chats').doc(chatId).collection('messages')
+            .orderBy('timestamp', 'asc')
+            .onSnapshot((querySnapshot) => {
+                chatWindow.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const message = doc.data();
+                    const messageDiv = document.createElement('div');
 
-                            if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
-                                messageDiv.textContent = `${message.message}`;
-                            } else {
-                                messageDiv.classList.add('message', 'received');
-                                db.collection('users').where('email', '==', senderEmail).get()
-                                    .then((querySnapshot) => {
-                                        const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                        messageDiv.textContent = `${message.message}`;
+                    if (message.sender === currentUser.email) {
+                        messageDiv.classList.add('message', 'sent');
+                        messageDiv.textContent = message.message;
+                    } else {
+                        messageDiv.classList.add('message', 'received');
+                        messageDiv.textContent = message.message;
+                    }
+                    chatWindow.appendChild(messageDiv);
+                });
 
-                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                            new Notification(`New message from ${senderDisplayName}`, {
-                                                body: message.message,
-                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                            });
-                                        }
-                                    });
-                            }
-                            chatWindow.appendChild(messageDiv);
-
-                            // Scroll to the bottom of the chat window after a new message is added
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
-                        });
-                    });
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching user data:', error);
-        });
+                // Scroll to the bottom of the chat window after a new message is added
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+    }
 }
 
-
+// Function to get chatId
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
 }
@@ -1113,6 +1116,98 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
+        
+let currentChatFriend = null;
+let typingTimeout;
+
+function getChatId(userEmail, friendEmail) {
+    return [userEmail, friendEmail].sort().join('_');
+}
+
+function startChat(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        currentChatFriend = friendEmail;
+        listenForTypingStatus(); // Setup typing listener after starting the chat
+    }
+}
+
+// Function to set typing status in Firestore
+function setTypingStatus(isTyping) {
+    const currentUser = firebase.auth().currentUser;
+    console.log('setTypingStatus called with:', currentUser, currentChatFriend);
+    if (!currentUser || !currentChatFriend) {
+        console.error("Current user or chat friend is not set.");
+        return;
+    }
+
+    const chatId = getChatId(currentUser.email, currentChatFriend);
+    const chatRef = db.collection('chats').doc(chatId);
+
+    // Sanitize email to avoid special character issues in Firestore
+    const sanitizedEmail = currentUser.email.replace(/[@.]/g, '_');
+    const updateData = {
+        [`${sanitizedEmail}_typing`]: isTyping
+    };
+
+    chatRef.set(updateData, { merge: true })
+        .then(() => {
+            console.log("Typing status set successfully.");
+        })
+        .catch((error) => {
+            console.error("Error setting typing status: ", error);
+        });
+}
+
+// Function to listen for typing status updates
+function listenForTypingStatus() {
+    const currentUser = firebase.auth().currentUser;
+    console.log('listenForTypingStatus called with:', currentUser, currentChatFriend);
+    if (!currentUser || !currentChatFriend) {
+        console.error("Current user or chat friend is not set.");
+        return;
+    }
+
+    const chatId = getChatId(currentUser.email, currentChatFriend);
+    const chatRef = db.collection('chats').doc(chatId);
+
+    chatRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            const sanitizedFriendEmail = currentChatFriend.replace(/[@.]/g, '_');
+            const isTyping = data[`${sanitizedFriendEmail}_typing`] || false;
+
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.style.display = isTyping ? 'block' : 'none';
+        }
+    });
+}
+
+// Event listeners for chat input to detect typing activity
+document.addEventListener('DOMContentLoaded', function () {
+    const chatInputElement = document.getElementById('chatInput');
+
+    // Listen for keypress to set typing status
+    chatInputElement.addEventListener('keypress', function () {
+        setTypingStatus(true);
+
+        // Reset typing status after a delay if the user stops typing
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            setTypingStatus(false);
+        }, 3000);  // 3 seconds of inactivity
+    });
+
+    // Listen for focus and blur to manage typing status more accurately
+    chatInputElement.addEventListener('focus', function () {
+        setTypingStatus(true);
+    });
+
+    chatInputElement.addEventListener('blur', function () {
+        setTypingStatus(false);
+    });
+});
+
 </script>
         
 <script>
