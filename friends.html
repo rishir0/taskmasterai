@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1075,130 +1076,12 @@ document.addEventListener("DOMContentLoaded", function() {
     function startChat(friendEmail) {
         const currentUser = firebase.auth().currentUser;
         if (currentUser) {
-            const chatId = getChatId(currentUser.email, friendEmail);
-
-            // Update the chat display
-            updateChatDisplay(friendEmail);
-
-            // Fetch and display messages for the chat
-            fetchMessages(chatId);
-
-            // Update chat ID for future interactions
             updateChatId(currentUser.email, friendEmail);
         }
     }
 
-    function updateChatDisplay(friendEmail) {
-        const chatWithSpan = document.getElementById('chatWith');
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            db.collection('users').where('email', '==', friendEmail).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const friendDoc = querySnapshot.docs[0];
-                        const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
-                        chatWithSpan.textContent = friendDisplayName;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user data:', error);
-                });
-        }
-    }
-
-    function fetchMessages(chatId) {
-        const chatWindow = document.getElementById('chatMessages');
-        const currentUser = firebase.auth().currentUser;
-
-        if (currentUser) {
-            db.collection('chats').doc(chatId).collection('messages')
-                .orderBy('timestamp', 'asc')
-                .get()
-                .then((querySnapshot) => {
-                    chatWindow.innerHTML = '';
-                    querySnapshot.forEach((doc) => {
-                        const message = doc.data();
-                        const senderEmail = message.sender;
-                        const messageDiv = document.createElement('div');
-
-                        if (senderEmail === currentUser.email) {
-                            messageDiv.classList.add('message', 'sent');
-                        } else {
-                            messageDiv.classList.add('message', 'received');
-                        }
-                        messageDiv.textContent = message.message;
-                        chatWindow.appendChild(messageDiv);
-
-                        // Scroll to the bottom of the chat window after a new message is added
-                        chatWindow.scrollTop = chatWindow.scrollHeight;
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching messages:', error);
-                });
-        }
-    }
-
-    function sendMessage(messageText) {
-        const currentUser = firebase.auth().currentUser;
-        const friendEmail = document.getElementById('chatWith').textContent;
-        const chatId = getChatId(currentUser.email, friendEmail);
-
-        if (currentUser && messageText.trim() !== '') {
-            const message = {
-                message: messageText,
-                sender: currentUser.email,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            db.collection('chats').doc(chatId).collection('messages')
-                .add(message)
-                .then(() => {
-                    console.log('Message sent successfully');
-                    // Clear the message input field after sending
-                    document.getElementById('messageInput').value = '';
-                    // Optionally, you may want to refresh the chat window
-                    fetchMessages(chatId);
-                })
-                .catch((error) => {
-                    console.error('Error sending message:', error);
-                });
-        }
-    }
-
-    function getChatId(user1Email, user2Email) {
-        // Generate a chat ID based on user emails
-        return [user1Email, user2Email].sort().join('_');
-    }
-
-    function updateChatId(currentUserEmail, friendEmail) {
-        // Placeholder function to handle chat ID updates
-        // Implement this function if needed for further chat management
-    }
-
-    // Example of how to use sendMessage when a user sends a message
-    document.getElementById('sendButton').addEventListener('click', () => {
-        const messageInput = document.getElementById('messageInput');
-        const messageText = messageInput.value;
-        sendMessage(messageText);
-    });
-
-    document.getElementById('messageInput').addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent form submission if inside a form
-            const messageText = event.target.value;
-            sendMessage(messageText);
-        }
-    });
-
-    // Example of how to use startChat when switching chats
-    document.querySelectorAll('.online-friend').forEach((element) => {
-        element.addEventListener('click', () => {
-            const friendEmail = element.textContent; // Assuming friendEmail is stored in the textContent
-            startChat(friendEmail);
-        });
-    });
+    // Use startChat(friendEmail) when starting or switching chats
+});
 
 
 function openChat(friendEmail) {
