@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1017,7 +1016,94 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateChatId(userEmail, chatFriend) {
         chatId = getChatId(userEmail, chatFriend);
         setupMessageListener(); // Set up message listener with the new chatId
+        displayChatMessages(); // Fetch and display messages for the new chat
     }
+
+    // Function to set up the message listener for the current chatId
+    function setupMessageListener() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot((querySnapshot) => {
+                    chatMessagesElement.innerHTML = ''; // Clear existing messages
+                    querySnapshot.forEach((doc) => {
+                        const message = doc.data();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = message.message;
+                        
+                        // Add classes based on sender
+                        if (message.sender === firebase.auth().currentUser.email) {
+                            messageDiv.classList.add('message', 'sent');
+                        } else {
+                            messageDiv.classList.add('message', 'received');
+                        }
+                        chatMessagesElement.appendChild(messageDiv);
+
+                        // Scroll to the bottom of the chat window
+                        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+                    });
+                });
+        }
+    }
+
+    // Function to display existing messages for the current chatId
+    function displayChatMessages() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .get()
+                .then((querySnapshot) => {
+                    chatMessagesElement.innerHTML = ''; // Clear existing messages
+                    querySnapshot.forEach((doc) => {
+                        const message = doc.data();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = message.message;
+
+                        // Add classes based on sender
+                        if (message.sender === firebase.auth().currentUser.email) {
+                            messageDiv.classList.add('message', 'sent');
+                        } else {
+                            messageDiv.classList.add('message', 'received');
+                        }
+                        chatMessagesElement.appendChild(messageDiv);
+
+                        // Scroll to the bottom of the chat window
+                        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching messages:', error);
+                });
+        }
+    }
+
+    // Event listener for the send button
+    sendButton.addEventListener('click', function() {
+        const messageText = chatInputElement.value.trim();
+        if (messageText && chatId) {
+            const currentUser = firebase.auth().currentUser;
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                message: messageText,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                chatInputElement.value = ''; // Clear the input field
+            })
+            .catch((error) => {
+                console.error('Error sending message:', error);
+            });
+        }
+    });
+
+    // Optionally, handle Enter key to send message
+    chatInputElement.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            sendButton.click();
+        }
+    });
+});
+
 
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
