@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -390,6 +389,104 @@ body.night-mode {
     text-align: left;
     border-top-left-radius: 0; /* Square the top-left corner */
 }
+
+/* Group Chats Container */
+#groupChats {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#groupChats h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+}
+
+/* Group Chat List Items */
+#groupChats ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#groupChats li {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #fff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+#groupChats li:hover {
+    background-color: #e0e0e0;
+}
+
+#groupChats li.active {
+    background-color: #d0d0d0;
+}
+
+#groupChats .group-name {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #555;
+}
+
+#groupChats .group-info {
+    font-size: 0.9em;
+    color: #777;
+}
+
+/* Create Group Button */
+#groupChats #createGroupButton {
+    display: inline-block;
+    padding: 8px 15px;
+    margin-top: 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#groupChats #createGroupButton:hover {
+    background-color: #0056b3;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #groupChats {
+        padding: 8px;
+    }
+
+    #groupChats h3 {
+        font-size: 1.3em;
+    }
+
+    #groupChats li {
+        padding: 8px;
+        font-size: 1em;
+    }
+
+    #groupChats .group-name {
+        font-size: 1.1em;
+    }
+
+    #groupChats #createGroupButton {
+        padding: 7px 12px;
+        font-size: 0.9em;
+    }
+}
+
 
 .create-new {
     display: grid;
