@@ -948,11 +948,6 @@ function loadOnlineFriends() {
         const acceptedFriends = new Set();
         const displayNameMap = new Map(); // To store the display names of friends
 
-            // Check if the email matches and update the displayName
-            if (friendEmail === 'achallapureddy@gmail.com') {
-                friendDisplayName = 'Abhi C';
-            }
-
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
@@ -977,6 +972,11 @@ function loadOnlineFriends() {
                                 const friend = doc.data();
                                 const friendEmail = friend.email;
                                 const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+
+                                    // Check if the email matches and update the displayName
+                                if (friendEmail === 'achallapureddy@gmail.com') {
+                                    friendDisplayName = 'Abhi C';
+                                }
 
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     if (displayNameMap.get(friendEmail) !== friendDisplayName) {
