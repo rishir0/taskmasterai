@@ -671,6 +671,17 @@ body.night-mode {
         <button onclick="addFriend()">Add Friend</button>
     </div>
 
+    <!-- Group Chats Section -->
+    <div class="group-chats">
+        <h2>Group Chats</h2>
+        <ul id="groupChats">
+            <!-- Group chats will be dynamically added here -->
+        </ul>
+        <input type="text" id="groupName" placeholder="Enter group name">
+        <input type="text" id="groupMembers" placeholder="Enter members' emails (comma-separated)">
+        <button onclick="createGroupChat()">Create Group Chat</button>
+    </div>
+
     <div class="chat-window">
         <h2>Chat with <span id="chatWith"></span></h2>
         <div id="typingIndicator" style="display: none; color: gray; font-style: italic;">
@@ -965,6 +976,77 @@ function loadOnlineFriends() {
     }
 }
 
+    let currentChatFriend = null; // Track the current chat friend
+    let currentChatGroup = null; // Track the current chat group
+    let chatId = ''; // Track the current chatId
+
+    function createGroupChat() {
+        const groupName = document.getElementById('groupName').value.trim();
+        const groupMembers = document.getElementById('groupMembers').value.trim().split(',').map(email => email.trim());
+        const currentUser = firebase.auth().currentUser;
+
+        if (groupName && groupMembers.length && currentUser) {
+            const chatId = generateChatId(currentUser.email, groupName);
+
+            db.collection('groupChats').doc(chatId).set({
+                groupName: groupName,
+                members: [...groupMembers, currentUser.email],
+                createdBy: currentUser.email,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log('Group chat created!');
+                loadGroupChats(); // Refresh the group chat list
+            });
+        }
+    }
+
+    function loadGroupChats() {
+        const currentUser = firebase.auth().currentUser;
+
+        if (currentUser) {
+            db.collection('groupChats').where('members', 'array-contains', currentUser.email)
+                .onSnapshot((querySnapshot) => {
+                    const groupChatsList = document.getElementById('groupChats');
+                    groupChatsList.innerHTML = '';
+
+                    querySnapshot.forEach((doc) => {
+                        const groupChat = doc.data();
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('group-chat-item');
+
+                        listItem.textContent = groupChat.groupName;
+
+                        listItem.onclick = () => openGroupChat(doc.id, groupChat.groupName);
+
+                        groupChatsList.appendChild(listItem);
+                    });
+                });
+        }
+    }
+
+    function openGroupChat(chatId, groupName) {
+        currentChatGroup = groupName;
+        currentChatFriend = null;
+        document.getElementById('chatWith').textContent = groupName;
+
+        db.collection('groupChats').doc(chatId).collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot((snapshot) => {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    const messageElement = document.createElement('div');
+
+                    messageElement.textContent = `${message.sender}: ${message.message}`;
+                    chatMessages.appendChild(messageElement);
+                });
+
+                scrollToBottom();
+            });
+    }
+
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
@@ -1030,14 +1112,14 @@ document.addEventListener("DOMContentLoaded", function() {
         const chatInput = chatInputElement.value.trim();
         const currentUser = firebase.auth().currentUser;
 
-        if (chatInput && currentChatFriend && currentUser) {
+         if (chatInput && (currentChatFriend || currentChatGroup) && currentUser) {
             if (!chatId) {
                 updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
             }
 
             db.collection('chats').doc(chatId).collection('messages').add({
                 sender: currentUser.email,
-                recipient: currentChatFriend,
+                recipient: currentChatFriend, currentChatGroup
                 message: chatInput,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
@@ -1091,11 +1173,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
+    currentChatGroup = null; // Clear group chat
 
     currentChatFriend = friendEmail;
 
@@ -1146,6 +1230,20 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
+   document.addEventListener('DOMContentLoaded', function() {
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                loadOnlineFriends();
+                loadGroupChats(); // Load group chats after user authentication
+                listenForTypingStatus(user);
+
+                // Other initialization code...
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+    });
 
 
 function getChatId(userEmail, friendEmail) {
