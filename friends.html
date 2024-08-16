@@ -971,9 +971,9 @@ function loadOnlineFriends() {
                             querySnapshot.forEach((doc) => {
                                 const friend = doc.data();
                                 const friendEmail = friend.email;
-                                const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+                                let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-                                    // Check if the email matches and update the displayName
+                                // Check if the email matches and update the displayName
                                 if (friendEmail === 'achallapureddy@gmail.com') {
                                     friendDisplayName = 'Abhi C';
                                 }
@@ -1013,6 +1013,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 
 function createUnfriendButton(friendEmail) {
