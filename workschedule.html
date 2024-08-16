@@ -283,11 +283,13 @@ body.night-mode {
     transform: scale(1.1);
 }
 
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
+.main-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0; /* Remove padding to let the chatbot take the full space */
+    overflow: hidden; /* Ensure the content fits within the container */
+}
 
         .dashboard-header {
             margin-bottom: 30px;
@@ -308,31 +310,34 @@ body.night-mode {
             color: var(--primary-color);
         }
 
-        .chatbot-container {
-            display: flex;
-            flex-direction: column;
-            height: 80vh;
-            max-width: 800px;
-            margin: 2rem auto;
-            border: 1px solid #333;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-        }
 
-        .chatbot-header {
-            background-color: #333;
-            color: #fff;
-            padding: 16px;
-            text-align: center;
-        }
+.chatbot-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    margin: 0; /* Remove margin to take up full space */
+    border: none; /* Remove border if you want it seamless */
+    border-radius: 0; /* Remove border radius if you want it seamless */
+    box-shadow: none; /* Remove box-shadow for a cleaner look */
+    overflow: hidden;
+}
 
-        .chatbot-iframe {
-            flex-grow: 1;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+.chatbot-header {
+    background-color: #333;
+    color: #fff;
+    padding: 16px;
+    text-align: center;
+}
+
+.chatbot-iframe {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 /* Existing styles */
 .sidebar-toggle {
     display: none;
@@ -495,25 +500,19 @@ body.night-mode {
                 </div>
             </div>
         </div>
-        <div class="main-content">
-            <div class="dashboard-header">
-            </div>
-            <div class="section">
-                <div class="chatbot-container">
-                    <div class="chatbot-header">
-                        <h2>AI Chat Bot</h2>
-                    </div>
-                    <iframe
-                        class="chatbot-iframe"
-                        src="https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU"
-                        title="Chatbot"
-                        frameborder="0"
-                        style="width: 100%; height: 600px; border: none;"
-                    ></iframe>
-                </div>
-            </div>
+<div class="main-content">
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h2>TaskMaster AI</h2>
         </div>
+        <iframe
+            class="chatbot-iframe"
+            src="https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU"
+            title="Chatbot"
+            frameborder="0"
+        ></iframe>
     </div>
+</div>
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
