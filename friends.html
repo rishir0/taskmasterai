@@ -1055,21 +1055,6 @@ function unfriendUser(friendEmail) {
     }
 }
 
-
-
-document.addEventListener("DOMContentLoaded", function() {
-    const chatInputElement = document.getElementById('chatInput');
-    const sendButton = document.querySelector('.chat-window button');
-    const chatMessagesElement = document.getElementById('chatMessages');
-    
-    let chatId = ''; // Define chatId variable here
-
-    // Function to update chatId based on the current chat
-    function updateChatId(userEmail, chatFriend) {
-        chatId = getChatId(userEmail, chatFriend);
-        setupMessageListener(); // Set up message listener with the new chatId
-    }
-
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
         const currentUser = firebase.auth().currentUser;
