@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1055,28 +1056,48 @@ function unfriendUser(friendEmail) {
     }
 }
 
-    function sendMessage() {
-        const chatInput = chatInputElement.value.trim();
-        const currentUser = firebase.auth().currentUser;
 
-        if (chatInput && currentChatFriend && currentUser) {
-            if (!chatId) {
-                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            }
 
-            db.collection('chats').doc(chatId).collection('messages').add({
-                sender: currentUser.email,
-                recipient: currentChatFriend,
-                message: chatInput,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                console.log('Message sent!');
-                chatInputElement.value = ''; // Clear the input field after sending
-            }).catch((error) => {
-                console.error('Error sending message: ', error);
-            });
-        }
+document.addEventListener("DOMContentLoaded", function() {
+    const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
+    
+    let chatId = ''; // Define chatId variable here
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        setupMessageListener(); // Set up message listener with the new chatId
     }
+
+function sendMessage() {
+    const chatInput = chatInputElement.value.trim();
+    const currentUser = firebase.auth().currentUser;
+
+    if (chatInput && currentChatFriend && currentUser) {
+        // Ensure chatId is set correctly for the current chat
+        if (!chatId) {
+            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+            // Wait for chatId to be updated before sending the message
+            return; // Exit the function to wait for the chatId update
+        }
+
+        // Proceed to send the message
+        db.collection('chats').doc(chatId).collection('messages').add({
+            sender: currentUser.email,
+            recipient: currentChatFriend,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Message sent!');
+            chatInputElement.value = ''; // Clear the input field after sending
+        }).catch((error) => {
+            console.error('Error sending message: ', error);
+        });
+    }
+}
+
 
     function scrollToBottom() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
