@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -948,6 +947,11 @@ function loadOnlineFriends() {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
         const displayNameMap = new Map(); // To store the display names of friends
+
+            // Check if the email matches and update the displayName
+            if (friendEmail === 'achallapureddy@gmail.com') {
+                friendDisplayName = 'Abhi C';
+            }
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
