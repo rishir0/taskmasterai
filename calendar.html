@@ -427,6 +427,31 @@ body.night-mode {
     background: var(--bg-color);
 }
 
+.calendar-container {
+    display: flex;
+    height: 100%;
+}
+
+.time-column {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 10px;
+    border-right: 1px solid var(--hover-bg);
+}
+
+.time-column .time-slot {
+    flex: 1;
+    width: 100%;
+    text-align: right;
+    padding-right: 10px;
+    box-sizing: border-box;
+    font-size: 0.8em;
+}
+
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
@@ -524,50 +549,6 @@ body.night-mode {
 .modal-footer button:hover {
     background-color: var(--hover-bg);
 }
-
-.calendar-body {
-    display: flex;
-}
-
-.calendar-time {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100px;
-    text-align: right;
-    padding-right: 10px;
-}
-
-.calendar-content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(12, 1fr);
-    gap: 1px;
-}
-
-.hour-block {
-    height: 50px;
-    border: 1px solid #ddd;
-    position: relative;
-}
-
-.day-content {
-    display: flex;
-    flex-direction: column;
-}
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -720,27 +701,23 @@ body.night-mode {
         <h2 id="currentWeek">August 1 - August 7, 2024</h2>
         <button id="nextWeek">Next &gt;</button>
     </div>
-    <div class="calendar-body">
-        <div class="calendar-time">
-            <!-- Time slots will be dynamically generated here -->
-        </div>
-        <div class="calendar-content">
-            <div class="calendar-header">
-                <div>Monday</div>
-                <div>Tuesday</div>
-                <div>Wednesday</div>
-                <div>Thursday</div>
-                <div>Friday</div>
-                <div>Saturday</div>
-                <div>Sunday</div>
-            </div>
-            <div class="calendar-grid">
-                <!-- Days will be dynamically generated here -->
-            </div>
-        </div>
+    <div class="calendar-header">
+        <div>Monday</div>
+        <div>Tuesday</div>
+        <div>Wednesday</div>
+        <div>Thursday</div>
+        <div>Friday</div>
+        <div>Saturday</div>
+        <div>Sunday</div>
+    </div>
+<div class="calendar-container">
+    <div class="time-column">
+        <!-- Times will be dynamically generated here -->
+    </div>
+    <div class="calendar-grid">
+        <!-- Days will be dynamically generated here -->
     </div>
 </div>
-
 
 <!-- Event Modal -->
 <div class="modal" id="eventModal">
@@ -752,7 +729,6 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
-            <input type="time" id="eventTime" placeholder="Event Time">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
@@ -770,7 +746,6 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="editEventTitle" placeholder="Event Title">
             <textarea id="editEventDescription" rows="4" placeholder="Event Description"></textarea>
-            <input type="time" id="editEventTime" placeholder="Event Time">
         </div>
         <div class="modal-footer">
             <button id="saveEditEvent">Save Changes</button>
@@ -778,6 +753,7 @@ body.night-mode {
         </div>
     </div>
 </div>
+
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -846,68 +822,59 @@ body.night-mode {
 
 function createCalendar() {
     const calendarGrid = document.querySelector('.calendar-grid');
-    calendarGrid.innerHTML = ''; // Clear existing days
+    calendarGrid.innerHTML = ''; // Clear any existing days
 
     for (let i = 0; i < 7; i++) {
         const dayDate = new Date(currentWeekStartDate);
         dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-        const dayDiv = document.createElement('div');
-        dayDiv.classList.add('day');
+        const dayColumn = document.createElement('div');
+        dayColumn.classList.add('day-column');
 
-        const dayContent = document.createElement('div');
-        dayContent.classList.add('day-content');
-
-        const header = document.createElement('div');
-        header.textContent = `${dayDate.getDate()}`;
-        dayContent.appendChild(header);
-
-        // Create hour blocks from 12 PM to 12 AM
-        for (let hour = 12; hour < 24; hour++) {
+        for (let hour = 0; hour < 24; hour++) {
             const hourBlock = document.createElement('div');
             hourBlock.classList.add('hour-block');
             hourBlock.dataset.time = `${hour}:00`;
             hourBlock.dataset.date = dayDate.toDateString();
 
-            // Populate events
-            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-            if (events[dayKey]) {
-                events[dayKey].forEach(event => {
+            if (events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`]) {
+                events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`].forEach(event => {
                     if (event.hour === hour) {
                         const eventDiv = document.createElement('div');
                         eventDiv.classList.add('event');
                         eventDiv.textContent = event.title;
                         eventDiv.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            openEditEventModal(dayKey, event);
+                            openEditEventModal(`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`, event);
                         });
                         hourBlock.appendChild(eventDiv);
                     }
                 });
             }
 
-            dayContent.appendChild(hourBlock);
+            dayColumn.appendChild(hourBlock);
         }
 
-        dayDiv.appendChild(dayContent);
-        calendarGrid.appendChild(dayDiv);
+        calendarGrid.appendChild(dayColumn);
     }
-
-    generateTimeSlots(); // Generate time slots after creating the calendar
 }
+
 
 function generateTimeSlots() {
-    const timeContainer = document.querySelector('.calendar-time');
-    timeContainer.innerHTML = ''; // Clear existing time slots
+    const timeColumn = document.querySelector('.time-column');
+    timeColumn.innerHTML = ''; // Clear any existing time slots
 
-    for (let i = 12; i <= 23; i++) {
+    for (let hour = 0; hour < 24; hour++) {
         const timeSlot = document.createElement('div');
-        const time = i < 12 ? `${i}:00 AM` : i === 12 ? `12:00 PM` : `${i - 12}:00 PM`;
-        timeSlot.textContent = time;
-        timeContainer.appendChild(timeSlot);
+        timeSlot.classList.add('time-slot');
+        timeSlot.textContent = `${hour}:00`;
+        timeColumn.appendChild(timeSlot);
     }
 }
-generateTimeSlots();
+
+generateTimeSlots(); // Call this function when the page loads
+
+
 
 
     function openEventModal(date) {
