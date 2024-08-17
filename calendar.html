@@ -415,7 +415,7 @@ body.night-mode {
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 .day-header {
@@ -434,8 +434,8 @@ body.night-mode {
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 80px;
+    justify-content: flex-start;
+    min-height: 120px;
 }
 
 .day.current-day {
@@ -696,23 +696,12 @@ body.night-mode {
         </div>
 <div class="calendar">
     <div class="calendar-header">
-        <button id="prevMonth">&lt; Previous</button>
-        <h2 id="currentMonth">August 2024</h2>
-        <button id="nextMonth">Next &gt;</button>
-        <button id="openGoogleCalendar" class="calendar-button">Open Google Calendar</button>
+        <button id="prevWeek">&lt; Previous</button>
+        <h2 id="currentWeek">August 1 - August 7, 2024</h2>
+        <button id="nextWeek">Next &gt;</button>
     </div>
     <div class="calendar-grid">
-        <div class="day-header">Mon</div>
-        <div class="day-header">Tue</div>
-        <div class="day-header">Wed</div>
-        <div class="day-header">Thu</div>
-        <div class="day-header">Fri</div>
-        <div class="day-header">Sat</div>
-        <div class="day-header">Sun</div>
         <!-- Days will be dynamically generated here -->
-        <div class="day">1</div>
-        <div class="day">2</div>
-        <!-- More days... -->
     </div>
 </div>
 
@@ -768,15 +757,24 @@ body.night-mode {
     let selectedDate = null;
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
+    let currentWeekStartDate = null;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
             window.location.href = 'login.html'; // Redirect to login if not authenticated
         } else {
+            calculateCurrentWeek();
             updateCalendarHeader();
             loadEvents();
         }
     });
+
+    function calculateCurrentWeek() {
+        const today = new Date();
+        const dayOfWeek = today.getDay() || 7;
+        currentWeekStartDate = new Date(today);
+        currentWeekStartDate.setDate(today.getDate() - dayOfWeek + 1);
+    }
 
     function updateCalendarHeader() {
         const monthNames = ["January", "February", "March", "April", "May", "June", 
@@ -786,8 +784,7 @@ body.night-mode {
 
     function createCalendar() {
         calendarGrid.innerHTML = '';
-        
-        // Add Days of the Week
+
         const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         daysOfWeek.forEach(day => {
             const dayHeader = document.createElement('div');
@@ -796,31 +793,23 @@ body.night-mode {
             calendarGrid.appendChild(dayHeader);
         });
 
-        const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const daysFromPrevMonth = (firstDayIndex === 0 ? 6 : firstDayIndex - 1);
+        for (let i = 0; i < 7; i++) {
+            const dayDate = new Date(currentWeekStartDate);
+            dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-        for (let i = 0; i < daysFromPrevMonth; i++) {
-            const emptyDiv = document.createElement('div');
-            emptyDiv.classList.add('day');
-            emptyDiv.style.visibility = 'hidden';
-            calendarGrid.appendChild(emptyDiv);
-        }
-
-        for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.classList.add('day');
-            dayDiv.textContent = i;
+            dayDiv.textContent = dayDate.getDate();
 
-            const today = new Date();
-            if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+            if (dayDate.toDateString() === new Date().toDateString()) {
                 dayDiv.classList.add('current-day');
             }
 
-            dayDiv.addEventListener('click', () => openEventModal(i));
+            dayDiv.addEventListener('click', () => openEventModal(dayDate));
 
-            if (events[i]) {
-                events[i].forEach(event => {
+            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+            if (events[dayKey]) {
+                events[dayKey].forEach(event => {
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('event');
                     eventDiv.textContent = event.title;
@@ -832,9 +821,9 @@ body.night-mode {
         }
     }
 
-    function openEventModal(day) {
-        selectedDate = day;
-        modalTitle.textContent = `Add Event on ${day} ${currentMonthElement.textContent}`;
+    function openEventModal(date) {
+        selectedDate = date;
+        modalTitle.textContent = `Add Event on ${date.toDateString()}`;
         eventTitleInput.value = '';
         eventDescriptionInput.value = '';
         eventDateTimeInput.value = '';
@@ -864,19 +853,21 @@ body.night-mode {
             description,
             dateTime,
             endDateTime,
-            day: selectedDate,
-            month: currentMonth,
-            year: currentYear,
+            day: selectedDate.getDate(),
+            month: selectedDate.getMonth(),
+            year: selectedDate.getFullYear(),
             uid: user.uid
         };
 
-        if (!events[selectedDate]) {
-            events[selectedDate] = [];
+        const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
+
+        if (!events[dayKey]) {
+            events[dayKey] = [];
         }
 
         try {
             await db.collection('events').add(event);
-            events[selectedDate].push(event);
+            events[dayKey].push(event);
             eventModal.style.display = 'none';
             createCalendar();
         } catch (error) {
@@ -892,19 +883,26 @@ body.night-mode {
         }
 
         try {
+            const startDate = currentWeekStartDate;
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+
             const snapshot = await db.collection('events')
-                .where("month", "==", currentMonth)
                 .where("year", "==", currentYear)
+                .where("month", "==", currentMonth)
                 .where("uid", "==", user.uid)
                 .get();
 
             snapshot.forEach(doc => {
                 const event = doc.data();
-                const day = event.day;
-                if (!events[day]) {
-                    events[day] = [];
+                const eventDate = new Date(event.dateTime);
+                if (eventDate >= startDate && eventDate <= endDate) {
+                    const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
+                    if (!events[dayKey]) {
+                        events[dayKey] = [];
+                    }
+                    events[dayKey].push(event);
                 }
-                events[day].push(event);
             });
 
             createCalendar();
@@ -913,28 +911,19 @@ body.night-mode {
         }
     }
 
-    // Handle Previous Month
+    // Handle Previous Week
     document.getElementById('prevMonth').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        updateCalendarHeader();
+        currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
         loadEvents();
     });
 
-    // Handle Next Month
+    // Handle Next Week
     document.getElementById('nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        updateCalendarHeader();
+        currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
         loadEvents();
     });
 </script>
+
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
