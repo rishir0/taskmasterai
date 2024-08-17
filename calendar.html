@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -819,22 +820,21 @@ function createCalendar() {
             dayDiv.classList.add('current-day');
         }
 
-dayDiv.addEventListener('click', () => openEventModal(dayDate));
+        dayDiv.addEventListener('click', () => openEventModal(dayDate));
 
-const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-if (events[dayKey]) {
-    events[dayKey].forEach(event => {
-        const eventDiv = document.createElement('div');
-        eventDiv.classList.add('event');
-        eventDiv.textContent = event.title;
-        eventDiv.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering the openEventModal
-            openEditEventModal(dayKey, event.id); // Ensure event.id is passed
-        });
-        dayDiv.appendChild(eventDiv);
-    });
-}
-
+        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+        if (events[dayKey]) {
+            events[dayKey].forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = event.title;
+                eventDiv.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the openEventModal
+                    openEditEventModal(dayKey, event);
+                });
+                dayDiv.appendChild(eventDiv);
+            });
+        }
 
         calendarGrid.appendChild(dayDiv);
     }
@@ -896,45 +896,24 @@ saveEvent.addEventListener('click', async () => {
 });
 
     
-async function openEditEventModal(dayKey, eventId) {
-    const user = firebase.auth().currentUser;
-    if (!user) {
-        console.error("No user is signed in");
-        return;
-    }
+function openEditEventModal(dayKey, event) {
+    currentDayKey = dayKey;
+    currentEditEvent = event;
 
-    try {
-        // Query Firestore to get the event details
-        const snapshot = await db.collection('events')
-            .where("year", "==", currentEditEvent.year)
-            .where("month", "==", currentEditEvent.month)
-            .where("day", "==", currentEditEvent.day)
-            .where("uid", "==", user.uid)
-            .where("id", "==", eventId) // Match event by ID
-            .get();
+    editEventTitleInput.value = event.title;
+    editEventDescriptionInput.value = event.description;
+    
+    // Convert saved times to a 12-hour format and set them in the input fields
+    editEventTimeStartInput.value = formatTimeTo12Hour(event.startTime);
+    editEventTimeEndInput.value = formatTimeTo12Hour(event.endTime);
 
-        if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
-            const eventData = doc.data();
-
-            // Set the event data in the modal
-            editEventTitleInput.value = eventData.title || '';
-            editEventDescriptionInput.value = eventData.description || '';
-            editEventTimeStartInput.value = formatTimeTo12Hour(eventData.startTime) || '';
-            editEventTimeEndInput.value = formatTimeTo12Hour(eventData.endTime) || '';
-
-            currentDayKey = dayKey;
-            currentEditEvent = eventData;
-
-            editEventModal.style.display = 'flex';
-        } else {
-            console.error("No event found");
-        }
-    } catch (error) {
-        console.error("Error retrieving event: ", error);
-    }
+    editEventModal.style.display = 'flex';
 }
 
+
+closeEditModal.addEventListener('click', () => {
+    editEventModal.style.display = 'none';
+});
 
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
