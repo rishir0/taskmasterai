@@ -427,6 +427,31 @@ body.night-mode {
     background: var(--bg-color);
 }
 
+.calendar-container {
+    display: flex;
+    height: 100%;
+}
+
+.time-column {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 10px;
+    border-right: 1px solid var(--hover-bg);
+}
+
+.time-column .time-slot {
+    flex: 1;
+    width: 100%;
+    text-align: right;
+    padding-right: 10px;
+    box-sizing: border-box;
+    font-size: 0.8em;
+}
+
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
@@ -685,6 +710,10 @@ body.night-mode {
         <div>Saturday</div>
         <div>Sunday</div>
     </div>
+<div class="calendar-container">
+    <div class="time-column">
+        <!-- Times will be dynamically generated here -->
+    </div>
     <div class="calendar-grid">
         <!-- Days will be dynamically generated here -->
     </div>
@@ -792,39 +821,59 @@ body.night-mode {
     }
 
 function createCalendar() {
-    calendarGrid.innerHTML = '';
+    const calendarGrid = document.querySelector('.calendar-grid');
+    calendarGrid.innerHTML = ''; // Clear any existing days
 
     for (let i = 0; i < 7; i++) {
         const dayDate = new Date(currentWeekStartDate);
         dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-        const dayDiv = document.createElement('div');
-        dayDiv.classList.add('day');
-        dayDiv.textContent = dayDate.getDate();
+        const dayColumn = document.createElement('div');
+        dayColumn.classList.add('day-column');
 
-        if (dayDate.toDateString() === new Date().toDateString()) {
-            dayDiv.classList.add('current-day');
-        }
+        for (let hour = 0; hour < 24; hour++) {
+            const hourBlock = document.createElement('div');
+            hourBlock.classList.add('hour-block');
+            hourBlock.dataset.time = `${hour}:00`;
+            hourBlock.dataset.date = dayDate.toDateString();
 
-        dayDiv.addEventListener('click', () => openEventModal(dayDate));
-
-        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-        if (events[dayKey]) {
-            events[dayKey].forEach(event => {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.textContent = event.title;
-                eventDiv.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent triggering the openEventModal
-                    openEditEventModal(dayKey, event);
+            if (events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`]) {
+                events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`].forEach(event => {
+                    if (event.hour === hour) {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
+                        eventDiv.textContent = event.title;
+                        eventDiv.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openEditEventModal(`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`, event);
+                        });
+                        hourBlock.appendChild(eventDiv);
+                    }
                 });
-                dayDiv.appendChild(eventDiv);
-            });
+            }
+
+            dayColumn.appendChild(hourBlock);
         }
 
-        calendarGrid.appendChild(dayDiv);
+        calendarGrid.appendChild(dayColumn);
     }
 }
+
+
+function generateTimeSlots() {
+    const timeColumn = document.querySelector('.time-column');
+    timeColumn.innerHTML = ''; // Clear any existing time slots
+
+    for (let hour = 0; hour < 24; hour++) {
+        const timeSlot = document.createElement('div');
+        timeSlot.classList.add('time-slot');
+        timeSlot.textContent = `${hour}:00`;
+        timeColumn.appendChild(timeSlot);
+    }
+}
+
+generateTimeSlots(); // Call this function when the page loads
+
 
 
 
