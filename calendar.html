@@ -706,13 +706,13 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
-            <input type="datetime-local" id="eventDateTime">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
         </div>
     </div>
 </div>
+
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -827,14 +827,10 @@ body.night-mode {
         const description = eventDescriptionInput.value;
         const dateTime = eventDateTimeInput.value;
 
-        const eventDuration = 60 * 60 * 1000; // 1 hour in milliseconds
-        const endDateTime = new Date(new Date(dateTime).getTime() + eventDuration).toISOString();
-
         const event = {
             title,
             description,
             dateTime,
-            endDateTime,
             day: selectedDate.getDate(),
             month: selectedDate.getMonth(),
             year: selectedDate.getFullYear(),
@@ -848,7 +844,7 @@ body.night-mode {
         }
 
         try {
-            await db.collection('events').add(event);
+            await db.collection('calendar').add(event);
             events[dayKey].push(event);
             eventModal.style.display = 'none';
             createCalendar();
@@ -865,7 +861,7 @@ body.night-mode {
         }
 
         try {
-            const snapshot = await db.collection('events')
+            const snapshot = await db.collection('calendar')
                 .where("year", "==", currentWeekStartDate.getFullYear())
                 .where("month", "==", currentWeekStartDate.getMonth())
                 .where("uid", "==", user.uid)
