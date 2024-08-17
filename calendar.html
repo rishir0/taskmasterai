@@ -769,6 +769,7 @@ body.night-mode {
     const editEventDescriptionInput = document.getElementById('editEventDescription');
     let currentEditEvent = null;
     let currentDayKey = null;
+    
 
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
@@ -829,6 +830,17 @@ function createCalendar() {
     }
 }
 
+// Elements for the "Add Event" modal
+const eventTitleInput = document.getElementById('eventTitle');
+const eventDescriptionInput = document.getElementById('eventDescription');
+const eventTimeStartInput = document.getElementById('eventTimeStart');
+const eventTimeEndInput = document.getElementById('eventTimeEnd');
+
+// Elements for the "Edit Event" modal
+const editEventTitleInput = document.getElementById('editEventTitle');
+const editEventDescriptionInput = document.getElementById('editEventDescription');
+const editEventTimeStartInput = document.getElementById('editEventTimeStart');
+const editEventTimeEndInput = document.getElementById('editEventTimeEnd');
 
 
     function openEventModal(date) {
@@ -852,8 +864,8 @@ saveEvent.addEventListener('click', async () => {
 
     const title = eventTitleInput.value;
     const description = eventDescriptionInput.value;
-    const startTime = document.getElementById('eventTimeStart').value;
-    const endTime = document.getElementById('eventTimeEnd').value;
+    const startTime = eventTimeStartInput.value;
+    const endTime = eventTimeEndInput.value;
 
     const event = {
         title,
@@ -903,8 +915,8 @@ saveEditEvent.addEventListener('click', async () => {
 
     const updatedTitle = editEventTitleInput.value;
     const updatedDescription = editEventDescriptionInput.value;
-    const updatedStartTime = document.getElementById('editEventTimeStart').value;
-    const updatedEndTime = document.getElementById('editEventTimeEnd').value;
+    const updatedStartTime = editEventTimeStartInput.value;
+    const updatedEndTime = editEventTimeEndInput.value;
 
     try {
         const snapshot = await db.collection('events')
