@@ -412,7 +412,7 @@ body.night-mode {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, 1fr); /* Ensures a 7-day grid */
     gap: 10px;
     width: 100%;
     height: auto;
@@ -436,11 +436,16 @@ body.night-mode {
     flex-direction: column;
     justify-content: flex-start;
     min-height: 120px;
+    transition: background-color 0.3s;
 }
 
 .day.current-day {
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     font-weight: bold;
+}
+
+.day:hover {
+    background-color: var(--hover-bg);
 }
 
 .event {
@@ -557,7 +562,7 @@ body.night-mode {
 
     .calendar-grid .day {
         padding: 10px;
-        height: 80px;
+        min-height: 80px;
         font-size: 0.9rem;
     }
 
