@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -697,7 +695,6 @@ body.night-mode {
     </div>
 </div>
 
-
 <!-- Event Modal -->
 <div class="modal" id="eventModal">
     <div class="modal-content">
@@ -708,7 +705,6 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
-            <input type="datetime-local" id="eventDateTime">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
@@ -744,7 +740,6 @@ body.night-mode {
     const modalTitle = document.getElementById('modalTitle');
     const eventTitleInput = document.getElementById('eventTitle');
     const eventDescriptionInput = document.getElementById('eventDescription');
-    const eventDateTimeInput = document.getElementById('eventDateTime');
     const currentWeekElement = document.getElementById('currentWeek');
     let events = {}; // Local cache for events
     let selectedDate = null;
@@ -810,7 +805,6 @@ body.night-mode {
         modalTitle.textContent = `Add Event on ${date.toDateString()}`;
         eventTitleInput.value = '';
         eventDescriptionInput.value = '';
-        eventDateTimeInput.value = '';
         eventModal.style.display = 'flex';
     }
 
@@ -827,16 +821,10 @@ body.night-mode {
 
         const title = eventTitleInput.value;
         const description = eventDescriptionInput.value;
-        const dateTime = eventDateTimeInput.value;
-
-        const eventDuration = 60 * 60 * 1000; // 1 hour in milliseconds
-        const endDateTime = new Date(new Date(dateTime).getTime() + eventDuration).toISOString();
 
         const event = {
             title,
             description,
-            dateTime,
-            endDateTime,
             day: selectedDate.getDate(),
             month: selectedDate.getMonth(),
             year: selectedDate.getFullYear(),
@@ -875,7 +863,7 @@ body.night-mode {
 
             snapshot.forEach(doc => {
                 const event = doc.data();
-                const eventDate = new Date(event.dateTime);
+                const eventDate = new Date(event.year, event.month, event.day);
                 const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
                 if (!events[dayKey]) {
                     events[dayKey] = [];
@@ -903,6 +891,7 @@ body.night-mode {
         loadEvents();
     });
 </script>
+
 
 
     <script>
