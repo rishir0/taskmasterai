@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar</title>
-    <!-- Include Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <!-- Include Google API Client Library -->
     <script src="https://apis.google.com/js/api.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -773,41 +769,6 @@ body.night-mode {
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
 
-    // Initialize Google API Client
-    function initClient() {
-        gapi.load('client:auth2', () => {
-            gapi.client.init({
-                clientId: '671266290399-d5skqeu7c9kb086jrsbqr352cgek9irk.apps.googleusercontent.com',
-                scope: 'https://www.googleapis.com/auth/calendar',
-            }).then(() => {
-                console.log('Google API client initialized successfully');
-                gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-                updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-            }).catch((error) => {
-                console.error('Error initializing Google API client:', error);
-            });
-        });
-    }
-
-    function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-            loadEvents();  // Load both Firestore and Google Calendar events
-        } else {
-            console.log('User is not signed in to Google');
-            // Optionally show a sign-in button here
-        }
-    }
-
-    function handleAuthClick() {
-        gapi.auth2.getAuthInstance().signIn();
-    }
-
-    function handleSignoutClick() {
-        gapi.auth2.getAuthInstance().signOut();
-    }
-
-    gapi.load('client:auth2', initClient);
-
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
             window.location.href = 'login.html'; // Redirect to login if not authenticated
@@ -837,7 +798,6 @@ body.night-mode {
 
         const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
         const daysFromPrevMonth = (firstDayIndex === 0 ? 6 : firstDayIndex - 1);
 
         for (let i = 0; i < daysFromPrevMonth; i++) {
@@ -917,16 +877,10 @@ body.night-mode {
         try {
             await db.collection('events').add(event);
             events[selectedDate].push(event);
-
-            if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-                createGoogleCalendarEvent(event);
-            }
-
             eventModal.style.display = 'none';
             createCalendar();
         } catch (error) {
             console.error("Error adding event: ", error);
-            // Optionally keep the modal open if there's an error
         }
     });
 
@@ -952,68 +906,11 @@ body.night-mode {
                 }
                 events[day].push(event);
             });
+
+            createCalendar();
         } catch (error) {
             console.error("Error loading events from Firestore: ", error);
         }
-
-        if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-            gapi.client.calendar.events.list({
-                'calendarId': 'primary',
-                'timeMin': (new Date(currentYear, currentMonth, 1)).toISOString(),
-                'timeMax': (new Date(currentYear, currentMonth + 1, 0)).toISOString(),
-                'showDeleted': false,
-                'singleEvents': true,
-                'orderBy': 'startTime'
-            }).then(function(response) {
-                const googleEvents = response.result.items;
-                googleEvents.forEach(event => {
-                    const start = event.start.dateTime || event.start.date;
-                    const date = new Date(start).getDate();
-
-                    if (!events[date]) {
-                        events[date] = [];
-                    }
-
-                    events[date].push({
-                        title: event.summary,
-                        description: event.description,
-                        dateTime: event.start.dateTime,
-                        endDateTime: event.end.dateTime
-                    });
-                });
-
-                createCalendar();
-            });
-        } else {
-            createCalendar();
-        }
-    }
-
-    function createGoogleCalendarEvent(event) {
-        const gapiEvent = {
-            'summary': event.title,
-            'description': event.description,
-            'start': {
-                'dateTime': event.dateTime,
-                'timeZone': 'America/Los_Angeles'
-            },
-            'end': {
-                'dateTime': event.endDateTime,
-                'timeZone': 'America/Los_Angeles'
-            },
-            'reminders': {
-                'useDefault': true
-            }
-        };
-
-        gapi.client.calendar.events.insert({
-            'calendarId': 'primary',
-            'resource': gapiEvent
-        }).then(response => {
-            console.log('Event created: ', response);
-        }).catch(error => {
-            console.error('Error creating Google Calendar event:', error);
-        });
     }
 
     // Handle Previous Month
@@ -1038,7 +935,6 @@ body.night-mode {
         loadEvents();
     });
 </script>
-
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
