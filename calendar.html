@@ -700,7 +700,9 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
+            <label for="eventTimeStart">Start Time:</label>
             <input type="time" id="eventTimeStart" placeholder="Start Time">
+            <label for="eventTimeEnd">End Time:</label>
             <input type="time" id="eventTimeEnd" placeholder="End Time">
         </div>
         <div class="modal-footer">
@@ -719,7 +721,9 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="editEventTitle" placeholder="Event Title">
             <textarea id="editEventDescription" rows="4" placeholder="Event Description"></textarea>
+            <label for="editEventTimeStart">Start Time:</label>
             <input type="time" id="editEventTimeStart" placeholder="Start Time">
+            <label for="editEventTimeEnd">End Time:</label>
             <input type="time" id="editEventTimeEnd" placeholder="End Time">
         </div>
         <div class="modal-footer">
@@ -728,6 +732,7 @@ body.night-mode {
         </div>
     </div>
 </div>
+
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -835,13 +840,16 @@ function createCalendar() {
 }
 
 
-    function openEventModal(date) {
-        selectedDate = date;
-        modalTitle.textContent = `Add Event on ${date.toDateString()}`;
-        eventTitleInput.value = '';
-        eventDescriptionInput.value = '';
-        eventModal.style.display = 'flex';
-    }
+function openEventModal(date) {
+    selectedDate = date;
+    modalTitle.textContent = `Add Event on ${date.toDateString()}`;
+    eventTitleInput.value = '';
+    eventDescriptionInput.value = '';
+    eventTimeStartInput.value = '';
+    eventTimeEndInput.value = '';
+    eventModal.style.display = 'flex';
+}
+
 
     closeModal.addEventListener('click', () => {
         eventModal.style.display = 'none';
@@ -856,8 +864,8 @@ saveEvent.addEventListener('click', async () => {
 
     const title = eventTitleInput.value;
     const description = eventDescriptionInput.value;
-    const startTime = eventTimeStartInput.value;
-    const endTime = eventTimeEndInput.value;
+    const startTime = parse12HourTime(eventTimeStartInput.value);
+    const endTime = parse12HourTime(eventTimeEndInput.value);
 
     const event = {
         title,
@@ -885,6 +893,7 @@ saveEvent.addEventListener('click', async () => {
         console.error("Error adding event: ", error);
     }
 });
+
     
 function openEditEventModal(dayKey, event) {
     currentDayKey = dayKey;
@@ -907,8 +916,8 @@ saveEditEvent.addEventListener('click', async () => {
 
     const updatedTitle = editEventTitleInput.value;
     const updatedDescription = editEventDescriptionInput.value;
-    const updatedStartTime = editEventTimeStartInput.value;
-    const updatedEndTime = editEventTimeEndInput.value;
+    const updatedStartTime = parse12HourTime(editEventTimeStartInput.value);
+    const updatedEndTime = parse12HourTime(editEventTimeEndInput.value);
 
     try {
         const snapshot = await db.collection('events')
@@ -940,6 +949,23 @@ saveEditEvent.addEventListener('click', async () => {
         console.error("Error updating event: ", error);
     }
 });
+
+function formatTimeTo12Hour(timeString) {
+    const [hour, minute] = timeString.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hour, minute);
+    return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+    }).format(date);
+}
+
+function parse12HourTime(timeString) {
+    const date = new Date(`1970-01-01T${timeString}:00`);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
+
 
 deleteEventButton.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
