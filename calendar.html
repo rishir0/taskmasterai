@@ -417,56 +417,45 @@ body.night-mode {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: auto 1fr;
-    gap: 1px;
-    background: var(--secondary-color);
-    flex: 1;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
 }
 
-.calendar-grid .day-header {
+.day-header {
     font-weight: bold;
-    padding: 10px;
     text-align: center;
-    background-color: var(--primary-color);
-    color: var(--text-color);
+    padding: 10px;
+    background-color: var(--header-bg);
+    color: var(--header-color);
+    border-radius: var(--border-radius);
 }
 
-.calendar-grid .day {
-    background-color: var(--card-bg);
-    padding: 20px;
-    text-align: center;
+.day {
+    background-color: var(--day-bg);
+    padding: 15px;
     border-radius: var(--border-radius);
-    height: 100px;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: background-color 0.3s, transform 0.3s;
+    justify-content: space-between;
+    min-height: 80px;
 }
 
-.calendar-grid .day.current-day {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: var(--text-color);
+.day.current-day {
+    background-color: var(--current-day-bg);
     font-weight: bold;
-    box-shadow: 0 0 10px var(--accent-color);
-}
-
-.calendar-grid .day:hover {
-    background-color: var(--hover-bg);
-    transform: scale(1.05);
 }
 
 .event {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    padding: 5px;
-    border-radius: 5px;
     margin-top: 5px;
-    font-size: 0.8rem;
-    text-align: left;
-    width: 90%;
+    padding: 3px;
+    background-color: var(--event-bg);
+    color: var(--event-color);
+    border-radius: var(--border-radius);
+    font-size: 0.8em;
 }
+
 
 .modal {
     display: none;
@@ -756,6 +745,11 @@ body.night-mode {
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
+<!-- Include Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
 <script>
     // Firebase project configuration
     var firebaseConfig = {
@@ -787,21 +781,20 @@ body.night-mode {
     let currentYear = new Date().getFullYear();
 
     // Initialize Google API Client
-function initClient() {
-    gapi.load('client:auth2', () => {
-        gapi.client.init({
-            clientId: '671266290399-d5skqeu7c9kb086jrsbqr352cgek9irk.apps.googleusercontent.com',
-            scope: 'https://www.googleapis.com/auth/calendar',
-        }).then(() => {
-            console.log('Google API client initialized successfully');
-            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-            updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        }).catch((error) => {
-            console.error('Error initializing Google API client:', error);
+    function initClient() {
+        gapi.load('client:auth2', () => {
+            gapi.client.init({
+                clientId: '671266290399-d5skqeu7c9kb086jrsbqr352cgek9irk.apps.googleusercontent.com',
+                scope: 'https://www.googleapis.com/auth/calendar',
+            }).then(() => {
+                console.log('Google API client initialized successfully');
+                gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+                updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            }).catch((error) => {
+                console.error('Error initializing Google API client:', error);
+            });
         });
-    });
-}
-
+    }
 
     function updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
@@ -839,6 +832,16 @@ function initClient() {
 
     function createCalendar() {
         calendarGrid.innerHTML = '';
+        
+        // Add Days of the Week
+        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        daysOfWeek.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.classList.add('day-header');
+            dayHeader.textContent = day;
+            calendarGrid.appendChild(dayHeader);
+        });
+
         const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
@@ -987,8 +990,6 @@ function initClient() {
                 });
 
                 createCalendar();
-            }).catch(error => {
-                console.error("Error loading events from Google Calendar:", error);
             });
         } else {
             createCalendar();
@@ -996,39 +997,33 @@ function initClient() {
     }
 
     function createGoogleCalendarEvent(event) {
-        const eventBody = {
+        const gapiEvent = {
             'summary': event.title,
             'description': event.description,
             'start': {
                 'dateTime': event.dateTime,
-                'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone  // Dynamic timezone
+                'timeZone': 'America/Los_Angeles'
             },
             'end': {
                 'dateTime': event.endDateTime,
-                'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
+                'timeZone': 'America/Los_Angeles'
+            },
+            'reminders': {
+                'useDefault': true
             }
         };
 
         gapi.client.calendar.events.insert({
             'calendarId': 'primary',
-            'resource': eventBody
-        }).then(function(response) {
-            console.log('Event created in Google Calendar: ', response);
+            'resource': gapiEvent
+        }).then(response => {
+            console.log('Event created: ', response);
         }).catch(error => {
-            console.error("Error creating event in Google Calendar:", error);
+            console.error('Error creating Google Calendar event:', error);
         });
     }
 
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        updateCalendarHeader();
-        loadEvents();
-    });
-
+    // Handle Previous Month
     document.getElementById('prevMonth').addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -1039,13 +1034,17 @@ function initClient() {
         loadEvents();
     });
 
-document.getElementById('openGoogleCalendar').addEventListener('click', () => {
-    // Redirect to Google Calendar
-    window.location.href = 'https://calendar.google.com';
-});
-
+    // Handle Next Month
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        updateCalendarHeader();
+        loadEvents();
+    });
 </script>
-
 
 
     <script>
