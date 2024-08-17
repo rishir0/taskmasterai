@@ -426,13 +426,13 @@ body.night-mode {
     font-weight: bold;
     text-align: center;
     padding: 10px;
-    background-color: var(--header-bg);
-    color: var(--header-color);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
     border-radius: var(--border-radius);
 }
 
 .day {
-    background-color: var(--day-bg);
+    background-color: var(--card-bg);
     padding: 15px;
     border-radius: var(--border-radius);
     cursor: pointer;
@@ -443,19 +443,18 @@ body.night-mode {
 }
 
 .day.current-day {
-    background-color: var(--current-day-bg);
+    background-color: var(--primary-color);
     font-weight: bold;
 }
 
 .event {
     margin-top: 5px;
     padding: 3px;
-    background-color: var(--event-bg);
-    color: var(--event-color);
+    background-color: var(--accent-color);
+    color: var(--text-color);
     border-radius: var(--border-radius);
     font-size: 0.8em;
 }
-
 
 .modal {
     display: none;
@@ -587,7 +586,6 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
-
 
 </style>
 
