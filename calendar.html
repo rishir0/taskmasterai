@@ -365,15 +365,19 @@ body.night-mode {
     animation: rotateIcon 0.5s;
 }
 
+/* Base Styles */
 .calendar {
     width: 100%;
-    max-width: 900px;
-    margin: 40px auto;
+    height: 100%;
+    max-width: none;
+    margin: 0;
     background: var(--glass-bg);
     border-radius: var(--border-radius);
     backdrop-filter: blur(10px);
     overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-header {
@@ -384,6 +388,13 @@ body.night-mode {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     color: var(--text-color);
     border-bottom: 1px solid var(--hover-bg);
+    flex-wrap: wrap;
+}
+
+.calendar-header h2 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
 }
 
 .calendar-header button {
@@ -395,6 +406,7 @@ body.night-mode {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s, transform 0.3s;
+    margin: 10px;
 }
 
 .calendar-header button:hover {
@@ -405,17 +417,18 @@ body.night-mode {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: auto 1fr;
     gap: 1px;
     background: var(--secondary-color);
+    flex: 1;
 }
 
 .calendar-grid .day-header {
     font-weight: bold;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
     background-color: var(--primary-color);
     color: var(--text-color);
-    border-radius: var(--border-radius);
 }
 
 .calendar-grid .day {
@@ -423,8 +436,9 @@ body.night-mode {
     padding: 20px;
     text-align: center;
     border-radius: var(--border-radius);
-    height: 120px;
+    height: 100px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -450,6 +464,8 @@ body.night-mode {
     border-radius: 5px;
     margin-top: 5px;
     font-size: 0.8rem;
+    text-align: left;
+    width: 90%;
 }
 
 .modal {
@@ -519,8 +535,7 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
-/* Existing styles... */
-
+/* Calendar Button Styles */
 .calendar-button {
     background-color: var(--accent-color);
     color: var(--text-color);
@@ -538,37 +553,22 @@ body.night-mode {
     transform: scale(1.05);
 }
 
-
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .calendar {
-        margin: 20px auto;
-        width: 100%;
-        max-width: 100%;
-        padding: 10px;
+    .calendar-header {
+        flex-direction: column;
+        padding: 15px;
     }
 
-    .calendar-header {
-        padding: 15px;
-        flex-direction: column;
-        text-align: center;
+    .calendar-header h2 {
+        margin-top: 10px;
+        font-size: 1.2rem;
     }
 
     .calendar-header button {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-        margin-top: 10px;
         width: 100%;
-    }
-
-    .calendar-grid {
-        grid-template-columns: repeat(7, 1fr);
-        gap: 1px;
-        font-size: 0.8rem;
-    }
-
-    .calendar-grid .day-header {
-        padding: 10px;
-        font-size: 0.8rem;
+        margin-top: 10px;
+        font-size: 0.9rem;
     }
 
     .calendar-grid .day {
@@ -580,10 +580,6 @@ body.night-mode {
     .modal-content {
         max-width: 90%;
         padding: 15px;
-    }
-
-    .modal-header {
-        margin-bottom: 8px;
     }
 
     .modal-header button {
@@ -602,6 +598,7 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
+
 
 </style>
 
@@ -719,7 +716,6 @@ body.night-mode {
         <button id="prevMonth">&lt; Previous</button>
         <h2 id="currentMonth">August 2024</h2>
         <button id="nextMonth">Next &gt;</button>
-        <!-- Google Calendar Button -->
         <button id="openGoogleCalendar" class="calendar-button">Open Google Calendar</button>
     </div>
     <div class="calendar-grid">
@@ -730,6 +726,10 @@ body.night-mode {
         <div class="day-header">Fri</div>
         <div class="day-header">Sat</div>
         <div class="day-header">Sun</div>
+        <!-- Days will be dynamically generated here -->
+        <div class="day">1</div>
+        <div class="day">2</div>
+        <!-- More days... -->
     </div>
 </div>
 
