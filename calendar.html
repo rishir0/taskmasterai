@@ -776,7 +776,7 @@ body.night-mode {
 
     function calculateCurrentWeek() {
         const today = new Date();
-        const dayOfWeek = today.getDay() || 7;
+        const dayOfWeek = today.getDay() || 7; // Ensure Sunday is handled correctly
         currentWeekStartDate = new Date(today);
         currentWeekStartDate.setDate(today.getDate() - dayOfWeek + 1);
     }
@@ -784,7 +784,10 @@ body.night-mode {
     function updateCalendarHeader() {
         const monthNames = ["January", "February", "March", "April", "May", "June", 
                             "July", "August", "September", "October", "November", "December"];
-        currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+        const endWeekDate = new Date(currentWeekStartDate);
+        endWeekDate.setDate(currentWeekStartDate.getDate() + 6);
+        const weekRange = `${monthNames[currentWeekStartDate.getMonth()]} ${currentWeekStartDate.getDate()} - ${monthNames[endWeekDate.getMonth()]} ${endWeekDate.getDate()}, ${currentYear}`;
+        document.getElementById('currentWeek').textContent = weekRange;
     }
 
     function createCalendar() {
@@ -826,107 +829,16 @@ body.night-mode {
         }
     }
 
-    function openEventModal(date) {
-        selectedDate = date;
-        modalTitle.textContent = `Add Event on ${date.toDateString()}`;
-        eventTitleInput.value = '';
-        eventDescriptionInput.value = '';
-        eventDateTimeInput.value = '';
-        eventModal.style.display = 'flex';
-    }
-
-    closeModal.addEventListener('click', () => {
-        eventModal.style.display = 'none';
-    });
-
-    saveEvent.addEventListener('click', async () => {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            console.error("No user is signed in");
-            return;
-        }
-
-        const title = eventTitleInput.value;
-        const description = eventDescriptionInput.value;
-        const dateTime = eventDateTimeInput.value;
-
-        const eventDuration = 60 * 60 * 1000; // 1 hour in milliseconds
-        const endDateTime = new Date(new Date(dateTime).getTime() + eventDuration).toISOString();
-
-        const event = {
-            title,
-            description,
-            dateTime,
-            endDateTime,
-            day: selectedDate.getDate(),
-            month: selectedDate.getMonth(),
-            year: selectedDate.getFullYear(),
-            uid: user.uid
-        };
-
-        const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
-
-        if (!events[dayKey]) {
-            events[dayKey] = [];
-        }
-
-        try {
-            await db.collection('events').add(event);
-            events[dayKey].push(event);
-            eventModal.style.display = 'none';
-            createCalendar();
-        } catch (error) {
-            console.error("Error adding event: ", error);
-        }
-    });
-
-    async function loadEvents() {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            console.error("No user is signed in");
-            return;
-        }
-
-        try {
-            const startDate = currentWeekStartDate;
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 6);
-
-            const snapshot = await db.collection('events')
-                .where("year", "==", currentYear)
-                .where("month", "==", currentMonth)
-                .where("uid", "==", user.uid)
-                .get();
-
-            snapshot.forEach(doc => {
-                const event = doc.data();
-                const eventDate = new Date(event.dateTime);
-                if (eventDate >= startDate && eventDate <= endDate) {
-                    const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
-                    if (!events[dayKey]) {
-                        events[dayKey] = [];
-                    }
-                    events[dayKey].push(event);
-                }
-            });
-
-            createCalendar();
-        } catch (error) {
-            console.error("Error loading events from Firestore: ", error);
-        }
-    }
-
-    // Handle Previous Week
-    document.getElementById('prevMonth').addEventListener('click', () => {
+    document.getElementById('prevWeek').addEventListener('click', () => {
         currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
         loadEvents();
     });
 
-    // Handle Next Week
-    document.getElementById('nextMonth').addEventListener('click', () => {
+    document.getElementById('nextWeek').addEventListener('click', () => {
         currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
         loadEvents();
     });
+});
 </script>
 
 
