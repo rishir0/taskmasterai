@@ -363,9 +363,10 @@ body.night-mode {
 
 /* Base Styles */
 .calendar {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Ensures the calendar takes up full viewport height */
+    width: 100%; /* Ensures the calendar takes up full width of its container */
     background: var(--glass-bg);
     border-radius: var(--border-radius);
     backdrop-filter: blur(10px);
@@ -373,7 +374,6 @@ body.night-mode {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Header containing navigation buttons and current week display */
 .calendar-nav-header {
     display: flex;
     justify-content: space-between;
@@ -424,7 +424,7 @@ body.night-mode {
     grid-template-columns: repeat(7, 1fr);
     grid-auto-rows: 1fr;
     gap: 0;
-    height: 100%;
+    flex: 1; /* Allows grid to fill the remaining space */
     background: var(--bg-color);
 }
 
@@ -562,6 +562,7 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
+
 
 
 </style>
