@@ -690,6 +690,11 @@ margin-right: 0px;}
     background-color: var(--accent-color);
 }
 
+.task-item span {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
 
 .additional-buttons {
     display: flex;
@@ -1096,10 +1101,12 @@ margin-right: 0px;}
         <h2>Tasks</h2>
         <div class="goal-card">
             <input type="text" id="task-input" placeholder="Enter new task">
+            <input type="date" id="task-due-date" placeholder="Due date"> <!-- New date input -->
             <button onclick="createTask()">Create Task</button>
         </div>
         <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
+</div>
     <div class="goals-section">
         <h2>Goals</h2>
         <div class="goal-card">
@@ -1597,10 +1604,14 @@ function createButtonContainer() {
 // Functions to create new tasks, projects, goals, and plans
 function createTask() {
     const taskInput = document.getElementById('task-input');
+    const taskDueDate = document.getElementById('task-due-date');
     const task = taskInput.value.trim();
+    const dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
+
     if (task) {
         db.collection('tasks').add({
             task: task,
+            dueDate: dueDate, // Store the due date
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
@@ -1609,8 +1620,10 @@ function createTask() {
             console.error('Error creating task:', error);
         });
         taskInput.value = '';
+        taskDueDate.value = ''; // Clear the date input after task creation
     }
 }
+
 
 function createProject() {
     const projectInput = document.getElementById('project-input');
@@ -1674,7 +1687,19 @@ function loadTasks() {
                 const task = doc.data();
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
-                taskDiv.textContent = task.task;
+
+                // Display task and due date
+                const taskText = document.createElement('span');
+                taskText.textContent = `${task.task}`;
+                taskDiv.appendChild(taskText);
+
+                if (task.dueDate) {
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${new Date(task.dueDate.toDate()).toLocaleDateString()})`;
+                    dueDateText.style.marginLeft = '10px';
+                    dueDateText.style.color = 'gray';
+                    taskDiv.appendChild(dueDateText);
+                }
 
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
@@ -1685,6 +1710,7 @@ function loadTasks() {
             });
         });
 }
+
 
 function loadProjects() {
     db.collection('projects')
