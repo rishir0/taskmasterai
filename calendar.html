@@ -527,35 +527,35 @@ body.night-mode {
 
 .calendar-content {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100%;
 }
 
-.calendar-time {
-    width: 60px;
-    padding-top: 48px;
-    border-right: 1px solid var(--hover-bg);
+.calendar-main {
     display: flex;
     flex-direction: column;
-    align-items: center;
+}
+
+.calendar-grid {
+    display: flex;
+    flex-direction: row;
+}
+
+.calendar-time {
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid var(--hover-bg);
     background: var(--bg-color);
+    height: 60px;
+    padding-top: 10px;
 }
 
 .calendar-time div {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1;
+    text-align: center;
     font-size: 0.75rem;
     color: var(--text-color);
 }
-
-.calendar-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
 
 
 /* Responsive Adjustments */
@@ -710,9 +710,6 @@ body.night-mode {
         <button id="nextWeek">Next &gt;</button>
     </div>
     <div class="calendar-content">
-        <div class="calendar-time">
-            <!-- Time slots will be dynamically generated here -->
-        </div>
         <div class="calendar-main">
             <div class="calendar-header">
                 <div>Monday</div>
@@ -726,6 +723,9 @@ body.night-mode {
             <div class="calendar-grid">
                 <!-- Days will be dynamically generated here -->
             </div>
+        </div>
+        <div class="calendar-time">
+            <!-- Time slots will be dynamically generated here -->
         </div>
     </div>
 </div>
@@ -766,8 +766,6 @@ body.night-mode {
         </div>
     </div>
 </div>
-
-
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -835,7 +833,8 @@ body.night-mode {
     }
 
 function createCalendar() {
-    calendarGrid.innerHTML = '';
+    const calendarGrid = document.querySelector('.calendar-grid');
+    calendarGrid.innerHTML = ''; // Clear existing days
 
     for (let i = 0; i < 7; i++) {
         const dayDate = new Date(currentWeekStartDate);
@@ -843,64 +842,62 @@ function createCalendar() {
 
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
-        dayDiv.textContent = dayDate.getDate();
 
-        if (dayDate.toDateString() === new Date().toDateString()) {
-            dayDiv.classList.add('current-day');
-        }
+        const dayContent = document.createElement('div');
+        dayContent.classList.add('day-content');
 
-        // Adding time slots for the first day
-        if (i === 0) { 
-            const timeContainer = document.createElement('div');
-            timeContainer.classList.add('time-container');
-            
-            const timeSlots = [
-                "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM",
-                "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", 
-                "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM"
-            ];
+        const header = document.createElement('div');
+        header.textContent = `${dayDate.getDate()}`;
+        dayContent.appendChild(header);
 
-            timeSlots.forEach(time => {
-                const timeDiv = document.createElement('div');
-                timeDiv.classList.add('time-slot');
-                timeDiv.textContent = time;
-                timeContainer.appendChild(timeDiv);
-            });
+        // Create hour blocks from 12 PM to 12 AM
+        for (let hour = 12; hour < 24; hour++) {
+            const hourBlock = document.createElement('div');
+            hourBlock.classList.add('hour-block');
+            hourBlock.dataset.time = `${hour}:00`;
+            hourBlock.dataset.date = dayDate.toDateString();
 
-            dayDiv.appendChild(timeContainer);
-        }
-
-        dayDiv.addEventListener('click', () => openEventModal(dayDate));
-
-        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-        if (events[dayKey]) {
-            events[dayKey].forEach(event => {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.textContent = event.title;
-                eventDiv.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent triggering the openEventModal
-                    openEditEventModal(dayKey, event);
+            // Populate events
+            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+            if (events[dayKey]) {
+                events[dayKey].forEach(event => {
+                    if (event.hour === hour) {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
+                        eventDiv.textContent = event.title;
+                        eventDiv.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openEditEventModal(dayKey, event);
+                        });
+                        hourBlock.appendChild(eventDiv);
+                    }
                 });
-                dayDiv.appendChild(eventDiv);
-            });
+            }
+
+            dayContent.appendChild(hourBlock);
         }
 
+        dayDiv.appendChild(dayContent);
         calendarGrid.appendChild(dayDiv);
     }
+
+    generateTimeSlots(); // Generate time slots after creating the calendar
 }
 
 function generateTimeSlots() {
     const timeContainer = document.querySelector('.calendar-time');
-    for (let i = 8; i <= 17; i++) {
+    timeContainer.innerHTML = ''; // Clear any existing time slots
+
+    for (let i = 12; i <= 23; i++) {
         const timeSlot = document.createElement('div');
-        const time = i < 12 ? `${i}:00 AM` : i === 12 ? `12:00 PM` : `${i - 12}:00 PM`;
+        const time = i === 12 ? `${i}:00 PM` : `${i - 12}:00 PM`;
         timeSlot.textContent = time;
         timeContainer.appendChild(timeSlot);
     }
 }
 
 generateTimeSlots();
+
 
     function openEventModal(date) {
         selectedDate = date;
