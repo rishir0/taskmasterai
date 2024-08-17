@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -827,10 +828,14 @@ body.night-mode {
         const description = eventDescriptionInput.value;
         const dateTime = eventDateTimeInput.value;
 
+        const eventDuration = 60 * 60 * 1000; // 1 hour in milliseconds
+        const endDateTime = new Date(new Date(dateTime).getTime() + eventDuration).toISOString();
+
         const event = {
             title,
             description,
             dateTime,
+            endDateTime,
             day: selectedDate.getDate(),
             month: selectedDate.getMonth(),
             year: selectedDate.getFullYear(),
@@ -844,7 +849,7 @@ body.night-mode {
         }
 
         try {
-            await db.collection('calendar').add(event);
+            await db.collection('events').add(event);
             events[dayKey].push(event);
             eventModal.style.display = 'none';
             createCalendar();
@@ -861,7 +866,7 @@ body.night-mode {
         }
 
         try {
-            const snapshot = await db.collection('calendar')
+            const snapshot = await db.collection('events')
                 .where("year", "==", currentWeekStartDate.getFullYear())
                 .where("month", "==", currentWeekStartDate.getMonth())
                 .where("uid", "==", user.uid)
