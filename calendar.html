@@ -769,6 +769,14 @@ body.night-mode {
     const editEventDescriptionInput = document.getElementById('editEventDescription');
     let currentEditEvent = null;
     let currentDayKey = null;
+    const eventTitleInput = document.getElementById('eventTitle');
+    const eventDescriptionInput = document.getElementById('eventDescription');
+    const eventTimeStartInput = document.getElementById('eventTimeStart');
+    const eventTimeEndInput = document.getElementById('eventTimeEnd');
+    const editEventTitleInput = document.getElementById('editEventTitle');
+    const editEventDescriptionInput = document.getElementById('editEventDescription');
+    const editEventTimeStartInput = document.getElementById('editEventTimeStart');
+    const editEventTimeEndInput = document.getElementById('editEventTimeEnd');
     
 
     firebase.auth().onAuthStateChanged((user) => {
@@ -829,18 +837,6 @@ function createCalendar() {
         calendarGrid.appendChild(dayDiv);
     }
 }
-
-// Elements for the "Add Event" modal
-const eventTitleInput = document.getElementById('eventTitle');
-const eventDescriptionInput = document.getElementById('eventDescription');
-const eventTimeStartInput = document.getElementById('eventTimeStart');
-const eventTimeEndInput = document.getElementById('eventTimeEnd');
-
-// Elements for the "Edit Event" modal
-const editEventTitleInput = document.getElementById('editEventTitle');
-const editEventDescriptionInput = document.getElementById('editEventDescription');
-const editEventTimeStartInput = document.getElementById('editEventTimeStart');
-const editEventTimeEndInput = document.getElementById('editEventTimeEnd');
 
 
     function openEventModal(date) {
