@@ -902,9 +902,18 @@ async function openEditEventModal(dayKey, eventId) {
         return;
     }
 
+    // Ensure eventId and necessary fields are not undefined
+    if (!eventId || !currentEditEvent || !currentEditEvent.year || !currentEditEvent.month || !currentEditEvent.day || !currentEditEvent.uid) {
+        console.error("Missing event data for query");
+        return;
+    }
+
     try {
         // Query Firestore to get the event details
         const snapshot = await db.collection('events')
+            .where("year", "==", currentEditEvent.year)
+            .where("month", "==", currentEditEvent.month)
+            .where("day", "==", currentEditEvent.day)
             .where("uid", "==", user.uid)
             .where("id", "==", eventId) // Unique identifier for the event
             .get();
@@ -932,6 +941,7 @@ async function openEditEventModal(dayKey, eventId) {
         console.error("Error retrieving event: ", error);
     }
 }
+
 
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
