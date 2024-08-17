@@ -896,19 +896,15 @@ saveEvent.addEventListener('click', async () => {
 });
 
     
-function openEditEventModal(dayKey, eventId) {
+async function openEditEventModal(dayKey, eventId) {
     const user = firebase.auth().currentUser;
     if (!user) {
         console.error("No user is signed in");
         return;
     }
 
-    if (!eventId || !dayKey) {
-        console.error("Missing eventId or dayKey");
-        return;
-    }
-
     try {
+        // Query Firestore to get the event details
         const snapshot = await db.collection('events')
             .where("year", "==", currentEditEvent.year)
             .where("month", "==", currentEditEvent.month)
@@ -921,6 +917,7 @@ function openEditEventModal(dayKey, eventId) {
             const doc = snapshot.docs[0];
             const eventData = doc.data();
 
+            // Set the event data in the modal
             editEventTitleInput.value = eventData.title || '';
             editEventDescriptionInput.value = eventData.description || '';
             editEventTimeStartInput.value = formatTimeTo12Hour(eventData.startTime) || '';
@@ -939,7 +936,6 @@ function openEditEventModal(dayKey, eventId) {
 }
 
 
-
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
         return;
@@ -951,13 +947,12 @@ saveEditEvent.addEventListener('click', async () => {
     const updatedEndTime = parse12HourTime(editEventTimeEndInput.value);
 
     try {
-        // Query Firestore to get the event document reference
         const snapshot = await db.collection('events')
             .where("year", "==", currentEditEvent.year)
             .where("month", "==", currentEditEvent.month)
             .where("day", "==", currentEditEvent.day)
             .where("uid", "==", currentEditEvent.uid)
-            .where("id", "==", currentEditEvent.id) // Use the unique identifier
+            .where("title", "==", currentEditEvent.title)
             .get();
 
         if (!snapshot.empty) {
@@ -970,12 +965,10 @@ saveEditEvent.addEventListener('click', async () => {
                 endTime: updatedEndTime
             });
 
-            // Update local event data
             currentEditEvent.title = updatedTitle;
             currentEditEvent.description = updatedDescription;
             currentEditEvent.startTime = updatedStartTime;
             currentEditEvent.endTime = updatedEndTime;
-
             createCalendar();
             editEventModal.style.display = 'none';
         }
@@ -983,7 +976,6 @@ saveEditEvent.addEventListener('click', async () => {
         console.error("Error updating event: ", error);
     }
 });
-
 
 function formatTimeTo12Hour(timeString) {
     const [hour, minute] = timeString.split(':').map(Number);
