@@ -421,10 +421,24 @@ body.night-mode {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: 1fr;
+    grid-auto-rows: minmax(50px, 1fr); /* Adjust this to your desired row height */
     gap: 0;
-    flex: 1; /* Allows grid to fill the remaining space */
+    flex: 1;
     background: var(--bg-color);
+}
+
+.day-column {
+    border-right: 1px solid var(--hover-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.hour-block {
+    border-bottom: 1px solid var(--hover-bg);
+    padding: 5px;
+    height: 50px; /* Adjust this to your desired hour block height */
+    box-sizing: border-box;
+    position: relative;
 }
 
 .calendar-container {
@@ -831,7 +845,7 @@ function createCalendar() {
         const dayColumn = document.createElement('div');
         dayColumn.classList.add('day-column');
 
-        for (let hour = 0; hour < 24; hour++) {
+        for (let hour = 12; hour <= 23; hour++) { // Adjust the loop to start at 12 PM and end at 11 PM
             const hourBlock = document.createElement('div');
             hourBlock.classList.add('hour-block');
             hourBlock.dataset.time = `${hour}:00`;
@@ -855,27 +869,36 @@ function createCalendar() {
             dayColumn.appendChild(hourBlock);
         }
 
+        // Add 12 AM (midnight) block for the next day
+        const midnightBlock = document.createElement('div');
+        midnightBlock.classList.add('hour-block');
+        midnightBlock.dataset.time = `00:00`;
+        midnightBlock.dataset.date = dayDate.toDateString();
+        dayColumn.appendChild(midnightBlock);
+
         calendarGrid.appendChild(dayColumn);
     }
 }
-
 
 function generateTimeSlots() {
     const timeColumn = document.querySelector('.time-column');
     timeColumn.innerHTML = ''; // Clear any existing time slots
 
-    for (let hour = 0; hour < 24; hour++) {
+    for (let hour = 12; hour <= 23; hour++) { // Adjust the loop to start at 12 PM and end at 11 PM
         const timeSlot = document.createElement('div');
         timeSlot.classList.add('time-slot');
-        timeSlot.textContent = `${hour}:00`;
+        timeSlot.textContent = `${hour % 12 === 0 ? 12 : hour % 12} PM`;
         timeColumn.appendChild(timeSlot);
     }
+
+    // Add 12 AM (midnight) slot
+    const midnightSlot = document.createElement('div');
+    midnightSlot.classList.add('time-slot');
+    midnightSlot.textContent = '12 AM';
+    timeColumn.appendChild(midnightSlot);
 }
 
 generateTimeSlots(); // Call this function when the page loads
-
-
-
 
     function openEventModal(date) {
         selectedDate = date;
@@ -889,40 +912,44 @@ generateTimeSlots(); // Call this function when the page loads
         eventModal.style.display = 'none';
     });
 
-    saveEvent.addEventListener('click', async () => {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            console.error("No user is signed in");
-            return;
-        }
+saveEvent.addEventListener('click', async () => {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
 
-        const title = eventTitleInput.value;
-        const description = eventDescriptionInput.value;
+    const title = eventTitleInput.value;
+    const description = eventDescriptionInput.value;
+    const startTime = document.getElementById('eventTimeStart').value;
+    const endTime = document.getElementById('eventTimeEnd').value;
 
-        const event = {
-            title,
-            description,
-            day: selectedDate.getDate(),
-            month: selectedDate.getMonth(),
-            year: selectedDate.getFullYear(),
-            uid: user.uid
-        };
+    const event = {
+        title,
+        description,
+        startTime,
+        endTime,
+        day: selectedDate.getDate(),
+        month: selectedDate.getMonth(),
+        year: selectedDate.getFullYear(),
+        uid: user.uid
+    };
 
-        const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
+    const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
 
-        if (!events[dayKey]) {
-            events[dayKey] = [];
-        }
+    if (!events[dayKey]) {
+        events[dayKey] = [];
+    }
 
-        try {
-            await db.collection('events').add(event);
-            events[dayKey].push(event);
-            eventModal.style.display = 'none';
-            createCalendar();
-        } catch (error) {
-            console.error("Error adding event: ", error);
-        }
-    });
+    try {
+        await db.collection('events').add(event);
+        events[dayKey].push(event);
+        eventModal.style.display = 'none';
+        createCalendar();
+    } catch (error) {
+        console.error("Error adding event: ", error);
+    }
+});
 
 function openEditEventModal(dayKey, event) {
     currentDayKey = dayKey;
@@ -945,6 +972,8 @@ saveEditEvent.addEventListener('click', async () => {
 
     const updatedTitle = editEventTitleInput.value;
     const updatedDescription = editEventDescriptionInput.value;
+    const updatedStartTime = document.getElementById('editEventTimeStart').value;
+    const updatedEndTime = document.getElementById('editEventTimeEnd').value;
 
     try {
         const snapshot = await db.collection('events')
@@ -960,11 +989,15 @@ saveEditEvent.addEventListener('click', async () => {
 
             await docRef.update({
                 title: updatedTitle,
-                description: updatedDescription
+                description: updatedDescription,
+                startTime: updatedStartTime,
+                endTime: updatedEndTime
             });
 
             currentEditEvent.title = updatedTitle;
             currentEditEvent.description = updatedDescription;
+            currentEditEvent.startTime = updatedStartTime;
+            currentEditEvent.endTime = updatedEndTime;
             createCalendar();
             editEventModal.style.display = 'none';
         }
@@ -972,7 +1005,7 @@ saveEditEvent.addEventListener('click', async () => {
         console.error("Error updating event: ", error);
     }
 });
-
+    
 deleteEventButton.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
         return;
