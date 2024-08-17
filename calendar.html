@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -708,6 +707,25 @@ body.night-mode {
     </div>
 </div>
 
+<!-- Edit Event Modal -->
+<div class="modal" id="editEventModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="editModalTitle">Edit Event</h3>
+            <button id="closeEditModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="editEventTitle" placeholder="Event Title">
+            <textarea id="editEventDescription" rows="4" placeholder="Event Description"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button id="saveEditEvent">Save Changes</button>
+            <button id="deleteEvent" class="danger-button">Delete Event</button>
+        </div>
+    </div>
+</div>
+
+
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
@@ -740,6 +758,14 @@ body.night-mode {
     let events = {}; // Local cache for events
     let selectedDate = null;
     let currentWeekStartDate = null;
+    const editEventModal = document.getElementById('editEventModal');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const saveEditEvent = document.getElementById('saveEditEvent');
+    const deleteEventButton = document.getElementById('deleteEvent');
+    const editEventTitleInput = document.getElementById('editEventTitle');
+    const editEventDescriptionInput = document.getElementById('editEventDescription');
+    let currentEditEvent = null;
+    let currentDayKey = null;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
@@ -788,6 +814,10 @@ function createCalendar() {
                 const eventDiv = document.createElement('div');
                 eventDiv.classList.add('event');
                 eventDiv.textContent = event.title;
+                eventDiv.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the openEventModal
+                    openEditEventModal(dayKey, event);
+                });
                 dayDiv.appendChild(eventDiv);
             });
         }
@@ -795,6 +825,7 @@ function createCalendar() {
         calendarGrid.appendChild(dayDiv);
     }
 }
+
 
 
     function openEventModal(date) {
@@ -844,35 +875,116 @@ function createCalendar() {
         }
     });
 
-    async function loadEvents() {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            console.error("No user is signed in");
-            return;
-        }
+function openEditEventModal(dayKey, event) {
+    currentDayKey = dayKey;
+    currentEditEvent = event;
 
-        try {
-            const snapshot = await db.collection('events')
-                .where("year", "==", currentWeekStartDate.getFullYear())
-                .where("month", "==", currentWeekStartDate.getMonth())
-                .where("uid", "==", user.uid)
-                .get();
+    editEventTitleInput.value = event.title;
+    editEventDescriptionInput.value = event.description;
 
-            snapshot.forEach(doc => {
-                const event = doc.data();
-                const eventDate = new Date(event.year, event.month, event.day);
-                const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
-                if (!events[dayKey]) {
-                    events[dayKey] = [];
-                }
-                events[dayKey].push(event);
+    editEventModal.style.display = 'flex';
+}
+
+closeEditModal.addEventListener('click', () => {
+    editEventModal.style.display = 'none';
+});
+
+saveEditEvent.addEventListener('click', async () => {
+    if (!currentEditEvent || !currentDayKey) {
+        return;
+    }
+
+    const updatedTitle = editEventTitleInput.value;
+    const updatedDescription = editEventDescriptionInput.value;
+
+    try {
+        const snapshot = await db.collection('events')
+            .where("year", "==", currentEditEvent.year)
+            .where("month", "==", currentEditEvent.month)
+            .where("day", "==", currentEditEvent.day)
+            .where("uid", "==", currentEditEvent.uid)
+            .where("title", "==", currentEditEvent.title)
+            .get();
+
+        if (!snapshot.empty) {
+            const docRef = snapshot.docs[0].ref;
+
+            await docRef.update({
+                title: updatedTitle,
+                description: updatedDescription
             });
 
+            currentEditEvent.title = updatedTitle;
+            currentEditEvent.description = updatedDescription;
             createCalendar();
-        } catch (error) {
-            console.error("Error loading events from Firestore: ", error);
+            editEventModal.style.display = 'none';
         }
+    } catch (error) {
+        console.error("Error updating event: ", error);
     }
+});
+
+deleteEventButton.addEventListener('click', async () => {
+    if (!currentEditEvent || !currentDayKey) {
+        return;
+    }
+
+    try {
+        const snapshot = await db.collection('events')
+            .where("year", "==", currentEditEvent.year)
+            .where("month", "==", currentEditEvent.month)
+            .where("day", "==", currentEditEvent.day)
+            .where("uid", "==", currentEditEvent.uid)
+            .where("title", "==", currentEditEvent.title)
+            .get();
+
+        if (!snapshot.empty) {
+            const docRef = snapshot.docs[0].ref;
+
+            await docRef.delete();
+
+            events[currentDayKey] = events[currentDayKey].filter(event => event !== currentEditEvent);
+            createCalendar();
+            editEventModal.style.display = 'none';
+        }
+    } catch (error) {
+        console.error("Error deleting event: ", error);
+    }
+});
+
+async function loadEvents() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    // Clear the events object to prevent duplicates
+    events = {};
+
+    try {
+        const snapshot = await db.collection('events')
+            .where("year", "==", currentWeekStartDate.getFullYear())
+            .where("month", "==", currentWeekStartDate.getMonth())
+            .where("uid", "==", user.uid)
+            .get();
+
+        snapshot.forEach(doc => {
+            const event = doc.data();
+            const eventDate = new Date(event.year, event.month, event.day);
+            const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
+            if (!events[dayKey]) {
+                events[dayKey] = [];
+            }
+            events[dayKey].push(event);
+        });
+
+        createCalendar();
+    } catch (error) {
+        console.error("Error loading events from Firestore: ", error);
+    }
+}
+
 
     // Handle Previous Week
     document.getElementById('prevWeek').addEventListener('click', () => {
