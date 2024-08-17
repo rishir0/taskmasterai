@@ -901,9 +901,14 @@ function openEditEventModal(dayKey, event) {
 
     editEventTitleInput.value = event.title;
     editEventDescriptionInput.value = event.description;
+    
+    // Convert saved times to a 12-hour format and set them in the input fields
+    editEventTimeStartInput.value = formatTimeTo12Hour(event.startTime);
+    editEventTimeEndInput.value = formatTimeTo12Hour(event.endTime);
 
     editEventModal.style.display = 'flex';
 }
+
 
 closeEditModal.addEventListener('click', () => {
     editEventModal.style.display = 'none';
@@ -965,6 +970,7 @@ function parse12HourTime(timeString) {
     const date = new Date(`1970-01-01T${timeString}:00`);
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
+
 
 
 deleteEventButton.addEventListener('click', async () => {
