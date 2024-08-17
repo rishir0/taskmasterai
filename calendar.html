@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -372,81 +373,84 @@ body.night-mode {
     backdrop-filter: blur(10px);
     overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    color: var(--text-color);
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--text-color);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
     border-bottom: 1px solid var(--hover-bg);
-}
-
-.calendar-header h2 {
-    margin: 0;
-    text-align: center;
-    flex: 1;
-}
-
-.calendar-header button {
-    background-color: var(--accent-color);
+    background: var(--bg-color);
     color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s, transform 0.3s;
+    text-align: center;
 }
 
-.calendar-header button:hover {
-    background-color: var(--hover-bg);
-    transform: scale(1.05);
+.calendar-header div {
+    padding: 10px;
+    font-weight: bold;
+}
+
+.calendar-header .current-day {
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    margin: 0 auto;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: 1fr;
-    gap: 1px;
-    background-color: var(--bg-color);
+    grid-auto-rows: minmax(50px, auto);
+    gap: 0;
     height: 100%;
+    overflow-y: auto;
+    background: var(--bg-color);
 }
 
 .day {
+    border-right: 1px solid var(--hover-bg);
+    border-bottom: 1px solid var(--hover-bg);
     position: relative;
-    background-color: var(--card-bg);
-    padding: 10px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--hover-bg);
-    display: flex;
-    flex-direction: column;
 }
 
-.day.current-day {
-    background-color: var(--accent-color);
+.day:last-child {
+    border-right: none;
 }
 
 .day-header {
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-    color: var(--text-color);
+    padding: 5px;
+    background: var(--secondary-color);
+    text-align: right;
+    padding-right: 10px;
 }
 
 .event {
-    margin-top: 5px;
-    padding: 5px;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border-radius: var(--border-radius);
-    font-size: 0.8em;
+    position: absolute;
+    background: var(--accent-color);
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    left: 0;
+    width: 100%;
 }
 
-/* Modal Styles */
+.event:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background-color: var(--accent-color);
+    transform: translateY(-50%);
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -517,33 +521,20 @@ body.night-mode {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .calendar-header {
-        flex-direction: column;
-        padding: 10px;
+        grid-template-columns: repeat(7, 1fr);
+        font-size: 0.75rem;
     }
 
-    .calendar-header h2 {
-        margin: 10px 0;
-        font-size: 1.2rem;
+    .day-header {
+        font-size: 0.75rem;
     }
 
-    .calendar-header button {
-        width: 100%;
-        margin-top: 10px;
-        font-size: 0.9rem;
-    }
-
-    .day {
-        padding: 10px;
-        font-size: 0.9rem;
+    .event {
+        font-size: 0.65rem;
     }
 
     .modal-content {
-        max-width: 90%;
         padding: 15px;
-    }
-
-    .modal-header button {
-        font-size: 1.2rem;
     }
 
     .modal-body input,
