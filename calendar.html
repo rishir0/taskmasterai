@@ -432,14 +432,17 @@ body.night-mode {
     border-bottom: 1px solid var(--hover-bg);
     position: relative;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
+
 
 .day:last-child {
     border-right: none;
 }
 
 .event {
-    position: absolute;
     background: var(--accent-color);
     color: #fff;
     padding: 2px 5px;
@@ -448,19 +451,11 @@ body.night-mode {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    left: 0;
-    width: 100%;
+    position: relative;
 }
 
 .event:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    height: 2px;
-    width: 100%;
-    background-color: var(--accent-color);
-    transform: translateY(-50%);
+    display: none; /* Remove the red line */
 }
 
 .modal {
@@ -769,36 +764,37 @@ body.night-mode {
         currentWeekElement.textContent = `${currentWeekStartDate.toLocaleDateString(undefined, options)} - ${weekEndDate.toLocaleDateString(undefined, options)}`;
     }
 
-    function createCalendar() {
-        calendarGrid.innerHTML = '';
+function createCalendar() {
+    calendarGrid.innerHTML = '';
 
-        for (let i = 0; i < 7; i++) {
-            const dayDate = new Date(currentWeekStartDate);
-            dayDate.setDate(currentWeekStartDate.getDate() + i);
+    for (let i = 0; i < 7; i++) {
+        const dayDate = new Date(currentWeekStartDate);
+        dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('day');
-            dayDiv.textContent = dayDate.getDate();
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = dayDate.getDate();
 
-            if (dayDate.toDateString() === new Date().toDateString()) {
-                dayDiv.classList.add('current-day');
-            }
-
-            dayDiv.addEventListener('click', () => openEventModal(dayDate));
-
-            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-            if (events[dayKey]) {
-                events[dayKey].forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('event');
-                    eventDiv.textContent = event.title;
-                    dayDiv.appendChild(eventDiv);
-                });
-            }
-
-            calendarGrid.appendChild(dayDiv);
+        if (dayDate.toDateString() === new Date().toDateString()) {
+            dayDiv.classList.add('current-day');
         }
+
+        dayDiv.addEventListener('click', () => openEventModal(dayDate));
+
+        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+        if (events[dayKey]) {
+            events[dayKey].forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = event.title;
+                dayDiv.appendChild(eventDiv);
+            });
+        }
+
+        calendarGrid.appendChild(dayDiv);
     }
+}
+
 
     function openEventModal(date) {
         selectedDate = date;
