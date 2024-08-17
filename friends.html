@@ -974,11 +974,6 @@ function loadOnlineFriends() {
                                 const friendEmail = friend.email;
                                 let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-                                // Check if the email matches and update the displayName
-                                if (friendEmail === 'achallapureddy@gmail.com') {
-                                    friendDisplayName = 'Abhi C';
-                                    friendRef.update({ displayName: 'Abhi C' }); // Update displayName in Firestore
-                                }
 
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     if (displayNameMap.get(friendEmail) !== friendDisplayName) {
