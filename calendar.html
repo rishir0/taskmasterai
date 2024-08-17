@@ -525,27 +525,37 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
-/* Style for time slots in the first day */
-.time-container {
+.calendar-content {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.calendar-time {
+    width: 60px;
+    padding-top: 48px;
+    border-right: 1px solid var(--hover-bg);
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
-    gap: 5px;
+    align-items: center;
+    background: var(--bg-color);
 }
 
-.time-slot {
-    background: var(--secondary-color);
+.calendar-time div {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
     color: var(--text-color);
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-size: 0.8rem;
-    text-align: center;
-    cursor: pointer;
 }
 
-.time-slot:hover {
-    background: var(--hover-bg);
+.calendar-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
+
 
 
 /* Responsive Adjustments */
@@ -699,17 +709,24 @@ body.night-mode {
         <h2 id="currentWeek">August 1 - August 7, 2024</h2>
         <button id="nextWeek">Next &gt;</button>
     </div>
-    <div class="calendar-header">
-        <div>Monday</div>
-        <div>Tuesday</div>
-        <div>Wednesday</div>
-        <div>Thursday</div>
-        <div>Friday</div>
-        <div>Saturday</div>
-        <div>Sunday</div>
-    </div>
-    <div class="calendar-grid">
-        <!-- Days will be dynamically generated here -->
+    <div class="calendar-content">
+        <div class="calendar-time">
+            <!-- Time slots will be dynamically generated here -->
+        </div>
+        <div class="calendar-main">
+            <div class="calendar-header">
+                <div>Monday</div>
+                <div>Tuesday</div>
+                <div>Wednesday</div>
+                <div>Thursday</div>
+                <div>Friday</div>
+                <div>Saturday</div>
+                <div>Sunday</div>
+            </div>
+            <div class="calendar-grid">
+                <!-- Days will be dynamically generated here -->
+            </div>
+        </div>
     </div>
 </div>
 
@@ -723,6 +740,7 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
+            <input type="time" id="eventTime" placeholder="Event Time">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
@@ -740,6 +758,7 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="editEventTitle" placeholder="Event Title">
             <textarea id="editEventDescription" rows="4" placeholder="Event Description"></textarea>
+            <input type="time" id="editEventTime" placeholder="Event Time">
         </div>
         <div class="modal-footer">
             <button id="saveEditEvent">Save Changes</button>
@@ -747,6 +766,7 @@ body.night-mode {
         </div>
     </div>
 </div>
+
 
 
 <!-- Include Firebase SDKs -->
@@ -870,7 +890,17 @@ function createCalendar() {
     }
 }
 
+function generateTimeSlots() {
+    const timeContainer = document.querySelector('.calendar-time');
+    for (let i = 8; i <= 17; i++) {
+        const timeSlot = document.createElement('div');
+        const time = i < 12 ? `${i}:00 AM` : i === 12 ? `12:00 PM` : `${i - 12}:00 PM`;
+        timeSlot.textContent = time;
+        timeContainer.appendChild(timeSlot);
+    }
+}
 
+generateTimeSlots();
 
     function openEventModal(date) {
         selectedDate = date;
