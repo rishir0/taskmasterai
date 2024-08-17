@@ -698,14 +698,16 @@ body.night-mode {
             <button id="closeModal">&times;</button>
         </div>
         <div class="modal-body">
+            <input type="text" id="eventTitle" placeholder="Event Title">
+            <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
             <input type="time" id="eventTimeStart" placeholder="Start Time">
+            <input type="time" id="eventTimeEnd" placeholder="End Time">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
         </div>
     </div>
 </div>
-
 
 <!-- Edit Event Modal -->
 <div class="modal" id="editEventModal">
