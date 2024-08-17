@@ -421,49 +421,10 @@ body.night-mode {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: minmax(50px, 1fr); /* Adjust this to your desired row height */
+    grid-auto-rows: 1fr;
     gap: 0;
-    flex: 1;
+    flex: 1; /* Allows grid to fill the remaining space */
     background: var(--bg-color);
-}
-
-.day-column {
-    border-right: 1px solid var(--hover-bg);
-    display: flex;
-    flex-direction: column;
-}
-
-.hour-block {
-    border-bottom: 1px solid var(--hover-bg);
-    padding: 5px;
-    height: 50px; /* Adjust this to your desired hour block height */
-    box-sizing: border-box;
-    position: relative;
-}
-
-.calendar-container {
-    display: flex;
-    height: 100%;
-}
-
-.time-column {
-    width: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    padding: 10px;
-    border-right: 1px solid var(--hover-bg);
-}
-
-.time-column .time-slot {
-    flex: 1;
-    width: 100%;
-    text-align: right;
-    padding-right: 10px;
-    box-sizing: border-box;
-    font-size: 0.8em;
 }
 
 .day {
@@ -724,10 +685,6 @@ body.night-mode {
         <div>Saturday</div>
         <div>Sunday</div>
     </div>
-<div class="calendar-container">
-    <div class="time-column">
-        <!-- Times will be dynamically generated here -->
-    </div>
     <div class="calendar-grid">
         <!-- Days will be dynamically generated here -->
     </div>
@@ -743,6 +700,8 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
+            <input type="time" id="eventTimeStart" placeholder="Start Time">
+            <input type="time" id="eventTimeEnd" placeholder="End Time">
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
@@ -760,6 +719,8 @@ body.night-mode {
         <div class="modal-body">
             <input type="text" id="editEventTitle" placeholder="Event Title">
             <textarea id="editEventDescription" rows="4" placeholder="Event Description"></textarea>
+            <input type="time" id="editEventTimeStart" placeholder="Start Time">
+            <input type="time" id="editEventTimeEnd" placeholder="End Time">
         </div>
         <div class="modal-footer">
             <button id="saveEditEvent">Save Changes</button>
@@ -767,7 +728,6 @@ body.night-mode {
         </div>
     </div>
 </div>
-
 
 <!-- Include Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -835,70 +795,41 @@ body.night-mode {
     }
 
 function createCalendar() {
-    const calendarGrid = document.querySelector('.calendar-grid');
-    calendarGrid.innerHTML = ''; // Clear any existing days
+    calendarGrid.innerHTML = '';
 
     for (let i = 0; i < 7; i++) {
         const dayDate = new Date(currentWeekStartDate);
         dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-        const dayColumn = document.createElement('div');
-        dayColumn.classList.add('day-column');
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = dayDate.getDate();
 
-        for (let hour = 12; hour <= 23; hour++) { // Adjust the loop to start at 12 PM and end at 11 PM
-            const hourBlock = document.createElement('div');
-            hourBlock.classList.add('hour-block');
-            hourBlock.dataset.time = `${hour}:00`;
-            hourBlock.dataset.date = dayDate.toDateString();
-
-            if (events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`]) {
-                events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`].forEach(event => {
-                    if (event.hour === hour) {
-                        const eventDiv = document.createElement('div');
-                        eventDiv.classList.add('event');
-                        eventDiv.textContent = event.title;
-                        eventDiv.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            openEditEventModal(`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`, event);
-                        });
-                        hourBlock.appendChild(eventDiv);
-                    }
-                });
-            }
-
-            dayColumn.appendChild(hourBlock);
+        if (dayDate.toDateString() === new Date().toDateString()) {
+            dayDiv.classList.add('current-day');
         }
 
-        // Add 12 AM (midnight) block for the next day
-        const midnightBlock = document.createElement('div');
-        midnightBlock.classList.add('hour-block');
-        midnightBlock.dataset.time = `00:00`;
-        midnightBlock.dataset.date = dayDate.toDateString();
-        dayColumn.appendChild(midnightBlock);
+        dayDiv.addEventListener('click', () => openEventModal(dayDate));
 
-        calendarGrid.appendChild(dayColumn);
+        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+        if (events[dayKey]) {
+            events[dayKey].forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = event.title;
+                eventDiv.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the openEventModal
+                    openEditEventModal(dayKey, event);
+                });
+                dayDiv.appendChild(eventDiv);
+            });
+        }
+
+        calendarGrid.appendChild(dayDiv);
     }
 }
 
-function generateTimeSlots() {
-    const timeColumn = document.querySelector('.time-column');
-    timeColumn.innerHTML = ''; // Clear any existing time slots
 
-    for (let hour = 12; hour <= 23; hour++) { // Adjust the loop to start at 12 PM and end at 11 PM
-        const timeSlot = document.createElement('div');
-        timeSlot.classList.add('time-slot');
-        timeSlot.textContent = `${hour % 12 === 0 ? 12 : hour % 12} PM`;
-        timeColumn.appendChild(timeSlot);
-    }
-
-    // Add 12 AM (midnight) slot
-    const midnightSlot = document.createElement('div');
-    midnightSlot.classList.add('time-slot');
-    midnightSlot.textContent = '12 AM';
-    timeColumn.appendChild(midnightSlot);
-}
-
-generateTimeSlots(); // Call this function when the page loads
 
     function openEventModal(date) {
         selectedDate = date;
@@ -950,7 +881,7 @@ saveEvent.addEventListener('click', async () => {
         console.error("Error adding event: ", error);
     }
 });
-
+    
 function openEditEventModal(dayKey, event) {
     currentDayKey = dayKey;
     currentEditEvent = event;
@@ -1005,7 +936,7 @@ saveEditEvent.addEventListener('click', async () => {
         console.error("Error updating event: ", error);
     }
 });
-    
+
 deleteEventButton.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
         return;
