@@ -418,22 +418,13 @@ body.night-mode {
     font-size: 1rem;
 }
 
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: 1fr;
-    gap: 0;
-    flex: 1; /* Allows grid to fill the remaining space */
-    background: var(--bg-color);
-}
-
 .calendar-container {
     display: flex;
-    height: 100%;
+    height: calc(100% - 50px); /* Adjust height to fit within the calendar */
 }
 
 .time-column {
-    width: 50px;
+    width: 60px; /* Adjust width as needed */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -441,10 +432,10 @@ body.night-mode {
     color: var(--text-color);
     padding: 10px;
     border-right: 1px solid var(--hover-bg);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3); /* Optional shadow for separation */
 }
 
 .time-column .time-slot {
-    flex: 1;
     width: 100%;
     text-align: right;
     padding-right: 10px;
@@ -461,7 +452,6 @@ body.night-mode {
     flex-direction: column;
     gap: 5px;
 }
-
 
 .day:last-child {
     border-right: none;
@@ -581,8 +571,6 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
-
-
 
 </style>
 
@@ -820,62 +808,73 @@ body.night-mode {
         currentWeekElement.textContent = `${currentWeekStartDate.toLocaleDateString(undefined, options)} - ${weekEndDate.toLocaleDateString(undefined, options)}`;
     }
 
+function generateTimeSlots() {
+    const timeColumn = document.querySelector('.time-column');
+    timeColumn.innerHTML = ''; // Clear existing time slots
+
+    for (let hour = 0; hour < 24; hour++) {
+        const timeSlot = document.createElement('div');
+        timeSlot.classList.add('time-slot');
+
+        // Convert military time to 12-hour format
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const adjustedHour = hour % 12 || 12;
+        timeSlot.textContent = `${adjustedHour}:00 ${period}`;
+        
+        timeColumn.appendChild(timeSlot);
+    }
+}
+
 function createCalendar() {
     const calendarGrid = document.querySelector('.calendar-grid');
-    calendarGrid.innerHTML = ''; // Clear any existing days
+    calendarGrid.innerHTML = ''; // Clear existing days
 
     for (let i = 0; i < 7; i++) {
         const dayDate = new Date(currentWeekStartDate);
         dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-        const dayColumn = document.createElement('div');
-        dayColumn.classList.add('day-column');
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = dayDate.getDate();
 
+        if (dayDate.toDateString() === new Date().toDateString()) {
+            dayDiv.classList.add('current-day');
+        }
+
+        // Create hour blocks
         for (let hour = 0; hour < 24; hour++) {
             const hourBlock = document.createElement('div');
             hourBlock.classList.add('hour-block');
             hourBlock.dataset.time = `${hour}:00`;
             hourBlock.dataset.date = dayDate.toDateString();
 
-            if (events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`]) {
-                events[`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`].forEach(event => {
+            // Populate events
+            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+            if (events[dayKey]) {
+                events[dayKey].forEach(event => {
                     if (event.hour === hour) {
                         const eventDiv = document.createElement('div');
                         eventDiv.classList.add('event');
                         eventDiv.textContent = event.title;
                         eventDiv.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            openEditEventModal(`${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`, event);
+                            openEditEventModal(dayKey, event);
                         });
                         hourBlock.appendChild(eventDiv);
                     }
                 });
             }
 
-            dayColumn.appendChild(hourBlock);
+            dayDiv.appendChild(hourBlock);
         }
 
-        calendarGrid.appendChild(dayColumn);
+        calendarGrid.appendChild(dayDiv);
     }
 }
 
-
-function generateTimeSlots() {
-    const timeColumn = document.querySelector('.time-column');
-    timeColumn.innerHTML = ''; // Clear any existing time slots
-
-    for (let hour = 0; hour < 24; hour++) {
-        const timeSlot = document.createElement('div');
-        timeSlot.classList.add('time-slot');
-        timeSlot.textContent = `${hour}:00`;
-        timeColumn.appendChild(timeSlot);
-    }
-}
-
-generateTimeSlots(); // Call this function when the page loads
-
-
-
+// Call this function to initialize the calendar
+generateTimeSlots();
+createCalendar();
 
     function openEventModal(date) {
         selectedDate = date;
