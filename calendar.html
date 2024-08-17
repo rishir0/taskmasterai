@@ -750,34 +750,30 @@ body.night-mode {
     // Initialize Firestore
     const db = firebase.firestore();
 
-    const calendarGrid = document.querySelector('.calendar-grid');
-    const eventModal = document.getElementById('eventModal');
-    const closeModal = document.getElementById('closeModal');
-    const saveEvent = document.getElementById('saveEvent');
-    const modalTitle = document.getElementById('modalTitle');
-    const eventTitleInput = document.getElementById('eventTitle');
-    const eventDescriptionInput = document.getElementById('eventDescription');
-    const currentWeekElement = document.getElementById('currentWeek');
-    let events = {}; // Local cache for events
-    let selectedDate = null;
-    let currentWeekStartDate = null;
-    const editEventModal = document.getElementById('editEventModal');
-    const closeEditModal = document.getElementById('closeEditModal');
-    const saveEditEvent = document.getElementById('saveEditEvent');
-    const deleteEventButton = document.getElementById('deleteEvent');
-    const editEventTitleInput = document.getElementById('editEventTitle');
-    const editEventDescriptionInput = document.getElementById('editEventDescription');
-    let currentEditEvent = null;
-    let currentDayKey = null;
-    const eventTitleInput = document.getElementById('eventTitle');
-    const eventDescriptionInput = document.getElementById('eventDescription');
-    const eventTimeStartInput = document.getElementById('eventTimeStart');
-    const eventTimeEndInput = document.getElementById('eventTimeEnd');
-    const editEventTitleInput = document.getElementById('editEventTitle');
-    const editEventDescriptionInput = document.getElementById('editEventDescription');
-    const editEventTimeStartInput = document.getElementById('editEventTimeStart');
-    const editEventTimeEndInput = document.getElementById('editEventTimeEnd');
-    
+const calendarGrid = document.querySelector('.calendar-grid');
+const eventModal = document.getElementById('eventModal');
+const closeModal = document.getElementById('closeModal');
+const saveEvent = document.getElementById('saveEvent');
+const modalTitle = document.getElementById('modalTitle');
+const eventTitleInput = document.getElementById('eventTitle');
+const eventDescriptionInput = document.getElementById('eventDescription');
+const eventTimeStartInput = document.getElementById('eventTimeStart');
+const eventTimeEndInput = document.getElementById('eventTimeEnd');
+const currentWeekElement = document.getElementById('currentWeek');
+let events = {}; // Local cache for events
+let selectedDate = null;
+let currentWeekStartDate = null;
+
+const editEventModal = document.getElementById('editEventModal');
+const closeEditModal = document.getElementById('closeEditModal');
+const saveEditEvent = document.getElementById('saveEditEvent');
+const deleteEventButton = document.getElementById('deleteEvent');
+const editEventTitleInput = document.getElementById('editEventTitle');
+const editEventDescriptionInput = document.getElementById('editEventDescription');
+const editEventTimeStartInput = document.getElementById('editEventTimeStart');
+const editEventTimeEndInput = document.getElementById('editEventTimeEnd');
+let currentEditEvent = null;
+let currentDayKey = null;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
