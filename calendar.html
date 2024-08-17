@@ -895,24 +895,47 @@ saveEvent.addEventListener('click', async () => {
 });
 
     
-function openEditEventModal(dayKey, event) {
-    currentDayKey = dayKey;
-    currentEditEvent = event;
+async function openEditEventModal(dayKey, eventId) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
 
-    editEventTitleInput.value = event.title;
-    editEventDescriptionInput.value = event.description;
-    
-    // Convert saved times to a 12-hour format and set them in the input fields
-    editEventTimeStartInput.value = formatTimeTo12Hour(event.startTime);
-    editEventTimeEndInput.value = formatTimeTo12Hour(event.endTime);
+    try {
+        // Query Firestore to get the event details
+        const snapshot = await db.collection('events')
+            .where("year", "==", currentEditEvent.year) // Use correct year, month, day, and uid
+            .where("month", "==", currentEditEvent.month)
+            .where("day", "==", currentEditEvent.day)
+            .where("uid", "==", user.uid)
+            .where("id", "==", eventId) // Unique identifier for the event
+            .get();
 
-    editEventModal.style.display = 'flex';
+        if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const eventData = doc.data();
+
+            // Set the event data in the modal
+            editEventTitleInput.value = eventData.title || '';
+            editEventDescriptionInput.value = eventData.description || '';
+
+            // Ensure startTime and endTime are converted to 12-hour format
+            editEventTimeStartInput.value = formatTimeTo12Hour(eventData.startTime) || '';
+            editEventTimeEndInput.value = formatTimeTo12Hour(eventData.endTime) || '';
+
+            currentDayKey = dayKey;
+            currentEditEvent = eventData;
+
+            editEventModal.style.display = 'flex';
+        } else {
+            console.error("No event found");
+        }
+    } catch (error) {
+        console.error("Error retrieving event: ", error);
+    }
 }
 
-
-closeEditModal.addEventListener('click', () => {
-    editEventModal.style.display = 'none';
-});
 
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
@@ -925,12 +948,13 @@ saveEditEvent.addEventListener('click', async () => {
     const updatedEndTime = parse12HourTime(editEventTimeEndInput.value);
 
     try {
+        // Query Firestore to get the event document reference
         const snapshot = await db.collection('events')
             .where("year", "==", currentEditEvent.year)
             .where("month", "==", currentEditEvent.month)
             .where("day", "==", currentEditEvent.day)
             .where("uid", "==", currentEditEvent.uid)
-            .where("title", "==", currentEditEvent.title)
+            .where("id", "==", currentEditEvent.id) // Use the unique identifier
             .get();
 
         if (!snapshot.empty) {
@@ -943,10 +967,12 @@ saveEditEvent.addEventListener('click', async () => {
                 endTime: updatedEndTime
             });
 
+            // Update local event data
             currentEditEvent.title = updatedTitle;
             currentEditEvent.description = updatedDescription;
             currentEditEvent.startTime = updatedStartTime;
             currentEditEvent.endTime = updatedEndTime;
+
             createCalendar();
             editEventModal.style.display = 'none';
         }
@@ -954,6 +980,7 @@ saveEditEvent.addEventListener('click', async () => {
         console.error("Error updating event: ", error);
     }
 });
+
 
 function formatTimeTo12Hour(timeString) {
     const [hour, minute] = timeString.split(':').map(Number);
