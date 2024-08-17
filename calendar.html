@@ -699,12 +699,12 @@ body.night-mode {
         </div>
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
-            <input type="datetime-local" id="eventDateTime" placeholder="Event Date & Time"> <!-- Added this input -->
+            <input type="datetime-local" id="eventDateTime" placeholder="Event Date & Time">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
-            <button id="deleteEvent" style="display: none;">Delete</button> <!-- Initially hidden -->
+            <button id="deleteEvent" style="display: none;">Delete</button>
         </div>
     </div>
 </div>
@@ -737,7 +737,7 @@ body.night-mode {
     const modalTitle = document.getElementById('modalTitle');
     const eventTitleInput = document.getElementById('eventTitle');
     const eventDescriptionInput = document.getElementById('eventDescription');
-    const eventDateTimeInput = document.getElementById('eventDateTime'); // Defined input
+    const eventDateTimeInput = document.getElementById('eventDateTime');
     const currentWeekElement = document.getElementById('currentWeek');
     let events = {}; // Local cache for events
     let selectedDate = null;
@@ -809,7 +809,7 @@ body.night-mode {
         selectedDate = date;
 
         if (event) {
-            modalTitle.textContent = `Edit Event on ${date.toDateString()}`;
+            modalTitle.textContent = `Edit Event`;
             eventTitleInput.value = event.title;
             eventDescriptionInput.value = event.description;
             eventDateTimeInput.value = event.dateTime.slice(0, 16); // Format datetime for input
@@ -817,7 +817,7 @@ body.night-mode {
             saveEvent.textContent = "Update Event"; // Change button text
             document.getElementById('deleteEvent').style.display = 'inline'; // Show delete button
         } else {
-            modalTitle.textContent = `Add Event on ${date.toDateString()}`;
+            modalTitle.textContent = `Add Event`;
             eventTitleInput.value = '';
             eventDescriptionInput.value = '';
             eventDateTimeInput.value = '';
