@@ -829,7 +829,7 @@ function createCalendar() {
                 eventDiv.textContent = event.title;
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent triggering the openEventModal
-                    openEditEventModal(dayKey, event);
+                    openEditEventModal(dayKey, event.id); // Pass the event ID
                 });
                 dayDiv.appendChild(eventDiv);
             });
@@ -905,9 +905,6 @@ async function openEditEventModal(dayKey, eventId) {
     try {
         // Query Firestore to get the event details
         const snapshot = await db.collection('events')
-            .where("year", "==", currentEditEvent.year) // Use correct year, month, day, and uid
-            .where("month", "==", currentEditEvent.month)
-            .where("day", "==", currentEditEvent.day)
             .where("uid", "==", user.uid)
             .where("id", "==", eventId) // Unique identifier for the event
             .get();
@@ -935,7 +932,6 @@ async function openEditEventModal(dayKey, eventId) {
         console.error("Error retrieving event: ", error);
     }
 }
-
 
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
