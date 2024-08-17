@@ -364,7 +364,6 @@ body.night-mode {
 /* Base Styles */
 .calendar {
     display: flex;
-    flex-direction: column;
     height: 100vh; /* Ensures the calendar takes up full viewport height */
     width: 100%; /* Ensures the calendar takes up full width of its container */
     background: var(--glass-bg);
@@ -418,21 +417,38 @@ body.night-mode {
     font-size: 1rem;
 }
 
+/* Calendar Container */
 .calendar-container {
     display: flex;
     height: calc(100% - 50px); /* Adjust height to fit within the calendar */
 }
 
-.time-column {
-    width: 60px; /* Adjust width as needed */
+.calendar-grid {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    flex: 1;
+    background: var(--bg-color);
+    overflow: auto;
+}
+
+.day {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-bottom: 1px solid var(--hover-bg);
+    position: relative;
+    padding: 10px;
+    gap: 5px;
+}
+
+.time-column {
+    width: 60px; /* Adjust width as needed */
     background-color: var(--bg-color);
     color: var(--text-color);
-    padding: 10px;
     border-right: 1px solid var(--hover-bg);
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3); /* Optional shadow for separation */
+    padding-right: 5px;
+    box-sizing: border-box;
 }
 
 .time-column .time-slot {
@@ -443,18 +459,23 @@ body.night-mode {
     font-size: 0.8em;
 }
 
-.day {
-    border-right: 1px solid var(--hover-bg);
-    border-bottom: 1px solid var(--hover-bg);
-    position: relative;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.day-content {
+    flex: 1;
+    background: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    padding: 0 10px;
 }
 
-.day:last-child {
-    border-right: none;
+.day-content .hour-block {
+    border-bottom: 1px solid var(--hover-bg);
+    padding: 5px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.day-content .hour-block:last-child {
+    border-bottom: none;
 }
 
 .event {
@@ -549,6 +570,8 @@ body.night-mode {
 
     .day {
         padding: 5px;
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .event {
@@ -809,20 +832,24 @@ body.night-mode {
     }
 
 function generateTimeSlots() {
-    const timeColumn = document.querySelector('.time-column');
-    timeColumn.innerHTML = ''; // Clear existing time slots
+    const days = document.querySelectorAll('.day');
+    
+    days.forEach(day => {
+        const timeColumn = day.querySelector('.time-column');
+        timeColumn.innerHTML = ''; // Clear existing time slots
 
-    for (let hour = 0; hour < 24; hour++) {
-        const timeSlot = document.createElement('div');
-        timeSlot.classList.add('time-slot');
+        for (let hour = 0; hour < 24; hour++) {
+            const timeSlot = document.createElement('div');
+            timeSlot.classList.add('time-slot');
 
-        // Convert military time to 12-hour format
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const adjustedHour = hour % 12 || 12;
-        timeSlot.textContent = `${adjustedHour}:00 ${period}`;
-        
-        timeColumn.appendChild(timeSlot);
-    }
+            // Convert military time to 12-hour format
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const adjustedHour = hour % 12 || 12;
+            timeSlot.textContent = `${adjustedHour}:00 ${period}`;
+            
+            timeColumn.appendChild(timeSlot);
+        }
+    });
 }
 
 function createCalendar() {
@@ -835,11 +862,19 @@ function createCalendar() {
 
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
-        dayDiv.textContent = dayDate.getDate();
+        
+        // Create time column
+        const timeColumn = document.createElement('div');
+        timeColumn.classList.add('time-column');
+        dayDiv.appendChild(timeColumn);
 
-        if (dayDate.toDateString() === new Date().toDateString()) {
-            dayDiv.classList.add('current-day');
-        }
+        // Create day content container
+        const dayContent = document.createElement('div');
+        dayContent.classList.add('day-content');
+        
+        const header = document.createElement('div');
+        header.textContent = `${dayDate.getDate()}`;
+        dayContent.appendChild(header);
 
         // Create hour blocks
         for (let hour = 0; hour < 24; hour++) {
@@ -865,16 +900,19 @@ function createCalendar() {
                 });
             }
 
-            dayDiv.appendChild(hourBlock);
+            dayContent.appendChild(hourBlock);
         }
 
+        dayDiv.appendChild(dayContent);
         calendarGrid.appendChild(dayDiv);
     }
+
+    generateTimeSlots(); // Generate time slots after creating the calendar
 }
 
-// Call this function to initialize the calendar
-generateTimeSlots();
+// Initialize the calendar
 createCalendar();
+
 
     function openEventModal(date) {
         selectedDate = date;
