@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -375,6 +374,37 @@ body.night-mode {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
+/* Header containing navigation buttons and current week display */
+.calendar-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    font-size: 1.25rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.calendar-nav-header h2 {
+    margin: 0;
+    font-weight: bold;
+}
+
+.calendar-nav-header button {
+    background-color: var(--secondary-color);
+    border: none;
+    color: var(--text-color);
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-nav-header button:hover {
+    background-color: var(--accent-color);
+}
+
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -382,11 +412,12 @@ body.night-mode {
     background: var(--bg-color);
     color: var(--text-color);
     text-align: center;
+    padding: 10px 0;
 }
 
 .calendar-header div {
-    padding: 10px;
     font-weight: bold;
+    font-size: 1rem;
 }
 
 .calendar-header .current-day {
@@ -413,6 +444,8 @@ body.night-mode {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
     position: relative;
+    text-align: right;
+    padding: 5px;
 }
 
 .day:last-child {
@@ -424,6 +457,7 @@ body.night-mode {
     background: var(--secondary-color);
     text-align: right;
     padding-right: 10px;
+    border-bottom: 1px solid var(--hover-bg);
 }
 
 .event {
@@ -550,6 +584,7 @@ body.night-mode {
     }
 }
 
+
 </style>
 
 </head>
@@ -662,15 +697,25 @@ body.night-mode {
             </div>
         </div>
 <div class="calendar">
-    <div class="calendar-header">
+    <div class="calendar-nav-header">
         <button id="prevWeek">&lt; Previous</button>
         <h2 id="currentWeek">August 1 - August 7, 2024</h2>
         <button id="nextWeek">Next &gt;</button>
+    </div>
+    <div class="calendar-header">
+        <div>Monday</div>
+        <div>Tuesday</div>
+        <div>Wednesday</div>
+        <div>Thursday</div>
+        <div>Friday</div>
+        <div>Saturday</div>
+        <div>Sunday</div>
     </div>
     <div class="calendar-grid">
         <!-- Days will be dynamically generated here -->
     </div>
 </div>
+
 
 <!-- Event Modal -->
 <div class="modal" id="eventModal">
