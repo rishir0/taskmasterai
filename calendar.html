@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -699,12 +700,10 @@ body.night-mode {
         </div>
         <div class="modal-body">
             <input type="text" id="eventTitle" placeholder="Event Title">
-            <input type="datetime-local" id="eventDateTime" placeholder="Event Date & Time">
             <textarea id="eventDescription" rows="4" placeholder="Event Description"></textarea>
         </div>
         <div class="modal-footer">
             <button id="saveEvent">Save</button>
-            <button id="deleteEvent" style="display: none;">Delete</button>
         </div>
     </div>
 </div>
@@ -737,7 +736,6 @@ body.night-mode {
     const modalTitle = document.getElementById('modalTitle');
     const eventTitleInput = document.getElementById('eventTitle');
     const eventDescriptionInput = document.getElementById('eventDescription');
-    const eventDateTimeInput = document.getElementById('eventDateTime');
     const currentWeekElement = document.getElementById('currentWeek');
     let events = {}; // Local cache for events
     let selectedDate = null;
@@ -767,67 +765,49 @@ body.night-mode {
         currentWeekElement.textContent = `${currentWeekStartDate.toLocaleDateString(undefined, options)} - ${weekEndDate.toLocaleDateString(undefined, options)}`;
     }
 
-    function createCalendar() {
-        calendarGrid.innerHTML = '';
+function createCalendar() {
+    calendarGrid.innerHTML = '';
 
-        for (let i = 0; i < 7; i++) {
-            const dayDate = new Date(currentWeekStartDate);
-            dayDate.setDate(currentWeekStartDate.getDate() + i);
+    for (let i = 0; i < 7; i++) {
+        const dayDate = new Date(currentWeekStartDate);
+        dayDate.setDate(currentWeekStartDate.getDate() + i);
 
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('day');
-            dayDiv.textContent = dayDate.getDate();
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = dayDate.getDate();
 
-            if (dayDate.toDateString() === new Date().toDateString()) {
-                dayDiv.classList.add('current-day');
-            }
-
-            dayDiv.addEventListener('click', () => openEventModal(dayDate));
-
-            const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
-            if (events[dayKey]) {
-                events[dayKey].forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('event');
-                    eventDiv.textContent = event.title;
-
-                    // Add click listener for editing the event
-                    eventDiv.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent the day click event
-                        openEventModal(dayDate, event);
-                    });
-
-                    dayDiv.appendChild(eventDiv);
-                });
-            }
-
-            calendarGrid.appendChild(dayDiv);
+        if (dayDate.toDateString() === new Date().toDateString()) {
+            dayDiv.classList.add('current-day');
         }
+
+        dayDiv.addEventListener('click', () => openEventModal(dayDate));
+
+        const dayKey = `${dayDate.getFullYear()}-${dayDate.getMonth()}-${dayDate.getDate()}`;
+        if (events[dayKey]) {
+            events[dayKey].forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.textContent = event.title;
+                dayDiv.appendChild(eventDiv);
+            });
+        }
+
+        calendarGrid.appendChild(dayDiv);
     }
+}
 
-    function openEventModal(date, event = null) {
+
+    function openEventModal(date) {
         selectedDate = date;
-
-        if (event) {
-            modalTitle.textContent = `Edit Event`;
-            eventTitleInput.value = event.title;
-            eventDescriptionInput.value = event.description;
-            eventDateTimeInput.value = event.dateTime.slice(0, 16); // Format datetime for input
-            saveEvent.setAttribute('data-event-id', event.id); // Store event ID in the button
-            saveEvent.textContent = "Update Event"; // Change button text
-            document.getElementById('deleteEvent').style.display = 'inline'; // Show delete button
-        } else {
-            modalTitle.textContent = `Add Event`;
-            eventTitleInput.value = '';
-            eventDescriptionInput.value = '';
-            eventDateTimeInput.value = '';
-            saveEvent.removeAttribute('data-event-id'); // Remove event ID if new event
-            saveEvent.textContent = "Save Event"; // Reset button text
-            document.getElementById('deleteEvent').style.display = 'none'; // Hide delete button
-        }
-
+        modalTitle.textContent = `Add Event on ${date.toDateString()}`;
+        eventTitleInput.value = '';
+        eventDescriptionInput.value = '';
         eventModal.style.display = 'flex';
     }
+
+    closeModal.addEventListener('click', () => {
+        eventModal.style.display = 'none';
+    });
 
     saveEvent.addEventListener('click', async () => {
         const user = firebase.auth().currentUser;
@@ -838,16 +818,10 @@ body.night-mode {
 
         const title = eventTitleInput.value;
         const description = eventDescriptionInput.value;
-        const dateTime = eventDateTimeInput.value;
-
-        const eventDuration = 60 * 60 * 1000; // 1 hour in milliseconds
-        const endDateTime = new Date(new Date(dateTime).getTime() + eventDuration).toISOString();
 
         const event = {
             title,
             description,
-            dateTime,
-            endDateTime,
             day: selectedDate.getDate(),
             month: selectedDate.getMonth(),
             year: selectedDate.getFullYear(),
@@ -856,42 +830,17 @@ body.night-mode {
 
         const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
 
-        try {
-            if (saveEvent.hasAttribute('data-event-id')) {
-                const eventId = saveEvent.getAttribute('data-event-id');
-                await db.collection('events').doc(eventId).update(event);
-                // Update event in local cache
-                const eventIndex = events[dayKey].findIndex(e => e.id === eventId);
-                events[dayKey][eventIndex] = event;
-            } else {
-                const docRef = await db.collection('events').add(event);
-                event.id = docRef.id; // Store the new document ID
-                if (!events[dayKey]) {
-                    events[dayKey] = [];
-                }
-                events[dayKey].push(event);
-            }
+        if (!events[dayKey]) {
+            events[dayKey] = [];
+        }
 
+        try {
+            await db.collection('events').add(event);
+            events[dayKey].push(event);
             eventModal.style.display = 'none';
             createCalendar();
         } catch (error) {
-            console.error("Error saving event: ", error);
-        }
-    });
-
-    document.getElementById('deleteEvent').addEventListener('click', async () => {
-        const eventId = saveEvent.getAttribute('data-event-id');
-        if (eventId) {
-            try {
-                await db.collection('events').doc(eventId).delete();
-                // Remove event from local cache
-                const dayKey = `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`;
-                events[dayKey] = events[dayKey].filter(event => event.id !== eventId);
-                eventModal.style.display = 'none';
-                createCalendar();
-            } catch (error) {
-                console.error("Error deleting event: ", error);
-            }
+            console.error("Error adding event: ", error);
         }
     });
 
@@ -902,9 +851,6 @@ body.night-mode {
             return;
         }
 
-        // Clear events object to prevent duplication
-        events = {};
-
         try {
             const snapshot = await db.collection('events')
                 .where("year", "==", currentWeekStartDate.getFullYear())
@@ -914,8 +860,7 @@ body.night-mode {
 
             snapshot.forEach(doc => {
                 const event = doc.data();
-                event.id = doc.id; // Store Firestore document ID for future edits
-                const eventDate = new Date(event.dateTime);
+                const eventDate = new Date(event.year, event.month, event.day);
                 const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
                 if (!events[dayKey]) {
                     events[dayKey] = [];
@@ -942,13 +887,7 @@ body.night-mode {
         updateCalendarHeader();
         loadEvents();
     });
-
-    closeModal.addEventListener('click', () => {
-        eventModal.style.display = 'none';
-    });
-
 </script>
-
 
 
 
