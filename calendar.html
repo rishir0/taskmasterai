@@ -428,21 +428,6 @@ body.night-mode {
 }
 
 
-.day {
-    border-right: 1px solid var(--hover-bg);
-    border-bottom: 1px solid var(--hover-bg);
-    position: relative; /* Ensure it contains the absolutely positioned circle */
-    padding: 10px; /* Maintain padding to accommodate the circle */
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.day:last-child {
-    border-right: none; /* Remove the right border for the last column */
-}
-
-
 .event {
     background: var(--accent-color);
     color: #fff;
@@ -526,6 +511,21 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
+.day {
+    border-right: 1px solid var(--hover-bg);
+    border-bottom: 1px solid var(--hover-bg);
+    position: relative; /* Ensure it contains the absolutely positioned circle */
+    padding: 10px; /* Maintain padding to accommodate the circle */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: var(--bg-color); /* Ensure background color is set */
+}
+
+.day:last-child {
+    border-right: none; /* Remove the right border for the last column */
+}
+
 .current-day {
     position: relative; /* Ensure proper positioning */
     display: inline-flex;
@@ -548,6 +548,7 @@ body.night-mode {
     z-index: 2; /* Ensure text is on top of the circle */
     font-weight: bold;
     font-size: 1rem;
+    color: white; /* Ensure the text color is visible */
 }
 
 
@@ -582,8 +583,6 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
-
-
 
 </style>
 
