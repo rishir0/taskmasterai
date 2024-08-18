@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -827,7 +826,16 @@ function createCalendar() {
             events[dayKey].forEach(event => {
                 const eventDiv = document.createElement('div');
                 eventDiv.classList.add('event');
-                eventDiv.textContent = event.title;
+                
+                let eventDisplayText = event.title;
+                
+                if (event.startTime && event.endTime) {
+                    const formattedStartTime = formatTimeTo12Hour(event.startTime);
+                    const formattedEndTime = formatTimeTo12Hour(event.endTime);
+                    eventDisplayText += ` (${formattedStartTime} - ${formattedEndTime})`;
+                }
+
+                eventDiv.textContent = eventDisplayText;
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent triggering the openEventModal
                     openEditEventModal(dayKey, event);
