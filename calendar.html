@@ -428,16 +428,17 @@ body.night-mode {
 }
 
 .current-day {
-    position: relative; /* Ensure proper positioning relative to the day container */
+    position: relative; /* Ensure the cell is positioned relative to its container */
     padding: 10px; /* Ensure there's enough padding to fit the circle */
-    color: white; /* Make the text color stand out */
+    overflow: hidden; /* Ensure content does not overflow the boundaries */
 }
 
 .current-day::before {
     content: ""; /* Empty content to create the circle */
     position: absolute; /* Absolute positioning to overlay the circle */
-    top: 5px; /* Adjust the top position */
-    left: 5px; /* Adjust the left position */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Center the circle */
     width: 30px; /* Adjust the size of the circle */
     height: 30px; /* Adjust the size of the circle */
     border-radius: 50%; /* Makes the circle */
@@ -449,13 +450,14 @@ body.night-mode {
 }
 
 .current-day span {
-    position: relative; /* Ensure the text is on top of the circle */
+    position: relative; /* Position relative to its container */
     color: white; /* White text color */
     z-index: 1; /* Ensure the text is above the circle */
     font-weight: bold;
-    /* Add padding to ensure the text does not overlap the circle */
-    padding: 2px;
+    font-size: 1rem; /* Adjust font size if needed */
+    text-align: center; /* Center align the text */
 }
+
 
 .day {
     border-right: 1px solid var(--hover-bg);
