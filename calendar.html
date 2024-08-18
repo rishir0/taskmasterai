@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -529,10 +528,10 @@ body.night-mode {
 
 .current-day {
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Gradient background */
-    color: var(--primary-color); /* Solid color for the text */
+    -webkit-background-clip: text; /* Use the gradient background for the text color */
+    -webkit-text-fill-color: transparent; /* Make the text transparent so the gradient shows through */
     font-weight: bold; /* Make the text bold */
 }
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -835,46 +834,38 @@ function createCalendar() {
             events[dayKey].forEach(event => {
                 const eventDiv = document.createElement('div');
                 eventDiv.classList.add('event');
-
+                
                 let eventDisplayText = event.title;
+                
+if (event.startTime && event.endTime) {
+    const formattedStartTime = formatTimeTo12Hour(event.startTime);
+    const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-                if (event.startTime && event.endTime) {
-                    const formattedStartTime = formatTimeTo12Hour(event.startTime);
-                    const formattedEndTime = formatTimeTo12Hour(event.endTime);
+    // Construct the time string
+    let timeString = '';
+    if (formattedStartTime) {
+        timeString += formattedStartTime;
+    }
+    if (formattedEndTime) {
+        if (timeString) {
+            timeString += ` - ${formattedEndTime}`;
+        } else {
+            timeString = formattedEndTime;
+        }
+    }
 
-                    // Create a date object for the event's end time
-                    const eventEndTime = new Date(dayDate);
-                    const [endHour, endMinute] = event.endTime.split(':').map(Number);
-                    eventEndTime.setHours(endHour, endMinute);
+    // Only add parentheses if there is valid time content
+    if (timeString) {
+        eventDisplayText += ` (${timeString})`;
+    }
+}
 
-                    // Check if the event time has passed
-                    const currentTime = new Date();
-                    if (currentTime > eventEndTime) {
-                        eventDiv.style.backgroundColor = "var(--primary-color)";
-                    }
 
-                    // Construct the time string
-                    let timeString = '';
-                    if (formattedStartTime) {
-                        timeString += formattedStartTime;
-                    }
-                    if (formattedEndTime) {
-                        if (timeString) {
-                            timeString += ` - ${formattedEndTime}`;
-                        } else {
-                            timeString = formattedEndTime;
-                        }
-                    }
-
-                    // Only add parentheses if there is valid time content
-                    if (timeString) {
-                        eventDisplayText += ` (${timeString})`;
-                    }
-                }
 
                 eventDiv.textContent = eventDisplayText;
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent triggering the openEventModal
+                    openEditEventModal(dayKey, event);
                 });
                 dayDiv.appendChild(eventDiv);
             });
