@@ -427,6 +427,21 @@ body.night-mode {
     background: var(--bg-color);
 }
 
+.current-day {
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: white; /* Make the text color stand out */
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: 3px; /* Slightly lower the circle */
+}
+
+
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
@@ -525,18 +540,6 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
-.current-day {
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Make the text color stand out */
-    padding: 5px; /* Adjust padding to make the circle well-rounded */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-}
 
 
 /* Responsive Adjustments */
