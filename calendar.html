@@ -438,8 +438,8 @@ body.night-mode {
 .current-day::before {
     content: ""; /* Empty content to create the circle */
     position: absolute; /* Absolute positioning to overlay the circle */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
+    top: 20%; /* Center vertically */
+    left: 25%; /* Center horizontally */
     transform: translate(-50%, -50%); /* Adjust for centering */
     width: 30px; /* Adjust the size of the circle */
     height: 30px; /* Adjust the size of the circle */
@@ -454,7 +454,7 @@ body.night-mode {
 .current-day span {
     position: relative; /* Ensure text is on top */
     color: white; /* White text color */
-    z-index: 2; /* Ensure the text is above the circle */
+    z-index: 1; /* Ensure the text is above the circle */
     font-weight: bold;
 }
 
