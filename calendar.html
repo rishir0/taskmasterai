@@ -443,7 +443,7 @@ body.night-mode {
     height: 30px; /* Adjust the size of the circle */
     border-radius: 50%; /* Makes the circle */
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    z-index: -1; /* Place it behind the text */
+    z-index: 0; /* Place it behind the text */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -452,7 +452,7 @@ body.night-mode {
 .current-day span {
     position: relative; /* Ensure the text is on top of the circle */
     color: white; /* White text color */
-    z-index: 1; /* Ensure the text is above the circle */
+    z-index: 2; /* Ensure the text is above the circle */
     font-weight: bold;
     /* Add padding to ensure the text does not overlap the circle */
     padding: 2px;
