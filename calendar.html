@@ -996,8 +996,16 @@ saveEditEvent.addEventListener('click', async () => {
 
 function formatTimeTo12Hour(timeString) {
     const [hour, minute] = timeString.split(':').map(Number);
+
+    // Check if hour and minute are valid
+    if (isNaN(hour) || isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+        return "Invalid time"; // Handle invalid time
+    }
+
+    // Create a date object with valid hour and minute values
     const date = new Date();
     date.setHours(hour, minute);
+
     return new Intl.DateTimeFormat('en-US', {
         hour: 'numeric',
         minute: 'numeric',
@@ -1090,15 +1098,24 @@ async function loadEvents() {
 
 
 function formatEventTime(event) {
-    const startTime = event.startTime; // Assuming you get the start time from the event object
-    const endTime = event.endTime; // Assuming you get the end time from the event object
+    const startTime = event.startTime || ''; // Default to empty string if not provided
+    const endTime = event.endTime || ''; // Default to empty string if not provided
 
-    // Check if startTime or endTime are "NaN:NaN" or invalid
-    if (startTime === "NaN:NaN" || endTime === "NaN:NaN") {
-        return event.title; // Only display the event title if the time is invalid
+    // Check if startTime or endTime are empty
+    if (!startTime && !endTime) {
+        return event.title; // Display only the title if no time is provided
     }
 
-    return `${startTime} - ${endTime}`;
+    // Format valid times
+    const formattedStartTime = startTime ? formatTimeTo12Hour(startTime) : '';
+    const formattedEndTime = endTime ? formatTimeTo12Hour(endTime) : '';
+
+    // Only display time if both are valid; otherwise, just display the title
+    if (formattedStartTime && formattedEndTime) {
+        return `${formattedStartTime} - ${formattedEndTime}`;
+    }
+
+    return event.title; // Fallback to title if time formatting fails or is incomplete
 }
 
 function renderEvent(event) {
