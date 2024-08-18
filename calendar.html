@@ -430,17 +430,16 @@ body.night-mode {
 .current-day {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Make the text color stand out */
-    padding: 5px; /* Adjust padding to make the circle well-rounded */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
+    color: white; 
+    padding: 5px; 
+    width: 30px;  
+    height: 30px; 
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    margin-top: 3px; /* Slightly lower the circle */
+    transform: translate(3px, 3px); /* Slightly shift the circle right and down */
 }
-
 
 .day {
     border-right: 1px solid var(--hover-bg);
@@ -450,8 +449,8 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    cursor: pointer; /* Ensure the day cell is clickable */
 }
-
 
 .day:last-child {
     border-right: none;
@@ -1066,7 +1065,12 @@ async function loadEvents() {
         currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
         updateCalendarHeader();
         loadEvents();
+
+    document.querySelectorAll('.day').forEach(day => {
+        day.addEventListener('click', function() {
+        openEventModal(day);
     });
+    
 
     // Handle Next Week
     document.getElementById('nextWeek').addEventListener('click', () => {
