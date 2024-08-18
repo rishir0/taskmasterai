@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1065,12 +1066,7 @@ async function loadEvents() {
         currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
         updateCalendarHeader();
         loadEvents();
-
-    document.querySelectorAll('.day').forEach(day => {
-        day.addEventListener('click', function() {
-        openEventModal(day);
     });
-    
 
     // Handle Next Week
     document.getElementById('nextWeek').addEventListener('click', () => {
