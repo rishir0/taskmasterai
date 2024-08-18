@@ -528,14 +528,23 @@ body.night-mode {
 .current-day {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Make the text color stand out */
-    padding: 5px; /* Adjust padding to make the circle well-rounded */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
+    color: white; /* Ensures the text color stands out */
+    padding: 5px; /* Maintains a well-rounded circle */
+    width: 30px;  /* Set width to maintain circle shape */
+    height: 30px; /* Set height to maintain circle shape */
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    margin: 0 auto; /* Centers the circle within its grid cell */
+}
+
+.day-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Ensures the day number is centered */
+    height: 100%; /* Ensures proper vertical alignment */
 }
 
 
