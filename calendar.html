@@ -527,11 +527,17 @@ body.night-mode {
 }
 
 .current-day {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Gradient background */
-    -webkit-background-clip: text; /* Use the gradient background for the text color */
-    -webkit-text-fill-color: transparent; /* Make the text transparent so the gradient shows through */
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Apply gradient */
+    -webkit-background-clip: text; /* Clip the gradient to the text */
+    -webkit-text-fill-color: transparent; /* Make the text transparent to show the gradient */
     font-weight: bold; /* Make the text bold */
 }
+
+.current-day .event {
+    color: inherit; /* Inherit the text color, preserving the gradient */
+    background: none; /* Ensure no background color overrides the text */
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
