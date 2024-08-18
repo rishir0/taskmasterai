@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -439,7 +438,7 @@ body.night-mode {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    transform: translate(3px, 3px); /* Slightly shift the circle right and down */
+    transform: translate(6px, 6px); /* Slightly shift the circle right and down */
 }
 
 .day {
@@ -451,11 +450,14 @@ body.night-mode {
     flex-direction: column;
     gap: 5px;
     cursor: pointer; /* Ensure the day cell is clickable */
+    width: 100%; /* Make the entire day section clickable */
+    box-sizing: border-box; /* Ensure borders are included in the element's width */
 }
 
 .day:last-child {
-    border-right: none;
+    border-right: 1px solid var(--hover-bg); /* Ensure the separator line appears on the right */
 }
+
 
 .event {
     background: var(--accent-color);
