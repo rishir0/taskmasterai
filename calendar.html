@@ -428,18 +428,25 @@ body.night-mode {
 }
 
 .current-day {
-    position: relative; /* Ensure the cell is positioned relative to its container */
-    padding: 10px; /* Ensure there's enough padding to fit the circle */
-    overflow: hidden; /* Ensure content does not overflow the boundaries */
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: white; /* Make the text color stand out */
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative; /* Ensure proper positioning */
+    margin: 0; /* Reset margin to avoid positioning issues */
 }
-
 
 .current-day::before {
     content: ""; /* Empty content to create the circle */
     position: absolute; /* Absolute positioning to overlay the circle */
-    top: 0; /* Align circle to the top */
-    left: 0; /* Align circle to the left */
+    top: 5px; /* Adjust the top position to ensure it does not overlap with the text */
+    left: 5px; /* Adjust the left position to ensure it does not overlap with the text */
     width: 30px; /* Adjust the size of the circle */
     height: 30px; /* Adjust the size of the circle */
     border-radius: 50%; /* Makes the circle */
@@ -452,16 +459,14 @@ body.night-mode {
 
 .current-day span {
     position: relative; /* Position relative to its container */
-    top: 9px; /* Adjust top position as needed */
-    left: 9px; /* Adjust left position as needed */
+    top: 5px; /* Adjust top position as needed to fit inside the circle */
+    left: 5px; /* Adjust left position as needed to fit inside the circle */
     color: white; /* White text color */
     z-index: 1; /* Ensure the text is above the circle */
     font-weight: bold;
     /* Add padding to ensure the text does not overlap the circle */
     padding: 2px;
 }
-
-
 
 .day {
     border-right: 1px solid var(--hover-bg);
