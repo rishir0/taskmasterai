@@ -836,31 +836,40 @@ function createCalendar() {
                 eventDiv.classList.add('event');
                 
                 let eventDisplayText = event.title;
-                
-if (event.startTime && event.endTime) {
-    const formattedStartTime = formatTimeTo12Hour(event.startTime);
-    const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-    // Construct the time string
-    let timeString = '';
-    if (formattedStartTime) {
-        timeString += formattedStartTime;
-    }
-    if (formattedEndTime) {
-        if (timeString) {
-            timeString += ` - ${formattedEndTime}`;
-        } else {
-            timeString = formattedEndTime;
-        }
-    }
+                if (event.startTime && event.endTime) {
+                    const formattedStartTime = formatTimeTo12Hour(event.startTime);
+                    const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-    // Only add parentheses if there is valid time content
-    if (timeString) {
-        eventDisplayText += ` (${timeString})`;
-    }
-}
+                    // Construct the time string
+                    let timeString = '';
+                    if (formattedStartTime) {
+                        timeString += formattedStartTime;
+                    }
+                    if (formattedEndTime) {
+                        if (timeString) {
+                            timeString += ` - ${formattedEndTime}`;
+                        } else {
+                            timeString = formattedEndTime;
+                        }
+                    }
 
+                    // Only add parentheses if there is valid time content
+                    if (timeString) {
+                        eventDisplayText += ` (${timeString})`;
+                    }
 
+                    // Create a Date object for the event's end time on the correct day
+                    const eventEndTime = new Date(dayDate);
+                    const [endHour, endMinute] = event.endTime.split(':').map(Number);
+                    eventEndTime.setHours(endHour, endMinute);
+
+                    // Check if the event's end time has passed
+                    const currentTime = new Date();
+                    if (currentTime > eventEndTime) {
+                        eventDiv.style.backgroundColor = "var(--primary-color)";
+                    }
+                }
 
                 eventDiv.textContent = eventDisplayText;
                 eventDiv.addEventListener('click', (e) => {
