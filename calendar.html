@@ -511,45 +511,36 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
+/* Add a border or separator style if needed */
 .day {
-    border-right: 1px solid var(--hover-bg);
-    border-bottom: 1px solid var(--hover-bg);
-    position: relative; /* Ensure it contains the absolutely positioned circle */
-    padding: 10px; /* Maintain padding to accommodate the circle */
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background: var(--bg-color); /* Ensure background color is set */
+    position: relative; /* Ensure positioning for children */
+    border-right: 1px solid #ddd; /* Example separator line */
 }
+
+.current-day {
+    position: relative;
+    background: linear-gradient(to bottom, #fff, #f0f0f0);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.current-day span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
 
 .day:last-child {
     border-right: none; /* Remove the right border for the last column */
 }
 
-.current-day {
-    position: relative; /* Ensure proper positioning */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%; /* Circular shape */
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Text color */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
-    box-sizing: border-box;
-    padding: 0; /* No padding needed, handle size via width and height */
-    text-align: center;
-    line-height: 30px; /* Center text vertically */
-    z-index: 1; /* Ensure it's above the separator lines */
-}
-
-.current-day span {
-    position: relative; /* Ensure the text is positioned correctly */
-    z-index: 2; /* Ensure text is on top of the circle */
-    font-weight: bold;
-    font-size: 1rem;
-    color: white; /* Ensure the text color is visible */
-}
 
 
 /* Responsive Adjustments */
@@ -1108,25 +1099,22 @@ function renderEvent(event) {
 function highlightCurrentDay() {
     const today = new Date();
     const currentDay = today.getDate();
-    const days = document.querySelectorAll('.day'); // Assuming each day cell has a class "day"
+    const days = document.querySelectorAll('.day'); 
 
     days.forEach(day => {
         const dayNumber = parseInt(day.textContent, 10);
 
         if (dayNumber === currentDay) {
             day.classList.add('current-day');
-
-            // Add or update the content dynamically
-            const span = day.querySelector('span') || document.createElement('span');
-            span.textContent = dayNumber;
-            day.appendChild(span);
+        } else {
+            day.classList.remove('current-day');
         }
     });
 }
 
 // Call the function after your calendar has rendered
+createCalendar();
 highlightCurrentDay();
-
 
 </script>
 
