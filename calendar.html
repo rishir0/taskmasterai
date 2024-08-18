@@ -859,11 +859,19 @@ function createCalendar() {
                 
                 let eventDisplayText = event.title;
                 
-                if (event.startTime && event.endTime) {
-                    const formattedStartTime = formatTimeTo12Hour(event.startTime);
-                    const formattedEndTime = formatTimeTo12Hour(event.endTime);
-                    eventDisplayText += ` (${formattedStartTime} - ${formattedEndTime})`;
-                }
+if (event.startTime && event.endTime) {
+    const formattedStartTime = formatTimeTo12Hour(event.startTime);
+    const formattedEndTime = formatTimeTo12Hour(event.endTime);
+
+    // Check if formatted times are valid
+    if (formattedStartTime && formattedEndTime) {
+        eventDisplayText += ` (${formattedStartTime} - ${formattedEndTime})`;
+    } else {
+        // Only add valid times or fallback to the title
+        eventDisplayText += ` (${formattedStartTime || ''}${formattedStartTime && formattedEndTime ? ' - ' : ''}${formattedEndTime || ''})`.trim();
+    }
+}
+
 
                 eventDiv.textContent = eventDisplayText;
                 eventDiv.addEventListener('click', (e) => {
