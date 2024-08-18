@@ -1074,44 +1074,95 @@ async function loadEvents() {
     events = {};
 
     try {
+        // Step 1: Load tasks from Firestore
         const taskSnapshot = await db.collection('tasks')
             .where("userId", "==", user.uid)
             .get();
 
-        taskSnapshot.forEach(async doc => {
+        taskSnapshot.forEach(doc => {
             const task = doc.data();
-            const dueDate = task.dueDate.toDate();
+            const dueDate = task.dueDate.toDate(); // Convert Firestore timestamp to Date
+
             const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
 
+            // Check if an event with this task already exists to avoid duplication
             if (!events[dayKey]) {
                 events[dayKey] = [];
             }
 
-            const event = {
-                title: task.task,
-                description: 'Converted from task', // You can modify this
-                startTime: `${dueDate.getHours()}:${dueDate.getMinutes()}`,
-                endTime: '', // Add end time if needed
-                day: dueDate.getDate(),
-                month: dueDate.getMonth(),
-                year: dueDate.getFullYear(),
-                uid: user.uid,
-                taskId: doc.id // Store the task ID for reference
-            };
+            const existingEvent = events[dayKey].find(event => event.taskId === doc.id);
+            if (!existingEvent) {
+                events[dayKey].push({
+                    title: task.task,
+                    description: 'Converted from task',
+                    startTime: dueDate.getHours() + ":" + dueDate.getMinutes(),
+                    endTime: null, // Assuming tasks don't have an end time
+                    day: dueDate.getDate(),
+                    month: dueDate.getMonth(),
+                    year: dueDate.getFullYear(),
+                    uid: user.uid,
+                    taskId: doc.id, // Store the task ID for reference
+                });
+            }
+        });
 
-            // Save the event to the Firestore events collection
-            await db.collection('events').add(event);
+        // Step 2: Load existing events from Firestore
+        const eventSnapshot = await db.collection('events')
+            .where("uid", "==", user.uid)
+            .get();
 
+        eventSnapshot.forEach(doc => {
+            const event = doc.data();
+            const dayKey = `${event.year}-${event.month}-${event.day}`;
+            if (!events[dayKey]) {
+                events[dayKey] = [];
+            }
             events[dayKey].push(event);
         });
 
+        // Step 3: Render the calendar
         createCalendar();
     } catch (error) {
-        console.error("Error loading tasks from Firestore: ", error);
+        console.error("Error loading events and tasks from Firestore: ", error);
     }
 }
 
+async function deleteEventAndTask(event) {
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.error("No user is signed in");
+            return;
+        }
 
+        // Step 1: Delete the event from Firestore
+        const snapshot = await db.collection('events')
+            .where("year", "==", event.year)
+            .where("month", "==", event.month)
+            .where("day", "==", event.day)
+            .where("uid", "==", user.uid)
+            .where("title", "==", event.title)
+            .get();
+
+        if (!snapshot.empty) {
+            const docRef = snapshot.docs[0].ref;
+            await docRef.delete();
+
+            // Step 2: Check if the event was created from a task
+            if (event.taskId) {
+                // Delete the associated task from Firestore
+                await db.collection('tasks').doc(event.taskId).delete();
+            }
+
+            // Step 3: Update local events and re-render the calendar
+            const dayKey = `${event.year}-${event.month}-${event.day}`;
+            events[dayKey] = events[dayKey].filter(e => e.title !== event.title);
+            createCalendar();
+        }
+    } catch (error) {
+        console.error("Error deleting event and associated task: ", error);
+    }
+}
 
     // Handle Previous Week
     document.getElementById('prevWeek').addEventListener('click', () => {
