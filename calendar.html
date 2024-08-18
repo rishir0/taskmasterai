@@ -534,18 +534,16 @@ body.night-mode {
 }
 
 .current-day::before {
-    content: ""; /* Empty content to create the circle */
-    position: absolute; /* Absolute positioning to overlay the circle */
-    top: 5px; /* Adjust the top position */
-    left: 5px; /* Adjust the left position */
-    width: 30px; /* Adjust the size of the circle */
-    height: 30px; /* Adjust the size of the circle */
-    border-radius: 50%; /* Makes the circle */
+    border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    z-index: 0; /* Place it behind the text */
-    display: flex;
-    justify-content: center;
+    color: white; /* Make the text color stand out */
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .current-day span {
