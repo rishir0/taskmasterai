@@ -427,21 +427,6 @@ body.night-mode {
     background: var(--bg-color);
 }
 
-.current-day {
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    border-right: 1px solid var(--hover-bg);
-    border-bottom: 1px solid var(--hover-bg);
-    position: relative;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer; /* Ensure the day cell is clickable */
-    width: 100%; /* Make the entire day section clickable */
-    box-sizing: border-box; /* Ensure borders are included in the element's width */
-}
-
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
@@ -450,15 +435,12 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    cursor: pointer; /* Ensure the day cell is clickable */
-    width: 100%; /* Make the entire day section clickable */
-    box-sizing: border-box; /* Ensure borders are included in the element's width */
 }
+
 
 .day:last-child {
-    border-right: 1px solid var(--hover-bg); /* Ensure the separator line appears on the right */
+    border-right: none;
 }
-
 
 .event {
     background: var(--accent-color);
@@ -542,8 +524,6 @@ body.night-mode {
 .modal-footer button:hover {
     background-color: var(--hover-bg);
 }
-
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
