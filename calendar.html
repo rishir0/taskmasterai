@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -527,17 +528,16 @@ body.night-mode {
 }
 
 .current-day {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Apply gradient */
-    -webkit-background-clip: text; /* Clip the gradient to the text */
-    -webkit-text-fill-color: transparent; /* Make the text transparent to show the gradient */
-    font-weight: bold; /* Make the text bold */
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
 }
 
 .current-day .event {
-    color: inherit; /* Inherit the text color, preserving the gradient */
-    background: none; /* Ensure no background color overrides the text */
+    color: white; /* Set the event text color to white */
+    background-color: var(--accent-color); /* Set the event background to the accent color */
 }
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
