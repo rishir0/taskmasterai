@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -428,6 +429,21 @@ body.night-mode {
 }
 
 
+.day {
+    border-right: 1px solid var(--hover-bg);
+    border-bottom: 1px solid var(--hover-bg);
+    position: relative; /* Ensure it contains the absolutely positioned circle */
+    padding: 10px; /* Maintain padding to accommodate the circle */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.day:last-child {
+    border-right: none; /* Remove the right border for the last column */
+}
+
+
 .event {
     background: var(--accent-color);
     color: #fff;
@@ -511,37 +527,34 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
-/* Add a border or separator style if needed */
-.day {
-    position: relative; /* Ensure positioning for children */
-    border-right: 1px solid #ddd; /* Example separator line */
+.current-day {
+    position: relative; /* Ensure proper positioning relative to the day container */
+    padding: 10px; /* Ensure there's enough padding to fit the circle */
+    color: white; /* Make the text color stand out */
+    z-index: 3; /* Ensure the text is above the circle */
 }
 
-.current-day {
-    position: relative;
-    background: linear-gradient(to bottom, #fff, #f0f0f0);
+.current-day::before {
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: white; /* Make the text color stand out */
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .current-day span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
+    position: relative; /* Ensure the text is on top of the circle */
+    color: white; /* White text color */
+    z-index: 3; /* Ensure the text is above the circle */
+    font-weight: bold;
+    /* Add padding to ensure the text does not overlap the circle */
+    padding: 2px;
 }
-
-
-.day:last-child {
-    border-right: none; /* Remove the right border for the last column */
-}
-
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -574,6 +587,8 @@ body.night-mode {
         font-size: 0.9rem;
     }
 }
+
+
 
 </style>
 
@@ -1099,21 +1114,16 @@ function renderEvent(event) {
 function highlightCurrentDay() {
     const today = new Date();
     const currentDay = today.getDate();
-    const days = document.querySelectorAll('.day'); 
+    const days = document.querySelectorAll('.day'); // Assuming each day cell has a class "day"
 
     days.forEach(day => {
-        const dayNumber = parseInt(day.textContent, 10);
-
-        if (dayNumber === currentDay) {
+        if (parseInt(day.textContent, 10) === currentDay) {
             day.classList.add('current-day');
-        } else {
-            day.classList.remove('current-day');
         }
     });
 }
 
 // Call the function after your calendar has rendered
-createCalendar();
 highlightCurrentDay();
 
 </script>
