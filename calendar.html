@@ -533,27 +533,14 @@ body.night-mode {
     z-index: 3; /* Ensure the text is above the circle */
 }
 
-.current-day::before {
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Make the text color stand out */
-    padding: 5px; /* Adjust padding to make the circle well-rounded */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+.current-day {
+    background-color: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Example background color, change as needed */
+    /* Add any additional styling you want for the current day */
+    /* For example: */
+    color: #000; /* Text color */
+    font-weight: bold; /* Make the text bold */
 }
 
-.current-day span {
-    position: relative; /* Ensure the text is on top of the circle */
-    color: white; /* White text color */
-    z-index: 3; /* Ensure the text is above the circle */
-    font-weight: bold;
-    /* Add padding to ensure the text does not overlap the circle */
-    padding: 2px;
-}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -1156,16 +1143,26 @@ function renderEvent(event) {
 function highlightCurrentDay() {
     const today = new Date();
     const currentDay = today.getDate();
-    const days = document.querySelectorAll('.day'); // Assuming each day cell has a class "day"
+    const currentMonth = today.getMonth(); // January is 0
+    const currentYear = today.getFullYear();
 
-    days.forEach(day => {
-        if (parseInt(day.textContent, 10) === currentDay) {
-            day.classList.add('current-day');
+    // Assuming you have a way to get the day cells
+    const dayCells = document.querySelectorAll('.day-cell'); // Update this selector as needed
+
+    dayCells.forEach(cell => {
+        const day = parseInt(cell.getAttribute('data-day'), 10);
+        const month = parseInt(cell.getAttribute('data-month'), 10);
+        const year = parseInt(cell.getAttribute('data-year'), 10);
+
+        if (day === currentDay && month === currentMonth && year === currentYear) {
+            cell.classList.add('current-day');
+        } else {
+            cell.classList.remove('current-day');
         }
     });
 }
 
-// Call the function after your calendar has rendered
+// Call this function when the calendar is rendered or when you need to update it
 highlightCurrentDay();
 
 </script>
