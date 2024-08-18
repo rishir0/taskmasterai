@@ -1093,19 +1093,13 @@ function formatEventTime(event) {
     const startTime = event.startTime; // Assuming you get the start time from the event object
     const endTime = event.endTime; // Assuming you get the end time from the event object
 
-    // Check if startTime or endTime is NaN or invalid
-    const isValidTime = (time) => {
-        const regex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/; // Regex for valid time format (HH:MM)
-        return regex.test(time);
-    };
-
-    if (!isValidTime(startTime) || !isValidTime(endTime)) {
+    // Check if startTime or endTime are "NaN:NaN" or invalid
+    if (startTime === "NaN:NaN" || endTime === "NaN:NaN") {
         return event.title; // Only display the event title if the time is invalid
     }
 
     return `${startTime} - ${endTime}`;
 }
-
 
 function renderEvent(event) {
     const timeText = formatEventTime(event);
@@ -1116,6 +1110,7 @@ function renderEvent(event) {
 
     return eventElement;
 }
+
 
 function highlightCurrentDay() {
     const today = new Date();
