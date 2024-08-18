@@ -1066,13 +1066,14 @@ async function loadEvents() {
     events = {};
 
     try {
-        const snapshot = await db.collection('events')
+        // Load events from the 'events' collection
+        const eventsSnapshot = await db.collection('events')
             .where("year", "==", currentWeekStartDate.getFullYear())
             .where("month", "==", currentWeekStartDate.getMonth())
             .where("uid", "==", user.uid)
             .get();
 
-        snapshot.forEach(doc => {
+        eventsSnapshot.forEach(doc => {
             const event = doc.data();
             const eventDate = new Date(event.year, event.month, event.day);
             const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
@@ -1082,12 +1083,39 @@ async function loadEvents() {
             events[dayKey].push(event);
         });
 
+        // Load tasks with due dates from the 'tasks' collection
+        const tasksSnapshot = await db.collection('tasks')
+            .where("uid", "==", user.uid)
+            .where("dueDate", "!=", null) // Make sure the task has a due date
+            .get();
+
+        tasksSnapshot.forEach(doc => {
+            const task = doc.data();
+            const dueDate = task.dueDate.toDate(); // Convert Firestore timestamp to Date object
+            const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
+
+            const taskEvent = {
+                title: task.title || 'Task',
+                description: task.description || '',
+                day: dueDate.getDate(),
+                month: dueDate.getMonth(),
+                year: dueDate.getFullYear(),
+                uid: user.uid,
+                startTime: task.startTime || '',
+                endTime: task.endTime || ''
+            };
+
+            if (!events[dayKey]) {
+                events[dayKey] = [];
+            }
+            events[dayKey].push(taskEvent);
+        });
+
         createCalendar();
     } catch (error) {
-        console.error("Error loading events from Firestore: ", error);
+        console.error("Error loading events and tasks from Firestore: ", error);
     }
 }
-
 
     // Handle Previous Week
     document.getElementById('prevWeek').addEventListener('click', () => {
