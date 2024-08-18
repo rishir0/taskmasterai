@@ -1086,7 +1086,7 @@ async function loadEvents() {
         // Load tasks with due dates from the 'tasks' collection
         const tasksSnapshot = await db.collection('tasks')
             .where("uid", "==", user.uid)
-            .where("dueDate", "!=", null) // Make sure the task has a due date
+            .where("dueDate", "!=", null) // Ensure the task has a due date
             .get();
 
         tasksSnapshot.forEach(doc => {
@@ -1116,6 +1116,7 @@ async function loadEvents() {
         console.error("Error loading events and tasks from Firestore: ", error);
     }
 }
+
 
     // Handle Previous Week
     document.getElementById('prevWeek').addEventListener('click', () => {
