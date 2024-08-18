@@ -1074,58 +1074,35 @@ async function loadEvents() {
     events = {};
 
     try {
-        // Step 1: Load tasks from Firestore
-        const taskSnapshot = await db.collection('tasks')
-            .where("userId", "==", user.uid)
-            .get();
-
-        taskSnapshot.forEach(doc => {
-            const task = doc.data();
-            const dueDate = task.dueDate.toDate(); // Convert Firestore timestamp to Date
-
-            const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
-
-            // Check if an event with this task already exists to avoid duplication
-            if (!events[dayKey]) {
-                events[dayKey] = [];
-            }
-
-            const existingEvent = events[dayKey].find(event => event.taskId === doc.id);
-            if (!existingEvent) {
-                events[dayKey].push({
-                    title: task.task,
-                    description: 'Converted from task',
-                    startTime: dueDate.getHours() + ":" + dueDate.getMinutes(),
-                    endTime: null, // Assuming tasks don't have an end time
-                    day: dueDate.getDate(),
-                    month: dueDate.getMonth(),
-                    year: dueDate.getFullYear(),
-                    uid: user.uid,
-                    taskId: doc.id, // Store the task ID for reference
-                });
-            }
-        });
-
-        // Step 2: Load existing events from Firestore
-        const eventSnapshot = await db.collection('events')
+        const snapshot = await db.collection('events')
+            .where("year", "==", currentWeekStartDate.getFullYear())
+            .where("month", "==", currentWeekStartDate.getMonth())
             .where("uid", "==", user.uid)
             .get();
 
-        eventSnapshot.forEach(doc => {
+        snapshot.forEach(doc => {
             const event = doc.data();
-            const dayKey = `${event.year}-${event.month}-${event.day}`;
-            if (!events[dayKey]) {
-                events[dayKey] = [];
+
+            // Ensure the dueDate is a valid Firestore Timestamp before converting
+            if (event.dueDate && event.dueDate.toDate) {
+                const eventDate = event.dueDate.toDate();
+                const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
+
+                if (!events[dayKey]) {
+                    events[dayKey] = [];
+                }
+                events[dayKey].push(event);
+            } else {
+                console.warn(`Invalid or missing dueDate in event: ${doc.id}`);
             }
-            events[dayKey].push(event);
         });
 
-        // Step 3: Render the calendar
         createCalendar();
     } catch (error) {
         console.error("Error loading events and tasks from Firestore: ", error);
     }
 }
+
 
 async function deleteEventAndTask(event) {
     try {
