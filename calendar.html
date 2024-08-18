@@ -999,7 +999,7 @@ function formatTimeTo12Hour(timeString) {
 
     // Check if hour and minute are valid
     if (isNaN(hour) || isNaN(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-        return "Invalid time"; // Handle invalid time
+        return null; // Return null for invalid time
     }
 
     // Create a date object with valid hour and minute values
@@ -1101,29 +1101,34 @@ function formatEventTime(event) {
     const startTime = event.startTime || ''; // Default to empty string if not provided
     const endTime = event.endTime || ''; // Default to empty string if not provided
 
-    // Check if startTime or endTime are empty
-    if (!startTime && !endTime) {
-        return event.title; // Display only the title if no time is provided
-    }
+    const formattedStartTime = startTime ? formatTimeTo12Hour(startTime) : null;
+    const formattedEndTime = endTime ? formatTimeTo12Hour(endTime) : null;
 
-    // Format valid times
-    const formattedStartTime = startTime ? formatTimeTo12Hour(startTime) : '';
-    const formattedEndTime = endTime ? formatTimeTo12Hour(endTime) : '';
-
-    // Only display time if both are valid; otherwise, just display the title
+    // Check if both startTime and endTime are valid
     if (formattedStartTime && formattedEndTime) {
         return `${formattedStartTime} - ${formattedEndTime}`;
     }
 
-    return event.title; // Fallback to title if time formatting fails or is incomplete
+    // If either time is invalid or missing, display only the title
+    return event.title;
 }
 
+// Example usage
 function renderEvent(event) {
-    const timeText = formatEventTime(event);
+    let eventDisplayText = event.title;
+
+    if (event.startTime && event.endTime) {
+        const formattedStartTime = formatTimeTo12Hour(event.startTime);
+        const formattedEndTime = formatTimeTo12Hour(event.endTime);
+
+        if (formattedStartTime && formattedEndTime) {
+            eventDisplayText += ` (${formattedStartTime} - ${formattedEndTime})`;
+        }
+    }
 
     const eventElement = document.createElement('div');
     eventElement.classList.add('event');
-    eventElement.textContent = timeText;
+    eventElement.textContent = eventDisplayText;
 
     return eventElement;
 }
