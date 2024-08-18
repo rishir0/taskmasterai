@@ -526,18 +526,16 @@ body.night-mode {
 }
 
 .current-day {
+    border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: white; /* Make the text color stand out */
-    padding: 5px;
-    border-radius: 50%;
-    width: auto;
-    height: auto;
-    line-height: normal;
-    display: inline-block;
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    margin-left: -5px; /* Adjust to align with the rest of the numbers */
-    margin-right: -5px; /* Adjust to align with the rest of the numbers */
-    border: 2px solid transparent; /* Ensures the day separators are visible */
 }
 
 
