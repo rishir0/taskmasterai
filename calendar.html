@@ -526,13 +526,29 @@ body.night-mode {
 }
 
 .current-day {
-    border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; /* Ensures the text color stands out */
-
+    color: white; /* Make the text color stand out */
+    padding: 5px;
+    border-radius: 50%;
+    width: auto;
+    height: auto;
+    line-height: normal;
+    display: inline-block;
+    box-sizing: border-box;
+    margin-left: -5px; /* Adjust to align with the rest of the numbers */
+    margin-right: -5px; /* Adjust to align with the rest of the numbers */
+    border: 2px solid transparent; /* Ensures the day separators are visible */
 }
 
-
+.day {
+    position: relative;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-right: 1px solid var(--hover-bg);
+    border-bottom: 1px solid var(--hover-bg);
+}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
