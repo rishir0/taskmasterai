@@ -527,35 +527,29 @@ body.night-mode {
 }
 
 .current-day {
-    position: relative; /* Ensure proper positioning relative to the day container */
-    padding: 10px; /* Ensure there's enough padding to fit the circle */
-    color: white; /* Make the text color stand out */
-    z-index: 3; /* Ensure the text is above the circle */
-}
-
-.current-day::before {
-    content: ""; /* Empty content to create the circle */
-    position: absolute; /* Absolute positioning to overlay the circle */
-    top: 5px; /* Adjust the top position */
-    left: 5px; /* Adjust the left position */
-    width: 30px; /* Adjust the size of the circle */
-    height: 30px; /* Adjust the size of the circle */
-    border-radius: 50%; /* Makes the circle */
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    z-index: 0; /* Place it behind the text */
-    display: flex;
-    justify-content: center;
+    position: relative; /* Ensure proper positioning */
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Circular shape */
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: white; /* Text color */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    box-sizing: border-box;
+    padding: 0; /* No padding needed, handle size via width and height */
+    text-align: center;
+    line-height: 30px; /* Center text vertically */
+    z-index: 1; /* Ensure it's above the separator lines */
 }
 
 .current-day span {
-    position: relative; /* Ensure the text is on top of the circle */
-    color: white; /* White text color */
-    z-index: 3; /* Ensure the text is above the circle */
+    position: relative; /* Ensure the text is positioned correctly */
+    z-index: 2; /* Ensure text is on top of the circle */
     font-weight: bold;
-    /* Add padding to ensure the text does not overlap the circle */
-    padding: 2px;
+    font-size: 1rem;
 }
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
