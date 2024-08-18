@@ -430,15 +430,16 @@ body.night-mode {
 .current-day {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: white; 
-    padding: 5px; 
-    width: 30px;  
-    height: 30px; 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    transform: translate(6px, 6px); /* Slightly shift the circle right and down */
+    border-right: 1px solid var(--hover-bg);
+    border-bottom: 1px solid var(--hover-bg);
+    position: relative;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer; /* Ensure the day cell is clickable */
+    width: 100%; /* Make the entire day section clickable */
+    box-sizing: border-box; /* Ensure borders are included in the element's width */
 }
 
 .day {
