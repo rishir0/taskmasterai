@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -527,8 +528,8 @@ body.night-mode {
 }
 
 .current-day {
-    background-color: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Example background color, change as needed */
-    color: #F50057
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Gradient background */
+    color: var(--primary-color); /* Solid color for the text */
     font-weight: bold; /* Make the text bold */
 }
 
@@ -836,38 +837,45 @@ function createCalendar() {
                 eventDiv.classList.add('event');
 
                 let eventDisplayText = event.title;
-                let isEventPassed = false;
 
                 if (event.startTime && event.endTime) {
-                    const eventStartDateTime = new Date(event.year, event.month, event.day, ...event.startTime.split(':'));
-                    const eventEndDateTime = new Date(event.year, event.month, event.day, ...event.endTime.split(':'));
-
                     const formattedStartTime = formatTimeTo12Hour(event.startTime);
                     const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-                    if (formattedStartTime && formattedEndTime) {
-                        eventDisplayText += ` (${formattedStartTime} - ${formattedEndTime})`;
+                    // Create a date object for the event's end time
+                    const eventEndTime = new Date(dayDate);
+                    const [endHour, endMinute] = event.endTime.split(':').map(Number);
+                    eventEndTime.setHours(endHour, endMinute);
+
+                    // Check if the event time has passed
+                    const currentTime = new Date();
+                    if (currentTime > eventEndTime) {
+                        eventDiv.style.backgroundColor = "var(--primary-color)";
                     }
 
-                    // Check if the event has already passed
-                    const now = new Date();
-                    if (now > eventEndDateTime) {
-                        isEventPassed = true;
+                    // Construct the time string
+                    let timeString = '';
+                    if (formattedStartTime) {
+                        timeString += formattedStartTime;
+                    }
+                    if (formattedEndTime) {
+                        if (timeString) {
+                            timeString += ` - ${formattedEndTime}`;
+                        } else {
+                            timeString = formattedEndTime;
+                        }
+                    }
+
+                    // Only add parentheses if there is valid time content
+                    if (timeString) {
+                        eventDisplayText += ` (${timeString})`;
                     }
                 }
 
                 eventDiv.textContent = eventDisplayText;
-
-                // Apply the primary color if the event has passed
-                if (isEventPassed) {
-                    eventDiv.style.color = "var(--primary-color)"; // Assuming --primary-color is defined in your CSS
-                }
-
                 eventDiv.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent triggering the openEventModal
-                    openEditEventModal(dayKey, event);
                 });
-
                 dayDiv.appendChild(eventDiv);
             });
         }
@@ -875,6 +883,7 @@ function createCalendar() {
         calendarGrid.appendChild(dayDiv);
     }
 }
+
 
 function openEventModal(date) {
     selectedDate = date;
