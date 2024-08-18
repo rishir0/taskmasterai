@@ -528,7 +528,7 @@ body.night-mode {
 
 .current-day {
     background-color: linear-gradient(135deg, var(--accent-color), var(--primary-color)); /* Example background color, change as needed */
-    color: #F50057
+    color: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     font-weight: bold; /* Make the text bold */
 }
 
@@ -834,33 +834,41 @@ function createCalendar() {
             events[dayKey].forEach(event => {
                 const eventDiv = document.createElement('div');
                 eventDiv.classList.add('event');
-                
+
                 let eventDisplayText = event.title;
-                
-if (event.startTime && event.endTime) {
-    const formattedStartTime = formatTimeTo12Hour(event.startTime);
-    const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-    // Construct the time string
-    let timeString = '';
-    if (formattedStartTime) {
-        timeString += formattedStartTime;
-    }
-    if (formattedEndTime) {
-        if (timeString) {
-            timeString += ` - ${formattedEndTime}`;
-        } else {
-            timeString = formattedEndTime;
-        }
-    }
+                if (event.startTime && event.endTime) {
+                    const formattedStartTime = formatTimeTo12Hour(event.startTime);
+                    const formattedEndTime = formatTimeTo12Hour(event.endTime);
 
-    // Only add parentheses if there is valid time content
-    if (timeString) {
-        eventDisplayText += ` (${timeString})`;
-    }
-}
+                    // Check if the event time has passed
+                    const currentTime = new Date();
+                    const eventEndTime = new Date(dayDate);
+                    const [endHour, endMinute] = event.endTime.split(':').map(Number);
+                    eventEndTime.setHours(endHour, endMinute);
 
+                    if (currentTime > eventEndTime) {
+                        eventDiv.style.backgroundColor = "var(--primary-color)";
+                    }
 
+                    // Construct the time string
+                    let timeString = '';
+                    if (formattedStartTime) {
+                        timeString += formattedStartTime;
+                    }
+                    if (formattedEndTime) {
+                        if (timeString) {
+                            timeString += ` - ${formattedEndTime}`;
+                        } else {
+                            timeString = formattedEndTime;
+                        }
+                    }
+
+                    // Only add parentheses if there is valid time content
+                    if (timeString) {
+                        eventDisplayText += ` (${timeString})`;
+                    }
+                }
 
                 eventDiv.textContent = eventDisplayText;
                 eventDiv.addEventListener('click', (e) => {
@@ -874,7 +882,6 @@ if (event.startTime && event.endTime) {
         calendarGrid.appendChild(dayDiv);
     }
 }
-
 
 function openEventModal(date) {
     selectedDate = date;
@@ -937,14 +944,17 @@ function openEditEventModal(dayKey, event) {
 
     editEventTitleInput.value = event.title;
     editEventDescriptionInput.value = event.description;
-    
-    // Convert saved times to a 12-hour format and set them in the input fields
-    editEventTimeStartInput.value = formatTimeTo12Hour(event.startTime);
-    editEventTimeEndInput.value = formatTimeTo12Hour(event.endTime);
+
+    // Display previously saved times
+    if (event.startTime) {
+        editEventTimeStartInput.value = event.startTime;
+    }
+    if (event.endTime) {
+        editEventTimeEndInput.value = event.endTime;
+    }
 
     editEventModal.style.display = 'flex';
 }
-
 
 closeEditModal.addEventListener('click', () => {
     editEventModal.style.display = 'none';
