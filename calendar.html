@@ -430,6 +430,7 @@ body.night-mode {
 .current-day {
     position: relative; /* Ensure the cell is positioned relative to its container */
     padding: 10px; /* Ensure there's enough padding to fit the circle */
+    overflow: hidden; /* Ensure content does not overflow the boundaries */
 }
 
 .current-day::before {
@@ -447,15 +448,17 @@ body.night-mode {
     align-items: center;
 }
 
-/* Position the date text */
 .current-day span {
-    position: absolute; /* Absolute positioning to move the date independently */
-    top: 5px; /* Adjust top position as needed */
-    left: 5px; /* Adjust left position as needed */
+    position: relative; /* Position relative to its container */
+    top: 9px; /* Adjust top position as needed */
+    left: 9px; /* Adjust left position as needed */
     color: white; /* White text color */
     z-index: 1; /* Ensure the text is above the circle */
     font-weight: bold;
+    /* Add padding to ensure the text does not overlap the circle */
+    padding: 2px;
 }
+
 
 
 .day {
