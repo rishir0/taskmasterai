@@ -428,25 +428,16 @@ body.night-mode {
 }
 
 .current-day {
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    position: relative; /* Ensure proper positioning relative to the day container */
+    padding: 10px; /* Ensure there's enough padding to fit the circle */
     color: white; /* Make the text color stand out */
-    padding: 5px; /* Adjust padding to make the circle well-rounded */
-    width: 30px;  /* Set width to maintain the circle shape */
-    height: 30px; /* Set height to maintain the circle shape */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    position: relative; /* Ensure proper positioning */
-    margin: 0; /* Reset margin to avoid positioning issues */
 }
 
 .current-day::before {
     content: ""; /* Empty content to create the circle */
     position: absolute; /* Absolute positioning to overlay the circle */
-    top: 5px; /* Adjust the top position to ensure it does not overlap with the text */
-    left: 5px; /* Adjust the left position to ensure it does not overlap with the text */
+    top: 5px; /* Adjust the top position */
+    left: 5px; /* Adjust the left position */
     width: 30px; /* Adjust the size of the circle */
     height: 30px; /* Adjust the size of the circle */
     border-radius: 50%; /* Makes the circle */
@@ -458,9 +449,7 @@ body.night-mode {
 }
 
 .current-day span {
-    position: relative; /* Position relative to its container */
-    top: 5px; /* Adjust top position as needed to fit inside the circle */
-    left: 5px; /* Adjust left position as needed to fit inside the circle */
+    position: relative; /* Ensure the text is on top of the circle */
     color: white; /* White text color */
     z-index: 1; /* Ensure the text is above the circle */
     font-weight: bold;
@@ -471,17 +460,17 @@ body.night-mode {
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
-    position: relative;
-    padding: 10px;
+    position: relative; /* Ensure it contains the absolutely positioned circle */
+    padding: 10px; /* Maintain padding to accommodate the circle */
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-
 .day:last-child {
-    border-right: none;
+    border-right: none; /* Remove the right border for the last column */
 }
+
 
 .event {
     background: var(--accent-color);
