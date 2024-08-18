@@ -497,7 +497,7 @@ body.night-mode {
 /* Updated Sections */
 #tasks-projects .tasks-section,
 #tasks-projects .projects-section,
-#tasks-projects .goals-section,
+#tasks-projects .events-section,
 #tasks-projects .plans-section {
     background-color: var(--card-bg);
     padding: 20px;
@@ -512,7 +512,7 @@ body.night-mode {
 
 #tasks-projects .tasks-section h2,
 #tasks-projects .projects-section h2,
-#tasks-projects .goals-section h2,
+#tasks-projects .events-section h2,
 #tasks-projects .plans-section h2 {
     color: var(--primary-color);
     margin-bottom: 20px;
@@ -521,7 +521,7 @@ body.night-mode {
 
 #tasks-projects .tasks-section input,
 #tasks-projects .projects-section input,
-#tasks-projects .goals-section input,
+#tasks-projects .events-section input,
 #tasks-projects .plans-section input {
     width: 70%;
     padding: 10px;
@@ -535,7 +535,7 @@ body.night-mode {
 
 #tasks-projects .tasks-section button,
 #tasks-projects .projects-section button,
-#tasks-projects .goals-section button,
+#tasks-projects .events-section button,
 #tasks-projects .plans-section button {
     background-color: var(--hover-bg); /* Use hover-bg for background on hover */
     color: var(--text-color);
@@ -550,14 +550,14 @@ body.night-mode {
 
 #tasks-projects .tasks-section button:hover,
 #tasks-projects .projects-section button:hover,
-#tasks-projects .goals-section button:hover,
+#tasks-projects .events-section button:hover,
 #tasks-projects .plans-section button:hover {
     background-color: var(--accent-color);
 }
 
 #tasks-projects .task-item,
 #tasks-projects .project-item,
-#tasks-projects .goal-item,
+#tasks-projects .event-item,
 #tasks-projects .plan-item {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
@@ -572,7 +572,7 @@ body.night-mode {
 
 #tasks-projects .task-item:hover,
 #tasks-projects .project-item:hover,
-#tasks-projects .goal-item:hover,
+#tasks-projects .event-item:hover,
 #tasks-projects .plan-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
@@ -587,7 +587,7 @@ body.night-mode {
 /* Style for Each Button */
 #tasks-projects .task-item button,
 #tasks-projects .project-item button,
-#tasks-projects .goal-item button,
+#tasks-projects .event-item button,
 #tasks-projects .plan-item button {
     background-color: var(--hover-bg);
     color: var(--text-color);
@@ -602,14 +602,14 @@ body.night-mode {
 
 #tasks-projects .task-item button:hover,
 #tasks-projects .project-item button:hover,
-#tasks-projects .goal-item button:hover,
+#tasks-projects .event-item button:hover,
 #tasks-projects .plan-item button:hover {
     background-color: var(--accent-color);
 }
 
 #tasks-projects #tasks-list,
 #tasks-projects #projects-list,
-#tasks-projects #goals-list,
+#tasks-projects #events-list,
 #tasks-projects #plans-list {
     list-style: none;
     padding: 0;
@@ -618,7 +618,7 @@ body.night-mode {
 
 .task-item button,
 .project-item button,
-.goal-item button,
+.event-item button,
 .plan-item button {
     display: inline-block;
 margin-right: 0px;}
@@ -852,7 +852,7 @@ margin-right: 0px;}
 @media (max-width: 768px) {
     #tasks-projects .tasks-section,
     #tasks-projects .projects-section,
-    #tasks-projects .goals-section,
+    #tasks-projects .events-section,
     #tasks-projects .plans-section {
         width: 100%;
         margin-bottom: 20px; /* Adds space between sections on mobile */
@@ -860,7 +860,7 @@ margin-right: 0px;}
     
     .task-button,
     .project-button,
-    .goal-button,
+    .event-button,
     .plan-button {
         display: block; /* Stacks buttons vertically on mobile */
         margin: 10px 0; /* Adds space between buttons */
@@ -1106,13 +1106,14 @@ margin-right: 0px;}
         </div>
         <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
-    <div class="goals-section">
-        <h2>Goals</h2>
+    <div class="events-section">
+        <h2>Events</h2>
         <div class="goal-card">
-            <input type="text" id="goal-input" placeholder="Enter new goal">
-            <button onclick="createGoal()">Create Goal</button>
+            <input type="text" id="event-input" placeholder="Enter new event">
+            <input type="date" id="event-due-date" placeholder="Due date"> <!-- New date input -->
+            <button onclick="createEvent()">Create Event</button>
         </div>
-        <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
+        <div id="events-list"></div> <!-- Event items will be added here dynamically -->
     </div>
     <div class="projects-section">
         <h2>Projects</h2>
@@ -1211,7 +1212,7 @@ margin-right: 0px;}
             // Load other app-specific data
             loadTasks();
             loadProjects();
-            loadGoals();
+            loadEvents();
             loadPlans();
         } else {
             // No user is signed in, redirect to login page
@@ -1600,7 +1601,7 @@ function createButtonContainer() {
     return container;
 }
 
-// Functions to create new tasks, projects, goals, and plans
+// Functions to create new tasks, projects, events, and plans
 function createTask() {
     const taskInput = document.getElementById('task-input');
     const taskDueDate = document.getElementById('task-due-date');
@@ -1641,20 +1642,25 @@ function createProject() {
     }
 }
 
-function createGoal() {
-    const goalInput = document.getElementById('goal-input');
-    const goal = goalInput.value.trim();
-    if (goal) {
-        db.collection('goals').add({
-            goal: goal,
+function createEvent() {
+    const eventInput = document.getElementById('event-input');
+    const eventDueDate = document.getElementById('event-due-date');
+    const event = taskInput.value.trim();
+    const dueDate = eventDueDate.value ? new Date(eventDueDate.value) : null;
+
+    if (event) {
+        db.collection('events').add({
+            event: event,
+            dueDate: dueDate, // Store the due date
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            console.log('Goal created:', goal);
+            console.log('Event created:', event);
         }).catch((error) => {
-            console.error('Error creating goal:', error);
+            console.error('Error creating event:', error);
         });
-        goalInput.value = '';
+        eventInput.value = '';
+        eventDueDate.value = ''; // Clear the date input after task creation
     }
 }
 
@@ -1734,25 +1740,37 @@ function loadProjects() {
         });
 }
 
-function loadGoals() {
-    db.collection('goals')
+function loadEvents() {
+    db.collection('events')
         .where('userId', '==', firebase.auth().currentUser.uid)
         .orderBy('createdAt')
         .onSnapshot(snapshot => {
-            const goalsList = document.getElementById('goals-list');
-            goalsList.innerHTML = '';
+            const tasksList = document.getElementById('events-list');
+            eventsList.innerHTML = '';
             snapshot.forEach(doc => {
-                const goal = doc.data();
-                const goalDiv = document.createElement('div');
-                goalDiv.className = 'goal-item';
-                goalDiv.textContent = goal.goal;
+                const event = doc.data();
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'event-item';
+
+                // Display task and due date
+                const eventText = document.createElement('span');
+                eventText.textContent = `${event.event}`;
+                eventDiv.appendChild(eventText);
+
+                if (event.dueDate) {
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${new Date(event.dueDate.toDate()).toLocaleDateString()})`;
+                    dueDateText.style.marginLeft = '10px';
+                    dueDateText.style.color = 'gray';
+                    eventDiv.appendChild(dueDateText);
+                }
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'goal', goal.goal));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'goal'));
-
-                goalDiv.appendChild(buttonContainer);
-                goalsList.appendChild(goalDiv);
+                buttonContainer.appendChild(createEditButton(doc.id, 'event', event.event));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'event'));
+                
+                eventDiv.appendChild(buttonContainer);
+                eventsList.appendChild(eventDiv);
             });
         });
 }
@@ -1856,12 +1874,12 @@ function deleteItem(id, type) {
     });
 }
 
-// Listen for authentication state changes to load tasks, projects, goals, and plans
+// Listen for authentication state changes to load tasks, projects, events, and plans
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         loadTasks();
         loadProjects();
-        loadGoals();
+        loadEvents();
         loadPlans();
     }
 });
