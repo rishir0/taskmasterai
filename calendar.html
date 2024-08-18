@@ -427,6 +427,33 @@ body.night-mode {
     background: var(--bg-color);
 }
 
+.current-day {
+    position: relative; /* Ensure it's positioned relative to its container */
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+}
+
+.current-day::before {
+    content: ""; /* Empty content to create the circle */
+    position: absolute; /* Absolute positioning to overlay the circle */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for centering */
+    width: 30px; /* Adjust the size of the circle */
+    height: 30px; /* Adjust the size of the circle */
+    border-radius: 50%; /* Makes the circle */
+    background: var(--accent-color); /* Background color of the circle */
+    z-index: -1; /* Place it behind the text */
+}
+
+.current-day span {
+    position: relative; /* Ensure text is on top */
+    color: var(--text-color); /* Text color inside the circle */
+    font-weight: bold;
+}
+
+
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
