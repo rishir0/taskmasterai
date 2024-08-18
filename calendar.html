@@ -525,6 +525,20 @@ body.night-mode {
     background-color: var(--hover-bg);
 }
 
+.current-day {
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: white; /* Make the text color stand out */
+    padding: 5px; /* Adjust padding to make the circle well-rounded */
+    width: 30px;  /* Set width to maintain the circle shape */
+    height: 30px; /* Set height to maintain the circle shape */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .calendar-header {
@@ -1057,9 +1071,45 @@ async function loadEvents() {
         updateCalendarHeader();
         loadEvents();
     });
+
+
+function formatEventTime(event) {
+    const startTime = event.startTime; // Assuming you get the start time from the event object
+    const endTime = event.endTime; // Assuming you get the end time from the event object
+
+    if (isNaN(startTime) || isNaN(endTime)) {
+        return event.title; // Only display the event title if the time is invalid
+    }
+
+    return `${startTime} - ${endTime}`;
+}
+
+function renderEvent(event) {
+    const timeText = formatEventTime(event);
+
+    const eventElement = document.createElement('div');
+    eventElement.classList.add('event');
+    eventElement.textContent = timeText;
+
+    return eventElement;
+}
+
+function highlightCurrentDay() {
+    const today = new Date();
+    const currentDay = today.getDate();
+    const days = document.querySelectorAll('.day'); // Assuming each day cell has a class "day"
+
+    days.forEach(day => {
+        if (parseInt(day.textContent, 10) === currentDay) {
+            day.classList.add('current-day');
+        }
+    });
+}
+
+// Call the function after your calendar has rendered
+highlightCurrentDay();
+
 </script>
-
-
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
