@@ -1044,8 +1044,15 @@ deleteEventButton.addEventListener('click', async () => {
         if (!snapshot.empty) {
             const docRef = snapshot.docs[0].ref;
 
+            // Check if the event is related to a task and delete the task if so
+            if (currentEditEvent.taskId) {
+                await db.collection('tasks').doc(currentEditEvent.taskId).delete();
+            }
+
+            // Delete the event from Firestore
             await docRef.delete();
 
+            // Remove the event from the local cache
             events[currentDayKey] = events[currentDayKey].filter(event => event !== currentEditEvent);
             createCalendar();
             editEventModal.style.display = 'none';
@@ -1054,6 +1061,7 @@ deleteEventButton.addEventListener('click', async () => {
         console.error("Error deleting event: ", error);
     }
 });
+
 
 async function loadEvents() {
     const user = firebase.auth().currentUser;
@@ -1066,56 +1074,43 @@ async function loadEvents() {
     events = {};
 
     try {
-        // Load events from the 'events' collection
-        const eventsSnapshot = await db.collection('events')
-            .where("year", "==", currentWeekStartDate.getFullYear())
-            .where("month", "==", currentWeekStartDate.getMonth())
-            .where("uid", "==", user.uid)
+        const taskSnapshot = await db.collection('tasks')
+            .where("userId", "==", user.uid)
             .get();
 
-        eventsSnapshot.forEach(doc => {
-            const event = doc.data();
-            const eventDate = new Date(event.year, event.month, event.day);
-            const dayKey = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
+        taskSnapshot.forEach(async doc => {
+            const task = doc.data();
+            const dueDate = task.dueDate.toDate();
+            const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
+
             if (!events[dayKey]) {
                 events[dayKey] = [];
             }
-            events[dayKey].push(event);
-        });
 
-        // Load tasks with due dates from the 'tasks' collection
-        const tasksSnapshot = await db.collection('tasks')
-            .where("uid", "==", user.uid)
-            .where("dueDate", "!=", null) // Ensure the task has a due date
-            .get();
-
-        tasksSnapshot.forEach(doc => {
-            const task = doc.data();
-            const dueDate = task.dueDate.toDate(); // Convert Firestore timestamp to Date object
-            const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
-
-            const taskEvent = {
-                title: task.title || 'Task',
-                description: task.description || '',
+            const event = {
+                title: task.task,
+                description: 'Converted from task', // You can modify this
+                startTime: `${dueDate.getHours()}:${dueDate.getMinutes()}`,
+                endTime: '', // Add end time if needed
                 day: dueDate.getDate(),
                 month: dueDate.getMonth(),
                 year: dueDate.getFullYear(),
                 uid: user.uid,
-                startTime: task.startTime || '',
-                endTime: task.endTime || ''
+                taskId: doc.id // Store the task ID for reference
             };
 
-            if (!events[dayKey]) {
-                events[dayKey] = [];
-            }
-            events[dayKey].push(taskEvent);
+            // Save the event to the Firestore events collection
+            await db.collection('events').add(event);
+
+            events[dayKey].push(event);
         });
 
         createCalendar();
     } catch (error) {
-        console.error("Error loading events and tasks from Firestore: ", error);
+        console.error("Error loading tasks from Firestore: ", error);
     }
 }
+
 
 
     // Handle Previous Week
