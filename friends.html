@@ -711,9 +711,9 @@ body.night-mode {
     </div>
     <div class="friends-list">
         <h2>Online Friends</h2>
-        <ul id="onlineFriends">
+        <div id="onlineFriends">
             <!-- Friends will be dynamically added here -->
-        </ul>
+        </div>
     </div>
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
@@ -727,9 +727,9 @@ body.night-mode {
         </div>
         <div class="group-list">
             <h3>Your Groups</h3>
-            <ul id="groupList">
+            <div id="groupList">
                 <!-- Groups will be dynamically added here -->
-            </ul>
+            </div>
         </div>
     </div>
     <div class="chat-window">
@@ -738,10 +738,9 @@ body.night-mode {
             <!-- Chat messages will be displayed here -->
         </div>
         <input type="text" id="chatInput" placeholder="Type a message">
-        <button onclick="sendMessageOrGroupMessage()">Send</button>
+        <button onclick="sendMessage()">Send</button>
     </div>
 </div>
-
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -1235,104 +1234,127 @@ function getUserEmail(userId) {
 }
 
 let currentGroupId = null;
-let currentFriendEmail = null;
 
-function sendMessageOrGroupMessage() {
-    if (currentGroupId) {
-        sendGroupMessage(currentGroupId);
-    } else if (currentFriendEmail) {
-        sendMessage(currentFriendEmail);
-    }
-}
-
-let groups = []; // Array to store groups
-let groupIdCounter = 1; // Counter to generate unique group IDs
-
+// Function to add friends to a group
 function addToGroup() {
-    const groupEmailsInput = document.getElementById('groupEmails').value.trim();
-    
-    if (groupEmailsInput === "") {
+    const groupEmails = document.getElementById("groupEmails").value.trim();
+    const emailsArray = groupEmails.split(',').map(email => email.trim()).filter(email => email !== '');
+
+    if (emailsArray.length === 0) {
         alert("Please enter at least one friend's email.");
         return;
     }
 
-    // Split the input by commas to get an array of emails
-    const groupEmails = groupEmailsInput.split(',').map(email => email.trim()).filter(email => email !== "");
+    const currentUser = firebase.auth().currentUser;
 
-    // Ensure there's at least one valid email
-    if (groupEmails.length === 0) {
-        alert("Please enter valid email addresses.");
+    if (!currentUser) {
+        alert("You need to be logged in to create a group.");
         return;
     }
 
-    // Create a new group with a default name "Group 1"
-    const newGroup = {
-        id: groupIdCounter++, // Increment group ID for uniqueness
-        name: `Group ${groups.length + 1}`, // Default name "Group 1", "Group 2", etc.
-        members: groupEmails
-    };
+    const groupName = `Group ${Date.now()}`; // Example default group name
 
-    groups.push(newGroup); // Add the new group to the groups array
-    displayGroup(newGroup); // Display the group in the UI
+    // Create the group in Firestore
+    db.collection('groupchats').add({
+        groupName: groupName,
+        participants: emailsArray.concat(currentUser.email),
+        createdBy: currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then((docRef) => {
+        console.log('Group chat created with ID:', docRef.id);
+        loadGroupChats(); // Reload the group chats after adding
+    }).catch((error) => {
+        console.error('Error creating group chat:', error);
+    });
 
-    // Clear the input field after adding the group
-    document.getElementById('groupEmails').value = "";
+    document.getElementById("groupEmails").value = ""; // Clear the input field
 }
 
-function displayGroup(group) {
-    const groupList = document.getElementById('groupList');
-
-    // Create a list item for the group
-    const listItem = document.createElement('li');
-    listItem.classList.add('group-item');
-
-    // Group name span
-    const groupNameSpan = document.createElement('span');
-    groupNameSpan.textContent = group.name;
-    groupNameSpan.classList.add('group-name');
-
-    // Open chat button
-    const openChatButton = document.createElement('button');
-    openChatButton.textContent = 'Open Chat';
-    openChatButton.onclick = () => openGroupChat(group.id);
-
-    // Append the elements to the list item
-    listItem.appendChild(groupNameSpan);
-    listItem.appendChild(openChatButton);
-
-    // Add the list item to the group list
-    groupList.appendChild(listItem);
-}
-
-function openGroupChat(groupId) {
-    const group = groups.find(g => g.id === groupId);
-    if (group) {
-        document.getElementById('chatWith').textContent = group.name;
-        // Load the messages for this group (you would implement this based on your chat setup)
-        console.log(`Opening chat for ${group.name} with members: ${group.members.join(', ')}`);
-        // Load messages function can go here
-    }
-}
-
-function sendGroupMessage(groupId) {
-    const chatInput = document.getElementById('chatInput').value.trim();
+// Function to load group chats
+function loadGroupChats() {
     const currentUser = firebase.auth().currentUser;
 
-    if (chatInput && groupId && currentUser) {
-        db.collection('groupChats').doc(groupId).collection('messages').add({
-            sender: currentUser.email,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Message sent!');
-            document.getElementById('chatInput').value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending message: ', error);
+    if (!currentUser) return;
+
+    db.collection('groupchats').where('participants', 'array-contains', currentUser.email)
+        .onSnapshot((snapshot) => {
+            const groupList = document.getElementById('groupList');
+            groupList.innerHTML = '';
+
+            snapshot.forEach((doc) => {
+                const group = doc.data();
+                const groupName = group.groupName || 'Unnamed Group';
+
+                const groupItem = document.createElement('div');
+                groupItem.classList.add('group-item');
+
+                const groupNameElement = document.createElement('span');
+                groupNameElement.textContent = groupName;
+                groupNameElement.classList.add('group-name');
+                groupItem.appendChild(groupNameElement);
+
+                groupItem.onclick = () => {
+                    openGroupChat(doc.id);
+                    currentGroupId = doc.id; // Set the current group ID
+                };
+
+                groupList.appendChild(groupItem);
+            });
         });
-    }
 }
 
-    
+// Function to open a group chat
+function openGroupChat(groupId) {
+    db.collection('groupchats').doc(groupId).get().then((doc) => {
+        if (doc.exists) {
+            const group = doc.data();
+            document.getElementById('chatWith').textContent = group.groupName;
+            loadGroupMessages(groupId);
+        }
+    }).catch((error) => {
+        console.error('Error opening group chat:', error);
+    });
+}
+
+// Function to load group messages
+function loadGroupMessages(groupId) {
+    db.collection('groupchats').doc(groupId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot((snapshot) => {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+
+            snapshot.forEach((doc) => {
+                const message = doc.data();
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+
+                const senderElement = document.createElement('span');
+                senderElement.classList.add('message-sender');
+                senderElement.textContent = message.sender;
+
+                const textElement = document.createElement('span');
+                textElement.classList.add('message-text');
+                textElement.textContent = message.message;
+
+                messageElement.appendChild(senderElement);
+                messageElement.appendChild(textElement);
+
+                chatMessages.appendChild(messageElement);
+            });
+
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+}
+
+// Call this function after user logs in to load existing group chats
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        loadGroupChats();
+    }
+});
+
 </script>
 
 
