@@ -1245,25 +1245,6 @@ function sendMessageOrGroupMessage() {
     }
 }
 
-function sendMessage(friendEmail) {
-    const chatInput = document.getElementById('chatInput').value.trim();
-    const currentUser = firebase.auth().currentUser;
-
-    if (chatInput && friendEmail && currentUser) {
-        db.collection('chats').add({
-            sender: currentUser.email,
-            recipient: friendEmail,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Message sent!');
-            document.getElementById('chatInput').value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending message: ', error);
-        });
-    }
-}
-
 function sendGroupMessage(groupId) {
     const chatInput = document.getElementById('chatInput').value.trim();
     const currentUser = firebase.auth().currentUser;
@@ -1282,12 +1263,6 @@ function sendGroupMessage(groupId) {
     }
 }
 
-function openChat(friendEmail) {
-    currentGroupId = null;
-    currentFriendEmail = friendEmail;
-    document.getElementById('chatWith').textContent = friendEmail;
-    loadMessages(friendEmail);
-}
 
 function openGroupChat(groupId) {
     currentFriendEmail = null;
@@ -1302,40 +1277,6 @@ function openGroupChat(groupId) {
         console.error('Error opening group chat:', error);
     });
 }
-
-function loadMessages(friendEmail) {
-    const currentUser = firebase.auth().currentUser;
-
-    db.collection('chats').where('sender', 'in', [currentUser.email, friendEmail])
-        .where('recipient', 'in', [currentUser.email, friendEmail])
-        .orderBy('timestamp')
-        .onSnapshot((snapshot) => {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '';
-
-            snapshot.forEach((doc) => {
-                const message = doc.data();
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message');
-
-                const senderElement = document.createElement('span');
-                senderElement.classList.add('message-sender');
-                senderElement.textContent = message.sender;
-
-                const textElement = document.createElement('span');
-                textElement.classList.add('message-text');
-                textElement.textContent = message.message;
-
-                messageElement.appendChild(senderElement);
-                messageElement.appendChild(textElement);
-
-                chatMessages.appendChild(messageElement);
-            });
-
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-}
-
     
 </script>
 
