@@ -527,7 +527,7 @@ body.night-mode {
 }
 
 .current-day {
-    color: #F50057; /* Solid text color */
+    color: var(--accent-color); /* Solid text color */
     font-weight: bold; /* Make the text bold */
 }
 
@@ -989,15 +989,27 @@ saveEditEvent.addEventListener('click', async () => {
                 endTime: updatedEndTime
             });
 
+            // Update local event object
             currentEditEvent.title = updatedTitle;
             currentEditEvent.description = updatedDescription;
             currentEditEvent.startTime = updatedStartTime;
             currentEditEvent.endTime = updatedEndTime;
+
+            // If the event was originally a task, update the linked task as well
+            if (currentEditEvent.linkedTaskId) {
+                const taskDocRef = db.collection('tasks').doc(currentEditEvent.linkedTaskId);
+                await taskDocRef.update({
+                    task: updatedTitle,
+                    dueDate: new Date(currentEditEvent.year, currentEditEvent.month, currentEditEvent.day, updatedStartTime.hours, updatedStartTime.minutes)
+                });
+                console.log("Linked task updated successfully.");
+            }
+
             createCalendar();
             editEventModal.style.display = 'none';
         }
     } catch (error) {
-        console.error("Error updating event: ", error);
+        console.error("Error updating event and linked task: ", error);
     }
 });
 
@@ -1033,6 +1045,7 @@ deleteEventButton.addEventListener('click', async () => {
     }
 
     try {
+        // Delete the event from Firestore
         const snapshot = await db.collection('events')
             .where("year", "==", currentEditEvent.year)
             .where("month", "==", currentEditEvent.month)
@@ -1045,8 +1058,8 @@ deleteEventButton.addEventListener('click', async () => {
             const docRef = snapshot.docs[0].ref;
 
             // Check if the event is related to a task and delete the task if so
-            if (currentEditEvent.taskId) {
-                await db.collection('tasks').doc(currentEditEvent.taskId).delete();
+            if (currentEditEvent.linkedTaskId) {
+                await db.collection('tasks').doc(currentEditEvent.linkedTaskId).delete();
             }
 
             // Delete the event from Firestore
@@ -1106,14 +1119,15 @@ async function loadEvents() {
             const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
 
             const taskEvent = {
-                title: task.task,
-                description: "", // Optionally add a description if available
-                day: dueDate.getDate(),
-                month: dueDate.getMonth(),
-                year: dueDate.getFullYear(),
-                uid: user.uid,
-                linkedTaskId: doc.id // Reference to the original task
-            };
+    title: task.task,
+    description: "",
+    day: dueDate.getDate(),
+    month: dueDate.getMonth(),
+    year: dueDate.getFullYear(),
+    uid: user.uid,
+    linkedTaskId: doc.id // Ensure this field is set
+};
+
 
             if (!events[dayKey]) {
                 events[dayKey] = [];
@@ -1169,6 +1183,19 @@ async function deleteEvent(event) {
     }
 }
 
+    // Handle Previous Week
+    document.getElementById('prevWeek').addEventListener('click', () => {
+        currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
+        updateCalendarHeader();
+        loadEvents();
+    });
+
+    // Handle Next Week
+    document.getElementById('nextWeek').addEventListener('click', () => {
+        currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
+        updateCalendarHeader();
+        loadEvents();
+    });
 
 function formatEventTime(event) {
     const startTime = event.startTime || ''; // Default to empty string if not provided
