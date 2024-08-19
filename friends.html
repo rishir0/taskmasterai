@@ -722,7 +722,7 @@ body.night-mode {
     <div class="group-chats">
         <h2>Manage Group Chats</h2>
         <div class="add-to-group">
-            <input type="text" id="groupEmail" placeholder="Enter friend's email">
+            <input type="text" id="groupEmails" placeholder="Enter friends' emails, separated by commas">
             <button onclick="addToGroup()">Add to Group</button>
         </div>
         <div class="group-list">
@@ -738,10 +738,9 @@ body.night-mode {
             <!-- Chat messages will be displayed here -->
         </div>
         <input type="text" id="chatInput" placeholder="Type a message">
-        <button onclick="sendMessage()">Send</button>
+        <button onclick="sendMessageOrGroupMessage()">Send</button>
     </div>
 </div>
-
 
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1235,122 +1234,32 @@ function getUserEmail(userId) {
     });
 }
 
+let currentGroupId = null;
+let currentFriendEmail = null;
 
-// Array to store groups
-let groups = [];
-
-// Function to add a friend to a group
-function addToGroup() {
-    const groupEmail = document.getElementById("groupEmail").value.trim();
-    
-    if (groupEmail === "") {
-        alert("Please enter a friend's email.");
-        return;
+function sendMessageOrGroupMessage() {
+    if (currentGroupId) {
+        sendGroupMessage(currentGroupId);
+    } else if (currentFriendEmail) {
+        sendMessage(currentFriendEmail);
     }
-
-    // Check if the group already exists
-    let groupExists = false;
-    for (let group of groups) {
-        if (group.members.includes(groupEmail)) {
-            groupExists = true;
-            break;
-        }
-    }
-
-    // If the group doesn't exist, create a new one
-    if (!groupExists) {
-        const newGroup = {
-            id: groups.length + 1,
-            members: [groupEmail]
-        };
-        groups.push(newGroup);
-        displayGroup(newGroup);
-    } else {
-        alert("Friend is already in a group.");
-    }
-
-    // Clear the input field
-    document.getElementById("groupEmail").value = "";
 }
 
-// Function to display the group in the UI
-function displayGroup(group) {
-    const groupList = document.getElementById("groupList");
-
-    // Create a list item for the group
-    const li = document.createElement("li");
-    li.textContent = `Group ${group.id}: ${group.members.join(", ")}`;
-
-    // Add the list item to the group list
-    groupList.appendChild(li);
-}
-
-// Example usage: Add friend to the group when the button is clicked
-document.querySelector(".add-to-group button").addEventListener("click", addToGroup);
-
-function createGroupChat(groupName, memberEmails) {
-    const currentUser = firebase.auth().currentUser;
-    const participants = memberEmails.concat(currentUser.email); // Add the current user to the group
-
-    db.collection('groupChats').add({
-        groupName: groupName,
-        participants: participants,
-        createdBy: currentUser.email,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then((docRef) => {
-        console.log('Group chat created with ID:', docRef.id);
-        loadGroupChats();
-    }).catch((error) => {
-        console.error('Error creating group chat:', error);
-    });
-}
-
-function loadGroupChats() {
+function sendMessage(friendEmail) {
+    const chatInput = document.getElementById('chatInput').value.trim();
     const currentUser = firebase.auth().currentUser;
 
-    db.collection('groupChats').where('participants', 'array-contains', currentUser.email)
-        .onSnapshot((snapshot) => {
-            const groupList = document.getElementById('groupList');
-            groupList.innerHTML = '';
-
-            snapshot.forEach((doc) => {
-                const group = doc.data();
-                const groupName = group.groupName || 'Unnamed Group';
-
-                const listItem = document.createElement('li');
-                listItem.classList.add('group-item');
-
-                const groupNameSpan = document.createElement('span');
-                groupNameSpan.textContent = groupName;
-                groupNameSpan.classList.add('group-name');
-
-                const renameButton = document.createElement('button');
-                renameButton.textContent = 'Rename';
-                renameButton.onclick = () => renameGroupChat(doc.id);
-
-                const openChatButton = document.createElement('button');
-                openChatButton.textContent = 'Open Chat';
-                openChatButton.onclick = () => openGroupChat(doc.id);
-
-                listItem.appendChild(groupNameSpan);
-                listItem.appendChild(renameButton);
-                listItem.appendChild(openChatButton);
-
-                groupList.appendChild(listItem);
-            });
-        });
-}
-
-function renameGroupChat(groupId) {
-    const newName = prompt('Enter the new group name:');
-    if (newName) {
-        db.collection('groupChats').doc(groupId).update({
-            groupName: newName
+    if (chatInput && friendEmail && currentUser) {
+        db.collection('chats').add({
+            sender: currentUser.email,
+            recipient: friendEmail,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            console.log('Group chat renamed');
-            loadGroupChats();
+            console.log('Message sent!');
+            document.getElementById('chatInput').value = ''; // Clear the input field after sending
         }).catch((error) => {
-            console.error('Error renaming group chat:', error);
+            console.error('Error sending message: ', error);
         });
     }
 }
@@ -1373,7 +1282,16 @@ function sendGroupMessage(groupId) {
     }
 }
 
+function openChat(friendEmail) {
+    currentGroupId = null;
+    currentFriendEmail = friendEmail;
+    document.getElementById('chatWith').textContent = friendEmail;
+    loadMessages(friendEmail);
+}
+
 function openGroupChat(groupId) {
+    currentFriendEmail = null;
+    currentGroupId = groupId;
     db.collection('groupChats').doc(groupId).get().then((doc) => {
         if (doc.exists) {
             const group = doc.data();
@@ -1385,8 +1303,11 @@ function openGroupChat(groupId) {
     });
 }
 
-function loadGroupMessages(groupId) {
-    db.collection('groupChats').doc(groupId).collection('messages')
+function loadMessages(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+
+    db.collection('chats').where('sender', 'in', [currentUser.email, friendEmail])
+        .where('recipient', 'in', [currentUser.email, friendEmail])
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
             const chatMessages = document.getElementById('chatMessages');
@@ -1411,34 +1332,9 @@ function loadGroupMessages(groupId) {
                 chatMessages.appendChild(messageElement);
             });
 
-            // Scroll to the bottom of the chat
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
 }
-
-</script>
-        
-<script>
-    function toggleNightMode() {
-        document.body.classList.toggle('night-mode');
-        // Save the user's preference in localStorage
-        if (document.body.classList.contains('night-mode')) {
-            localStorage.setItem('nightMode', 'enabled');
-        } else {
-            localStorage.setItem('nightMode', 'disabled');
-        }
-    }
-
-    // Check localStorage to see if night mode was enabled previously
-    document.addEventListener('DOMContentLoaded', (event) => {
-        if (localStorage.getItem('nightMode') === 'enabled') {
-            document.body.classList.add('night-mode');
-        }
-    });
-
-    document.getElementById('toggleNightMode').addEventListener('click', function() {
-    document.body.classList.toggle('night-mode');
-});
 
     
 </script>
