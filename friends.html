@@ -231,7 +231,7 @@ body.night-mode {
 }
 
 .unfriend-button {
-    padding: 5px 10px;
+    padding: 5px;
     background-color: var(--accent-color);
     color: #fff;
     border: none;
@@ -240,11 +240,20 @@ body.night-mode {
     font-size: 14px;
     transition: background-color 0.3s;
     margin-left: 10px; /* Space between name and button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .unfriend-button:hover {
     background-color: #c0392b;
 }
+
+.unfriend-button svg {
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+}
+
 
 
 #onlineFriends {
@@ -1231,11 +1240,47 @@ function loadOnlineFriends() {
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
-    button.textContent = 'Unfriend';
     button.className = 'unfriend-button';
     button.onclick = () => unfriendUser(friendEmail);
+
+    // Create SVG element
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('fill', '#ffffff');
+
+    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path1.setAttribute('class', 'a');
+    path1.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
+
+    const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle1.setAttribute('class', 'b');
+    circle1.setAttribute('cx', '11.5');
+    circle1.setAttribute('cy', '5.99202');
+    circle1.setAttribute('r', '5');
+
+    const circle2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle2.setAttribute('class', 'a');
+    circle2.setAttribute('cx', '16.5');
+    circle2.setAttribute('cy', '18.00798');
+    circle2.setAttribute('r', '5');
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('class', 'a');
+    line.setAttribute('x1', '14.5');
+    line.setAttribute('x2', '18.5');
+    line.setAttribute('y1', '18.00798');
+    line.setAttribute('y2', '18.00798');
+
+    svg.appendChild(path1);
+    svg.appendChild(circle1);
+    svg.appendChild(circle2);
+    svg.appendChild(line);
+
+    button.appendChild(svg);
     return button;
 }
+
 
 function unfriendUser(friendEmail) {
     const currentUser = firebase.auth().currentUser;
