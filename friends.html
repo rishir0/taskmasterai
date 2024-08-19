@@ -1403,14 +1403,15 @@ function loadGroupMessages(groupId) {
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '';
+            chatMessages.innerHTML = ''; // Clear the chat window
+
+            const fragment = document.createDocumentFragment(); // Use a document fragment for better performance
 
             snapshot.forEach((doc) => {
                 const message = doc.data();
                 const messageElement = document.createElement('div');
                 const currentUser = firebase.auth().currentUser;
 
-                // Determine if the message was sent by the current user
                 const isSentByCurrentUser = message.sender === currentUser.email;
 
                 // Fetch the display name of the sender
@@ -1420,32 +1421,30 @@ function loadGroupMessages(groupId) {
                         const senderDisplayName = senderDoc ? senderDoc.data().displayName : message.sender;
 
                         if (!isSentByCurrentUser) {
-                            // Create sender name element (only for other users)
                             const senderElement = document.createElement('span');
                             senderElement.classList.add('message-sender');
                             senderElement.textContent = `${senderDisplayName}: `;
                             messageElement.appendChild(senderElement);
                         }
 
-                        // Create message text element
                         const textElement = document.createElement('span');
                         textElement.classList.add('message-text');
                         textElement.textContent = message.message;
 
-                        // Append message text to message element
                         messageElement.appendChild(textElement);
 
-                        // Apply styles based on whether the message is sent or received
                         if (isSentByCurrentUser) {
                             messageElement.classList.add('message', 'sent');
                         } else {
                             messageElement.classList.add('message', 'received');
                         }
 
-                        chatMessages.appendChild(messageElement);
-                        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+                        fragment.appendChild(messageElement); // Append to the document fragment
                     });
             });
+
+            chatMessages.appendChild(fragment); // Append all messages at once
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
         });
 }
 
