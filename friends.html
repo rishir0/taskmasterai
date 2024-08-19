@@ -1419,18 +1419,20 @@ function loadGroupMessages(groupId) {
                         const senderDoc = querySnapshot.docs[0];
                         const senderDisplayName = senderDoc ? senderDoc.data().displayName : message.sender;
 
-                        // Create sender name element
-                        const senderElement = document.createElement('span');
-                        senderElement.classList.add('message-sender');
-                        senderElement.textContent = `${senderDisplayName}: `;
+                        if (!isSentByCurrentUser) {
+                            // Create sender name element (only for other users)
+                            const senderElement = document.createElement('span');
+                            senderElement.classList.add('message-sender');
+                            senderElement.textContent = `${senderDisplayName}: `;
+                            messageElement.appendChild(senderElement);
+                        }
 
                         // Create message text element
                         const textElement = document.createElement('span');
                         textElement.classList.add('message-text');
                         textElement.textContent = message.message;
 
-                        // Append sender name and message text to message element
-                        messageElement.appendChild(senderElement);
+                        // Append message text to message element
                         messageElement.appendChild(textElement);
 
                         // Apply styles based on whether the message is sent or received
