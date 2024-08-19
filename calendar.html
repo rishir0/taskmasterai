@@ -405,7 +405,7 @@ body.night-mode {
 
 .calendar-header {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* Adjust this if you want to customize the columns */
+    grid-template-columns: repeat(7, 1fr);
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: var(--text-color);
     text-align: center;
@@ -416,13 +416,7 @@ body.night-mode {
 .calendar-header div {
     font-weight: bold;
     font-size: 1rem;
-    border-right: 1px solid var(--hover-bg); /* Add a border to match the grid cells */
 }
-
-.calendar-header div:last-child {
-    border-right: none; /* Remove the right border for the last column */
-}
-
 
 .calendar-grid {
     display: grid;
@@ -442,13 +436,11 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    text-align: center; /* Center text and content within each day */
 }
 
 .day:last-child {
     border-right: none; /* Remove the right border for the last column */
 }
-
 
 
 .event {
@@ -457,12 +449,15 @@ body.night-mode {
     padding: 2px 5px;
     border-radius: 3px;
     font-size: 0.75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevent the text from wrapping */
+    overflow: hidden; /* Hide the overflowed text */
+    text-overflow: ellipsis; /* Add ellipsis for overflowed text */
     position: relative;
+    max-width: 100%; /* Ensure it doesn't exceed its container */
+    display: inline-block; /* Allow it to shrink to fit content */
+    box-sizing: border-box; /* Include padding and border in the element’s total width and height */
 }
-
+        
 .event:before {
     display: none; /* Remove the red line */
 }
