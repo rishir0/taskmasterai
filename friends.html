@@ -200,13 +200,18 @@ body.night-mode {
     background: transparent;
 }
 
+/* Dashboard Header */
 .dashboard-header {
-    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
 }
 
+/* Header Text */
 .dashboard-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    margin: 0;
+    font-size: 24px; /* Font size for the text */
+    display: flex;
+    align-items: center;
 }
 
 .friends-list, .add-friend, .chat-window {
@@ -924,9 +929,7 @@ body.night-mode {
             </ul>
         </div>
     </div>
-
-    <script src="script.js"></script>
-
+        
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <!-- Add Firebase products that you want to use -->
