@@ -692,18 +692,23 @@ body.night-mode {
     position: relative;
 }
 
+/* Center the title text and ensure proper alignment */
 .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 15px;
+    position: relative; /* Position relative to align the buttons */
 }
 
+/* Center title text */
 .modal-title {
     font-size: 18px;
     font-weight: bold;
+    margin: 0; /* Remove default margin */
 }
 
+/* Style for the modal buttons */
 .modal-btn {
     background: transparent;
     border: none;
@@ -712,28 +717,34 @@ body.night-mode {
     color: #fff;
     display: flex;
     align-items: center;
+    position: absolute; /* Absolute positioning for proper alignment */
 }
 
+#disableModal {
+    left: 10px; /* Position disable button on the left */
+}
+
+#closeModal {
+    right: 10px; /* Position close button on the right */
+}
+
+/* Ensure SVG icons are appropriately sized */
 .modal-btn svg {
     width: 24px;
     height: 24px;
 }
 
+/* Style for the bug list */
 .bug-list {
     list-style: disc;
     padding-left: 20px;
+    margin: 0; /* Remove default margin */
 }
 
 .bug-list li {
     margin-bottom: 10px;
 }
 
-/* Close button styles */
-#closeModal {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
 
     </style>
 </head>
@@ -917,11 +928,8 @@ body.night-mode {
             </button>
         </div>
         <ul class="bug-list">
-            <li>Bug 1: Default issue</li>
-            <li>Bug 2: Default issue</li>
-            <li>Bug 3: Default issue</li>
-            <li>Bug 4: Default issue</li>
-            <li>Bug 5: Default issue</li>
+            <li>Chat Switching Bug: When switching between individual chats, messages may be sent to the previous chat instead of the current one.</li>
+            <li>Fix:Refresh the page before switching chats, then select the desired contact.</li>
         </ul>
     </div>
 </div>
