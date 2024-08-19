@@ -388,6 +388,7 @@ body.night-mode {
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 15px;
+    color: var(--text-color); /* Ensure consistent text color */
 }
 
 .add-to-group {
@@ -420,7 +421,24 @@ body.night-mode {
 }
 
 .add-to-group button:hover {
-    background-color: #3b7bce;
+    background-color: #3b7bce; /* Change background color on hover */
+}
+
+/* Additional styles for responsiveness and better integration with the chat window */
+
+@media (max-width: 768px) {
+    .group-chats h2 {
+        font-size: 20px;
+    }
+
+    .add-to-group input[type="text"] {
+        width: calc(100% - 110px); /* Adjust input width for smaller screens */
+    }
+
+    .add-to-group button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
 }
 
 
@@ -707,6 +725,12 @@ body.night-mode {
             <input type="text" id="groupEmail" placeholder="Enter friend's email">
             <button onclick="addToGroup()">Add to Group</button>
         </div>
+        <div class="group-list">
+            <h3>Your Groups</h3>
+            <ul id="groupList">
+                <!-- Groups will be dynamically added here -->
+            </ul>
+        </div>
     </div>
     <div class="chat-window">
         <h2>Chat with <span id="chatWith"></span></h2>
@@ -717,6 +741,7 @@ body.night-mode {
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
+
 
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1209,6 +1234,135 @@ function getUserEmail(userId) {
         return doc.data().email;
     });
 }
+
+function createGroupChat(groupName, memberEmails) {
+    const currentUser = firebase.auth().currentUser;
+    const participants = memberEmails.concat(currentUser.email); // Add the current user to the group
+
+    db.collection('groupChats').add({
+        groupName: groupName,
+        participants: participants,
+        createdBy: currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then((docRef) => {
+        console.log('Group chat created with ID:', docRef.id);
+        loadGroupChats();
+    }).catch((error) => {
+        console.error('Error creating group chat:', error);
+    });
+}
+
+function loadGroupChats() {
+    const currentUser = firebase.auth().currentUser;
+
+    db.collection('groupChats').where('participants', 'array-contains', currentUser.email)
+        .onSnapshot((snapshot) => {
+            const groupList = document.getElementById('groupList');
+            groupList.innerHTML = '';
+
+            snapshot.forEach((doc) => {
+                const group = doc.data();
+                const groupName = group.groupName || 'Unnamed Group';
+
+                const listItem = document.createElement('li');
+                listItem.classList.add('group-item');
+
+                const groupNameSpan = document.createElement('span');
+                groupNameSpan.textContent = groupName;
+                groupNameSpan.classList.add('group-name');
+
+                const renameButton = document.createElement('button');
+                renameButton.textContent = 'Rename';
+                renameButton.onclick = () => renameGroupChat(doc.id);
+
+                const openChatButton = document.createElement('button');
+                openChatButton.textContent = 'Open Chat';
+                openChatButton.onclick = () => openGroupChat(doc.id);
+
+                listItem.appendChild(groupNameSpan);
+                listItem.appendChild(renameButton);
+                listItem.appendChild(openChatButton);
+
+                groupList.appendChild(listItem);
+            });
+        });
+}
+
+function renameGroupChat(groupId) {
+    const newName = prompt('Enter the new group name:');
+    if (newName) {
+        db.collection('groupChats').doc(groupId).update({
+            groupName: newName
+        }).then(() => {
+            console.log('Group chat renamed');
+            loadGroupChats();
+        }).catch((error) => {
+            console.error('Error renaming group chat:', error);
+        });
+    }
+}
+
+function sendGroupMessage(groupId) {
+    const chatInput = document.getElementById('chatInput').value.trim();
+    const currentUser = firebase.auth().currentUser;
+
+    if (chatInput && groupId && currentUser) {
+        db.collection('groupChats').doc(groupId).collection('messages').add({
+            sender: currentUser.email,
+            message: chatInput,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Message sent!');
+            document.getElementById('chatInput').value = ''; // Clear the input field after sending
+        }).catch((error) => {
+            console.error('Error sending message: ', error);
+        });
+    }
+}
+
+function openGroupChat(groupId) {
+    db.collection('groupChats').doc(groupId).get().then((doc) => {
+        if (doc.exists) {
+            const group = doc.data();
+            document.getElementById('chatWith').textContent = group.groupName;
+            loadGroupMessages(groupId);
+        }
+    }).catch((error) => {
+        console.error('Error opening group chat:', error);
+    });
+}
+
+function loadGroupMessages(groupId) {
+    db.collection('groupChats').doc(groupId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot((snapshot) => {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+
+            snapshot.forEach((doc) => {
+                const message = doc.data();
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+
+                const senderElement = document.createElement('span');
+                senderElement.classList.add('message-sender');
+                senderElement.textContent = message.sender;
+
+                const textElement = document.createElement('span');
+                textElement.classList.add('message-text');
+                textElement.textContent = message.message;
+
+                messageElement.appendChild(senderElement);
+                messageElement.appendChild(textElement);
+
+                chatMessages.appendChild(messageElement);
+            });
+
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+}
+
 </script>
         
 <script>
