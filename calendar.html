@@ -1043,6 +1043,10 @@ function openEditEventModal(dayKey, event) {
     editEventModal.style.display = 'flex';
 }
 
+closeEditModal.addEventListener('click', () => {
+    editEventModal.style.display = 'none';
+});
+
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
         return;
@@ -1187,7 +1191,7 @@ async function loadTasks() {
         return;
     }
 
-    tasks = {}; // Clear the tasks object to prevent duplicates
+    tasks = {}; // Clear the tasks object
 
     try {
         const tasksSnapshot = await db.collection('tasks')
@@ -1196,33 +1200,26 @@ async function loadTasks() {
 
         tasksSnapshot.forEach(doc => {
             const task = doc.data();
-
-            if (!task.dueDate) {
-                console.warn(`Task with ID ${doc.id} is missing a dueDate.`);
-                return; // Skip tasks without a dueDate
-            }
-
             const dueDate = task.dueDate.toDate();
             const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
 
             const taskEvent = {
                 title: task.task,
-                description: task.description || "", // Use task description if available
+                description: task.description || "", // Default empty string if not set
                 day: dueDate.getDate(),
                 month: dueDate.getMonth(),
                 year: dueDate.getFullYear(),
                 uid: user.uid,
                 linkedTaskId: doc.id, // Link task to event
-                startTime: task.startTime || "", // Use task start time if available
-                endTime: task.endTime || "", // Use task end time if available
-                eventType: "task" // Mark it as a task event
+                startTime: task.startTime || "09:00", // Default start time
+                endTime: task.endTime || "17:00" // Default end time
             };
 
             if (!tasks[dayKey]) {
                 tasks[dayKey] = [];
             }
 
-            // Prevent duplicate events for the same task
+            // Prevent duplicate events
             const existingEvent = tasks[dayKey].find(e => e.linkedTaskId === doc.id);
             if (!existingEvent) {
                 tasks[dayKey].push(taskEvent);
