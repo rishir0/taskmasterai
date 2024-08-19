@@ -1237,6 +1237,75 @@ tasksSnapshot.forEach(doc => {
     }
 }
 
+async function loadTasks() {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    tasks = {}; // Clear the tasks object to prevent duplicates
+
+    try {
+        const tasksSnapshot = await db.collection('tasks')
+            .where("userId", "==", user.uid)
+            .get();
+
+        tasksSnapshot.forEach(doc => {
+            const task = doc.data();
+
+            if (!task.dueDate) {
+                console.warn(`Task with ID ${doc.id} is missing a dueDate.`);
+                return; // Skip tasks without a dueDate
+            }
+
+            const dueDate = task.dueDate.toDate();
+            const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
+
+            const taskEvent = {
+                title: task.task,
+                description: task.description || "", // Use task description if available
+                day: dueDate.getDate(),
+                month: dueDate.getMonth(),
+                year: dueDate.getFullYear(),
+                uid: user.uid,
+                linkedTaskId: doc.id, // Link task to event
+                startTime: task.startTime || "", // Use task start time if available
+                endTime: task.endTime || "", // Use task end time if available
+                eventType: "task" // Mark it as a task event
+            };
+
+            if (!tasks[dayKey]) {
+                tasks[dayKey] = [];
+            }
+
+            // Prevent duplicate events for the same task
+            const existingEvent = tasks[dayKey].find(e => e.linkedTaskId === doc.id);
+            if (!existingEvent) {
+                tasks[dayKey].push(taskEvent);
+            }
+        });
+
+        // Integrate tasks into events
+        Object.keys(tasks).forEach(dayKey => {
+            if (!events[dayKey]) {
+                events[dayKey] = [];
+            }
+            tasks[dayKey].forEach(taskEvent => {
+                // Check if the task has already been converted to an event
+                const existingEvent = events[dayKey].find(e => e.linkedTaskId === taskEvent.linkedTaskId);
+                if (!existingEvent) {
+                    events[dayKey].push(taskEvent);
+                }
+            });
+        });
+
+        createCalendar(); // Redraw the calendar
+    } catch (error) {
+        console.error("Error loading tasks from Firestore: ", error);
+    }
+}
+
 async function deleteEvent(event) {
     if (!event) {
         console.error("No event provided for deletion.");
