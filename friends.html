@@ -1405,17 +1405,25 @@ function loadGroupMessages(groupId) {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = ''; // Clear the chat window
 
-            snapshot.forEach((doc) => {
+            snapshot.forEach(async (doc) => {
                 const message = doc.data();
                 const messageElement = document.createElement('div');
                 const currentUser = firebase.auth().currentUser;
 
                 const isSentByCurrentUser = message.sender === currentUser.email;
 
-                // Fetch the display name of the sender synchronously
-                const senderDisplayName = isSentByCurrentUser ? null : message.sender;
+                let senderDisplayName = message.sender;
 
                 if (!isSentByCurrentUser) {
+                    // Fetch the display name of the sender
+                    const userSnapshot = await db.collection('users')
+                        .where('email', '==', message.sender)
+                        .get();
+
+                    if (!userSnapshot.empty) {
+                        senderDisplayName = userSnapshot.docs[0].data().displayName || message.sender;
+                    }
+
                     const senderElement = document.createElement('span');
                     senderElement.classList.add('message-sender');
                     senderElement.textContent = `${senderDisplayName}: `;
@@ -1440,6 +1448,7 @@ function loadGroupMessages(groupId) {
             chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
         });
 }
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
