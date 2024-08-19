@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -380,6 +381,7 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+/* Group chat message styling */
 #groupMessages {
     flex: 1;
     overflow-y: auto;
@@ -422,6 +424,7 @@ body.night-mode {
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 
 .add-to-group {
     display: flex;
@@ -1353,9 +1356,19 @@ function sendGroupMessage(groupId) {
             });
 
             // Display the message in the chat window
-            const chatMessages = document.getElementById('groupMessages');
+            const chatMessages = document.getElementById('chatMessages');
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message', 'sent');
+            messageElement.classList.add('message');
+
+            // Only show the display names of other participants, not the current user
+            participants.forEach(email => {
+                if (email !== currentUser.email) {
+                    const nameElement = document.createElement('span');
+                    nameElement.classList.add('message-sender');
+                    nameElement.textContent = email;
+                    messageElement.appendChild(nameElement);
+                }
+            });
 
             const textElement = document.createElement('span');
             textElement.classList.add('message-text');
@@ -1371,7 +1384,6 @@ function sendGroupMessage(groupId) {
         console.error("Error fetching group data:", error);
     });
 }
-
 
 // Function to load group chats
 function loadGroupChats() {
@@ -1424,7 +1436,7 @@ function loadGroupMessages(groupId) {
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
-            const chatMessages = document.getElementById('groupMessages');
+            const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = '';
 
             snapshot.forEach((doc) => {
@@ -1442,14 +1454,6 @@ function loadGroupMessages(groupId) {
 
                 messageElement.appendChild(senderElement);
                 messageElement.appendChild(textElement);
-
-                // Apply styles based on sender
-                const currentUser = firebase.auth().currentUser;
-                if (message.sender === currentUser.email) {
-                    messageElement.classList.add('sent');
-                } else {
-                    messageElement.classList.add('received');
-                }
 
                 chatMessages.appendChild(messageElement);
             });
