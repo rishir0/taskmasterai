@@ -1396,6 +1396,7 @@ function openGroupChat(groupId) {
     });
 }
 
+
 // Function to load group messages
 function loadGroupMessages(groupId) {
     db.collection('groupchats').doc(groupId).collection('messages')
@@ -1407,24 +1408,42 @@ function loadGroupMessages(groupId) {
             snapshot.forEach((doc) => {
                 const message = doc.data();
                 const messageElement = document.createElement('div');
-                messageElement.classList.add('message');
+                const currentUser = firebase.auth().currentUser;
 
-                const senderElement = document.createElement('span');
-                senderElement.classList.add('message-sender');
-                senderElement.textContent = message.sender;
+                // Determine if the message was sent by the current user
+                const isSentByCurrentUser = message.sender === currentUser.email;
 
-                const textElement = document.createElement('span');
-                textElement.classList.add('message-text');
-                textElement.textContent = message.message;
+                // Fetch the display name of the sender
+                db.collection('users').where('email', '==', message.sender).get()
+                    .then((querySnapshot) => {
+                        const senderDoc = querySnapshot.docs[0];
+                        const senderDisplayName = senderDoc ? senderDoc.data().displayName : message.sender;
 
-                messageElement.appendChild(senderElement);
-                messageElement.appendChild(textElement);
+                        // Create sender name element
+                        const senderElement = document.createElement('span');
+                        senderElement.classList.add('message-sender');
+                        senderElement.textContent = `${senderDisplayName}: `;
 
-                chatMessages.appendChild(messageElement);
+                        // Create message text element
+                        const textElement = document.createElement('span');
+                        textElement.classList.add('message-text');
+                        textElement.textContent = message.message;
+
+                        // Append sender name and message text to message element
+                        messageElement.appendChild(senderElement);
+                        messageElement.appendChild(textElement);
+
+                        // Apply styles based on whether the message is sent or received
+                        if (isSentByCurrentUser) {
+                            messageElement.classList.add('message', 'sent');
+                        } else {
+                            messageElement.classList.add('message', 'received');
+                        }
+
+                        chatMessages.appendChild(messageElement);
+                        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+                    });
             });
-
-            // Scroll to the bottom of the chat
-            chatMessages.scrollTop = chatMessages.scrollHeight;
         });
 }
 
