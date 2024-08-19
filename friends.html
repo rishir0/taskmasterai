@@ -380,15 +380,31 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.group-chats {
-    margin-bottom: 20px; /* Space between group chats and chat window */
+#groupList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.group-chats h2 {
-    font-size: 24px;
-    font-weight: 500;
-    margin-bottom: 15px;
-    color: var(--text-color); /* Ensure consistent text color */
+#groupList .group-item {
+    background: var(--glass-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: space-between; /* Ensure the group name and other elements are spaced out */
+    align-items: center; /* Align items in the center vertically */
+}
+
+#groupList .group-item:hover {
+    background: var(--hover-bg);
+}
+
+.group-name {
+    font-weight: bold;
+    /* You can add more styles here if needed */
 }
 
 .add-to-group {
