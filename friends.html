@@ -738,7 +738,7 @@ body.night-mode {
             <!-- Chat messages will be displayed here -->
         </div>
         <input type="text" id="chatInput" placeholder="Type a message">
-        <button onclick="sendMessage()">Send</button>
+        <button onclick="sendGroupMessage(currentGroupId)">Send</button>
     </div>
 </div>
 
@@ -1268,6 +1268,63 @@ function addToGroup() {
     });
 
     document.getElementById("groupEmails").value = ""; // Clear the input field
+}
+
+let currentGroupId = null;
+
+function sendGroupMessage(groupId) {
+    const messageText = document.getElementById("chatInput").value.trim();
+    if (messageText === "") return;
+
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser || !groupId) return;
+
+    // Fetch the group data to get participants
+    db.collection('groupchats').doc(groupId).get().then((doc) => {
+        if (doc.exists) {
+            const group = doc.data();
+            const participants = group.participants || [];
+
+            // Store the message in the group's messages collection
+            db.collection('groupchats').doc(groupId).collection('messages').add({
+                sender: currentUser.email,
+                message: messageText,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById("chatInput").value = ""; // Clear the input field
+            }).catch((error) => {
+                console.error("Error sending message:", error);
+            });
+
+            // Display the message in the chat window
+            const chatMessages = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+
+            // Only show the display names of other participants, not the current user
+            participants.forEach(email => {
+                if (email !== currentUser.email) {
+                    const nameElement = document.createElement('span');
+                    nameElement.classList.add('message-sender');
+                    nameElement.textContent = email;
+                    messageElement.appendChild(nameElement);
+                }
+            });
+
+            const textElement = document.createElement('span');
+            textElement.classList.add('message-text');
+            textElement.textContent = messageText;
+
+            messageElement.appendChild(textElement);
+            chatMessages.appendChild(messageElement);
+
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }).catch((error) => {
+        console.error("Error fetching group data:", error);
+    });
 }
 
 // Function to load group chats
