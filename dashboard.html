@@ -1607,49 +1607,58 @@ function createTask() {
     const task = taskInput.value.trim();
     let dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
 
-    if (dueDate) {
-        // Set the time to the start of the day to avoid timezone issues
-        dueDate.setUTCHours(0, 0, 0, 0);
-    }
-
-    if (task) {
+    if (task && dueDate) {
+        // Correct timezone offset issue
+        dueDate.setHours(0, 0, 0, 0); // Normalize time to midnight
+        
         db.collection('tasks').add({
             task: task,
             dueDate: dueDate, // Store the due date
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then((docRef) => {
+        }).then(docRef => {
             console.log('Task created:', task);
-            
-            // If there's a due date, create an event for it
-            if (dueDate) {
-                createEventForTask(docRef.id, task, dueDate);
-            }
+            createTaskEvent(docRef.id, task, dueDate); // Create the event
         }).catch((error) => {
             console.error('Error creating task:', error);
         });
+
         taskInput.value = '';
         taskDueDate.value = ''; // Clear the date input after task creation
     }
 }
 
-function createEventForTask(taskId, taskTitle, dueDate) {
-    db.collection('events').add({
+async function createTaskEvent(taskId, taskTitle, dueDate) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    const taskEvent = {
         title: taskTitle,
-        description: '', // Set an empty description or modify as needed
-        startTime: dueDate.toISOString(), // Assuming you want to use ISO format
-        endTime: dueDate.toISOString(),
-        linkedTaskId: taskId,
-        userId: firebase.auth().currentUser.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        console.log('Event created for task:', taskTitle);
-    }).catch((error) => {
-        console.error('Error creating event for task:', error);
-    });
+        description: "", // Default to empty string
+        day: dueDate.getDate(),
+        month: dueDate.getMonth(),
+        year: dueDate.getFullYear(),
+        uid: user.uid,
+        linkedTaskId: taskId, // Link task to event
+        startTime: "09:00", // Default start time
+        endTime: "17:00" // Default end time
+    };
+
+    try {
+        await db.collection('events').add(taskEvent);
+        console.log('Task event created:', taskEvent);
+    } catch (error) {
+        console.error('Error creating task event:', error);
+    }
 }
 
-
+function correctDate(date) {
+    const offset = date.getTimezoneOffset() * 60000; // Get timezone offset in milliseconds
+    return new Date(date.getTime() - offset); // Adjust date to UTC
+}
 
 function createProject() {
     const projectInput = document.getElementById('project-input');
