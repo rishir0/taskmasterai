@@ -440,8 +440,20 @@ body.night-mode {
     background-color: #3b7bce; /* Change background color on hover */
 }
 
-.edit-button,
-.delete-button {
+.group-item {
+    background: var(--glass-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: space-between; /* Space out items in the group item */
+    align-items: center; /* Align items in the center vertically */
+}
+
+.group-item .edit-button,
+.group-item .delete-button {
     padding: 5px 10px;
     color: #fff;
     border: none;
@@ -449,24 +461,25 @@ body.night-mode {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
-    margin-left: 10px; /* Space between group name and buttons */
+    margin-left: 5px; /* Space between buttons */
 }
 
-.edit-button {
+.group-item .edit-button {
     background-color: #3498db; /* Blue color for edit button */
 }
 
-.edit-button:hover {
+.group-item .edit-button:hover {
     background-color: #2980b9;
 }
 
-.delete-button {
+.group-item .delete-button {
     background-color: #e74c3c; /* Red color for delete button */
 }
 
-.delete-button:hover {
+.group-item .delete-button:hover {
     background-color: #c0392b;
 }
+
 
 /* Additional styles for responsiveness and better integration with the chat window */
 
