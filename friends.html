@@ -380,8 +380,14 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-/* Group chat message styling */
-.group-chats .message {
+#groupMessages {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 15px;
+}
+
+#groupMessages .message {
     max-width: 70%; /* Limit width for better readability */
     padding: 10px;
     border-radius: 10px;
@@ -390,7 +396,7 @@ body.night-mode {
     clear: both;
 }
 
-.group-chats .message.sent {
+#groupMessages .message.sent {
     background: var(--primary-color); /* Customize color for sent messages */
     color: #fff;
     align-self: flex-end;
@@ -399,7 +405,7 @@ body.night-mode {
     border-top-right-radius: 0; /* Square the top-right corner */
 }
 
-.group-chats .message.received {
+#groupMessages .message.received {
     background: var(--accent-color); /* Customize color for received messages */
     color: var(--text-color);
     align-self: flex-start;
@@ -408,6 +414,14 @@ body.night-mode {
     border-top-left-radius: 0; /* Square the top-left corner */
 }
 
+#groupMessages div {
+    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
 .add-to-group {
     display: flex;
@@ -1339,19 +1353,9 @@ function sendGroupMessage(groupId) {
             });
 
             // Display the message in the chat window
-            const chatMessages = document.getElementById('chatMessages');
+            const chatMessages = document.getElementById('groupMessages');
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-
-            // Only show the display names of other participants, not the current user
-            participants.forEach(email => {
-                if (email !== currentUser.email) {
-                    const nameElement = document.createElement('span');
-                    nameElement.classList.add('message-sender');
-                    nameElement.textContent = email;
-                    messageElement.appendChild(nameElement);
-                }
-            });
+            messageElement.classList.add('message', 'sent');
 
             const textElement = document.createElement('span');
             textElement.classList.add('message-text');
@@ -1367,6 +1371,7 @@ function sendGroupMessage(groupId) {
         console.error("Error fetching group data:", error);
     });
 }
+
 
 // Function to load group chats
 function loadGroupChats() {
@@ -1419,7 +1424,7 @@ function loadGroupMessages(groupId) {
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
-            const chatMessages = document.getElementById('chatMessages');
+            const chatMessages = document.getElementById('groupMessages');
             chatMessages.innerHTML = '';
 
             snapshot.forEach((doc) => {
@@ -1437,6 +1442,14 @@ function loadGroupMessages(groupId) {
 
                 messageElement.appendChild(senderElement);
                 messageElement.appendChild(textElement);
+
+                // Apply styles based on sender
+                const currentUser = firebase.auth().currentUser;
+                if (message.sender === currentUser.email) {
+                    messageElement.classList.add('sent');
+                } else {
+                    messageElement.classList.add('received');
+                }
 
                 chatMessages.appendChild(messageElement);
             });
