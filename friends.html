@@ -1405,8 +1405,6 @@ function loadGroupMessages(groupId) {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = ''; // Clear the chat window
 
-            const fragment = document.createDocumentFragment(); // Use a document fragment for better performance
-
             snapshot.forEach((doc) => {
                 const message = doc.data();
                 const messageElement = document.createElement('div');
@@ -1414,36 +1412,31 @@ function loadGroupMessages(groupId) {
 
                 const isSentByCurrentUser = message.sender === currentUser.email;
 
-                // Fetch the display name of the sender
-                db.collection('users').where('email', '==', message.sender).get()
-                    .then((querySnapshot) => {
-                        const senderDoc = querySnapshot.docs[0];
-                        const senderDisplayName = senderDoc ? senderDoc.data().displayName : message.sender;
+                // Fetch the display name of the sender synchronously
+                const senderDisplayName = isSentByCurrentUser ? null : message.sender;
 
-                        if (!isSentByCurrentUser) {
-                            const senderElement = document.createElement('span');
-                            senderElement.classList.add('message-sender');
-                            senderElement.textContent = `${senderDisplayName}: `;
-                            messageElement.appendChild(senderElement);
-                        }
+                if (!isSentByCurrentUser) {
+                    const senderElement = document.createElement('span');
+                    senderElement.classList.add('message-sender');
+                    senderElement.textContent = `${senderDisplayName}: `;
+                    messageElement.appendChild(senderElement);
+                }
 
-                        const textElement = document.createElement('span');
-                        textElement.classList.add('message-text');
-                        textElement.textContent = message.message;
+                const textElement = document.createElement('span');
+                textElement.classList.add('message-text');
+                textElement.textContent = message.message;
 
-                        messageElement.appendChild(textElement);
+                messageElement.appendChild(textElement);
 
-                        if (isSentByCurrentUser) {
-                            messageElement.classList.add('message', 'sent');
-                        } else {
-                            messageElement.classList.add('message', 'received');
-                        }
+                if (isSentByCurrentUser) {
+                    messageElement.classList.add('message', 'sent');
+                } else {
+                    messageElement.classList.add('message', 'received');
+                }
 
-                        fragment.appendChild(messageElement); // Append to the document fragment
-                    });
+                chatMessages.appendChild(messageElement);
             });
 
-            chatMessages.appendChild(fragment); // Append all messages at once
             chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
         });
 }
