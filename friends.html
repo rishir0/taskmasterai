@@ -1432,6 +1432,12 @@ function openGroupChat(groupId) {
 
 // Function to load group messages
 function loadGroupMessages(groupId, currentUser) {
+    // Ensure currentUser is defined and has an email property
+    if (!currentUser || !currentUser.email) {
+        console.error('currentUser is undefined or does not have an email property.');
+        return;
+    }
+
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
