@@ -1421,13 +1421,7 @@ function openGroupChat(groupId) {
 }
 
 // Function to load group messages
-function loadGroupMessages(groupId, currentUser) {
-    // Ensure currentUser is defined and has an email property
-    if (!currentUser || !currentUser.email) {
-        console.error('currentUser is undefined or does not have an email property.');
-        return;
-    }
-
+function loadGroupMessages(groupId) {
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -1439,32 +1433,24 @@ function loadGroupMessages(groupId, currentUser) {
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message');
 
-                // Determine if the message is sent or received
-                if (message.sender === currentUser.email) {
+                // Assuming currentUsername holds the username of the current user
+                if (message.sender === currentUsername) {
                     messageElement.classList.add('sent');
                 } else {
                     messageElement.classList.add('received');
                 }
 
-                // Create the text bubble
-                const bubbleElement = document.createElement('div');
-                bubbleElement.classList.add('bubble');
+                const senderElement = document.createElement('span');
+                senderElement.classList.add('message-sender');
+                senderElement.textContent = message.sender;
 
                 const textElement = document.createElement('span');
                 textElement.classList.add('message-text');
                 textElement.textContent = message.message;
 
-                bubbleElement.appendChild(textElement);
+                messageElement.appendChild(senderElement);
+                messageElement.appendChild(textElement);
 
-                // Only add the sender name if it's not the current user
-                if (message.sender !== currentUser.email) {
-                    const senderElement = document.createElement('span');
-                    senderElement.classList.add('message-sender');
-                    senderElement.textContent = message.displayName || message.sender;
-                    messageElement.appendChild(senderElement);
-                }
-
-                messageElement.appendChild(bubbleElement);
                 chatMessages.appendChild(messageElement);
             });
 
