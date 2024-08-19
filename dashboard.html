@@ -1608,9 +1608,10 @@ function createTask() {
     let dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
 
     if (task && dueDate) {
-        // Correct timezone offset issue
+        // Correct timezone offset issue and add one day
         dueDate.setHours(0, 0, 0, 0); // Normalize time to midnight
-        
+        dueDate.setDate(dueDate.getDate() + 1); // Increment due date by one day
+
         db.collection('tasks').add({
             task: task,
             dueDate: dueDate, // Store the due date
