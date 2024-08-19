@@ -452,6 +452,11 @@ body.night-mode {
     align-items: center; /* Align items in the center vertically */
 }
 
+.group-item .buttons {
+    display: flex;
+    gap: 5px; /* Space between the buttons */
+}
+
 .group-item .edit-button,
 .group-item .delete-button {
     padding: 5px 10px;
@@ -461,7 +466,6 @@ body.night-mode {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
-    margin-left: 2px; /* Space between buttons */
 }
 
 .group-item .edit-button {
@@ -479,6 +483,7 @@ body.night-mode {
 .group-item .delete-button:hover {
     background-color: #c0392b;
 }
+
 
 
 /* Additional styles for responsiveness and better integration with the chat window */
@@ -1430,6 +1435,10 @@ function loadGroupChats() {
                 groupNameElement.classList.add('group-name');
                 groupItem.appendChild(groupNameElement);
 
+                // Button container
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('buttons');
+
                 // Edit button
                 const editButton = document.createElement('button');
                 editButton.textContent = 'Edit';
@@ -1437,7 +1446,7 @@ function loadGroupChats() {
                 editButton.onclick = () => {
                     editGroupChat(doc.id, groupName);
                 };
-                groupItem.appendChild(editButton);
+                buttonContainer.appendChild(editButton);
 
                 // Delete button
                 const deleteButton = document.createElement('button');
@@ -1446,7 +1455,9 @@ function loadGroupChats() {
                 deleteButton.onclick = () => {
                     deleteGroupChat(doc.id);
                 };
-                groupItem.appendChild(deleteButton);
+                buttonContainer.appendChild(deleteButton);
+
+                groupItem.appendChild(buttonContainer);
 
                 groupItem.onclick = () => {
                     openGroupChat(doc.id);
