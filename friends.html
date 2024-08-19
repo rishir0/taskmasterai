@@ -432,7 +432,7 @@ body.night-mode {
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     transition: background-color 0.3s;
 }
 
@@ -657,6 +657,74 @@ body.night-mode {
 }
 
 
+/* Modal Styles */
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modal-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.modal-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.bug-list {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.bug-list li {
+    margin-bottom: 10px;
+}
+
+/* Close button styles */
+#closeModal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+
     </style>
 </head>
 <body>
@@ -767,10 +835,18 @@ body.night-mode {
                 </div>
             </div>
         </div>  
-<div class="main-content">
-    <div class="dashboard-header">
-        <h1>Friends</h1>
-    </div>
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h1>Friends</h1>
+            <!-- SVG Icon -->
+            <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path d="M12,10V8a3,3,0,0,0-2-2.82V4A3,3,0,0,0,4,4V5.18A3,3,0,0,0,2,8v2a3,3,0,0,0,3,3H9A3,3,0,0,0,12,10ZM6,4A1,1,0,0,1,8,4V5H6ZM4,10V8A1,1,0,0,1,5,7H9a1,1,0,0,1,1,1v2a1,1,0,0,1-1,1H5A1,1,0,0,1,4,10ZM19,7H15a1,1,0,0,0,0,2h4a1,1,0,0,1,1,1v9.72l-1.57-1.45a1,1,0,0,0-.68-.27H9a1,1,0,0,1-1-1V16a1,1,0,0,0-2,0v1a3,3,0,0,0,3,3h8.36l3,2.73A1,1,0,0,0,21,23a1.1,1.1,0,0,0,.4-.08A1,1,0,0,0,22,22V10A3,3,0,0,0,19,7Z"></path>
+                </g>
+            </svg>
+        </div>
     <div class="friends-list">
         <h2>Online Friends</h2>
         <div id="onlineFriends">
@@ -803,6 +879,45 @@ body.night-mode {
         <button onclick="sendMessage(currentGroupId)">Send</button>
     </div>
 </div>
+
+
+    <!-- Modal Structure -->
+    <div id="bugModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="disableModal" class="modal-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="#ffffff">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path d="M11.5 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zM18 10.5c0-3.07-2.13-5.64-5-6.32V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5v.68c-.51.12-.99.32-1.45.56L18 14.18V10.5zm-.27 8.5l2 2L21 19.73 4.27 3 3 4.27l2.92 2.92C5.34 8.16 5 9.29 5 10.5V16l-2 2v1h14.73z"></path>
+                        </g>
+                    </svg>
+                </button>
+                <span class="modal-title">Current Bugs:</span>
+                <button id="closeModal" class="modal-btn">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <g id="Edit / Close_Circle">
+                                <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </g>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <ul class="bug-list">
+                <li>Bug 1: Default issue</li>
+                <li>Bug 2: Default issue</li>
+                <li>Bug 3: Default issue</li>
+                <li>Bug 4: Default issue</li>
+                <li>Bug 5: Default issue</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
