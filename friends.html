@@ -380,50 +380,16 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-/* Group chat message styling */
-#groupMessages {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
+.group-chats {
+    margin-bottom: 20px; /* Space between group chats and chat window */
+}
+
+.group-chats h2 {
+    font-size: 24px;
+    font-weight: 500;
     margin-bottom: 15px;
+    color: var(--text-color); /* Ensure consistent text color */
 }
-
-#groupMessages .message {
-    max-width: 70%; /* Limit width for better readability */
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    clear: both;
-}
-
-#groupMessages .message.sent {
-    background: var(--primary-color); /* Customize color for sent messages */
-    color: #fff;
-    align-self: flex-end;
-    float: right;
-    text-align: right;
-    border-top-right-radius: 0; /* Square the top-right corner */
-}
-
-#groupMessages .message.received {
-    background: var(--accent-color); /* Customize color for received messages */
-    color: var(--text-color);
-    align-self: flex-start;
-    float: left;
-    text-align: left;
-    border-top-left-radius: 0; /* Square the top-left corner */
-}
-
-#groupMessages div {
-    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
-    color: var(--text-color);
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
 
 .add-to-group {
     display: flex;
@@ -809,36 +775,46 @@ body.night-mode {
             }
         }
 
-document.addEventListener('DOMContentLoaded', function() {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            // User is signed in
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-            document.getElementById('displayName').textContent = username;
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    // Update the UI with the user's display name
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
 
-            // Load friends, update status, etc.
-            updateOnlineStatus(true);
-            loadOnlineFriends();
-            listenForFriendRequests();
-
-            // Handle visibility and unload events for online status
-            window.addEventListener('beforeunload', function() {
-                updateOnlineStatus(false);
-            });
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'visible') {
+                    // Set Firestore online status to true when the user is authenticated
                     updateOnlineStatus(true);
+
+                    // Handle the user going offline only when the tab is closed or navigated away
+                    window.addEventListener('beforeunload', function() {
+                        updateOnlineStatus(false);
+                    });
+
+                    // Handle tab visibility change
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'visible') {
+                            updateOnlineStatus(true);
+                        }
+                    });
+
+                } else {
+                    // No user is signed in, redirect to login page
+                    window.location.href = "login.html";
                 }
             });
+        });
 
-        } else {
-            // No user is signed in, redirect to login page
-            window.location.href = "login.html";
-        }
+            document.addEventListener('DOMContentLoaded', function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                loadOnlineFriends();
+                listenForFriendRequests();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
     });
-});
-
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
