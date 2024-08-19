@@ -200,19 +200,25 @@ body.night-mode {
     background: transparent;
 }
 
-/* Dashboard Header */
 .dashboard-header {
     display: flex;
     align-items: center;
+    margin-bottom: 30px;
 }
 
-/* Header Text */
 .dashboard-header h1 {
-    margin: 0;
-    font-size: 24px; /* Font size for the text */
+    font-size: 2.5rem;
+    margin: 0; /* Remove default margin to align with icon */
     display: flex;
-    align-items: center;
+    align-items: center; /* Center align text and icon vertically */
 }
+
+.dashboard-header svg {
+    width: 1.5rem; /* Adjust the size to fit nicely with the text */
+    height: 1.5rem;
+    margin-left: 10px; /* Space between the icon and text */
+}
+
 
 .friends-list, .add-friend, .chat-window {
     margin-bottom: 20px; /* Reduced margin for more compact spacing */
@@ -729,16 +735,6 @@ body.night-mode {
     right: 10px;
 }
 
-/* SVG Icon */
-.dashboard-header svg {
-    width: 24px; /* Match the font size */
-    height: 24px; /* Match the font size */
-    fill: #ffffff;
-    stroke: #ffffff;
-    cursor: pointer; /* Optional: show pointer cursor on hover */
-    margin-left: 10px; /* Space between the text and the icon */
-    vertical-align: middle; /* Aligns the icon with the text */
-}
     </style>
 </head>
 <body>
@@ -894,41 +890,41 @@ body.night-mode {
     </div>
 </div>
 
-    <!-- Modal Structure -->
-    <div id="bugModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button id="disableModal" class="modal-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="#ffffff">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <path d="M11.5 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zM18 10.5c0-3.07-2.13-5.64-5-6.32V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5v.68c-.51.12-.99.32-1.45.56L18 14.18V10.5zm-.27 8.5l2 2L21 19.73 4.27 3 3 4.27l2.92 2.92C5.34 8.16 5 9.29 5 10.5V16l-2 2v1h14.73z"></path>
+<!-- Modal Structure -->
+<div id="bugModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button id="disableModal" class="modal-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="#ffffff">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <path d="M11.5 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zM18 10.5c0-3.07-2.13-5.64-5-6.32V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5v.68c-.51.12-.99.32-1.45.56L18 14.18V10.5zm-.27 8.5l2 2L21 19.73 4.27 3 3 4.27l2.92 2.92C5.34 8.16 5 9.29 5 10.5V16l-2 2v1h14.73z"></path>
+                    </g>
+                </svg>
+            </button>
+            <span class="modal-title">Current Bugs:</span>
+            <button id="closeModal" class="modal-btn">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <g id="Edit / Close_Circle">
+                            <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </g>
-                    </svg>
-                </button>
-                <span class="modal-title">Current Bugs:</span>
-                <button id="closeModal" class="modal-btn">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <g id="Edit / Close_Circle">
-                                <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </g>
-                        </g>
-                    </svg>
-                </button>
-            </div>
-            <ul class="bug-list">
-                <li>Bug 1: Default issue</li>
-                <li>Bug 2: Default issue</li>
-                <li>Bug 3: Default issue</li>
-                <li>Bug 4: Default issue</li>
-                <li>Bug 5: Default issue</li>
-            </ul>
+                    </g>
+                </svg>
+            </button>
         </div>
+        <ul class="bug-list">
+            <li>Bug 1: Default issue</li>
+            <li>Bug 2: Default issue</li>
+            <li>Bug 3: Default issue</li>
+            <li>Bug 4: Default issue</li>
+            <li>Bug 5: Default issue</li>
+        </ul>
     </div>
+</div>
         
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -1789,14 +1785,20 @@ firebase.auth().onAuthStateChanged(user => {
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('bugModal');
     const closeModalBtn = document.getElementById('closeModal');
     const disableModalBtn = document.getElementById('disableModal');
-    const userId = firebase.auth().currentUser.uid;
 
-    // Show modal on page load
-    modal.style.display = 'flex';
+    // Check if the modal should be shown
+    if (localStorage.getItem('modalDisabled') === 'true') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'flex'; // Display the modal by default
+    }
 
     // Close modal
     closeModalBtn.addEventListener('click', function() {
@@ -1806,17 +1808,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Disable modal for current user
     disableModalBtn.addEventListener('click', function() {
         // Set a flag in localStorage to remember the user's preference
-        localStorage.setItem('modalDisabled', true);
+        localStorage.setItem('modalDisabled', 'true');
         modal.style.display = 'none';
     });
-
-    // Check if the modal should be shown
-    if (localStorage.getItem('modalDisabled') === 'true') {
-        modal.style.display = 'none';
-    }
 });
-
 </script>
+
 
 <script>
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
