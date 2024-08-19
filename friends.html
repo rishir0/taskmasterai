@@ -1433,13 +1433,6 @@ function loadGroupMessages(groupId) {
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message');
 
-                // Assuming currentUsername holds the username of the current user
-                if (message.sender === currentUsername) {
-                    messageElement.classList.add('sent');
-                } else {
-                    messageElement.classList.add('received');
-                }
-
                 const senderElement = document.createElement('span');
                 senderElement.classList.add('message-sender');
                 senderElement.textContent = message.sender;
@@ -1458,7 +1451,6 @@ function loadGroupMessages(groupId) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
 }
-
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
