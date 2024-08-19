@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
-    :root {
-        --primary-color: #009bf5;
-        --secondary-color: #8d8aaf;;
-        --accent-color: #40E0D0;
-        --text-color: #ffffff;
-        --bg-color: rgba(255, 255, 255, 0.1);
-        --card-bg: rgba(255, 255, 255, 0.1);
-        --glass-bg: rgba(255, 255, 255, 0.1);
-        --hover-bg: rgba(255, 255, 255, 0.1);
-        --border-radius: 15px;
-    }
+:root {
+    --primary-color: #8AB4F8; /* Light blue, more subtle than the original */
+    --secondary-color: #B9B9D4; /* Soft grayish-blue */
+    --accent-color: #66F2E4; /* Light turquoise, soft and complementary */
+    --text-color: #FFFFFF; /* White text for contrast */
+    --bg-color: rgba(255, 255, 255, 0.2); /* Slightly more opaque background */
+    --card-bg: rgba(255, 255, 255, 0.3); /* Slightly more opaque for cards */
+    --glass-bg: rgba(255, 255, 255, 0.25); /* Glass effect with more opacity */
+    --hover-bg: rgba(255, 255, 255, 0.3); /* Hover effect with slightly higher opacity */
+    --border-radius: 15px; /* Rounded corners for soft edges */
+}
     
     body {
         font-family: 'Poppins', sans-serif;
@@ -45,15 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const darkThemeStyles = `
 :root {
-    --primary-color: #009bf5; /* Keep primary color white */
-    --secondary-color: #8d8aaf; /* Consistent secondary color */
-    --accent-color: #003366; /* Consistent accent color */
-    --text-color: #ffffff; /* Keep text color white */
-    --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color */
-    --card-bg: rgba(31, 31, 31, 0.9); /* Darker card background */
-    --glass-bg: rgba(31, 31, 31, 0.9); /* Darker glass background */
+    --primary-color: #40E0D0; /* Light turquoise as the primary color */
+    --secondary-color: #8d8aaf; /* Muted grayish-blue for secondary elements */
+    --accent-color: #003366; /* Dark navy blue for accents */
+    --text-color: #ffffff; /* White text for contrast */
+    --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color with high opacity */
+    --card-bg: rgba(31, 31, 31, 0.8); /* Slightly lighter card background */
+    --glass-bg: rgba(31, 31, 31, 0.7); /* Darker glass background with slight transparency */
     --hover-bg: rgba(55, 55, 55, 0.9); /* Darker hover background */
-    --border-radius: 15px;
+    --border-radius: 15px; /* Rounded corners */
 }
 
 body {
