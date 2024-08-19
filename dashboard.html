@@ -1637,14 +1637,14 @@ async function createTaskEvent(taskId, taskTitle, dueDate) {
 
     const taskEvent = {
         title: taskTitle,
-        description: "", // Default to empty string
+        description: "task converted to event", // Description as requested
         day: dueDate.getDate(),
         month: dueDate.getMonth(),
         year: dueDate.getFullYear(),
         uid: user.uid,
         linkedTaskId: taskId, // Link task to event
-        startTime: "09:00", // Default start time
-        endTime: "17:00" // Default end time
+        startTime: "", // No default start time
+        endTime: "" // No default end time
     };
 
     try {
