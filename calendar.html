@@ -310,7 +310,7 @@ body.night-mode {
 /* Mobile styles */
 @media (max-width: 768px) {
     .sidebar {
-        display: none; /* Hide sidebar by default */
+        display: none;
         position: fixed;
         left: 0;
         top: 0;
@@ -324,23 +324,18 @@ body.night-mode {
         border-radius: 0; /* No rounded corners */
     }
     .sidebar.active {
-        display: flex; /* Show sidebar when active */
+        display: flex;
     }
     .sidebar-toggle {
         display: block;
-        position: fixed; /* Ensure it's fixed */
-        top: 10px; /* Adjust as needed */
-        left: 10px; /* Adjust as needed */
-        z-index: 1001; /* Ensure it is above the sidebar */
     }
     .main-content {
-        padding-left: 20px; /* Maintain padding */
-        margin-left: 0; /* No extra margin on left */
-        margin-top: 60px; /* Push content below the toggle button */
+        padding-left: 20px;
+        margin-left: 0;
     }
 
     .calendar-nav-header {
-        margin-top: 10px; /* Ensure space between header and calendar grid */
+        margin-top: 50px; /* Ensure space between header and calendar grid */
     }
 }
     
