@@ -306,6 +306,34 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 250px; /* Adjust width as needed */
+        background-color: #333; /* Solid color, adjust as needed */
+        color: var(--text-color);
+        padding: 20px; /* Adjust padding as needed */
+        z-index: 1000;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
+        border-radius: 0; /* No rounded corners */
+    }
+    .sidebar.active {
+        display: flex;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .main-content {
+        padding-left: 20px;
+        margin-left: 0;
+    }
+}
     
 /* Animation for SVG */
 @keyframes rotateIcon {
@@ -576,8 +604,9 @@ body.night-mode {
     }
 
     .main-content {
-        padding-left: 0; /* Remove padding for mobile */
-        margin-left: 0;
+        padding-left: 0; /* Remove left padding */
+        margin-left: 0; /* Ensure no extra margin on left */
+        margin-top: 50px; /* Add margin-top to push content below the toggle button */
     }
 }
 
