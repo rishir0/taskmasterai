@@ -726,15 +726,14 @@ body.night-mode {
 
 /* SVG Icon */
 .dashboard-header svg {
-    width: 16px; /* Adjust width */
-    height: 16px; /* Adjust height */
+    width: 24px; /* Match the font size */
+    height: 24px; /* Match the font size */
     fill: #ffffff;
     stroke: #ffffff;
     cursor: pointer; /* Optional: show pointer cursor on hover */
     margin-left: 10px; /* Space between the text and the icon */
+    vertical-align: middle; /* Aligns the icon with the text */
 }
-
-
     </style>
 </head>
 <body>
@@ -889,7 +888,6 @@ body.night-mode {
         <button onclick="sendMessage(currentGroupId)">Send</button>
     </div>
 </div>
-
 
     <!-- Modal Structure -->
     <div id="bugModal" class="modal">
@@ -1787,6 +1785,34 @@ firebase.auth().onAuthStateChanged(user => {
 
     // Event listener for toggle button
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('bugModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const disableModalBtn = document.getElementById('disableModal');
+    const userId = firebase.auth().currentUser.uid;
+
+    // Show modal on page load
+    modal.style.display = 'flex';
+
+    // Close modal
+    closeModalBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Disable modal for current user
+    disableModalBtn.addEventListener('click', function() {
+        // Set a flag in localStorage to remember the user's preference
+        localStorage.setItem('modalDisabled', true);
+        modal.style.display = 'none';
+    });
+
+    // Check if the modal should be shown
+    if (localStorage.getItem('modalDisabled') === 'true') {
+        modal.style.display = 'none';
+    }
+});
+
 </script>
 
 <script>
@@ -1794,5 +1820,7 @@ firebase.auth().onAuthStateChanged(user => {
         document.querySelector('.sidebar').classList.toggle('active');
     });
 </script>
+
+
 </body>
 </html>
