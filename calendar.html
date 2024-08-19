@@ -405,7 +405,7 @@ body.night-mode {
 
 .calendar-header {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7 equal columns for each day of the week */
+    grid-template-columns: repeat(7, 1fr); /* Adjust this if you want to customize the columns */
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: var(--text-color);
     text-align: center;
@@ -416,33 +416,40 @@ body.night-mode {
 .calendar-header div {
     font-weight: bold;
     font-size: 1rem;
-    padding: 10px; /* Ensure consistent padding */
+    border-right: 1px solid var(--hover-bg); /* Add a border to match the grid cells */
 }
 
-/* Grid for days of the month */
+.calendar-header div:last-child {
+    border-right: none; /* Remove the right border for the last column */
+}
+
+
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7 equal columns for each day of the week */
-    gap: 0; /* No gaps between days */
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 0;
     flex: 1; /* Allows grid to fill the remaining space */
     background: var(--bg-color);
 }
 
-/* Styles for each day cell */
+
 .day {
     border-right: 1px solid var(--hover-bg);
     border-bottom: 1px solid var(--hover-bg);
+    position: relative; /* Ensure it contains the absolutely positioned circle */
     padding: 10px; /* Maintain padding to accommodate the circle */
     display: flex;
     flex-direction: column;
     gap: 5px;
-    box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
+    text-align: center; /* Center text and content within each day */
 }
 
-/* Remove the right border for the last column */
 .day:last-child {
-    border-right: none;
+    border-right: none; /* Remove the right border for the last column */
 }
+
+
 
 .event {
     background: var(--accent-color);
