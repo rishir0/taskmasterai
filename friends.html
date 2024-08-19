@@ -809,46 +809,36 @@ body.night-mode {
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            auth.onAuthStateChanged(function(user) {
-                if (user) {
-                    // Update the UI with the user's display name
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // User is signed in
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            document.getElementById('displayName').textContent = username;
 
-                    // Set Firestore online status to true when the user is authenticated
+            // Load friends, update status, etc.
+            updateOnlineStatus(true);
+            loadOnlineFriends();
+            listenForFriendRequests();
+
+            // Handle visibility and unload events for online status
+            window.addEventListener('beforeunload', function() {
+                updateOnlineStatus(false);
+            });
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
                     updateOnlineStatus(true);
-
-                    // Handle the user going offline only when the tab is closed or navigated away
-                    window.addEventListener('beforeunload', function() {
-                        updateOnlineStatus(false);
-                    });
-
-                    // Handle tab visibility change
-                    document.addEventListener('visibilitychange', function() {
-                        if (document.visibilityState === 'visible') {
-                            updateOnlineStatus(true);
-                        }
-                    });
-
-                } else {
-                    // No user is signed in, redirect to login page
-                    window.location.href = "login.html";
                 }
             });
-        });
 
-            document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                loadOnlineFriends();
-                listenForFriendRequests();
-            } else {
-                window.location.href = "login.html";
-            }
-        });
+        } else {
+            // No user is signed in, redirect to login page
+            window.location.href = "login.html";
+        }
     });
+});
+
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
