@@ -237,7 +237,6 @@ body.night-mode {
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 14px;
     transition: background-color 0.3s;
     margin-left: 10px; /* Space between name and button */
     display: flex;
@@ -253,7 +252,6 @@ body.night-mode {
     width: 20px; /* Adjust size as needed */
     height: 20px; /* Adjust size as needed */
 }
-
 
 
 #onlineFriends {
@@ -1247,11 +1245,11 @@ function createUnfriendButton(friendEmail) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('fill', '#ffffff');
+    svg.setAttribute('fill', '#000000');
 
-    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path1.setAttribute('class', 'a');
-    path1.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'a');
+    path.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
 
     const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle1.setAttribute('class', 'b');
@@ -1272,7 +1270,7 @@ function createUnfriendButton(friendEmail) {
     line.setAttribute('y1', '18.00798');
     line.setAttribute('y2', '18.00798');
 
-    svg.appendChild(path1);
+    svg.appendChild(path);
     svg.appendChild(circle1);
     svg.appendChild(circle2);
     svg.appendChild(line);
@@ -1280,7 +1278,6 @@ function createUnfriendButton(friendEmail) {
     button.appendChild(svg);
     return button;
 }
-
 
 function unfriendUser(friendEmail) {
     const currentUser = firebase.auth().currentUser;
