@@ -1043,10 +1043,6 @@ function openEditEventModal(dayKey, event) {
     editEventModal.style.display = 'flex';
 }
 
-closeEditModal.addEventListener('click', () => {
-    editEventModal.style.display = 'none';
-});
-
 saveEditEvent.addEventListener('click', async () => {
     if (!currentEditEvent || !currentDayKey) {
         return;
@@ -1059,49 +1055,38 @@ saveEditEvent.addEventListener('click', async () => {
 
     try {
         // Update the event in the 'events' collection
-        const snapshot = await db.collection('events')
-            .where("year", "==", currentEditEvent.year)
-            .where("month", "==", currentEditEvent.month)
-            .where("day", "==", currentEditEvent.day)
-            .where("uid", "==", currentEditEvent.uid)
-            .where("title", "==", currentEditEvent.title)
-            .get();
+        const docRef = db.collection('events').doc(currentEditEvent.id);
 
-        if (!snapshot.empty) {
-            const docRef = snapshot.docs[0].ref;
+        await docRef.update({
+            title: updatedTitle,
+            description: updatedDescription,
+            startTime: updatedStartTime,
+            endTime: updatedEndTime
+        });
 
-            await docRef.update({
-                title: updatedTitle,
-                description: updatedDescription,
-                startTime: updatedStartTime,
-                endTime: updatedEndTime
+        // Update local event object
+        currentEditEvent.title = updatedTitle;
+        currentEditEvent.description = updatedDescription;
+        currentEditEvent.startTime = updatedStartTime;
+        currentEditEvent.endTime = updatedEndTime;
+
+        // If the event was originally a task, update the linked task as well
+        if (currentEditEvent.linkedTaskId) {
+            const taskDocRef = db.collection('tasks').doc(currentEditEvent.linkedTaskId);
+
+            await taskDocRef.update({
+                task: updatedTitle,
+                dueDate: new Date(currentEditEvent.year, currentEditEvent.month, currentEditEvent.day, updatedStartTime.split(':')[0], updatedStartTime.split(':')[1])
             });
-
-            // Update local event object
-            currentEditEvent.title = updatedTitle;
-            currentEditEvent.description = updatedDescription;
-            currentEditEvent.startTime = updatedStartTime;
-            currentEditEvent.endTime = updatedEndTime;
-
-            // If the event was originally a task, update the linked task as well
-            if (currentEditEvent.linkedTaskId) {
-                const taskDocRef = db.collection('tasks').doc(currentEditEvent.linkedTaskId);
-
-                await taskDocRef.update({
-                    task: updatedTitle,
-                    dueDate: new Date(currentEditEvent.year, currentEditEvent.month, currentEditEvent.day, updatedStartTime.split(':')[0], updatedStartTime.split(':')[1])
-                });
-            }
-
-            createCalendar(); // Redraw the calendar
-            editEventModal.style.display = 'none';
-        } else {
-            console.error("No matching event found to update.");
         }
+
+        createCalendar(); // Redraw the calendar
+        editEventModal.style.display = 'none';
     } catch (error) {
         console.error("Error updating event and linked task: ", error);
     }
 });
+
 
 function formatTimeTo12Hour(timeString) {
     const [hour, minute] = timeString.split(':').map(Number);
@@ -1136,32 +1121,24 @@ deleteEventButton.addEventListener('click', async () => {
 
     try {
         // Delete the event from Firestore
-        const snapshot = await db.collection('events')
-            .where("year", "==", currentEditEvent.year)
-            .where("month", "==", currentEditEvent.month)
-            .where("day", "==", currentEditEvent.day)
-            .where("uid", "==", currentEditEvent.uid)
-            .where("title", "==", currentEditEvent.title)
-            .get();
+        const docRef = db.collection('events').doc(currentEditEvent.id);
 
-        if (!snapshot.empty) {
-            const docRef = snapshot.docs[0].ref;
+        await docRef.delete();
 
-            // Check if the event is related to a task and delete the task if so
-            if (currentEditEvent.linkedTaskId) {
-                await db.collection('tasks').doc(currentEditEvent.linkedTaskId).delete();
-            }
-
-            // Delete the event from Firestore
-            await docRef.delete();
-
-            // Remove the event from the local cache
-            events[currentDayKey] = events[currentDayKey].filter(event => event !== currentEditEvent);
-            createCalendar();
-            editEventModal.style.display = 'none';
+        // If the event was converted from a task, delete the task as well
+        if (currentEditEvent.linkedTaskId) {
+            const taskDocRef = db.collection('tasks').doc(currentEditEvent.linkedTaskId);
+            await taskDocRef.delete();
         }
+
+        // Update local events cache
+        const dayKey = `${currentEditEvent.year}-${currentEditEvent.month}-${currentEditEvent.day}`;
+        events[dayKey] = events[dayKey].filter(e => e.id !== currentEditEvent.id);
+
+        createCalendar(); // Redraw the calendar
+        editEventModal.style.display = 'none';
     } catch (error) {
-        console.error("Error deleting event: ", error);
+        console.error("Error deleting event and related task from Firestore: ", error);
     }
 });
 
@@ -1189,47 +1166,13 @@ async function loadEvents() {
             if (!events[dayKey]) {
                 events[dayKey] = [];
             }
+            // Add document ID to the event
+            event.id = doc.id;
             events[dayKey].push(event);
         });
 
         // Load tasks and convert to events
-        const tasksSnapshot = await db.collection('tasks')
-            .where("userId", "==", user.uid)
-            .get();
-
-tasksSnapshot.forEach(doc => {
-    const task = doc.data();
-
-    if (!task.dueDate) {
-        console.warn(`Task with ID ${doc.id} is missing a dueDate.`);
-        return; // Skip tasks without a dueDate
-    }
-
-    const dueDate = task.dueDate.toDate();
-    const dayKey = `${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDate()}`;
-
-    const taskEvent = {
-        title: task.task,
-        description: "", // Default to empty string if no description
-        day: dueDate.getDate(),
-        month: dueDate.getMonth(),
-        year: dueDate.getFullYear(),
-        uid: user.uid,
-        linkedTaskId: doc.id, // Link task to event
-        startTime: "09:00", // Default start time
-        endTime: "17:00" // Default end time
-    };
-
-    if (!events[dayKey]) {
-        events[dayKey] = [];
-    }
-
-    // Prevent duplicate events for the same task
-    const existingEvent = events[dayKey].find(e => e.linkedTaskId === doc.id);
-    if (!existingEvent) {
-        events[dayKey].push(taskEvent);
-    }
-});
+        await loadTasks();
 
         createCalendar(); // Redraw the calendar
     } catch (error) {
