@@ -306,7 +306,6 @@ body.night-mode {
     max-height: 600px; /* Ensures the chat window doesn't overflow the page */
 }
 
-/* Container for chat messages */
 #chatMessages {
     flex: 1;
     overflow-y: auto;
@@ -314,7 +313,6 @@ body.night-mode {
     margin-bottom: 15px;
 }
 
-/* General message styling */
 #chatMessages .message {
     max-width: 70%; /* Limit width for better readability */
     padding: 10px;
@@ -322,10 +320,8 @@ body.night-mode {
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     clear: both;
-    position: relative; /* For the speech bubble arrow */
 }
 
-/* Styling for messages sent by the current user */
 #chatMessages .message.sent {
     background: var(--primary-color); /* Customize color for sent messages */
     color: #fff;
@@ -333,10 +329,8 @@ body.night-mode {
     float: right;
     text-align: right;
     border-top-right-radius: 0; /* Square the top-right corner */
-    border-top-left-radius: 10px; /* Round the opposite corner */
 }
 
-/* Styling for messages received from others */
 #chatMessages .message.received {
     background: var(--accent-color); /* Customize color for received messages */
     color: var(--text-color);
@@ -344,32 +338,9 @@ body.night-mode {
     float: left;
     text-align: left;
     border-top-left-radius: 0; /* Square the top-left corner */
-    border-top-right-radius: 10px; /* Round the opposite corner */
 }
 
-/* Speech bubble arrow for sent messages */
-#chatMessages .message.sent::after {
-    content: "";
-    position: absolute;
-    top: 10px;
-    right: -15px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent transparent transparent var(--primary-color);
-}
 
-/* Speech bubble arrow for received messages */
-#chatMessages .message.received::after {
-    content: "";
-    position: absolute;
-    top: 10px;
-    left: -15px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent var(--accent-color) transparent transparent;
-}
-
-/* Additional styling for messages container */
 #chatMessages div {
     background: var(--message-bg); /* Adjusted to use a custom variable for message background */
     color: var(--text-color);
@@ -379,7 +350,6 @@ body.night-mode {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Input styling */
 #chatInput {
     padding: 10px;
     border: 1px solid var(--secondary-color);
@@ -392,6 +362,7 @@ body.night-mode {
     background-color: var(--card-bg);
     color: var(--text-color);
 }
+
 
 .chat-window button {
     padding: 10px;
@@ -1368,7 +1339,7 @@ function sendGroupMessage(groupId) {
 
     // Store the message in the group's messages collection
     db.collection('groupchats').doc(groupId).collection('messages').add({
-        sender: currentUser.uid, // Storing UID for fetching displayName
+        sender: currentUser.uid,
         message: messageText,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
@@ -1428,8 +1399,6 @@ function openGroupChat(groupId) {
 function loadGroupMessages(groupId) {
     const currentUser = firebase.auth().currentUser;
 
-    if (!currentUser) return;
-
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -1438,19 +1407,22 @@ function loadGroupMessages(groupId) {
 
             snapshot.forEach((doc) => {
                 const message = doc.data();
-                const isCurrentUser = message.sender === currentUser.uid;
+                const messageElement = document.createElement('div');
 
-                // Fetch the sender's displayName
-                db.collection('users').doc(message.sender).get().then(userDoc => {
+                if (message.sender === currentUser.uid) {
+                    messageElement.classList.add('message', 'sent');
+                } else {
+                    messageElement.classList.add('message', 'received');
+                }
+
+                // Fetch the sender's display name
+                db.collection('users').doc(message.sender).get().then((userDoc) => {
                     if (userDoc.exists) {
-                        const displayName = userDoc.data().displayName || "Unknown";
-
-                        const messageElement = document.createElement('div');
-                        messageElement.classList.add('message', isCurrentUser ? 'message-right' : 'message-left');
+                        const displayName = userDoc.data().displayName || message.sender;
 
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
-                        senderElement.textContent = isCurrentUser ? "You" : displayName;
+                        senderElement.textContent = displayName;
 
                         const textElement = document.createElement('span');
                         textElement.classList.add('message-text');
@@ -1460,10 +1432,12 @@ function loadGroupMessages(groupId) {
                         messageElement.appendChild(textElement);
 
                         chatMessages.appendChild(messageElement);
-                        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom of the chat
+
+                        // Scroll to the bottom of the chat
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
                     }
-                }).catch(error => {
-                    console.error('Error fetching user displayName:', error);
+                }).catch((error) => {
+                    console.error("Error fetching user data:", error);
                 });
             });
         });
