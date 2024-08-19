@@ -440,6 +440,34 @@ body.night-mode {
     background-color: #3b7bce; /* Change background color on hover */
 }
 
+.edit-button,
+.delete-button {
+    padding: 5px 10px;
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    margin-left: 10px; /* Space between group name and buttons */
+}
+
+.edit-button {
+    background-color: #3498db; /* Blue color for edit button */
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
+.delete-button {
+    background-color: #e74c3c; /* Red color for delete button */
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
 /* Additional styles for responsiveness and better integration with the chat window */
 
 @media (max-width: 768px) {
@@ -1389,6 +1417,24 @@ function loadGroupChats() {
                 groupNameElement.classList.add('group-name');
                 groupItem.appendChild(groupNameElement);
 
+                // Edit button
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.classList.add('edit-button');
+                editButton.onclick = () => {
+                    editGroupChat(doc.id, groupName);
+                };
+                groupItem.appendChild(editButton);
+
+                // Delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.classList.add('delete-button');
+                deleteButton.onclick = () => {
+                    deleteGroupChat(doc.id);
+                };
+                groupItem.appendChild(deleteButton);
+
                 groupItem.onclick = () => {
                     openGroupChat(doc.id);
                     currentGroupId = doc.id; // Set the current group ID
@@ -1398,6 +1444,39 @@ function loadGroupChats() {
             });
         });
 }
+
+function editGroupChat(groupId, currentGroupName) {
+    const newGroupName = prompt('Enter the new group name:', currentGroupName);
+    if (newGroupName && newGroupName.trim() !== '') {
+        db.collection('groupchats').doc(groupId).update({
+            groupName: newGroupName
+        }).then(() => {
+            console.log('Group name updated successfully!');
+        }).catch((error) => {
+            console.error('Error updating group name:', error);
+        });
+    }
+}
+
+function deleteGroupChat(groupId) {
+    const confirmation = confirm('Are you sure you want to delete this group chat? This action cannot be undone.');
+    if (confirmation) {
+        db.collection('groupchats').doc(groupId).collection('messages').get().then((snapshot) => {
+            const batch = db.batch();
+            snapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            return batch.commit();
+        }).then(() => {
+            return db.collection('groupchats').doc(groupId).delete();
+        }).then(() => {
+            console.log('Group chat deleted successfully!');
+        }).catch((error) => {
+            console.error('Error deleting group chat:', error);
+        });
+    }
+}
+
 
 // Function to open a group chat
 function openGroupChat(groupId) {
