@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
-        --primary-color: #40E0D0;
-        --secondary-color: #3F3D56;
-        --accent-color: #009bf5;
+        --primary-color: #009bf5;
+        --secondary-color: #8d8aaf;;
+        --accent-color: #40E0D0;
         --text-color: #ffffff;
         --bg-color: rgba(255, 255, 255, 0.1);
         --card-bg: rgba(255, 255, 255, 0.1);
@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const darkThemeStyles = `
 :root {
-    --primary-color: rgba(255, 255, 255, 0.1); /* Keep primary color white */
-    --secondary-color: #3f3d56; /* Consistent secondary color */
-    --accent-color: #009bf5; /* Consistent accent color */
+    --primary-color: #009bf5; /* Keep primary color white */
+    --secondary-color: #8d8aaf; /* Consistent secondary color */
+    --accent-color: #003366; /* Consistent accent color */
     --text-color: #ffffff; /* Keep text color white */
     --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color */
     --card-bg: rgba(31, 31, 31, 0.9); /* Darker card background */
