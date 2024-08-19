@@ -310,7 +310,7 @@ body.night-mode {
 /* Mobile styles */
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
+        display: none; /* Hide sidebar by default */
         position: fixed;
         left: 0;
         top: 0;
@@ -324,14 +324,23 @@ body.night-mode {
         border-radius: 0; /* No rounded corners */
     }
     .sidebar.active {
-        display: flex;
+        display: flex; /* Show sidebar when active */
     }
     .sidebar-toggle {
         display: block;
+        position: fixed; /* Ensure it's fixed */
+        top: 10px; /* Adjust as needed */
+        left: 10px; /* Adjust as needed */
+        z-index: 1001; /* Ensure it is above the sidebar */
     }
     .main-content {
-        padding-left: 20px;
-        margin-left: 0;
+        padding-left: 20px; /* Maintain padding */
+        margin-left: 0; /* No extra margin on left */
+        margin-top: 60px; /* Push content below the toggle button */
+    }
+
+    .calendar-nav-header {
+        margin-top: 10px; /* Ensure space between header and calendar grid */
     }
 }
     
@@ -570,37 +579,6 @@ body.night-mode {
         text-align: left; /* Align text to the left */
         margin-left: 0; /* Remove left margin */
         margin-right: auto; /* Push events to the left */
-    }
-
-    .sidebar {
-        display: none; /* Hide sidebar by default */
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 250px; /* Adjust width as needed */
-        background-color: #333; /* Solid color, adjust as needed */
-        color: var(--text-color);
-        padding: 20px; /* Adjust padding as needed */
-        z-index: 1000;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Optional shadow for better depth */
-        border-radius: 0; /* No rounded corners */
-        overflow-y: auto; /* Ensure content scrolls if it exceeds height */
-        transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
-        transform: translateX(-100%); /* Start hidden off-screen */
-    }
-
-    .sidebar.active {
-        display: block; /* Show sidebar when active */
-        transform: translateX(0); /* Slide in from the left */
-    }
-
-    .sidebar-toggle {
-        display: block;
-        position: fixed; /* Fixed position for visibility */
-        left: 10px; /* Adjust as needed */
-        top: 10px; /* Adjust as needed */
-        z-index: 1001; /* Ensure it is above the sidebar */
     }
 
     .main-content {
