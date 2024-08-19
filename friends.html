@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -378,50 +380,6 @@ body.night-mode {
 
 .chat-window button:hover {
     background-color: #3b7bce;
-}
-
-/* Group chat message styling */
-#groupMessages {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-    margin-bottom: 15px;
-}
-
-#groupMessages .message {
-    max-width: 70%; /* Limit width for better readability */
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    clear: both;
-}
-
-#groupMessages .message.sent {
-    background: var(--primary-color); /* Customize color for sent messages */
-    color: #fff;
-    align-self: flex-end;
-    float: right;
-    text-align: right;
-    border-top-right-radius: 0; /* Square the top-right corner */
-}
-
-#groupMessages .message.received {
-    background: var(--accent-color); /* Customize color for received messages */
-    color: var(--text-color);
-    align-self: flex-start;
-    float: left;
-    text-align: left;
-    border-top-left-radius: 0; /* Square the top-left corner */
-}
-
-#groupMessages div {
-    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
-    color: var(--text-color);
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -1337,15 +1295,50 @@ function sendGroupMessage(groupId) {
 
     if (!currentUser || !groupId) return;
 
-    // Store the message in the group's messages collection
-    db.collection('groupchats').doc(groupId).collection('messages').add({
-        sender: currentUser.uid,
-        message: messageText,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        document.getElementById("chatInput").value = ""; // Clear the input field
+    // Fetch the group data to get participants
+    db.collection('groupchats').doc(groupId).get().then((doc) => {
+        if (doc.exists) {
+            const group = doc.data();
+            const participants = group.participants || [];
+
+            // Store the message in the group's messages collection
+            db.collection('groupchats').doc(groupId).collection('messages').add({
+                sender: currentUser.email,
+                message: messageText,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById("chatInput").value = ""; // Clear the input field
+            }).catch((error) => {
+                console.error("Error sending message:", error);
+            });
+
+            // Display the message in the chat window
+            const chatMessages = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+
+            // Only show the display names of other participants, not the current user
+            participants.forEach(email => {
+                if (email !== currentUser.email) {
+                    const nameElement = document.createElement('span');
+                    nameElement.classList.add('message-sender');
+                    nameElement.textContent = email;
+                    messageElement.appendChild(nameElement);
+                }
+            });
+
+            const textElement = document.createElement('span');
+            textElement.classList.add('message-text');
+            textElement.textContent = messageText;
+
+            messageElement.appendChild(textElement);
+            chatMessages.appendChild(messageElement);
+
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }).catch((error) => {
-        console.error("Error sending message:", error);
+        console.error("Error fetching group data:", error);
     });
 }
 
@@ -1396,9 +1389,7 @@ function openGroupChat(groupId) {
 }
 
 // Function to load group messages
-function loadGroupMessages(groupId) {
-    const currentUser = firebase.auth().currentUser;
-
+function loadGroupMessages(groupId, currentUser) {
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -1408,40 +1399,42 @@ function loadGroupMessages(groupId) {
             snapshot.forEach((doc) => {
                 const message = doc.data();
                 const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
 
-                if (message.sender === currentUser.uid) {
-                    messageElement.classList.add('message', 'sent');
+                // Determine if the message is sent or received
+                if (message.sender === currentUser.email) {
+                    messageElement.classList.add('sent');
                 } else {
-                    messageElement.classList.add('message', 'received');
+                    messageElement.classList.add('received');
                 }
 
-                // Fetch the sender's display name
-                db.collection('users').doc(message.sender).get().then((userDoc) => {
-                    if (userDoc.exists) {
-                        const displayName = userDoc.data().displayName || message.sender;
+                // Create the text bubble
+                const bubbleElement = document.createElement('div');
+                bubbleElement.classList.add('bubble');
 
-                        const senderElement = document.createElement('span');
-                        senderElement.classList.add('message-sender');
-                        senderElement.textContent = displayName;
+                const textElement = document.createElement('span');
+                textElement.classList.add('message-text');
+                textElement.textContent = message.message;
 
-                        const textElement = document.createElement('span');
-                        textElement.classList.add('message-text');
-                        textElement.textContent = message.message;
+                bubbleElement.appendChild(textElement);
 
-                        messageElement.appendChild(senderElement);
-                        messageElement.appendChild(textElement);
+                // Only add the sender name if it's not the current user
+                if (message.sender !== currentUser.email) {
+                    const senderElement = document.createElement('span');
+                    senderElement.classList.add('message-sender');
+                    senderElement.textContent = message.displayName || message.sender;
+                    messageElement.appendChild(senderElement);
+                }
 
-                        chatMessages.appendChild(messageElement);
-
-                        // Scroll to the bottom of the chat
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }
-                }).catch((error) => {
-                    console.error("Error fetching user data:", error);
-                });
+                messageElement.appendChild(bubbleElement);
+                chatMessages.appendChild(messageElement);
             });
+
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         });
 }
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
