@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1405,50 +1406,56 @@ function loadGroupMessages(groupId) {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = ''; // Clear the chat window
 
-            snapshot.forEach(async (doc) => {
-                const message = doc.data();
-                const messageElement = document.createElement('div');
-                const currentUser = firebase.auth().currentUser;
+            const messages = snapshot.docs.map(doc => doc.data());
 
-                const isSentByCurrentUser = message.sender === currentUser.email;
-
-                let senderDisplayName = message.sender;
-
-                if (!isSentByCurrentUser) {
-                    // Fetch the display name of the sender
+            // Fetch all display names before rendering
+            const fetchDisplayNamesPromises = messages.map(async (message) => {
+                if (message.sender === firebase.auth().currentUser.email) {
+                    return { ...message, senderDisplayName: null };
+                } else {
                     const userSnapshot = await db.collection('users')
                         .where('email', '==', message.sender)
                         .get();
 
-                    if (!userSnapshot.empty) {
-                        senderDisplayName = userSnapshot.docs[0].data().displayName || message.sender;
-                    }
+                    const senderDisplayName = !userSnapshot.empty 
+                        ? userSnapshot.docs[0].data().displayName || message.sender 
+                        : message.sender;
 
-                    const senderElement = document.createElement('span');
-                    senderElement.classList.add('message-sender');
-                    senderElement.textContent = `${senderDisplayName}: `;
-                    messageElement.appendChild(senderElement);
+                    return { ...message, senderDisplayName };
                 }
-
-                const textElement = document.createElement('span');
-                textElement.classList.add('message-text');
-                textElement.textContent = message.message;
-
-                messageElement.appendChild(textElement);
-
-                if (isSentByCurrentUser) {
-                    messageElement.classList.add('message', 'sent');
-                } else {
-                    messageElement.classList.add('message', 'received');
-                }
-
-                chatMessages.appendChild(messageElement);
             });
 
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+            Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
+                messagesWithDisplayNames.forEach(message => {
+                    const messageElement = document.createElement('div');
+
+                    if (message.senderDisplayName) {
+                        const senderElement = document.createElement('span');
+                        senderElement.classList.add('message-sender');
+                        senderElement.textContent = `${message.senderDisplayName}: `;
+                        messageElement.appendChild(senderElement);
+                    }
+
+                    const textElement = document.createElement('span');
+                    textElement.classList.add('message-text');
+                    textElement.textContent = message.message;
+
+                    messageElement.appendChild(textElement);
+
+                    if (message.sender === firebase.auth().currentUser.email) {
+                        messageElement.classList.add('message', 'sent');
+                    } else {
+                        messageElement.classList.add('message', 'received');
+                    }
+
+                    chatMessages.appendChild(messageElement);
+                });
+
+                // Scroll to the bottom of the chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
         });
 }
-
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
