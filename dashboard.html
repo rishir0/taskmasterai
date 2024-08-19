@@ -1605,7 +1605,12 @@ function createTask() {
     const taskInput = document.getElementById('task-input');
     const taskDueDate = document.getElementById('task-due-date');
     const task = taskInput.value.trim();
-    const dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
+    let dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
+
+    if (dueDate) {
+        // Set the time to the start of the day to avoid timezone issues
+        dueDate.setUTCHours(0, 0, 0, 0);
+    }
 
     if (task) {
         db.collection('tasks').add({
@@ -1613,8 +1618,13 @@ function createTask() {
             dueDate: dueDate, // Store the due date
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
+        }).then((docRef) => {
             console.log('Task created:', task);
+            
+            // If there's a due date, create an event for it
+            if (dueDate) {
+                createEventForTask(docRef.id, task, dueDate);
+            }
         }).catch((error) => {
             console.error('Error creating task:', error);
         });
@@ -1622,6 +1632,23 @@ function createTask() {
         taskDueDate.value = ''; // Clear the date input after task creation
     }
 }
+
+function createEventForTask(taskId, taskTitle, dueDate) {
+    db.collection('events').add({
+        title: taskTitle,
+        description: '', // Set an empty description or modify as needed
+        startTime: dueDate.toISOString(), // Assuming you want to use ISO format
+        endTime: dueDate.toISOString(),
+        linkedTaskId: taskId,
+        userId: firebase.auth().currentUser.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log('Event created for task:', taskTitle);
+    }).catch((error) => {
+        console.error('Error creating event for task:', error);
+    });
+}
+
 
 
 function createProject() {
@@ -1693,8 +1720,10 @@ function loadTasks() {
                 taskDiv.appendChild(taskText);
 
                 if (task.dueDate) {
+                    // Convert dueDate to a local date string
+                    const dueDate = task.dueDate.toDate();
                     const dueDateText = document.createElement('span');
-                    dueDateText.textContent = ` (Due: ${new Date(task.dueDate.toDate()).toLocaleDateString()})`;
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
                     dueDateText.style.color = 'gray';
                     taskDiv.appendChild(dueDateText);
