@@ -405,7 +405,7 @@ body.night-mode {
 
 .calendar-header {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, 1fr); /* Adjust this if you want to customize the columns */
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
     color: var(--text-color);
     text-align: center;
@@ -416,7 +416,13 @@ body.night-mode {
 .calendar-header div {
     font-weight: bold;
     font-size: 1rem;
+    border-right: 1px solid var(--hover-bg); /* Add a border to match the grid cells */
 }
+
+.calendar-header div:last-child {
+    border-right: none; /* Remove the right border for the last column */
+}
+
 
 .calendar-grid {
     display: grid;
@@ -436,11 +442,13 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    text-align: center; /* Center text and content within each day */
 }
 
 .day:last-child {
     border-right: none; /* Remove the right border for the last column */
 }
+
 
 
 .event {
@@ -559,9 +567,9 @@ body.night-mode {
     .event {
         font-size: 0.75rem; /* Adjust font size for mobile */
         white-space: normal; /* Allow text to wrap */
-        text-align: right; /* Align text to the right */
-        margin-left: auto; /* Push events to the right */
-        margin-right: 0; /* Remove right margin */
+        text-align: left; /* Align text to the left */
+        margin-left: 0; /* Remove left margin */
+        margin-right: auto; /* Push events to the left */
     }
 }
 
