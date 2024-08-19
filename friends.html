@@ -380,63 +380,32 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.group-chats {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 200px); /* Matches height of chat window */
-    background: var(--glass-bg);
-    border-radius: var(--border-radius);
-    padding: 15px;
-    max-height: 600px; /* Ensures the group chats section doesn't overflow the page */
-    margin-bottom: 15px; /* Space between group chats and chat window */
-}
-
-.group-chats h2 {
-    font-size: 24px;
-    font-weight: 500;
-    margin-bottom: 15px;
-    color: var(--text-color); /* Ensure consistent text color */
-}
-
-.group-chats ul {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-    margin-bottom: 15px;
-    list-style: none;
-    padding: 0;
-}
-
-.group-chats li {
-    background: var(--message-bg); /* Use same background as chat messages */
-    color: var(--text-color);
+/* Group chat message styling */
+.group-chats .message {
+    max-width: 70%; /* Limit width for better readability */
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    clear: both;
 }
 
-.group-chats li .group-name {
-    flex: 1;
-    font-size: 16px;
-}
-
-.group-chats li button {
-    padding: 5px 10px;
-    background-color: var(--primary-color);
+.group-chats .message.sent {
+    background: var(--primary-color); /* Customize color for sent messages */
     color: #fff;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
+    align-self: flex-end;
+    float: right;
+    text-align: right;
+    border-top-right-radius: 0; /* Square the top-right corner */
 }
 
-.group-chats li button:hover {
-    background-color: #3b7bce;
+.group-chats .message.received {
+    background: var(--accent-color); /* Customize color for received messages */
+    color: var(--text-color);
+    align-self: flex-start;
+    float: left;
+    text-align: left;
+    border-top-left-radius: 0; /* Square the top-left corner */
 }
 
 
