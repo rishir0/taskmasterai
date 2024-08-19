@@ -1235,6 +1235,59 @@ function getUserEmail(userId) {
     });
 }
 
+
+// Array to store groups
+let groups = [];
+
+// Function to add a friend to a group
+function addToGroup() {
+    const groupEmail = document.getElementById("groupEmail").value.trim();
+    
+    if (groupEmail === "") {
+        alert("Please enter a friend's email.");
+        return;
+    }
+
+    // Check if the group already exists
+    let groupExists = false;
+    for (let group of groups) {
+        if (group.members.includes(groupEmail)) {
+            groupExists = true;
+            break;
+        }
+    }
+
+    // If the group doesn't exist, create a new one
+    if (!groupExists) {
+        const newGroup = {
+            id: groups.length + 1,
+            members: [groupEmail]
+        };
+        groups.push(newGroup);
+        displayGroup(newGroup);
+    } else {
+        alert("Friend is already in a group.");
+    }
+
+    // Clear the input field
+    document.getElementById("groupEmail").value = "";
+}
+
+// Function to display the group in the UI
+function displayGroup(group) {
+    const groupList = document.getElementById("groupList");
+
+    // Create a list item for the group
+    const li = document.createElement("li");
+    li.textContent = `Group ${group.id}: ${group.members.join(", ")}`;
+
+    // Add the list item to the group list
+    groupList.appendChild(li);
+}
+
+// Example usage: Add friend to the group when the button is clicked
+document.querySelector(".add-to-group button").addEventListener("click", addToGroup);
+
 function createGroupChat(groupName, memberEmails) {
     const currentUser = firebase.auth().currentUser;
     const participants = memberEmails.concat(currentUser.email); // Add the current user to the group
