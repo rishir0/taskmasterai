@@ -1270,8 +1270,6 @@ function addToGroup() {
     document.getElementById("groupEmails").value = ""; // Clear the input field
 }
 
-let currentGroupId = null;
-
 function sendGroupMessage(groupId) {
     const messageText = document.getElementById("chatInput").value.trim();
     if (messageText === "") return;
