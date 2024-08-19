@@ -1178,6 +1178,24 @@ async function loadEvents() {
         // Load tasks and convert to events
         await loadTasks();
 
+        // Sort events within each day by startTime
+        Object.keys(events).forEach(dayKey => {
+            events[dayKey].sort((a, b) => {
+                // Convert startTime and endTime to comparable values
+                const startTimeA = a.startTime ? new Date(`1970-01-01T${a.startTime}:00`) : new Date(0);
+                const startTimeB = b.startTime ? new Date(`1970-01-01T${b.startTime}:00`) : new Date(0);
+
+                if (startTimeA.getTime() === startTimeB.getTime()) {
+                    // If start times are equal, sort by end time
+                    const endTimeA = a.endTime ? new Date(`1970-01-01T${a.endTime}:00`) : new Date(0);
+                    const endTimeB = b.endTime ? new Date(`1970-01-01T${b.endTime}:00`) : new Date(0);
+                    return endTimeA.getTime() - endTimeB.getTime();
+                }
+
+                return startTimeA.getTime() - startTimeB.getTime();
+            });
+        });
+
         createCalendar(); // Redraw the calendar
     } catch (error) {
         console.error("Error loading events and tasks from Firestore: ", error);
