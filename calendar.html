@@ -335,7 +335,7 @@ body.night-mode {
     }
 
     .calendar-nav-header {
-        margin-top: 50px; /* Ensure space between header and calendar grid */
+        margin-top: 80px; /* Ensure space between header and calendar grid */
     }
 }
     
@@ -574,6 +574,14 @@ body.night-mode {
         text-align: left; /* Align text to the left */
         margin-left: 0; /* Remove left margin */
         margin-right: auto; /* Push events to the left */
+    }
+
+    /* Adjust the week date display */
+    .calendar-nav-header {
+        font-size: 0.85rem; /* Reduce font size for better fit */
+        overflow: hidden; /* Hide any overflowed text */
+        text-overflow: ellipsis; /* Add ellipsis if text overflows */
+        white-space: nowrap; /* Prevent text wrapping */
     }
 
     .main-content {
