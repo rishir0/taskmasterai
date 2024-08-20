@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -316,49 +317,23 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.message-container {
-    margin-bottom: 10px; /* Adjust spacing as needed */
-    position: relative; /* Allows positioning of the button relative to the container */
-}
-
-.message-sender {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.message-text {
-    display: block; /* Ensures the text is displayed as a block */
-    padding: 10px;
-    border-radius: 10px;
-    background-color: #f1f1f1; /* Example background color for speech bubble */
-}
-
-.message.sent .message-text {
-    background-color: #dcf8c6; /* Background color for sent messages */
-}
-
-.message.received .message-text {
-    background-color: #ffffff; /* Background color for received messages */
-}
-
-.add-friend-icon-button {
-    position: absolute;
-    right: -40px; /* Position the button outside the message bubble, adjust as needed */
-    top: 50%;
-    transform: translateY(-50%); /* Center the button vertically */
-    padding: 5px;
+.add-friend-button {
+    padding: 0; /* Remove padding for a circular button */
     background-color: var(--primary-color);
     border: none;
-    border-radius: 50%;
+    border-radius: 50%; /* Make the button circular */
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 40px; /* Set width to make it circular */
+    height: 40px; /* Set height to make it circular */
 }
 
-.add-friend-icon-button svg {
+.add-friend-button svg {
     width: 24px;
     height: 24px;
+    fill: #ffffff; /* Set fill color to white */
 }
 
 .chat-window {
@@ -1745,16 +1720,15 @@ function openGroupChat(groupId) {
     });
 }
 
-function createAddFriendButton() {
+function createAddFriendButton(friendEmail) {
     const button = document.createElement('button');
-    button.className = 'add-friend-icon-button';
-    button.onclick = () => addFriend();
+    button.className = 'add-friend-button';
+    button.onclick = () => addFriend(friendEmail);
 
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('fill', '#ffffff'); // Use the SVG's fill color
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('class', 'a');
@@ -1863,7 +1837,6 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-container');
 
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
