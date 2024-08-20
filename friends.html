@@ -332,18 +332,18 @@ body.night-mode {
     margin-right: 5px;
 }
 
-.message-text-container {
-    position: relative;
+.message-text {
+    display: block; /* Ensures the text is displayed as a block */
     padding: 10px;
     border-radius: 10px;
     background-color: #f1f1f1; /* Example background color for speech bubble */
 }
 
-.message.sent .message-text-container {
+.message.sent .message-text {
     background-color: #dcf8c6; /* Background color for sent messages */
 }
 
-.message.received .message-text-container {
+.message.received .message-text {
     background-color: #ffffff; /* Background color for received messages */
 }
 
@@ -366,6 +366,7 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
+
 
 .chat-window {
     display: flex;
@@ -1899,15 +1900,11 @@ function loadGroupMessages(groupId) {
                         messageContainer.appendChild(headerElement);
                     }
 
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-text-container');
-
                     const textElement = document.createElement('span');
                     textElement.classList.add('message-text');
                     textElement.textContent = message.message;
 
-                    messageElement.appendChild(textElement);
-                    messageContainer.appendChild(messageElement);
+                    messageContainer.appendChild(textElement);
 
                     if (message.sender === firebase.auth().currentUser.email) {
                         messageContainer.classList.add('message', 'sent');
@@ -1923,6 +1920,7 @@ function loadGroupMessages(groupId) {
             });
         });
 }
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
