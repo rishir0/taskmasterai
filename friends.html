@@ -316,23 +316,22 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.add-friend-button {
-    padding: 0; /* Remove padding for a circular button */
+.add-friend-icon-button {
+    padding: 5px;
     background-color: var(--primary-color);
     border: none;
-    border-radius: 50%; /* Make the button circular */
+    border-radius: 50%; /* Makes the button circular */
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Set width to make it circular */
-    height: 40px; /* Set height to make it circular */
+    width: 40px; /* Adjust width for a larger circular button */
+    height: 40px; /* Adjust height for a larger circular button */
 }
 
-.add-friend-button svg {
+.add-friend-icon-button svg {
     width: 24px;
     height: 24px;
-    fill: #ffffff; /* Set fill color to white */
 }
 
 .chat-window {
@@ -1719,19 +1718,20 @@ function openGroupChat(groupId) {
     });
 }
 
-function createAddFriendButton(friendEmail) {
+function createAddFriendIconButton(friendEmail) {
     const button = document.createElement('button');
-    button.className = 'add-friend-button';
+    button.className = 'add-friend-icon-button';
     button.onclick = () => addFriend(friendEmail);
 
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('fill', '#ffffff');
 
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('class', 'a');
-    path.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
+    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path1.setAttribute('class', 'a');
+    path1.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
 
     const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle1.setAttribute('class', 'b');
@@ -1759,7 +1759,7 @@ function createAddFriendButton(friendEmail) {
     line2.setAttribute('y1', '16');
     line2.setAttribute('y2', '20');
 
-    svg.appendChild(path);
+    svg.appendChild(path1);
     svg.appendChild(circle1);
     svg.appendChild(circle2);
     svg.appendChild(line1);
