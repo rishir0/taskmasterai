@@ -1863,6 +1863,7 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-container');
 
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
