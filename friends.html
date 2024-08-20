@@ -1102,6 +1102,7 @@ function addFriend() {
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     console.log('Friend request sent!');
+                    alert('Friend request sent!');
                 }).catch((error) => {
                     console.error('Error sending friend request:', error);
                 });
@@ -1832,6 +1833,7 @@ function sendFriendRequest(friendEmail) {
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     console.log('Friend request sent!');
+                    alert('Friend request sent!');
                 }).catch((error) => {
                     console.error('Error sending friend request:', error);
                 });
