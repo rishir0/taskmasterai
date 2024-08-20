@@ -316,13 +316,27 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
+.message-container {
+    margin-bottom: 10px; /* Adjust spacing as needed */
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.message-sender {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 .add-friend-icon-button {
-    width: 40px; /* Adjust as needed */
-    height: 40px; /* Adjust as needed */
-    padding: 0; /* Remove padding to maintain circle shape */
+    margin-left: 10px; /* Adjust as needed */
+    padding: 5px;
     background-color: var(--primary-color);
     border: none;
-    border-radius: 50%; /* Make it a circle */
+    border-radius: 50%;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -333,6 +347,7 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
+
 
 .chat-window {
     display: flex;
@@ -1836,12 +1851,16 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-container');
 
                     if (message.senderDisplayName) {
+                        const headerElement = document.createElement('div');
+                        headerElement.classList.add('message-header');
+                        
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
                         senderElement.textContent = `${message.senderDisplayName}: `;
-                        messageElement.appendChild(senderElement);
+                        headerElement.appendChild(senderElement);
 
                         // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
@@ -1851,13 +1870,15 @@ function loadGroupMessages(groupId) {
                                     const friendData = snapshot.docs[0].data();
                                     if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
                                         const addFriendButton = createAddFriendButton(message.sender);
-                                        messageElement.appendChild(addFriendButton);
+                                        headerElement.appendChild(addFriendButton);
                                     }
                                 }
                             })
                             .catch((error) => {
                                 console.error('Error checking friend status:', error);
                             });
+
+                        messageElement.appendChild(headerElement);
                     }
 
                     const textElement = document.createElement('span');
@@ -1880,6 +1901,7 @@ function loadGroupMessages(groupId) {
             });
         });
 }
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
