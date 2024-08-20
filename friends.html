@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1250,21 +1249,24 @@ function createUnfriendButton(friendEmail) {
     svg.setAttribute('fill', 'none');
     svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG you provided
 
-    // Define paths and shapes
+    // Define paths and shapes with slightly thicker stroke width
     const path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
+    path.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
     path.setAttribute('class', 'a');
 
     const circle1 = document.createElementNS(svgNS, 'circle');
     circle1.setAttribute('cx', '11.5');
     circle1.setAttribute('cy', '5.99202');
     circle1.setAttribute('r', '5');
+    circle1.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
     circle1.setAttribute('class', 'b');
 
     const circle2 = document.createElementNS(svgNS, 'circle');
     circle2.setAttribute('cx', '16.5');
     circle2.setAttribute('cy', '18.00798');
     circle2.setAttribute('r', '5');
+    circle2.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
     circle2.setAttribute('class', 'a');
 
     const line = document.createElementNS(svgNS, 'line');
@@ -1272,6 +1274,7 @@ function createUnfriendButton(friendEmail) {
     line.setAttribute('x2', '18.5');
     line.setAttribute('y1', '18.00798');
     line.setAttribute('y2', '18.00798');
+    line.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
     line.setAttribute('class', 'a');
 
     // Append SVG elements to the SVG container
@@ -1285,6 +1288,7 @@ function createUnfriendButton(friendEmail) {
 
     return button;
 }
+
 
 
 function unfriendUser(friendEmail) {
