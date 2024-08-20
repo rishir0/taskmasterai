@@ -316,7 +316,13 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.add-friend-button {
+.message-container {
+    position: relative; /* Allows absolute positioning of child elements */
+    padding: 5px;
+    margin-bottom: 10px; /* Adjust as needed */
+}
+        
+.add-friend-icon-button {
     padding: 0; /* Remove padding for a circular button */
     background-color: var(--primary-color);
     border: none;
@@ -327,13 +333,20 @@ body.night-mode {
     justify-content: center;
     width: 40px; /* Set width to make it circular */
     height: 40px; /* Set height to make it circular */
+    position: absolute; /* Position relative to parent element */
+    right: -50px; /* Adjust position to be outside the message bubble */
+    top: 50%;
+    transform: translateY(-50%); /* Center vertically */
+    z-index: 1; /* Ensure button appears above other elements */
 }
 
-.add-friend-button svg {
+.add-friend-icon-button svg {
     width: 24px;
     height: 24px;
-    fill: #ffffff; /* Set fill color to white */
+    fill: none; /* Set fill to none */
+    stroke: #ffffff; /* Set stroke color to white */
 }
+
 
 .chat-window {
     display: flex;
@@ -1721,7 +1734,7 @@ function openGroupChat(groupId) {
 
 function createAddFriendButton(friendEmail) {
     const button = document.createElement('button');
-    button.className = 'add-friend-button';
+    button.className = 'add-friend-icon-button'; // Update class name
     button.onclick = () => sendFriendRequest(friendEmail);
 
     // Create SVG element
@@ -1859,6 +1872,7 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-container'); // Add class for positioning
 
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
@@ -1874,7 +1888,7 @@ function loadGroupMessages(groupId) {
                                     const friendData = snapshot.docs[0].data();
                                     if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
                                         const addFriendButton = createAddFriendButton(message.sender);
-                                        messageElement.appendChild(addFriendButton);
+                                        messageElement.appendChild(addFriendButton); // Append button to message container
                                     }
                                 }
                             })
