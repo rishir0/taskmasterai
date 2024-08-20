@@ -1722,34 +1722,49 @@ function openGroupChat(groupId) {
 function createAddFriendButton(friendEmail) {
     const button = document.createElement('button');
     button.className = 'add-friend-button';
-    button.onclick = () => addFriend(friendEmail);
+    button.onclick = () => sendFriendRequest(friendEmail);
 
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', svgNS);
-    svg.setAttribute('fill', 'none');
+    svg.setAttribute('fill', 'none'); // Set fill to none
     svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG provided
+
+    // Define styles for the SVG
+    const style = document.createElementNS(svgNS, 'style');
+    style.textContent = `
+        .a, .b {
+            fill: none;
+            stroke: #ffffff;
+            stroke-linecap: round;
+            stroke-width: 1.5px;
+        }
+        .a {
+            stroke-linejoin: round;
+        }
+        .b {
+            stroke-linejoin: bevel;
+        }
+    `;
+    svg.appendChild(style);
 
     // Define paths and shapes with correct stroke width and style
     const path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
-    path.setAttribute('stroke-width', '1.5'); // Match the stroke width
     path.setAttribute('class', 'a');
 
     const circle1 = document.createElementNS(svgNS, 'circle');
     circle1.setAttribute('cx', '12');
     circle1.setAttribute('cy', '5.98404');
     circle1.setAttribute('r', '5');
-    circle1.setAttribute('stroke-width', '1.5'); // Match the stroke width
     circle1.setAttribute('class', 'b');
 
     const circle2 = document.createElementNS(svgNS, 'circle');
     circle2.setAttribute('cx', '17');
     circle2.setAttribute('cy', '18');
     circle2.setAttribute('r', '5');
-    circle2.setAttribute('stroke-width', '1.5'); // Match the stroke width
     circle2.setAttribute('class', 'a');
 
     const line1 = document.createElementNS(svgNS, 'line');
@@ -1757,7 +1772,6 @@ function createAddFriendButton(friendEmail) {
     line1.setAttribute('x2', '19');
     line1.setAttribute('y1', '18');
     line1.setAttribute('y2', '18');
-    line1.setAttribute('stroke-width', '1.5'); // Match the stroke width
     line1.setAttribute('class', 'a');
 
     const line2 = document.createElementNS(svgNS, 'line');
@@ -1765,7 +1779,6 @@ function createAddFriendButton(friendEmail) {
     line2.setAttribute('x2', '17');
     line2.setAttribute('y1', '16');
     line2.setAttribute('y2', '20');
-    line2.setAttribute('stroke-width', '1.5'); // Match the stroke width
     line2.setAttribute('class', 'a');
 
     // Append SVG elements to the SVG container
@@ -1780,6 +1793,7 @@ function createAddFriendButton(friendEmail) {
 
     return button;
 }
+
 
 function sendFriendRequest(friendEmail) {
     const currentUser = firebase.auth().currentUser;
@@ -1813,8 +1827,6 @@ function sendFriendRequest(friendEmail) {
             });
     }
 }
-
-
 
 
 // Function to load group messages
