@@ -318,6 +318,7 @@ body.night-mode {
 
 .message-container {
     margin-bottom: 10px; /* Adjust spacing as needed */
+    position: relative; /* Allows positioning of the button relative to the container */
 }
 
 .message-header {
@@ -331,8 +332,26 @@ body.night-mode {
     margin-right: 5px;
 }
 
+.message-text-container {
+    position: relative;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f1f1f1; /* Example background color for speech bubble */
+}
+
+.message.sent .message-text-container {
+    background-color: #dcf8c6; /* Background color for sent messages */
+}
+
+.message.received .message-text-container {
+    background-color: #ffffff; /* Background color for received messages */
+}
+
 .add-friend-icon-button {
-    margin-left: 10px; /* Adjust as needed */
+    position: absolute;
+    right: -40px; /* Position the button outside the message bubble, adjust as needed */
+    top: 50%;
+    transform: translateY(-50%); /* Center the button vertically */
     padding: 5px;
     background-color: var(--primary-color);
     border: none;
@@ -347,7 +366,6 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
-
 
 .chat-window {
     display: flex;
@@ -1850,8 +1868,8 @@ function loadGroupMessages(groupId) {
 
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-container');
+                    const messageContainer = document.createElement('div');
+                    messageContainer.classList.add('message-container');
 
                     if (message.senderDisplayName) {
                         const headerElement = document.createElement('div');
@@ -1878,22 +1896,26 @@ function loadGroupMessages(groupId) {
                                 console.error('Error checking friend status:', error);
                             });
 
-                        messageElement.appendChild(headerElement);
+                        messageContainer.appendChild(headerElement);
                     }
+
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-text-container');
 
                     const textElement = document.createElement('span');
                     textElement.classList.add('message-text');
                     textElement.textContent = message.message;
 
                     messageElement.appendChild(textElement);
+                    messageContainer.appendChild(messageElement);
 
                     if (message.sender === firebase.auth().currentUser.email) {
-                        messageElement.classList.add('message', 'sent');
+                        messageContainer.classList.add('message', 'sent');
                     } else {
-                        messageElement.classList.add('message', 'received');
+                        messageContainer.classList.add('message', 'received');
                     }
 
-                    chatMessages.appendChild(messageElement);
+                    chatMessages.appendChild(messageContainer);
                 });
 
                 // Scroll to the bottom of the chat
@@ -1901,7 +1923,6 @@ function loadGroupMessages(groupId) {
             });
         });
 }
-
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
