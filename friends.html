@@ -316,9 +316,9 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-.message-container {
+.message {
     margin-bottom: 10px; /* Adjust spacing as needed */
-    position: relative; /* Allows positioning of the button relative to the container */
+    position: relative; /* Allows positioning of the button relative to the message */
 }
 
 .message-sender {
@@ -333,19 +333,15 @@ body.night-mode {
     background-color: #f1f1f1; /* Example background color for speech bubble */
 }
 
-.message.sent .message-text {
+.sent .message-text {
     background-color: #dcf8c6; /* Background color for sent messages */
 }
 
-.message.received .message-text {
+.received .message-text {
     background-color: #ffffff; /* Background color for received messages */
 }
 
 .add-friend-icon-button {
-    position: absolute;
-    right: -40px; /* Position the button outside the message bubble, adjust as needed */
-    top: 50%;
-    transform: translateY(-50%); /* Center the button vertically */
     padding: 5px;
     background-color: var(--primary-color);
     border: none;
@@ -354,6 +350,7 @@ body.night-mode {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    /* Ensure button appears outside the message bubble */
 }
 
 .add-friend-icon-button svg {
@@ -1863,29 +1860,13 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-container');
+                    messageElement.classList.add('message');
 
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
                         senderElement.textContent = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
-
-                        // Check if user is not friends with the sender
-                        const currentUser = firebase.auth().currentUser;
-                        db.collection('users').where('email', '==', message.sender).get()
-                            .then((snapshot) => {
-                                if (!snapshot.empty) {
-                                    const friendData = snapshot.docs[0].data();
-                                    if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
-                                        const addFriendButton = createAddFriendButton(message.sender);
-                                        messageElement.appendChild(addFriendButton);
-                                    }
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Error checking friend status:', error);
-                            });
                     }
 
                     const textElement = document.createElement('span');
@@ -1895,12 +1876,32 @@ function loadGroupMessages(groupId) {
                     messageElement.appendChild(textElement);
 
                     if (message.sender === firebase.auth().currentUser.email) {
-                        messageElement.classList.add('message', 'sent');
+                        messageElement.classList.add('sent');
                     } else {
-                        messageElement.classList.add('message', 'received');
+                        messageElement.classList.add('received');
                     }
 
                     chatMessages.appendChild(messageElement);
+
+                    // Check if user is not friends with the sender and add the button
+                    const currentUser = firebase.auth().currentUser;
+                    db.collection('users').where('email', '==', message.sender).get()
+                        .then((snapshot) => {
+                            if (!snapshot.empty) {
+                                const friendData = snapshot.docs[0].data();
+                                if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
+                                    const addFriendButton = createAddFriendButton(message.sender);
+                                    // Position the button outside the message bubble
+                                    addFriendButton.style.position = 'absolute';
+                                    addFriendButton.style.right = '0'; // Adjust this value as needed
+                                    addFriendButton.style.top = `${messageElement.offsetTop}px`;
+                                    chatMessages.appendChild(addFriendButton);
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error checking friend status:', error);
+                        });
                 });
 
                 // Scroll to the bottom of the chat
@@ -1908,6 +1909,7 @@ function loadGroupMessages(groupId) {
             });
         });
 }
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
