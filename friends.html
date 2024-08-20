@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,6 +238,7 @@ body.night-mode {
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
+    font-size: 14px;
     transition: background-color 0.3s;
     margin-left: 10px; /* Space between name and button */
     display: flex;
@@ -252,6 +254,7 @@ body.night-mode {
     width: 20px; /* Adjust size as needed */
     height: 20px; /* Adjust size as needed */
 }
+
 
 
 #onlineFriends {
@@ -1234,50 +1237,55 @@ function loadOnlineFriends() {
     }
 }
 
-
-
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
     button.className = 'unfriend-button';
     button.onclick = () => unfriendUser(friendEmail);
 
     // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.setAttribute('fill', '#000000');
+    svg.setAttribute('xmlns', svgNS);
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG you provided
 
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('class', 'a');
+    // Define paths and shapes
+    const path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
+    path.setAttribute('class', 'a');
 
-    const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle1.setAttribute('class', 'b');
+    const circle1 = document.createElementNS(svgNS, 'circle');
     circle1.setAttribute('cx', '11.5');
     circle1.setAttribute('cy', '5.99202');
     circle1.setAttribute('r', '5');
+    circle1.setAttribute('class', 'b');
 
-    const circle2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle2.setAttribute('class', 'a');
+    const circle2 = document.createElementNS(svgNS, 'circle');
     circle2.setAttribute('cx', '16.5');
     circle2.setAttribute('cy', '18.00798');
     circle2.setAttribute('r', '5');
+    circle2.setAttribute('class', 'a');
 
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('class', 'a');
+    const line = document.createElementNS(svgNS, 'line');
     line.setAttribute('x1', '14.5');
     line.setAttribute('x2', '18.5');
     line.setAttribute('y1', '18.00798');
     line.setAttribute('y2', '18.00798');
+    line.setAttribute('class', 'a');
 
+    // Append SVG elements to the SVG container
     svg.appendChild(path);
     svg.appendChild(circle1);
     svg.appendChild(circle2);
     svg.appendChild(line);
 
+    // Append SVG to the button
     button.appendChild(svg);
+
     return button;
 }
+
 
 function unfriendUser(friendEmail) {
     const currentUser = firebase.auth().currentUser;
