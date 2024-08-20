@@ -786,6 +786,64 @@ body.night-mode {
     margin-bottom: 10px;
 }
 
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: var(--border-radius);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.view-members-button,
+.remove-member-button {
+    background-color: var(--accent-color);
+    border: none;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.view-members-button:hover,
+.remove-member-button:hover {
+    background-color: #2980b9;
+}
 
     </style>
 </head>
@@ -939,6 +997,17 @@ body.night-mode {
         </div>
         <input type="text" id="chatInput" placeholder="Type a message">
         <button onclick="sendMessage(currentGroupId)">Send</button>
+    </div>
+</div>
+
+<!-- Modal for Viewing Group Members -->
+<div id="viewMembersModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Group Members</h2>
+        <div id="membersList">
+            <!-- Members will be dynamically added here -->
+        </div>
     </div>
 </div>
 
@@ -1666,6 +1735,15 @@ function loadGroupChats() {
                 };
                 buttonContainer.appendChild(editButton);
 
+                 // View Members button
+                const viewMembersButton = document.createElement('button');
+                viewMembersButton.classList.add('view-members-button');
+                viewMembersButton.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><circle class="a" cx="17" cy="18" r="0.20745"></circle><circle class="a" cx="14.35106" cy="18" r="0.20745"></circle><circle class="a" cx="19.47832" cy="18" r="0.20745"></circle></g></svg>`;
+                viewMembersButton.onclick = () => {
+                    openViewMembersModal(doc.id);
+                };
+                buttonContainer.appendChild(viewMembersButton);
+
                 // Delete button
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -1676,6 +1754,8 @@ function loadGroupChats() {
                 buttonContainer.appendChild(deleteButton);
 
                 groupItem.appendChild(buttonContainer);
+        
+                groupList.appendChild(groupItem);
 
                 groupItem.onclick = () => {
                     openGroupChat(doc.id);
@@ -1685,6 +1765,68 @@ function loadGroupChats() {
                 groupList.appendChild(groupItem);
             });
         });
+}
+
+function openViewMembersModal(groupId) {
+    const modal = document.getElementById('viewMembersModal');
+    const membersList = document.getElementById('membersList');
+    membersList.innerHTML = '';
+
+    db.collection('groupchats').doc(groupId).get().then((doc) => {
+        const group = doc.data();
+        const participants = group.participants;
+
+        participants.forEach((participantEmail) => {
+            db.collection('users').where('email', '==', participantEmail).get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((userDoc) => {
+                        const user = userDoc.data();
+
+                        const memberItem = document.createElement('div');
+                        memberItem.classList.add('member-item');
+
+                        const nameElement = document.createElement('span');
+                        nameElement.textContent = `${user.displayName} (${user.email})`;
+                        memberItem.appendChild(nameElement);
+
+                        const removeButton = document.createElement('button');
+                        removeButton.classList.add('remove-member-button');
+                        removeButton.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,11.016,12,11.016"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="15.58579" x2="18.41421" y1="16.58579" y2="19.41421"></line><line class="a" x1="18.41421" x2="15.58579" y1="16.58579" y2="19.41421"></line></g></svg>`;
+                        removeButton.onclick = () => {
+                            removeUserFromGroupChat(groupId, user.email);
+                        };
+                        memberItem.appendChild(removeButton);
+
+                        membersList.appendChild(memberItem);
+                    });
+                });
+        });
+
+        modal.style.display = 'block';
+    });
+
+    const closeBtn = document.querySelector('.modal .close');
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
+}
+
+window.onclick = function (event) {
+    const modal = document.getElementById('viewMembersModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+};
+
+function removeUserFromGroupChat(groupId, userEmail) {
+    db.collection('groupchats').doc(groupId).update({
+        participants: firebase.firestore.FieldValue.arrayRemove(userEmail)
+    }).then(() => {
+        alert(`User ${userEmail} removed from the group chat.`);
+        openViewMembersModal(groupId); // Refresh the modal view
+    }).catch((error) => {
+        console.error("Error removing user: ", error);
+    });
 }
 
 function editGroupChat(groupId, currentGroupName) {
