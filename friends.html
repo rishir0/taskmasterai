@@ -323,23 +323,22 @@ body.night-mode {
 }
         
 .add-friend-icon-button {
-    padding: 0; /* Remove padding for a circular button */
+    padding: 0 !important; /* Ensure no padding is applied */
     background-color: var(--primary-color);
     border: none;
-    border-radius: 50%; /* Make the button circular */
+    border-radius: 50%;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Set width to make it circular */
-    height: 40px; /* Set height to make it circular */
-    position: absolute; /* Position relative to parent element */
-    right: -90px; /* Adjust this value to move the button further right */
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: -90px;
     top: 50%;
-    transform: translateY(-50%); /* Center vertically */
-    z-index: 1; /* Ensure button appears above other elements */
+    transform: translateY(-50%);
+    z-index: 1;
 }
-
 
 .add-friend-icon-button svg {
     width: 24px;
