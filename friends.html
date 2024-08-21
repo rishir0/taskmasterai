@@ -1920,67 +1920,55 @@ function createAddFriendButton(friendEmail) {
 function createViewMembersButton() {
     const button = document.createElement('button');
     button.className = 'view-members-button'; // Update class name
-    
+
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('xmlns', svgNS);
-    svg.setAttribute('fill', '#000000'); // Set fill to black
-    svg.setAttribute('stroke', 'none'); // Set stroke to none
-
-    // Define styles for the SVG
-    const style = document.createElementNS(svgNS, 'style');
-    style.textContent = `
-        .a, .b {
-            fill: none;
-            stroke: #ffffff;
-            stroke-linecap: round;
-            stroke-width: 1.5px;
-        }
-        .a {
-            stroke-linejoin: round;
-        }
-        .b {
-            stroke-linejoin: bevel;
-        }
-    `;
-    svg.appendChild(style);
+    svg.setAttribute('fill', 'none'); // Set fill to none
+    svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG provided
 
     // Define paths and shapes with correct stroke width and style
     const path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
-    path.setAttribute('class', 'a');
+    path.setAttribute('stroke', '#ffffff'); // Ensure path stroke color
+    path.setAttribute('stroke-width', '1.5');
 
     const circle1 = document.createElementNS(svgNS, 'circle');
     circle1.setAttribute('cx', '12');
     circle1.setAttribute('cy', '5.98404');
     circle1.setAttribute('r', '5');
-    circle1.setAttribute('class', 'b');
+    circle1.setAttribute('stroke', '#ffffff'); // Ensure circle stroke color
+    circle1.setAttribute('stroke-width', '1.5');
 
     const circle2 = document.createElementNS(svgNS, 'circle');
     circle2.setAttribute('cx', '17');
     circle2.setAttribute('cy', '18');
     circle2.setAttribute('r', '5');
-    circle2.setAttribute('class', 'a');
+    circle2.setAttribute('stroke', '#ffffff'); // Ensure circle stroke color
+    circle2.setAttribute('stroke-width', '1.5');
 
     const circle3 = document.createElementNS(svgNS, 'circle');
     circle3.setAttribute('cx', '17');
     circle3.setAttribute('cy', '18');
     circle3.setAttribute('r', '0.20745');
-    circle3.setAttribute('class', 'a');
+    circle3.setAttribute('stroke', '#ffffff'); // Ensure circle stroke color
+    circle3.setAttribute('stroke-width', '1.5');
 
     const circle4 = document.createElementNS(svgNS, 'circle');
     circle4.setAttribute('cx', '14.35106');
     circle4.setAttribute('cy', '18');
     circle4.setAttribute('r', '0.20745');
-    circle4.setAttribute('class', 'a');
+    circle4.setAttribute('stroke', '#ffffff'); // Ensure circle stroke color
+    circle4.setAttribute('stroke-width', '1.5');
 
     const circle5 = document.createElementNS(svgNS, 'circle');
     circle5.setAttribute('cx', '19.47832');
     circle5.setAttribute('cy', '18');
     circle5.setAttribute('r', '0.20745');
-    circle5.setAttribute('class', 'a');
+    circle5.setAttribute('stroke', '#ffffff'); // Ensure circle stroke color
+    circle5.setAttribute('stroke-width', '1.5');
 
     // Append SVG elements to the SVG container
     svg.appendChild(path);
