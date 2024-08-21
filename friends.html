@@ -1089,31 +1089,10 @@ body.night-mode {
                 </svg>
             </button>
         </div>
-        <div class="bug-section">
-            <div class="bug-item">
-                <span class="bug-icon">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <path d="M16 4L13.7487 6.25129M13.7487 6.25129C13.242 6.09132 12.6621 6 12 6C11.526 6 10.9172 6.08088 10.2886 6.28864M13.7487 6.25129C15.3001 6.741 16.1662 7.87407 16.6073 9M8 4L10.2886 6.28864M10.2886 6.28864C9.13478 6.67002 7.91423 7.47896 7.33838 9M16.6073 9C16.8926 9.72834 17 10.4537 17 11V13M16.6073 9H18C18.6667 9 20 8.6 20 7M17 13V15C17 15.5463 16.8926 16.2717 16.6073 17M17 13H20M16.6073 17C16.0221 18.4937 14.6889 20 12 20C9.31111 20 7.97787 18.4937 7.39275 17M16.6073 17H18C18.6667 17 20 17.4 20 19M7.33838 9C7.12488 9.56394 7 10.2258 7 11V13M7.33838 9H6C5.33333 9 4 8.6 4 7M7 13V15C7 15.5463 7.10744 16.2717 7.39275 17M7 13H4M7.39275 17H6C5.33333 17 4 17.4 4 19" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                            <path d="M12 10H12.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                            <path d="M10 13H10.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                            <path d="M14 13H14.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                        </g>
-                    </svg>
-                </span>
-                <p class="bug-description"><strong>Chat Switching Bug:</strong> When switching between individual chats, messages may be sent to the previous chat instead of the current one.</p>
-            </div>
-            <div class="fix-item">
-                <span class="fix-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="#000000">
-                        <path d="m 24.775889,297.28984 -3.995429,3.99543 -2.828427,-2.82843 3.994048,-3.99404 a 6,6 0 0 0 -6.822475,1.16562 6,6 0 0 0 -1.548177,5.79082 l -6.9371048,6.9371 c -1.1752115,1.17521 -1.1752115,3.06743 0,4.24264 1.1752115,1.17521 3.0674292,1.17521 4.2426408,0 l 6.938485,-6.93848 a 6,6 0 0 0 5.789437,-1.5468 6,6 0 0 0 1.167002,-6.82386 z"/>
-                    </svg>
-                </span>
-                <p class="fix-description">Updated chat switching logic to ensure messages are sent to the correct chat.</p>
-            </div>
-        </div>
+        <ul class="bug-list">
+            <li>Chat Switching Bug: When switching between individual chats, messages may be sent to the previous chat instead of the current one.</li>
+            <li>Fix: Refresh the page before switching chats, then select the desired contact.</li>
+        </ul>
     </div>
 </div>
 
