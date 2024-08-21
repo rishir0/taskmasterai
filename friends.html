@@ -1685,27 +1685,7 @@ function loadGroupChats() {
                 buttonContainer.classList.add('buttons');
 
                 // View Members button
-                const viewMembersButton = document.createElement('button');
-                viewMembersButton.classList.add('view-members-button');
-                viewMembersButton.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                        <defs>
-                            <style>
-                                .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
-                                .a{stroke-linejoin:round;}
-                                .b{stroke-linejoin:bevel;}
-                            </style>
-                        </defs>
-                        <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
-                        <circle class="b" cx="12" cy="5.98404" r="5"></circle>
-                        <circle class="a" cx="17" cy="18" r="5"></circle>
-                        <circle class="a" cx="17" cy="18" r="0.20745"></circle>
-                        <circle class="a" cx="14.35106" cy="18" r="0.20745"></circle>
-                        <circle class="a" cx="19.47832" cy="18" r="0.20745"></circle>
-                    </g>
-                </svg>`;
+                const viewMembersButton = createViewMembersButton();
                 viewMembersButton.onclick = () => {
                     openViewMembersModal(doc.id);
                 };
@@ -1742,6 +1722,7 @@ function loadGroupChats() {
             });
         });
 }
+
 
 function openViewMembersModal(groupId) {
     const modal = document.getElementById('viewMembersModal');
@@ -1929,6 +1910,85 @@ function createAddFriendButton(friendEmail) {
     svg.appendChild(circle2);
     svg.appendChild(line1);
     svg.appendChild(line2);
+
+    // Append SVG to the button
+    button.appendChild(svg);
+
+    return button;
+}
+
+function createViewMembersButton() {
+    const button = document.createElement('button');
+    button.className = 'view-members-button'; // Update class name
+    
+    // Create SVG element
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('xmlns', svgNS);
+    svg.setAttribute('fill', '#000000'); // Set fill to black
+    svg.setAttribute('stroke', 'none'); // Set stroke to none
+
+    // Define styles for the SVG
+    const style = document.createElementNS(svgNS, 'style');
+    style.textContent = `
+        .a, .b {
+            fill: none;
+            stroke: #ffffff;
+            stroke-linecap: round;
+            stroke-width: 1.5px;
+        }
+        .a {
+            stroke-linejoin: round;
+        }
+        .b {
+            stroke-linejoin: bevel;
+        }
+    `;
+    svg.appendChild(style);
+
+    // Define paths and shapes with correct stroke width and style
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
+    path.setAttribute('class', 'a');
+
+    const circle1 = document.createElementNS(svgNS, 'circle');
+    circle1.setAttribute('cx', '12');
+    circle1.setAttribute('cy', '5.98404');
+    circle1.setAttribute('r', '5');
+    circle1.setAttribute('class', 'b');
+
+    const circle2 = document.createElementNS(svgNS, 'circle');
+    circle2.setAttribute('cx', '17');
+    circle2.setAttribute('cy', '18');
+    circle2.setAttribute('r', '5');
+    circle2.setAttribute('class', 'a');
+
+    const circle3 = document.createElementNS(svgNS, 'circle');
+    circle3.setAttribute('cx', '17');
+    circle3.setAttribute('cy', '18');
+    circle3.setAttribute('r', '0.20745');
+    circle3.setAttribute('class', 'a');
+
+    const circle4 = document.createElementNS(svgNS, 'circle');
+    circle4.setAttribute('cx', '14.35106');
+    circle4.setAttribute('cy', '18');
+    circle4.setAttribute('r', '0.20745');
+    circle4.setAttribute('class', 'a');
+
+    const circle5 = document.createElementNS(svgNS, 'circle');
+    circle5.setAttribute('cx', '19.47832');
+    circle5.setAttribute('cy', '18');
+    circle5.setAttribute('r', '0.20745');
+    circle5.setAttribute('class', 'a');
+
+    // Append SVG elements to the SVG container
+    svg.appendChild(path);
+    svg.appendChild(circle1);
+    svg.appendChild(circle2);
+    svg.appendChild(circle3);
+    svg.appendChild(circle4);
+    svg.appendChild(circle5);
 
     // Append SVG to the button
     button.appendChild(svg);
