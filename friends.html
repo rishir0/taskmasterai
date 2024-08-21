@@ -832,15 +832,15 @@ body.night-mode {
 .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Place buttons on either side of the title */
+    justify-content: center;
     margin-bottom: 15px;
+    position: relative; /* Position relative to align the buttons */
 }
 
 /* Center title text */
 .modal-title {
-    font-size: 1.5rem; /* Adjusted size for better readability */
+    font-size: 18px;
     font-weight: bold;
-    color: #fff; /* Ensure title text is visible */
     margin: 0; /* Remove default margin */
 }
 
@@ -853,6 +853,15 @@ body.night-mode {
     color: #fff;
     display: flex;
     align-items: center;
+    position: absolute; /* Absolute positioning for proper alignment */
+}
+
+#disableModal {
+    left: 10px; /* Position disable button on the left */
+}
+
+#closeModal {
+    right: 10px; /* Position close button on the right */
 }
 
 /* Ensure SVG icons are appropriately sized */
@@ -861,64 +870,7 @@ body.night-mode {
     height: 24px;
 }
 
-/* Bug and Fix Sections */
-.bug-section {
-    margin-top: 10px;
-}
-
-/* Fix Item Styles */
-.fix-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: 1rem; /* Ensure text size is consistent */
-}
-
-.fix-icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 10px; /* Adjust space for alignment */
-}
-
-.fix-icon svg {
-    width: 1rem; /* Match the font size */
-    height: 1rem; /* Match the font size */
-    fill: currentColor; /* Use the current text color */
-}
-
-.fix-label {
-    font-weight: bold;
-    color: var(--accent-color); /* Accent color */
-    margin-right: 5px; /* Space between the label and text */
-}
-
-.fix-description {
-    color: var(--accent-color); /* Accent color */
-    font-size: 0.9rem; /* Smaller text size */
-}
-
-/* Bug Item Styles */
-.bug-item {
-    margin-bottom: 10px;
-    font-size: 1rem; /* Ensure text size is consistent */
-}
-
-.bug-description {
-    color: #ffffff; /* White text color for description */
-    font-size: 0.9rem; /* Smaller text size */
-}
-
-.bug-description strong {
-    font-weight: bold;
-    color: #ffffff; /* Ensure bold text is white */
-}
-
-/* Remove Bug label */
-.bug-label {
-    display: none;
-}
-
-/* Style for the bug list (if used) */
+/* Style for the bug list */
 .bug-list {
     list-style: disc;
     padding-left: 20px;
@@ -928,9 +880,6 @@ body.night-mode {
 .bug-list li {
     margin-bottom: 10px;
 }
-
-
-
 
     </style>
 </head>
