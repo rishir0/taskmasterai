@@ -832,7 +832,7 @@ body.night-mode {
 .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Adjusted to place buttons on either side of the title */
+    justify-content: space-between; /* Place buttons on either side of the title */
     margin-bottom: 15px;
     position: relative;
 }
@@ -853,15 +853,15 @@ body.night-mode {
     color: #fff;
     display: flex;
     align-items: center;
-    position: relative; /* Changed from absolute to relative for better alignment */
+    position: relative; /* Relative positioning for alignment */
 }
 
 #disableModal {
-    /* No specific positioning needed here if using flex layout */
+    /* No specific positioning needed if using flex layout */
 }
 
 #closeModal {
-    /* No specific positioning needed here if using flex layout */
+    /* No specific positioning needed if using flex layout */
 }
 
 /* Ensure SVG icons are appropriately sized */
@@ -880,6 +880,7 @@ body.night-mode {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+    font-size: 1rem; /* Ensure text size is consistent */
 }
 
 .fix-icon {
@@ -896,9 +897,9 @@ body.night-mode {
 
 .fix-label {
     font-weight: bold;
-    font-size: 1rem; /* Adjust as needed */
+    color: var(--accent-color); /* Use the accent color */
+    margin-right: 5px; /* Space between the label and text */
 }
-
 
 /* Style for the bug list (if used) */
 .bug-list {
@@ -910,8 +911,6 @@ body.night-mode {
 .bug-list li {
     margin-bottom: 10px;
 }
-
-
 
     </style>
 </head>
