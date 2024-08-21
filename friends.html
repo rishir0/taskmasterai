@@ -1720,7 +1720,6 @@ function loadGroupChats() {
                 };
                 buttonContainer.appendChild(editButton);
 
-
                 // Delete button
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -1731,7 +1730,7 @@ function loadGroupChats() {
                 buttonContainer.appendChild(deleteButton);
 
                 groupItem.appendChild(buttonContainer);
-        
+
                 groupList.appendChild(groupItem);
 
                 groupItem.onclick = () => {
