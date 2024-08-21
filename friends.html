@@ -834,13 +834,13 @@ body.night-mode {
     align-items: center;
     justify-content: space-between; /* Place buttons on either side of the title */
     margin-bottom: 15px;
-    position: relative;
 }
 
 /* Center title text */
 .modal-title {
-    font-size: 18px;
+    font-size: 1.5rem; /* Adjusted size for better readability */
     font-weight: bold;
+    color: #fff; /* Ensure title text is visible */
     margin: 0; /* Remove default margin */
 }
 
@@ -853,15 +853,6 @@ body.night-mode {
     color: #fff;
     display: flex;
     align-items: center;
-    position: relative; /* Relative positioning for alignment */
-}
-
-#disableModal {
-    /* No specific positioning needed if using flex layout */
-}
-
-#closeModal {
-    /* No specific positioning needed if using flex layout */
 }
 
 /* Ensure SVG icons are appropriately sized */
@@ -912,15 +903,19 @@ body.night-mode {
     font-size: 1rem; /* Ensure text size is consistent */
 }
 
-.bug-label {
-    font-weight: bold;
-    color: var(--primary-color); /* Primary color */
-    margin-right: 5px; /* Space between the label and text */
+.bug-description {
+    color: #ffffff; /* White text color for description */
+    font-size: 0.9rem; /* Smaller text size */
 }
 
-.bug-description {
-    color: var(--primary-color); /* Primary color */
-    font-size: 0.9rem; /* Smaller text size */
+.bug-description strong {
+    font-weight: bold;
+    color: #ffffff; /* Ensure bold text is white */
+}
+
+/* Remove Bug label */
+.bug-label {
+    display: none;
 }
 
 /* Style for the bug list (if used) */
@@ -933,6 +928,7 @@ body.night-mode {
 .bug-list li {
     margin-bottom: 10px;
 }
+
 
 
     </style>
@@ -1145,8 +1141,7 @@ body.night-mode {
         </div>
         <div class="bug-section">
             <div class="bug-item">
-                <span class="bug-label">Bug:</span>
-                <p class="bug-description">Chat Switching Bug: When switching between individual chats, messages may be sent to the previous chat instead of the current one.</p>
+                <p class="bug-description"><strong>Chat Switching Bug:</strong> When switching between individual chats, messages may be sent to the previous chat instead of the current one.</p>
             </div>
             <div class="fix-item">
                 <span class="fix-icon">
@@ -1163,7 +1158,7 @@ body.night-mode {
                     </svg>
                 </span>
                 <span class="fix-label">Fix:</span>
-                <p class="fix-description">Refresh the page before switching chats, then select the desired contact.</p>
+                <p class="fix-description"><span class="fix-description-text">Refresh the page before switching chats, then select the desired contact.</span></p>
             </div>
         </div>
     </div>
