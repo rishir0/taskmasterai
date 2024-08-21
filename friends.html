@@ -709,85 +709,32 @@ body.night-mode {
 }
 
 
-/* Modal Styles */
+/* General Modal Styles */
 .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
+/* Specific Modal Content Styles */
 .modal-content {
-    background: #333;
-    color: #fff;
+    background-color: gray; /* Set modal background to gray */
+    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
     border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 600px;
-    position: relative;
+    position: relative; /* Position relative to align buttons */
 }
 
-/* Center the title text and ensure proper alignment */
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    position: relative; /* Position relative to align the buttons */
-}
-
-/* Center title text */
-.modal-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0; /* Remove default margin */
-}
-
-/* Style for the modal buttons */
-.modal-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    position: absolute; /* Absolute positioning for proper alignment */
-}
-
-#disableModal {
-    left: 10px; /* Position disable button on the left */
-}
-
-#closeModal {
-    right: 10px; /* Position close button on the right */
-}
-
-/* Ensure SVG icons are appropriately sized */
-.modal-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* Style for the bug list */
-.bug-list {
-    list-style: disc;
-    padding-left: 20px;
-    margin: 0; /* Remove default margin */
-}
-
-.bug-list li {
-    margin-bottom: 10px;
-}
-
-
-.close {
+/* Close Button */
+.modal-content .close {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -795,20 +742,13 @@ body.night-mode {
     cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
+.modal-content .close:hover,
+.modal-content .close:focus {
     color: white;
     text-decoration: none;
 }
 
-.member-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid #ccc;
-}
-
+/* View Members Button */
 .view-members-button,
 .remove-member-button {
     background-color: var(--accent-color);
@@ -823,6 +763,29 @@ body.night-mode {
 .remove-member-button:hover {
     background-color: #2980b9;
 }
+
+/* Member Item Styles */
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+/* SVG Icons for Modal Buttons */
+.modal-content .view-members-button svg,
+.modal-content .remove-member-button svg,
+.modal-content .close svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Ensure no interference with other modals */
+#viewMembersModal .modal-content {
+    /* If additional specific styles needed for this modal, add them here */
+}
+
 
 
     </style>
