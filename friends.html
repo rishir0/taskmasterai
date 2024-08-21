@@ -1141,28 +1141,32 @@ body.night-mode {
         </div>
         <div class="bug-section">
             <div class="bug-item">
+                <span class="bug-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path d="M16 4L13.7487 6.25129M13.7487 6.25129C13.242 6.09132 12.6621 6 12 6C11.526 6 10.9172 6.08088 10.2886 6.28864M13.7487 6.25129C15.3001 6.741 16.1662 7.87407 16.6073 9M8 4L10.2886 6.28864M10.2886 6.28864C9.13478 6.67002 7.91423 7.47896 7.33838 9M16.6073 9C16.8926 9.72834 17 10.4537 17 11V13M16.6073 9H18C18.6667 9 20 8.6 20 7M17 13V15C17 15.5463 16.8926 16.2717 16.6073 17M17 13H20M16.6073 17C16.0221 18.4937 14.6889 20 12 20C9.31111 20 7.97787 18.4937 7.39275 17M16.6073 17H18C18.6667 17 20 17.4 20 19M7.33838 9C7.12488 9.56394 7 10.2258 7 11V13M7.33838 9H6C5.33333 9 4 8.6 4 7M7 13V15C7 15.5463 7.10744 16.2717 7.39275 17M7 13H4M7.39275 17H6C5.33333 17 4 17.4 4 19" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <path d="M12 10H12.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <path d="M10 13H10.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            <path d="M14 13H14.001" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </g>
+                    </svg>
+                </span>
                 <p class="bug-description"><strong>Chat Switching Bug:</strong> When switching between individual chats, messages may be sent to the previous chat instead of the current one.</p>
             </div>
             <div class="fix-item">
                 <span class="fix-icon">
-                    <!-- SVG for fix icon -->
-                    <svg version="1.1" id="Uploaded_to_svgrepo_com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" fill="#000000">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <style type="text/css">
-                                .stone_een{fill:#ffffff;}
-                            </style>
-                            <path class="stone_een" d="M29.5,24.5L16.563,11.563C16.84,10.758,17,9.899,17,9c0-4.411-3.589-8-8-8 C8.338,1,7.659,1.089,6.982,1.266c-0.347,0.09-0.619,0.359-0.713,0.706C6.175,2.317,6.273,2.687,6.527,2.941l2.645,2.645 C9.549,5.964,9.757,6.466,9.757,7c0,0.534-0.208,1.036-0.586,1.414L8.414,9.172C8.036,9.549,7.534,9.757,7,9.757 S5.964,9.549,5.586,9.172L2.941,6.526c-0.19-0.19-0.445-0.293-0.707-0.293c-0.087,0-0.175,0.011-0.262,0.035 C1.625,6.363,1.356,6.635,1.266,6.982C1.089,7.659,1,8.338,1,9c0,4.411,3.589,8,8,8c0.899,0,1.758-0.16,2.563-0.437L24.5,29.5 c0.69,0.69,1.595,1.036,2.5,1.036s1.81-0.345,2.5-1.036C30.881,28.119,30.881,25.881,29.5,24.5z M27,28c-0.552,0-1-0.448-1-1 c0-0.552,0.448-1,1-1s1,0.448,1,1C28,27.552,27.552,28,27,28z"></path>
-                        </g>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="#000000">
+                        <path d="m 24.775889,297.28984 -3.995429,3.99543 -2.828427,-2.82843 3.994048,-3.99404 a 6,6 0 0 0 -6.822475,1.16562 6,6 0 0 0 -1.548177,5.79082 l -6.9371048,6.9371 c -1.1752115,1.17521 -1.1752115,3.06743 0,4.24264 1.1752115,1.17521 3.0674292,1.17521 4.2426408,0 l 6.938485,-6.93848 a 6,6 0 0 0 5.789437,-1.5468 6,6 0 0 0 1.167002,-6.82386 z"/>
                     </svg>
                 </span>
-                <span class="fix-label">Fix:</span>
-                <p class="fix-description"><span class="fix-description-text">Refresh the page before switching chats, then select the desired contact.</span></p>
+                <p class="fix-description">Updated chat switching logic to ensure messages are sent to the correct chat.</p>
             </div>
         </div>
     </div>
 </div>
+
 
 
         
