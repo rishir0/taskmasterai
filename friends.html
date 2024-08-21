@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -740,21 +741,12 @@ body.night-mode {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .modal2 .modal-content .close:hover,
 .modal2 .modal-content .close:focus {
     color: white;
     text-decoration: none;
-}
-
-/* Ensure SVG icons for close button are appropriately sized */
-.modal2 .modal-content .close svg {
-    width: 24px; /* Ensure width matches the button size */
-    height: 24px; /* Ensure height matches the button size */
 }
 
 /* View Members Button */
@@ -782,6 +774,14 @@ body.night-mode {
     border-bottom: 1px solid #ccc;
 }
 
+/* SVG Icons for Modal Buttons */
+.modal2 .modal-content .view-members-button svg,
+.modal2 .modal-content .remove-member-button svg,
+.modal2 .modal-content .close svg {
+    width: 24px;
+    height: 24px;
+}
+
 /* Ensure no interference with other modals */
 #viewMembersModal .modal-content {
     /* If additional specific styles needed for this modal, add them here */
@@ -804,7 +804,6 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
-
 
 /* Modal Styles */
 .modal {
@@ -1041,8 +1040,8 @@ body.night-mode {
 <!-- Modal for Viewing Group Members -->
 <div id="viewMembersModal" class="modal2">
     <div class="modal-content">
-        <span class="close">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <span class="modal-btn">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -1063,7 +1062,6 @@ body.night-mode {
         </div>
     </div>
 </div>
-
 
 <!-- Modal Structure -->
 <div id="bugModal" class="modal">
