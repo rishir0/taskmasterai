@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
         --primary-color: #e07a5f;
-        --secondary-color: #ffffff
+        --secondary-color: #ffffff;
         --accent-color: ##2d3748d;
         --text-color: #ffffff;
         --bg-color: rgba(255, 255, 255, 0.1);
