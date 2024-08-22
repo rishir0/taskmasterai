@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -735,7 +734,7 @@ body.night-mode {
 }
 
 /* Close Button */
-.modal2 .modal-content .close {
+.modal2 .close {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -743,8 +742,8 @@ body.night-mode {
     cursor: pointer;
 }
 
-.modal2 .modal-content .close:hover,
-.modal2 .modal-content .close:focus {
+.modal2 .close:hover,
+.modal2 .close:focus {
     color: white;
     text-decoration: none;
 }
@@ -1876,7 +1875,7 @@ function openViewMembersModal(groupId) {
         modal.style.display = 'block';
     });
 
-    const closeBtn = document.querySelector('.modal .close');
+    const closeBtn = document.querySelector('.modal2 .close');
     closeBtn.onclick = function () {
         modal.style.display = 'none';
     };
