@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
-        --primary-color: #009bf5;
+        --primary-color: #1e2a38;
         --secondary-color: #8d8aaf;;
-        --accent-color: #40E0D0;
+        --accent-color: #f08a5d;
         --text-color: #ffffff;
         --bg-color: rgba(255, 255, 255, 0.1);
         --card-bg: rgba(255, 255, 255, 0.1);
