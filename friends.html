@@ -1813,6 +1813,15 @@ viewMembersButton.style.display = 'flex';
 viewMembersButton.style.alignItems = 'center';
 viewMembersButton.style.justifyContent = 'center';
 
+// Hover effect to change color
+viewMembersButton.addEventListener('mouseover', () => {
+    viewMembersButton.style.backgroundColor = '#3b7bce';
+});
+
+viewMembersButton.addEventListener('mouseout', () => {
+    viewMembersButton.style.backgroundColor = 'var(--accent-color)'; // Reset to the original color
+});
+
 viewMembersButton.onclick = () => {
     openViewMembersModal(doc.id);
 };
