@@ -1493,68 +1493,64 @@ function loadOnlineFriends() {
                                         const friendName = document.createElement('span');
                                         friendName.textContent = friendDisplayName;
                                         friendName.classList.add('friend-name');
+// Button container
+const buttonContainer = document.createElement('div');
+buttonContainer.classList.add('buttons');
 
+// View Members button with SVG in a smaller circle
+const viewFriendInfoButton = document.createElement('button');
+viewFriendInfoButton.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <defs>
+                <style>
+                    .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
+                    .a{stroke-linejoin:round;}
+                    .b{stroke-linejoin:bevel;}
+                </style>
+            </defs>
+            <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
+            <circle class="b" cx="12" cy="5.98404" r="5"></circle>
+            <circle class="a" cx="17" cy="18" r="5"></circle>
+            <circle class="a" cx="17" cy="18" r="0.20745"></circle>
+            <circle class="a" cx="14.35106" cy="18" r="0.20745"></circle>
+            <circle class="a" cx="19.47832" cy="18" r="0.20745"></circle>
+        </g>
+    </svg>
+`;
+
+// Apply circular style and smaller size
+viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)'; // Replace with your accent color variable or hex code
+viewFriendInfoButton.style.border = 'none';
+viewFriendInfoButton.style.borderRadius = '50%';
+viewFriendInfoButton.style.padding = '6px'; // Reduced padding for a smaller circle
+viewFriendInfoButton.style.cursor = 'pointer';
+viewFriendInfoButton.style.display = 'flex';
+viewFriendInfoButton.style.alignItems = 'center';
+viewFriendInfoButton.style.justifyContent = 'center';
+
+// Hover effect to change color
+viewFriendInfoButton.addEventListener('mouseover', () => {
+    viewFriendInfoButton.style.backgroundColor = '#3b7bce';
+});
+
+viewFriendInfoButton.addEventListener('mouseout', () => {
+    viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)'; // Reset to the original color
+});
+
+viewFriendInfoButton.onclick = () => {
+    openViewMembersModal(doc.id);
+};
+buttonContainer.appendChild(viewFriendInfoButton);
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
                                         
-                                        // Create the 'View Friend Info' button
-                                        const viewFriendInfoButton = document.createElement('button');
-                                        viewFriendInfoButton.innerHTML = `
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
-                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                                <g id="SVGRepo_iconCarrier">
-                                                    <defs>
-                                                        <style>
-                                                            .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
-                                                            .a{stroke-linejoin:round;}
-                                                            .b{stroke-linejoin:bevel;}
-                                                        </style>
-                                                    </defs>
-                                                    <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
-                                                    <circle class="b" cx="12" cy="5.98404" r="5"></circle>
-                                                    <circle class="a" cx="17" cy="18" r="5"></circle>
-                                                    <line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line>
-                                                    <line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line>
-                                                </g>
-                                            </svg>
-                                        `;
 
-                                        viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
-                                        viewFriendInfoButton.style.border = 'none';
-                                        viewFriendInfoButton.style.borderRadius = '50%';
-                                        viewFriendInfoButton.style.padding = '6px';
-                                        viewFriendInfoButton.style.cursor = 'pointer';
-                                        viewFriendInfoButton.style.display = 'flex';
-                                        viewFriendInfoButton.style.alignItems = 'center';
-                                        viewFriendInfoButton.style.justifyContent = 'center';
-
-                                        viewFriendInfoButton.addEventListener('mouseover', () => {
-                                            viewFriendInfoButton.style.backgroundColor = '#3b7bce';
-                                        });
-
-                                        viewFriendInfoButton.addEventListener('mouseout', () => {
-                                            viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
-                                        });
-
-                                        viewFriendInfoButton.onclick = () => {
-                                            const modal = document.getElementById('viewFriendModal');
-                                            modal.style.display = 'block';
-                                            document.getElementById('friendDisplayName').textContent = friendDisplayName;
-                                            document.getElementById('friendEmail').textContent = friendEmail;
-                                            document.getElementById('editFriendName').value = friendDisplayName;
-
-                                            document.getElementById('saveFriendName').onclick = () => {
-                                                const newFriendName = document.getElementById('editFriendName').value;
-                                                if (newFriendName !== friendDisplayName) {
-                                                    saveFriendDisplayName(friendEmail, newFriendName);
-                                                }
-                                                modal.style.display = 'none';
-                                            };
-                                        };
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
                                         listItem.appendChild(unfriendButton);
@@ -1570,6 +1566,38 @@ function loadOnlineFriends() {
                 console.error("Error fetching user data for accepted friends: ", error);
             });
     }
+}
+
+function openViewFriendInfoModal(friendEmail) {
+    const modal = document.getElementById('viewFriendModal');
+    const friendDisplayName = document.getElementById('friendDisplayName');
+    const friendEmailElement = document.getElementById('friendEmail');
+
+    // Clear previous content
+    friendDisplayName.textContent = '';
+    friendEmailElement.textContent = '';
+
+    // Fetch the user's data
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((userDoc) => {
+                const user = userDoc.data();
+                
+                // Populate modal with friend's displayName and email
+                friendDisplayName.textContent = user.displayName;
+                friendEmailElement.textContent = user.email;
+            });
+        }).catch((error) => {
+            console.error("Error fetching user data: ", error);
+        });
+
+    modal.style.display = 'block';
+
+    // Add functionality for the close button
+    const closeBtn = document.querySelector('.modal3 .close-button3');
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
 }
 
 function createUnfriendButton(friendEmail) {
@@ -1933,53 +1961,6 @@ function sendGroupMessage(groupId) {
     });
 }
 
-function initializeViewFriendInfoButton(friendUserId, friendDisplayName) {
-    // Open the modal and populate it with friend's data
-    viewFriendInfoButton.onclick = () => {
-        openViewFriendModal(friendUserId, friendDisplayName);
-    };
-
-    return viewFriendInfoButton;
-}
-
-function openViewFriendModal(friendUserId, friendDisplayName) {
-    const modal = document.getElementById('viewFriendModal');
-    const closeButton = document.querySelector('.close-button3');
-
-    // Fetch and display friend info in the modal
-    db.collection('users').doc(friendUserId).get().then(doc => {
-        if (doc.exists) {
-            const friendData = doc.data();
-            document.getElementById('friendDisplayName').textContent = friendDisplayName;
-            document.getElementById('friendEmail').textContent = friendData.email;
-            document.getElementById('editFriendName').value = friendDisplayName;
-        } else {
-            console.error('No such user found!');
-        }
-    }).catch(error => {
-        console.error('Error fetching friend info:', error);
-    });
-
-    // Show the modal
-    modal.style.display = 'block';
-
-    // Close modal on click of the close button
-    closeButton.onclick = function () {
-        modal.style.display = 'none';
-    };
-
-    // Close modal when clicking outside of it
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
-}
-
-function attachViewFriendInfoFunction(button, friendUserId, friendDisplayName) {
-    const viewFriendInfoButton = initializeViewFriendInfoButton(friendUserId, friendDisplayName);
-    button.appendChild(viewFriendInfoButton);
-}
 
 // Function to load group chats
 function loadGroupChats() {
