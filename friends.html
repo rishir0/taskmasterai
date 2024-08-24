@@ -1499,7 +1499,62 @@ function loadOnlineFriends() {
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
+                                        
+                                        // Create the 'View Friend Info' button
+                                        const viewFriendInfoButton = document.createElement('button');
+                                        viewFriendInfoButton.innerHTML = `
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
+                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                    <defs>
+                                                        <style>
+                                                            .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
+                                                            .a{stroke-linejoin:round;}
+                                                            .b{stroke-linejoin:bevel;}
+                                                        </style>
+                                                    </defs>
+                                                    <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
+                                                    <circle class="b" cx="12" cy="5.98404" r="5"></circle>
+                                                    <circle class="a" cx="17" cy="18" r="5"></circle>
+                                                    <line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line>
+                                                    <line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line>
+                                                </g>
+                                            </svg>
+                                        `;
 
+                                        viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
+                                        viewFriendInfoButton.style.border = 'none';
+                                        viewFriendInfoButton.style.borderRadius = '50%';
+                                        viewFriendInfoButton.style.padding = '6px';
+                                        viewFriendInfoButton.style.cursor = 'pointer';
+                                        viewFriendInfoButton.style.display = 'flex';
+                                        viewFriendInfoButton.style.alignItems = 'center';
+                                        viewFriendInfoButton.style.justifyContent = 'center';
+
+                                        viewFriendInfoButton.addEventListener('mouseover', () => {
+                                            viewFriendInfoButton.style.backgroundColor = '#3b7bce';
+                                        });
+
+                                        viewFriendInfoButton.addEventListener('mouseout', () => {
+                                            viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
+                                        });
+
+                                        viewFriendInfoButton.onclick = () => {
+                                            const modal = document.getElementById('viewFriendModal');
+                                            modal.style.display = 'block';
+                                            document.getElementById('friendDisplayName').textContent = friendDisplayName;
+                                            document.getElementById('friendEmail').textContent = friendEmail;
+                                            document.getElementById('editFriendName').value = friendDisplayName;
+
+                                            document.getElementById('saveFriendName').onclick = () => {
+                                                const newFriendName = document.getElementById('editFriendName').value;
+                                                if (newFriendName !== friendDisplayName) {
+                                                    saveFriendDisplayName(friendEmail, newFriendName);
+                                                }
+                                                modal.style.display = 'none';
+                                            };
+                                        };
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
                                         listItem.appendChild(unfriendButton);
