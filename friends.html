@@ -885,51 +885,28 @@ body.night-mode {
     margin-bottom: 10px;
 }
 
-.view-friend-info-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--accent-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    padding: 0;
-    margin-left: 10px;
-}
-
-.view-friend-info-button svg {
-    width: 24px;
-    height: 24px;
-}
-
-.view-friend-info-button:hover {
-    background-color: #3b7bce; /* Change to hover color */
-}
-
-
 /* General Modal Styles */
 .modal3 {
     display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1000;
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Specific Modal Content Styles */
 .modal3 .modal-content3 {
-    background-color: #333;
-    margin: 15% auto;
+    background-color: #333; /* Set modal background to gray */
+    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
-    width: 80%;
-    border-radius: var(--border-radius);
-    position: relative;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: var(--border-radius); /* Use your existing border-radius variable */
+    position: relative; /* Position relative to align buttons */
+    color: var(--text-color); /* Use your existing text color */
 }
 
 /* Close Button */
@@ -939,41 +916,66 @@ body.night-mode {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: var(--accent-color); /* Use your existing accent color */
+    border-radius: 50%; /* Circular button */
 }
 
 .modal3 .close-button3:hover,
 .modal3 .close-button3:focus {
     color: white;
-    text-decoration: none;
+    background-color: #3b7bce; /* Change on hover to a different shade */
 }
 
-/* Modal Button */
+/* Modal Button Styles */
 .modal3 .modal-btn {
-    background-color: var(--accent-color);
+    background: var(--accent-color); /* Use your existing accent color */
     border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
     cursor: pointer;
+    padding: 10px 20px;
+    border-radius: var(--border-radius); /* Consistent border-radius */
+    color: var(--text-color); /* Use your existing text color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background-color 0.3s;
-    color: #fff;
 }
 
 .modal3 .modal-btn:hover {
-    background-color: #2980b9;
+    background-color: #3b7bce; /* Hover effect */
 }
 
-/* Input Field */
+/* Input Field Styles */
 .modal3 .edit-input {
     width: 100%;
     padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin: 10px 0;
     border-radius: var(--border-radius);
-    border: 1px solid #ccc;
-    background-color: #444;
-    color: #fff;
+    border: 1px solid var(--secondary-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
 }
 
+.modal3 .edit-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* SVG Icons for Modal Buttons */
+.modal3 .modal-content3 .close-button3 svg,
+.modal3 .modal-content3 .modal-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Ensure no interference with other modals */
+#viewFriendModal .modal-content3 {
+    /* Additional specific styles for this modal if needed */
+}
 
     </style>
 </head>
@@ -1191,14 +1193,10 @@ body.night-mode {
     </div>
 </div>
 
-<div class="friend-item">
-    <button class="view-friend-info-button"></button>
-</div>
-
-<!-- Modal for Viewing Friend Information -->
+<!-- Modal for Viewing Friend Info -->
 <div id="viewFriendModal" class="modal3">
-    <div class="modal-content">
-        <span class="close">
+    <div class="modal-content3">
+        <span class="close-button3">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -1216,12 +1214,14 @@ body.night-mode {
         </span>
         <h2>Friend Information</h2>
         <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
-        <p><strong>Email:</strong> <span id="user.email"></span></p>
+        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
         <label for="editFriendName">Edit Friend Name:</label>
-        <input type="text" id="editFriendName">
-        <button id="saveFriendName">Save</button>
+        <input type="text" id="editFriendName" class="edit-input">
+        <button id="saveFriendName" class="modal-btn">Save</button>
     </div>
 </div>
+
+
 
         
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1497,69 +1497,13 @@ function loadOnlineFriends() {
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
 
-                                        // Create the 'View Friend Info' button
-                                        const viewFriendInfoButton = document.createElement('button');
-                                        viewFriendInfoButton.innerHTML = `
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
-                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                                <g id="SVGRepo_iconCarrier">
-                                                    <defs>
-                                                        <style>
-                                                            .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
-                                                            .a{stroke-linejoin:round;}
-                                                            .b{stroke-linejoin:bevel;}
-                                                        </style>
-                                                    </defs>
-                                                    <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
-                                                    <circle class="b" cx="12" cy="5.98404" r="5"></circle>
-                                                    <circle class="a" cx="17" cy="18" r="5"></circle>
-                                                    <line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line>
-                                                    <line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line>
-                                                </g>
-                                            </svg>
-                                        `;
-
-                                        viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
-                                        viewFriendInfoButton.style.border = 'none';
-                                        viewFriendInfoButton.style.borderRadius = '50%';
-                                        viewFriendInfoButton.style.padding = '6px';
-                                        viewFriendInfoButton.style.cursor = 'pointer';
-                                        viewFriendInfoButton.style.display = 'flex';
-                                        viewFriendInfoButton.style.alignItems = 'center';
-                                        viewFriendInfoButton.style.justifyContent = 'center';
-
-                                        viewFriendInfoButton.addEventListener('mouseover', () => {
-                                            viewFriendInfoButton.style.backgroundColor = '#3b7bce';
-                                        });
-
-                                        viewFriendInfoButton.addEventListener('mouseout', () => {
-                                            viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
-                                        });
-
-                                        viewFriendInfoButton.onclick = () => {
-                                            const modal = document.getElementById('viewFriendModal');
-                                            modal.style.display = 'block';
-                                            document.getElementById('friendDisplayName').textContent = friendDisplayName;
-                                            document.getElementById('friendEmail').textContent = friendEmail;
-                                            document.getElementById('editFriendName').value = friendDisplayName;
-
-                                            document.getElementById('saveFriendName').onclick = () => {
-                                                const newFriendName = document.getElementById('editFriendName').value;
-                                                if (newFriendName !== friendDisplayName) {
-                                                    saveFriendDisplayName(friendEmail, newFriendName);
-                                                }
-                                                modal.style.display = 'none';
-                                            };
-                                        };
-
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
-                                        listItem.appendChild(viewFriendInfoButton);
                                         listItem.appendChild(unfriendButton);
+
                                         onlineFriendsList.appendChild(listItem);
                                     }
                                 }
@@ -1625,100 +1569,6 @@ function createUnfriendButton(friendEmail) {
 
     return button;
 }
-
-function initializeViewFriendInfoButton(userId, friendDisplayName) {
-    const modal = document.getElementById('viewFriendModal');
-    const closeButton = document.querySelector('.close-button3');
-    const saveButton = document.getElementById('saveFriendName');
-
-    // Function to fetch user email from the users collection
-    function fetchUserEmail(userId) {
-        return firebase.firestore().collection('users').doc(userId).get()
-            .then(doc => {
-                if (doc.exists) {
-                    return doc.data().email; // Assuming email is a field in the user document
-                } else {
-                    console.error('No such user!');
-                    return '';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user email:', error);
-                return '';
-            });
-    }
-
-    // Open the modal and display the friend's information
-    async function openModal() {
-        modal.style.display = 'block';
-        document.getElementById('friendDisplayName').textContent = friendDisplayName;
-
-        const friendEmail = await fetchUserEmail(userId);
-        document.getElementById('friendEmail').textContent = friendEmail;
-        document.getElementById('editFriendName').value = friendDisplayName;
-    }
-
-    // Close the modal
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    // Save the new friend display name
-    function saveFriendName() {
-        const newFriendName = document.getElementById('editFriendName').value;
-        if (newFriendName !== friendDisplayName) {
-            saveFriendDisplayName(userId, newFriendName);
-            friendDisplayName = newFriendName; // Update local variable
-        }
-        closeModal();
-    }
-
-    // Add event listeners
-    closeButton.onclick = closeModal;
-    saveButton.onclick = saveFriendName;
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    };
-
-    return openModal;
-}
-
-// Usage in your existing code
-// Assuming you have a way to get the friend's userId and displayName
-
-function attachViewFriendInfoFunction(button, userId, friendDisplayName) {
-    const openModal = initializeViewFriendInfoButton(userId, friendDisplayName);
-    button.onclick = openModal;
-}
-
-
-
-// Function to save the edited friendDisplayName for the current user
-function saveFriendDisplayName(friendEmail, newFriendName) {
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser) {
-        const currentUserEmail = currentUser.email;
-        db.collection('users').where('email', '==', currentUserEmail).get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0];
-                    userDoc.ref.update({
-                        [`friendDisplayNames.${friendEmail}`]: newFriendName
-                    }).then(() => {
-                        console.log('Friend display name updated successfully.');
-                    });
-                }
-            });
-    }
-}
-
-// Close the modal
-document.querySelector('.close-button3').onclick = function() {
-    document.getElementById('viewFriendModal').style.display = 'none';
-};
-
 
 
 
@@ -2026,6 +1876,96 @@ function sendGroupMessage(groupId) {
     }).catch((error) => {
         console.error("Error fetching group data:", error);
     });
+}
+
+function initializeViewFriendInfoButton(friendUserId, friendDisplayName) {
+    // Create and style the button
+    const viewFriendInfoButton = document.createElement('button');
+    viewFriendInfoButton.innerHTML = `
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <defs>
+                    <style>
+                        .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
+                        .a{stroke-linejoin:round;}
+                        .b{stroke-linejoin:bevel;}
+                    </style>
+                </defs>
+                <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
+                <circle class="b" cx="12" cy="5.98404" r="5"></circle>
+                <circle class="a" cx="17" cy="18" r="5"></circle>
+                <circle class="a" cx="17" cy="18" r="0.20745"></circle>
+                <circle class="a" cx="14.35106" cy="18" r="0.20745"></circle>
+                <circle class="a" cx="19.47832" cy="18" r="0.20745"></circle>
+            </g>
+        </svg>
+    `;
+
+    // Apply circular style and hover effect
+    viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
+    viewFriendInfoButton.style.border = 'none';
+    viewFriendInfoButton.style.borderRadius = '50%';
+    viewFriendInfoButton.style.padding = '6px';
+    viewFriendInfoButton.style.cursor = 'pointer';
+    viewFriendInfoButton.style.display = 'flex';
+    viewFriendInfoButton.style.alignItems = 'center';
+    viewFriendInfoButton.style.justifyContent = 'center';
+
+    viewFriendInfoButton.addEventListener('mouseover', () => {
+        viewFriendInfoButton.style.backgroundColor = '#3b7bce';
+    });
+
+    viewFriendInfoButton.addEventListener('mouseout', () => {
+        viewFriendInfoButton.style.backgroundColor = 'var(--accent-color)';
+    });
+
+    // Open the modal and populate it with friend's data
+    viewFriendInfoButton.onclick = () => {
+        openViewFriendModal(friendUserId, friendDisplayName);
+    };
+
+    return viewFriendInfoButton;
+}
+
+function openViewFriendModal(friendUserId, friendDisplayName) {
+    const modal = document.getElementById('viewFriendModal');
+    const closeButton = document.querySelector('.close-button3');
+
+    // Fetch and display friend info in the modal
+    db.collection('users').doc(friendUserId).get().then(doc => {
+        if (doc.exists) {
+            const friendData = doc.data();
+            document.getElementById('friendDisplayName').textContent = friendDisplayName;
+            document.getElementById('friendEmail').textContent = friendData.email;
+            document.getElementById('editFriendName').value = friendDisplayName;
+        } else {
+            console.error('No such user found!');
+        }
+    }).catch(error => {
+        console.error('Error fetching friend info:', error);
+    });
+
+    // Show the modal
+    modal.style.display = 'block';
+
+    // Close modal on click of the close button
+    closeButton.onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    // Close modal when clicking outside of it
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+}
+
+function attachViewFriendInfoFunction(button, friendUserId, friendDisplayName) {
+    const viewFriendInfoButton = initializeViewFriendInfoButton(friendUserId, friendDisplayName);
+    button.appendChild(viewFriendInfoButton);
 }
 
 // Function to load group chats
