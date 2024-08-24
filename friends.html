@@ -909,41 +909,61 @@ body.night-mode {
 }
 
 
+/* Modal styles */
 .modal3 {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content3 {
-    background-color: var(--card-bg);
-    margin: 15% auto;
+    background-color: var(--glass-bg);
     padding: 20px;
-    border: 1px solid var(--secondary-color);
     border-radius: var(--border-radius);
-    width: 80%;
-    max-width: 400px;
-    color: var(--text-color);
+    width: 300px;
+    max-width: 90%;
 }
 
 .close-button3 {
-    color: var(--text-color);
     float: right;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 24px;
     cursor: pointer;
+    color: var(--accent-color);
 }
 
-.close-button3:hover {
-    color: #3b7bce;
+.input-style {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--primary-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
+.save-button {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    padding: 10px 15px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.save-button:hover {
+    background-color: var(--primary-color);
+}
 
     </style>
 </head>
@@ -1173,10 +1193,11 @@ body.night-mode {
         <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
         <p><strong>Email:</strong> <span id="friendEmail"></span></p>
         <label for="editFriendName">Edit Friend Name:</label>
-        <input type="text" id="editFriendName">
-        <button id="saveFriendName">Save</button>
+        <input type="text" id="editFriendName" class="input-style">
+        <button id="saveFriendName" class="save-button">Save</button>
     </div>
 </div>
+
 
 
 
@@ -1605,9 +1626,15 @@ function createViewFriendInfoButton(friendEmail, friendDisplayName) {
         // Save the new friend display name
         document.getElementById('saveFriendName').onclick = () => {
             const newFriendName = document.getElementById('editFriendName').value;
-            if (newFriendName !== friendDisplayName) {
+            if (newFriendName !== friendDisplayName && newFriendName.trim() !== "") {
                 // Logic to save the new friendDisplayName for the current user only
-                saveFriendDisplayName(friendEmail, newFriendName);
+                saveFriendDisplayName(friendEmail, newFriendName)
+                    .then(() => {
+                        document.getElementById('friendDisplayName').textContent = newFriendName;
+                    })
+                    .catch((error) => {
+                        console.error("Error saving new friend name: ", error);
+                    });
             }
             modal.style.display = 'none';
         };
@@ -1615,6 +1642,7 @@ function createViewFriendInfoButton(friendEmail, friendDisplayName) {
 
     return button;
 }
+
 
 // Function to save the edited friendDisplayName for the current user
 function saveFriendDisplayName(friendEmail, newFriendName) {
