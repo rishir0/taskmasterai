@@ -912,28 +912,28 @@ body.night-mode {
 /* General Modal Styles */
 .modal3 {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Specific Modal Content Styles */
-.modal3 .modal-content {
-    background-color: #333; /* Set modal background to gray */
-    margin: 15% auto; /* 15% from the top and centered */
+.modal3 .modal-content3 {
+    background-color: #333;
+    margin: 15% auto;
     padding: 20px;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 80%;
     border-radius: var(--border-radius);
-    position: relative; /* Position relative to align buttons */
+    position: relative;
 }
 
 /* Close Button */
-.modal3 .close {
+.modal3 .close-button3 {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -941,42 +941,39 @@ body.night-mode {
     cursor: pointer;
 }
 
-.modal3 .close:hover,
-.modal3 .close:focus {
+.modal3 .close-button3:hover,
+.modal3 .close-button3:focus {
     color: white;
     text-decoration: none;
 }
 
-/* Input and Button Styling */
-.modal3 #editFriendName {
-    width: calc(100% - 20px);
+/* Modal Button */
+.modal3 .modal-btn {
+    background-color: var(--accent-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff;
+}
+
+.modal3 .modal-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Input Field */
+.modal3 .edit-input {
+    width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin-top: 10px;
+    margin-bottom: 20px;
     border-radius: var(--border-radius);
     border: 1px solid #ccc;
     background-color: #444;
     color: #fff;
 }
 
-.modal3 #saveFriendName {
-    background-color: var(--accent-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    color: #fff;
-    transition: background-color 0.3s;
-}
-
-.modal3 #saveFriendName:hover {
-    background-color: #2980b9;
-}
-
-/* Ensure SVG icons are appropriately sized */
-.modal3 .close svg {
-    width: 24px;
-    height: 24px;
-}
 
     </style>
 </head>
@@ -1629,42 +1626,73 @@ function createUnfriendButton(friendEmail) {
     return button;
 }
 
-function createViewFriendInfoButton(friendEmail, friendDisplayName) {
-    const button = document.createElement('button');
-    button.classList.add('view-friend-info-button');
+function initializeViewFriendInfoButton(userId, friendDisplayName) {
+    const modal = document.getElementById('viewFriendModal');
+    const closeButton = document.querySelector('.close-button3');
+    const saveButton = document.getElementById('saveFriendName');
 
-    // Add SVG directly into the button
-    button.innerHTML = `
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>
-    `;
+    // Function to fetch user email from the users collection
+    function fetchUserEmail(userId) {
+        return firebase.firestore().collection('users').doc(userId).get()
+            .then(doc => {
+                if (doc.exists) {
+                    return doc.data().email; // Assuming email is a field in the user document
+                } else {
+                    console.error('No such user!');
+                    return '';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user email:', error);
+                return '';
+            });
+    }
 
-    button.onclick = () => {
-        // Open the modal and display the friend's information
-        const modal = document.getElementById('viewFriendModal');
+    // Open the modal and display the friend's information
+    async function openModal() {
         modal.style.display = 'block';
         document.getElementById('friendDisplayName').textContent = friendDisplayName;
+
+        const friendEmail = await fetchUserEmail(userId);
         document.getElementById('friendEmail').textContent = friendEmail;
         document.getElementById('editFriendName').value = friendDisplayName;
+    }
 
-        // Save the new friend display name
-        document.getElementById('saveFriendName').onclick = () => {
-            const newFriendName = document.getElementById('editFriendName').value;
-            if (newFriendName !== friendDisplayName && newFriendName.trim() !== "") {
-                // Logic to save the new friendDisplayName for the current user only
-                saveFriendDisplayName(friendEmail, newFriendName)
-                    .then(() => {
-                        document.getElementById('friendDisplayName').textContent = newFriendName;
-                    })
-                    .catch((error) => {
-                        console.error("Error saving new friend name: ", error);
-                    });
-            }
-            modal.style.display = 'none';
-        };
+    // Close the modal
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // Save the new friend display name
+    function saveFriendName() {
+        const newFriendName = document.getElementById('editFriendName').value;
+        if (newFriendName !== friendDisplayName) {
+            saveFriendDisplayName(userId, newFriendName);
+            friendDisplayName = newFriendName; // Update local variable
+        }
+        closeModal();
+    }
+
+    // Add event listeners
+    closeButton.onclick = closeModal;
+    saveButton.onclick = saveFriendName;
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
     };
 
-    return button;
+    return openModal;
 }
+
+// Usage in your existing code
+// Assuming you have a way to get the friend's userId and displayName
+
+function attachViewFriendInfoFunction(button, userId, friendDisplayName) {
+    const openModal = initializeViewFriendInfoButton(userId, friendDisplayName);
+    button.onclick = openModal;
+}
+
 
 
 // Function to save the edited friendDisplayName for the current user
