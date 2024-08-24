@@ -886,22 +886,28 @@ body.night-mode {
 }
 
 .view-friend-info-button {
-    background-color: var(--accent-color);
-    border: none;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 40px;
     height: 40px;
-    transition: background-color 0.3s;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.view-friend-info-button svg {
+    width: 24px;
+    height: 24px;
 }
 
 .view-friend-info-button:hover {
-    background-color: #3b7bce;
+    background-color: #3b7bce; /* Change to hover color */
 }
+
 
 .modal3 {
     display: none; /* Hidden by default */
@@ -1449,6 +1455,12 @@ function loadOnlineFriends() {
 
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
+
+                                        // Create and append View Friend Info button
+                                        const viewFriendInfoButton = document.createElement('button');
+                                        viewFriendInfoButton.classList.add('view-friend-info-button');
+                                        viewFriendInfoButton.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>`;
+                                        viewFriendInfoButton.onclick = () => openViewFriendInfoModal(friendEmail, friendDisplayName);
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
