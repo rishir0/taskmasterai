@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1114,35 +1115,6 @@ body.night-mode {
     </div>
 </div>
 
-<!-- Modal for Viewing Friend Information -->
-<div id="viewFriendModal" class="modal3">
-    <div class="modal-content">
-        <span class="close">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                    <g id="Edit / Close_Circle">
-                        <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
-                            stroke="#ffffff"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                        </path>
-                    </g>
-                </g>
-            </svg>
-        </span>
-        <h2>Friend Information</h2>
-        <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
-        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
-        <label for="editFriendName">Edit Friend Name:</label>
-        <input type="text" id="editFriendName">
-        <button id="saveFriendName">Save</button>
-    </div>
-</div>
-
-
 <!-- Modal for Viewing Group Members -->
 <div id="viewMembersModal" class="modal2">
     <div class="modal-content">
@@ -1200,6 +1172,34 @@ body.night-mode {
             <li>Chat Switching Bug: When switching between individual chats, messages may be sent to the previous chat instead of the current one.</li>
             <li>Fix: Refresh the page before switching chats, then select the desired contact.</li>
         </ul>
+    </div>
+</div>
+
+<!-- Modal for Viewing Friend Information -->
+<div id="viewFriendModal" class="modal3">
+    <div class="modal-content">
+        <span class="close">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <g id="Edit / Close_Circle">
+                        <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
+                            stroke="#ffffff"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                        </path>
+                    </g>
+                </g>
+            </svg>
+        </span>
+        <h2>Friend Information</h2>
+        <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
+        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
+        <label for="editFriendName">Edit Friend Name:</label>
+        <input type="text" id="editFriendName">
+        <button id="saveFriendName">Save</button>
     </div>
 </div>
 
@@ -1611,6 +1611,41 @@ function createUnfriendButton(friendEmail) {
     return button;
 }
 
+function createViewFriendInfoButton(friendEmail, friendDisplayName) {
+    const button = document.createElement('button');
+    button.classList.add('view-friend-info-button');
+
+    // Add SVG directly into the button
+    button.innerHTML = `
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>
+    `;
+
+    button.onclick = () => {
+        // Open the modal and display the friend's information
+        const modal = document.getElementById('viewFriendModal');
+        modal.style.display = 'block';
+        document.getElementById('friendDisplayName').textContent = friendDisplayName;
+        document.getElementById('friendEmail').textContent = friendEmail;
+        document.getElementById('editFriendName').value = friendDisplayName;
+
+        // Save the new friend display name
+        document.getElementById('saveFriendName').onclick = () => {
+            const newFriendName = document.getElementById('editFriendName').value;
+            if (newFriendName !== friendDisplayName) {
+                // Logic to save the new friendDisplayName for the current user only
+                saveFriendDisplayName(friendEmail, newFriendName);
+            }
+            modal.style.display = 'none';
+        };
+    };
+
+    return button;
+}
+
+// Close modal when clicking the close button
+document.querySelector('.modal3 .close').onclick = function() {
+    document.getElementById('viewFriendModal').style.display = 'none';
+};
 
 
 
@@ -2056,43 +2091,6 @@ buttonContainer.appendChild(viewMembersButton);
         });
 }
 
-
-function createViewFriendInfoButton(friendEmail, friendDisplayName) {
-    const button = document.createElement('button');
-    button.classList.add('view-friend-info-button');
-
-    // Add SVG directly into the button
-    button.innerHTML = `
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>
-    `;
-
-    button.onclick = () => {
-        // Open the modal and display the friend's information
-        const modal = document.getElementById('viewFriendModal');
-        modal.style.display = 'block';
-        document.getElementById('friendDisplayName').textContent = friendDisplayName;
-        document.getElementById('friendEmail').textContent = friendEmail;
-        document.getElementById('editFriendName').value = friendDisplayName;
-
-        // Save the new friend display name
-        document.getElementById('saveFriendName').onclick = () => {
-            const newFriendName = document.getElementById('editFriendName').value;
-            if (newFriendName !== friendDisplayName) {
-                // Logic to save the new friendDisplayName for the current user only
-                saveFriendDisplayName(friendEmail, newFriendName);
-            }
-            modal.style.display = 'none';
-        };
-    };
-
-    return button;
-}
-
-    const closeBtn = document.querySelector('.modal3 .close');
-    closeBtn.onclick = function () {
-        modal.style.display = 'none';
-    };
-}
 
 function openViewMembersModal(groupId) {
     const modal = document.getElementById('viewMembersModal');
