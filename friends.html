@@ -885,6 +885,60 @@ body.night-mode {
     margin-bottom: 10px;
 }
 
+.view-friend-info-button {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    transition: background-color 0.3s;
+}
+
+.view-friend-info-button:hover {
+    background-color: #3b7bce;
+}
+
+.modal3 {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+}
+
+.modal-content3 {
+    background-color: var(--card-bg);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+    width: 80%;
+    max-width: 400px;
+    color: var(--text-color);
+}
+
+.close-button3 {
+    color: var(--text-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button3:hover {
+    color: #3b7bce;
+}
+
+
     </style>
 </head>
 <body>
@@ -1100,6 +1154,25 @@ body.night-mode {
         </ul>
     </div>
 </div>
+
+<div class="friend-item">
+    <button class="view-friend-info-button"></button>
+</div>
+
+<!-- Modal structure -->
+<div id="viewFriendModal" class="modal3">
+    <div class="modal-content3">
+        <span class="close-button3">&times;</span>
+        <h3>Friend Information</h3>
+        <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
+        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
+        <label for="editFriendName">Edit Friend Name:</label>
+        <input type="text" id="editFriendName">
+        <button id="saveFriendName">Save</button>
+    </div>
+</div>
+
+
 
 
 
@@ -1449,6 +1522,62 @@ function createUnfriendButton(friendEmail) {
 
     return button;
 }
+
+function createViewFriendInfoButton(friendEmail, friendDisplayName) {
+    const button = document.createElement('button');
+    button.classList.add('view-friend-info-button');
+
+    // Add SVG directly into the button
+    button.innerHTML = `
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>
+    `;
+
+    button.onclick = () => {
+        // Open the modal and display the friend's information
+        const modal = document.getElementById('viewFriendModal');
+        modal.style.display = 'block';
+        document.getElementById('friendDisplayName').textContent = friendDisplayName;
+        document.getElementById('friendEmail').textContent = friendEmail;
+        document.getElementById('editFriendName').value = friendDisplayName;
+
+        // Save the new friend display name
+        document.getElementById('saveFriendName').onclick = () => {
+            const newFriendName = document.getElementById('editFriendName').value;
+            if (newFriendName !== friendDisplayName) {
+                // Logic to save the new friendDisplayName for the current user only
+                saveFriendDisplayName(friendEmail, newFriendName);
+            }
+            modal.style.display = 'none';
+        };
+    };
+
+    return button;
+}
+
+// Function to save the edited friendDisplayName for the current user
+function saveFriendDisplayName(friendEmail, newFriendName) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserEmail = currentUser.email;
+        db.collection('users').where('email', '==', currentUserEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    userDoc.ref.update({
+                        [`friendDisplayNames.${friendEmail}`]: newFriendName
+                    }).then(() => {
+                        console.log('Friend display name updated successfully.');
+                    });
+                }
+            });
+    }
+}
+
+// Close the modal
+document.querySelector('.close-button3').onclick = function() {
+    document.getElementById('viewFriendModal').style.display = 'none';
+};
+
 
 
 
