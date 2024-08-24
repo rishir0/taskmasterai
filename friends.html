@@ -2088,11 +2088,11 @@ function createViewFriendInfoButton(friendEmail, friendDisplayName) {
     return button;
 }
 
-// Close modal when clicking the close button
-document.querySelector('.modal3 .close').onclick = function() {
-    document.getElementById('viewFriendModal').style.display = 'none';
-};
-
+    const closeBtn = document.querySelector('.modal3 .close');
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
+}
 
 function openViewMembersModal(groupId) {
     const modal = document.getElementById('viewMembersModal');
