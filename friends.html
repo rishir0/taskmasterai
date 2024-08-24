@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -910,60 +909,73 @@ body.night-mode {
 }
 
 
-/* Modal styles */
+/* General Modal Styles */
 .modal3 {
-    display: none;
-    position: fixed;
-    z-index: 1000;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
-.modal-content3 {
-    background-color: var(--glass-bg);
+/* Specific Modal Content Styles */
+.modal3 .modal-content {
+    background-color: #333; /* Set modal background to gray */
+    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
+    width: 80%; /* Could be more or less, depending on screen size */
     border-radius: var(--border-radius);
-    width: 300px;
-    max-width: 90%;
+    position: relative; /* Position relative to align buttons */
 }
 
-.close-button3 {
+/* Close Button */
+.modal3 .close {
+    color: #aaa;
     float: right;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    color: var(--accent-color);
 }
 
-.input-style {
-    width: 100%;
+.modal3 .close:hover,
+.modal3 .close:focus {
+    color: white;
+    text-decoration: none;
+}
+
+/* Input and Button Styling */
+.modal3 #editFriendName {
+    width: calc(100% - 20px);
     padding: 10px;
     margin: 10px 0;
     border-radius: var(--border-radius);
-    border: 1px solid var(--primary-color);
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    border: 1px solid #ccc;
+    background-color: #444;
+    color: #fff;
 }
 
-.save-button {
+.modal3 #saveFriendName {
     background-color: var(--accent-color);
-    color: var(--text-color);
-    padding: 10px 15px;
     border: none;
+    padding: 10px 20px;
     border-radius: var(--border-radius);
     cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
+    color: #fff;
+    transition: background-color 0.3s;
 }
 
-.save-button:hover {
-    background-color: var(--primary-color);
+.modal3 #saveFriendName:hover {
+    background-color: #2980b9;
+}
+
+/* Ensure SVG icons are appropriately sized */
+.modal3 .close svg {
+    width: 24px;
+    height: 24px;
 }
 
     </style>
@@ -1186,23 +1198,33 @@ body.night-mode {
     <button class="view-friend-info-button"></button>
 </div>
 
-<!-- Modal structure -->
+<!-- Modal for Viewing Friend Information -->
 <div id="viewFriendModal" class="modal3">
-    <div class="modal-content3">
-        <span class="close-button3">&times;</span>
-        <h3>Friend Information</h3>
+    <div class="modal-content">
+        <span class="close">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <g id="Edit / Close_Circle">
+                        <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
+                            stroke="#ffffff"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round">
+                        </path>
+                    </g>
+                </g>
+            </svg>
+        </span>
+        <h2>Friend Information</h2>
         <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
-        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
+        <p><strong>Email:</strong> <span id="user.email"></span></p>
         <label for="editFriendName">Edit Friend Name:</label>
-        <input type="text" id="editFriendName" class="input-style">
-        <button id="saveFriendName" class="save-button">Save</button>
+        <input type="text" id="editFriendName">
+        <button id="saveFriendName">Save</button>
     </div>
 </div>
-
-
-
-
-
 
         
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
