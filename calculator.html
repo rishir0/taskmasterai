@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific & Graphing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .calculator {
+            width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-screen {
+            width: 100%;
+            height: 50px;
+            background-color: #e0e0e0;
+            border: none;
+            padding: 10px;
+            text-align: right;
+            font-size: 24px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .calculator-keys {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 10px;
+        }
+
+        .calculator-keys button {
+            height: 50px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .calculator-keys button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #graph-container {
+            margin-top: 20px;
+        }
+
+        #graph {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="calculator-screen" id="calculatorScreen" readonly />
+
+        <div class="calculator-keys">
+            <button onclick="appendCharacter('7')">7</button>
+            <button onclick="appendCharacter('8')">8</button>
+            <button onclick="appendCharacter('9')">9</button>
+            <button onclick="appendCharacter('/')">/</button>
+            <button onclick="clearScreen()">C</button>
+
+            <button onclick="appendCharacter('4')">4</button>
+            <button onclick="appendCharacter('5')">5</button>
+            <button onclick="appendCharacter('6')">6</button>
+            <button onclick="appendCharacter('*')">*</button>
+            <button onclick="appendCharacter('(')">(</button>
+
+            <button onclick="appendCharacter('1')">1</button>
+            <button onclick="appendCharacter('2')">2</button>
+            <button onclick="appendCharacter('3')">3</button>
+            <button onclick="appendCharacter('-')">-</button>
+            <button onclick="appendCharacter(')')">)</button>
+
+            <button onclick="appendCharacter('0')">0</button>
+            <button onclick="appendCharacter('.')">.</button>
+            <button onclick="calculateResult()">=</button>
+            <button onclick="appendCharacter('+')">+</button>
+            <button onclick="appendCharacter('^')">^</button>
+
+            <button onclick="appendCharacter('sin(')">sin</button>
+            <button onclick="appendCharacter('cos(')">cos</button>
+            <button onclick="appendCharacter('tan(')">tan</button>
+            <button onclick="appendCharacter('log(')">log</button>
+            <button onclick="appendCharacter('sqrt(')">√</button>
+        </div>
+
+        <div id="graph-container">
+            <canvas id="graph"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function appendCharacter(character) {
+            const screen = document.getElementById('calculatorScreen');
+            screen.value += character;
+        }
+
+        function clearScreen() {
+            document.getElementById('calculatorScreen').value = '';
+        }
+
+        function calculateResult() {
+            const screen = document.getElementById('calculatorScreen');
+            try {
+                screen.value = eval(screen.value.replace('^', '**').replace('√', 'Math.sqrt'));
+            } catch (error) {
+                screen.value = 'Error';
+            }
+        }
+
+        // Simple graphing capability
+        function plotGraph(expression) {
+            const ctx = document.getElementById('graph').getContext('2d');
+            const xValues = [];
+            const yValues = [];
+
+            for (let x = -10; x <= 10; x += 0.1) {
+                xValues.push(x);
+                try {
+                    yValues.push(eval(expression.replace(/x/g, x)));
+                } catch (error) {
+                    yValues.push(null);
+                }
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'y = ' + expression,
+                        data: yValues,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Example to plot a graph on load (e.g., y = x^2)
+        document.addEventListener('DOMContentLoaded', function () {
+            plotGraph('x**2');
+        });
+    </script>
+</body>
+</html>
