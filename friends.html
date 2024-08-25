@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
     <script src="theme.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/emoji-button.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/index.min.js"></script>
     <style>
      :root {
         --primary-color: #6C63FF;
@@ -998,9 +998,19 @@ body.night-mode {
 .emoji-picker span:hover {
     transform: scale(1.2); /* Enlarge emoji slightly on hover */
 }
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    position: relative; /* Ensures the picker is positioned correctly */
+}
 
-
-
+#emojiPickerButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* Adjust size as needed */
+    margin-right: 10px; /* Space between the emoji button and send button */
+}
     </style>
 </head>
 <body>
@@ -1153,19 +1163,11 @@ body.night-mode {
     </div>
     <div class="chat-input-container">
         <input type="text" id="chatInput" placeholder="Type a message">
+        <button id="emojiPickerButton">😀</button> <!-- Emoji picker button -->
         <button onclick="sendMessage(currentGroupId)">Send</button>
     </div>
-    <!-- Emoji Picker -->
-    <div id="emojiPicker" class="emoji-picker">
-        <!-- List of emojis -->
-        <span onclick="addEmoji('😀')">😀</span>
-        <span onclick="addEmoji('😁')">😁</span>
-        <span onclick="addEmoji('😂')">😂</span>
-        <span onclick="addEmoji('😅')">😅</span>
-        <span onclick="addEmoji('😊')">😊</span>
-        <!-- Add more emojis as needed -->
-    </div>
 </div>
+
 
 
 
@@ -1362,6 +1364,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById('emojiPickerButton');
+    const chatInput = document.getElementById('chatInput');
+
+    // Initialize the Emoji Button picker
+    const picker = new EmojiButton({
+        position: 'top-end', // Position the picker above the button
+        theme: 'dark' // Matches your theme; options are 'dark' or 'light'
+    });
+
+    // Toggle the emoji picker when the button is clicked
+    button.addEventListener('click', () => {
+        picker.togglePicker(button);
+    });
+
+    // Insert the selected emoji into the chat input field
+    picker.on('emoji', emoji => {
+        chatInput.value += emoji;
+    });
+});
 
 
 function addFriend() {
