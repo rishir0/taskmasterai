@@ -990,11 +990,10 @@ body.night-mode {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.emoji-list span:hover, .emoji-picker span:hover {
-    transform: scale(1.4); /* Larger scale for a more pronounced pop */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
-}
 
+.emoji-picker span:hover {
+    transform: scale(1.2); /* Enlarge emoji slightly on hover */
+} 
 .emoji-dropdown {
     background-color: transparent;
     border: none;
@@ -1402,21 +1401,21 @@ body.night-mode {
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
-        var firebaseConfig = {
-            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-            authDomain: "deepworkai-c3419.firebaseapp.com",
-            projectId: "deepworkai-c3419",
-            storageBucket: "deepworkai-c3419.appspot.com",
-            messagingSenderId: "367439182644",
-            appId: "1:367439182644:web:304216430df97eff68c361"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
-        var auth = firebase.auth();
-        var emojiPicker = document.getElementById("emojiPicker");
-        var recentEmojisContainer = document.getElementById("recentEmojis");
+// Initialize Firebase
+var firebaseConfig = {
+    apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+    authDomain: "deepworkai-c3419.firebaseapp.com",
+    projectId: "deepworkai-c3419",
+    storageBucket: "deepworkai-c3419.appspot.com",
+    messagingSenderId: "367439182644",
+    appId: "1:367439182644:web:304216430df97eff68c361"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var auth = firebase.auth();
+
+var emojiPicker = document.getElementById("emojiPicker");
+var recentEmojisContainer = document.getElementById("recentEmojis");
 
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
@@ -1426,20 +1425,19 @@ function toggleEmojiPicker() {
 // Function to add emoji to input and save it as recent
 function addEmoji(emoji) {
     const chatInput = document.getElementById('chatInput');
-    chatInput.value += emoji;
-    
+    if (chatInput) {
+        chatInput.value += emoji;
+    }
+
     var user = auth.currentUser;
     if (user) {
         var userDocRef = db.collection("recentEmojis").doc(user.uid);
-
         userDocRef.get().then(function(doc) {
             if (doc.exists) {
-                // If the document exists, update it
                 userDocRef.update({
                     emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
                 });
             } else {
-                // If the document doesn't exist, create it with the initial emoji
                 userDocRef.set({
                     emojis: [emoji]
                 });
@@ -1475,6 +1473,8 @@ function loadRecentEmojis() {
                     recentEmojisContainer.appendChild(emojiSpan);
                 });
             }
+        }).catch(function(error) {
+            console.error("Error loading recent emojis: ", error);
         });
     }
 }
