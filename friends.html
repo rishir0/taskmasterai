@@ -1169,120 +1169,38 @@ body.night-mode {
         <button onclick="sendMessage(currentGroupId)">Send</button>
     </div>
     
-    <!-- Recently Used Emojis -->
-    <div id="recentEmojis" class="emoji-picker">
-        <!-- Recently used emojis will be loaded here dynamically -->
+<!-- Emoji Picker -->
+<div class="emoji-container">
+    <!-- Recent or Popular Emojis -->
+    <div id="recentEmojis">
+        <!-- Recent or Popular emojis will be dynamically added here -->
     </div>
-    
-<!-- Emoji Picker Dropdown -->
-<div class="dropdown">
-    <button onclick="toggleEmojiPicker()">Emoji Picker</button>
-    <div id="emojiPicker" class="emoji-picker hidden">
-        <!-- List of all emojis -->
-        <span onclick="addEmoji('😀')">😀</span>
-        <span onclick="addEmoji('😁')">😁</span>
-        <span onclick="addEmoji('😂')">😂</span>
-        <span onclick="addEmoji('🤣')">🤣</span>
-        <span onclick="addEmoji('😃')">😃</span>
-        <span onclick="addEmoji('😄')">😄</span>
-        <span onclick="addEmoji('😅')">😅</span>
-        <span onclick="addEmoji('😆')">😆</span>
-        <span onclick="addEmoji('😉')">😉</span>
-        <span onclick="addEmoji('😊')">😊</span>
-        <span onclick="addEmoji('😋')">😋</span>
-        <span onclick="addEmoji('😎')">😎</span>
-        <span onclick="addEmoji('😍')">😍</span>
-        <span onclick="addEmoji('😘')">😘</span>
-        <span onclick="addEmoji('😗')">😗</span>
-        <span onclick="addEmoji('😙')">😙</span>
-        <span onclick="addEmoji('😚')">😚</span>
-        <span onclick="addEmoji('🙂')">🙂</span>
-        <span onclick="addEmoji('🤗')">🤗</span>
-        <span onclick="addEmoji('🤩')">🤩</span>
-        <span onclick="addEmoji('🤔')">🤔</span>
-        <span onclick="addEmoji('🤨')">🤨</span>
-        <span onclick="addEmoji('😐')">😐</span>
-        <span onclick="addEmoji('😑')">😑</span>
-        <span onclick="addEmoji('😶')">😶</span>
-        <span onclick="addEmoji('🙄')">🙄</span>
-        <span onclick="addEmoji('😏')">😏</span>
-        <span onclick="addEmoji('😣')">😣</span>
-        <span onclick="addEmoji('😥')">😥</span>
-        <span onclick="addEmoji('😮')">😮</span>
-        <span onclick="addEmoji('🤐')">🤐</span>
-        <span onclick="addEmoji('😯')">😯</span>
-        <span onclick="addEmoji('😪')">😪</span>
-        <span onclick="addEmoji('😫')">😫</span>
-        <span onclick="addEmoji('😴')">😴</span>
-        <span onclick="addEmoji('😌')">😌</span>
-        <span onclick="addEmoji('😛')">😛</span>
-        <span onclick="addEmoji('😜')">😜</span>
-        <span onclick="addEmoji('😝')">😝</span>
-        <span onclick="addEmoji('🤤')">🤤</span>
-        <span onclick="addEmoji('😒')">😒</span>
-        <span onclick="addEmoji('😓')">😓</span>
-        <span onclick="addEmoji('😔')">😔</span>
-        <span onclick="addEmoji('😕')">😕</span>
-        <span onclick="addEmoji('🙃')">🙃</span>
-        <span onclick="addEmoji('🤑')">🤑</span>
-        <span onclick="addEmoji('😲')">😲</span>
-        <span onclick="addEmoji('☹️')">☹️</span>
-        <span onclick="addEmoji('🙁')">🙁</span>
-        <span onclick="addEmoji('😖')">😖</span>
-        <span onclick="addEmoji('😞')">😞</span>
-        <span onclick="addEmoji('😟')">😟</span>
-        <span onclick="addEmoji('😤')">😤</span>
-        <span onclick="addEmoji('😢')">😢</span>
-        <span onclick="addEmoji('😭')">😭</span>
-        <span onclick="addEmoji('😦')">😦</span>
-        <span onclick="addEmoji('😧')">😧</span>
-        <span onclick="addEmoji('😨')">😨</span>
-        <span onclick="addEmoji('😩')">😩</span>
-        <span onclick="addEmoji('🤯')">🤯</span>
-        <span onclick="addEmoji('😬')">😬</span>
-        <span onclick="addEmoji('😰')">😰</span>
-        <span onclick="addEmoji('😱')">😱</span>
-        <span onclick="addEmoji('🥵')">🥵</span>
-        <span onclick="addEmoji('🥶')">🥶</span>
-        <span onclick="addEmoji('😳')">😳</span>
-        <span onclick="addEmoji('🤪')">🤪</span>
-        <span onclick="addEmoji('😵')">😵</span>
-        <span onclick="addEmoji('😡')">😡</span>
-        <span onclick="addEmoji('😠')">😠</span>
-        <span onclick="addEmoji('🤬')">🤬</span>
-        <span onclick="addEmoji('😷')">😷</span>
-        <span onclick="addEmoji('🤒')">🤒</span>
-        <span onclick="addEmoji('🤕')">🤕</span>
-        <span onclick="addEmoji('🤢')">🤢</span>
-        <span onclick="addEmoji('🤮')">🤮</span>
-        <span onclick="addEmoji('🤧')">🤧</span>
-        <span onclick="addEmoji('😇')">😇</span>
-        <span onclick="addEmoji('🥳')">🥳</span>
-        <span onclick="addEmoji('🥴')">🥴</span>
-        <span onclick="addEmoji('🥺')">🥺</span>
-        <span onclick="addEmoji('🤠')">🤠</span>
-        <span onclick="addEmoji('😈')">😈</span>
-        <span onclick="addEmoji('👿')">👿</span>
-        <span onclick="addEmoji('👹')">👹</span>
-        <span onclick="addEmoji('👺')">👺</span>
-        <span onclick="addEmoji('🤡')">🤡</span>
-        <span onclick="addEmoji('💩')">💩</span>
-        <span onclick="addEmoji('👻')">👻</span>
-        <span onclick="addEmoji('💀')">💀</span>
-        <span onclick="addEmoji('☠️')">☠️</span>
-        <span onclick="addEmoji('👽')">👽</span>
-        <span onclick="addEmoji('👾')">👾</span>
-        <span onclick="addEmoji('🤖')">🤖</span>
-        <span onclick="addEmoji('😺')">😺</span>
-        <span onclick="addEmoji('😸')">😸</span>
-        <span onclick="addEmoji('😹')">😹</span>
-        <span onclick="addEmoji('😻')">😻</span>
-        <span onclick="addEmoji('😼')">😼</span>
-        <span onclick="addEmoji('😽')">😽</span>
-        <span onclick="addEmoji('🙀')">🙀</span>
-        <span onclick="addEmoji('😿')">😿</span>
-        <span onclick="addEmoji('😾')">😾</span>
-        <!-- Add more emojis here as needed -->
+
+    <!-- Emoji Picker Dropdown -->
+    <div class="dropdown">
+        <button onclick="toggleEmojiPicker()">
+            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path fill="#000000" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+                </g>
+            </svg>
+        </button>
+        <div id="emojiPicker" class="emoji-picker hidden">
+            <!-- List of all emojis -->
+            <!-- Example: -->
+            <span onclick="addEmoji('😀')">😀</span>
+            <span onclick="addEmoji('😁')">😁</span>
+            <span onclick="addEmoji('😂')">😂</span>
+            <span onclick="addEmoji('🤣')">🤣</span>
+            <span onclick="addEmoji('😃')">😃</span>
+            <span onclick="addEmoji('😄')">😄</span>
+            <span onclick="addEmoji('😅')">😅</span>
+            <span onclick="addEmoji('😆')">😆</span>
+            <span onclick="addEmoji('😉')">😉</span>
+            <!-- Add more emojis here -->
+        </div>
     </div>
 </div>
 
@@ -2646,58 +2564,73 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 
-// Function to add emoji to chat input and store it as recently used
-function addEmoji(emoji) {
-    const chatInput = document.getElementById('chatInput');
-    chatInput.value += emoji;
+    // Function to toggle emoji picker dropdown
+    function toggleEmojiPicker() {
+        var emojiPicker = document.getElementById("emojiPicker");
+        emojiPicker.classList.toggle("hidden");
+    }
 
-    // Update recently used emojis in Firestore
-    const userRef = db.collection('users').doc(userId);
+    // Function to add an emoji to the chat
+    function addEmoji(emoji) {
+        // Your code to add emoji to the chat input
+    }
 
-    userRef.get().then((doc) => {
-        let recentEmojis = doc.data().recentEmojis || [];
+    // Function to load recent emojis from Firestore
+    function loadRecentEmojis() {
+        var recentEmojisContainer = document.getElementById("recentEmojis");
 
-        // Remove the emoji if it's already in the list to avoid duplicates
-        recentEmojis = recentEmojis.filter(e => e !== emoji);
+        // Assume a limit for the number of emojis to show based on available space
+        var maxEmojis = 10; // Adjust based on your layout
 
-        // Add the emoji to the front of the array
-        recentEmojis.unshift(emoji);
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                var userId = user.uid;
+                db.collection("users").doc(userId).get().then(function(doc) {
+                    if (doc.exists) {
+                        var recentEmojis = doc.data().recentEmojis || [];
 
-        // Limit to the last 10 emojis
-        if (recentEmojis.length > 10) {
-            recentEmojis.pop();
-        }
-
-        // Update Firestore with the new array
-        userRef.update({ recentEmojis });
-    });
-}
-
-// Function to load recently used emojis
-function loadRecentEmojis() {
-    const userRef = db.collection('users').doc(userId);
-    userRef.get().then((doc) => {
-        const recentEmojis = doc.data().recentEmojis || [];
-        const emojiContainer = document.getElementById('recentEmojis');
-
-        // Clear current emojis
-        emojiContainer.innerHTML = '';
-
-        // Add each emoji to the container
-        recentEmojis.forEach(emoji => {
-            const emojiSpan = document.createElement('span');
-            emojiSpan.innerText = emoji;
-            emojiSpan.onclick = () => addEmoji(emoji);
-            emojiContainer.appendChild(emojiSpan);
+                        if (recentEmojis.length > 0) {
+                            displayEmojis(recentEmojis.slice(0, maxEmojis), recentEmojisContainer);
+                        } else {
+                            // Load popular emojis if no recent emojis are available
+                            displayPopularEmojis(recentEmojisContainer, maxEmojis);
+                        }
+                    } else {
+                        // Load popular emojis if no user data exists
+                        displayPopularEmojis(recentEmojisContainer, maxEmojis);
+                    }
+                }).catch(function(error) {
+                    console.error("Error getting document:", error);
+                    displayPopularEmojis(recentEmojisContainer, maxEmojis);
+                });
+            } else {
+                // User is not signed in, load popular emojis
+                displayPopularEmojis(recentEmojisContainer, maxEmojis);
+            }
         });
-    });
-}
+    }
 
-// Function to display all emojis (already in place)
-function toggleEmojiPicker() {
-    const emojiPicker = document.getElementById('emojiPicker');
-    emojiPicker.classList.toggle('hidden'); // Add or remove the 'hidden' class
-}
+    // Function to display emojis in the container
+    function displayEmojis(emojis, container) {
+        container.innerHTML = ""; // Clear current emojis
+        emojis.forEach(function(emoji) {
+            var emojiSpan = document.createElement("span");
+            emojiSpan.innerText = emoji;
+            emojiSpan.onclick = function() {
+                addEmoji(emoji);
+            };
+            container.appendChild(emojiSpan);
+        });
+    }
+
+    // Function to display popular emojis
+    function displayPopularEmojis(container, maxEmojis) {
+        var popularEmojis = ["😀", "😁", "😂", "🤣", "😃", "😄", "😅", "😆", "😉"]; // Example set of popular emojis
+        displayEmojis(popularEmojis.slice(0, maxEmojis), container);
+    }
+
+    // Load recent emojis on page load
+    document.addEventListener("DOMContentLoaded", loadRecentEmojis);
 
 
 </script>
