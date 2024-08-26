@@ -987,18 +987,17 @@ body.night-mode {
     font-size: 24px;
     padding: 5px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.3s ease;
 }
 
+.emoji-list span:hover, .emoji-picker span:hover {
+    transform: scale(1.2); /* Pop-up effect */
+}
 
-.emoji-picker span:hover {
-    transform: scale(1.2); /* Enlarge emoji slightly on hover */
-} 
 .emoji-dropdown {
     background-color: transparent;
     border: none;
     padding: 5px;
-    margin-left: 5px;
     cursor: pointer;
     border-radius: 50%;
     width: 40px;
@@ -1012,12 +1011,14 @@ body.night-mode {
     display: flex;
     flex-wrap: wrap;
     padding: 5px;
-    background-color: #fff;
+    background-color: #fff; /* Ensure this matches #chatInput background */
     border: 1px solid #ccc;
     border-radius: 10px;
     position: absolute;
     z-index: 100;
-    left: auto;
+    top: 100%; /* Position it below the button */
+    left: 0; /* Align with the button */
+    width: max-content; /* Adjust width based on content */
 }
 
 .emoji-picker.hidden {
@@ -1178,7 +1179,6 @@ body.night-mode {
     <div class="chat-input-container">
         <input type="text" id="chatInput" placeholder="Type a message">
         <button onclick="sendMessage(currentGroupId)">Send</button>
-    </div>
     
 <div class="emoji-container">
     <div id="recentEmojis" class="emoji-list"></div>
@@ -1292,6 +1292,8 @@ body.night-mode {
         <span onclick="addEmoji('😿')">😿</span>
         <span onclick="addEmoji('😾')">😾</span>
             <!-- Add more emojis here -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
