@@ -513,34 +513,34 @@ body.night-mode {
 
 .emoji-dropdown,
 .clear-emojis {
-    background-color: transparent;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 30px; /* Adjust size as needed */
-    height: 30px; /* Adjust size as needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: var(--primary-color); /* Matches the emoji dropdown */
+    border: none !important; /* Remove any border */
+    padding: 0 !important; /* No padding */
+    cursor: pointer !important; /* Pointer cursor */
+    border-radius: 50% !important; /* Round shape */
+    width: 40px !important; /* Fixed width */
+    height: 40px !important; /* Fixed height */
+    display: flex !important; /* Flexbox layout */
+    align-items: center !important; /* Center vertically */
+    justify-content: center !important; /* Center horizontally */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Optional shadow */
+    transition: background-color 0.3s, box-shadow 0.3s !important; /* Smooth transitions */
+}
+
+.clear-emojis:hover {
+    background-color: #3b7bce; /* Change color on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow on hover */
 }
 
 .clear-emojis svg {
-    width: 20px; /* Adjust size of the SVG */
-    height: 20px; /* Adjust size of the SVG */
+    width: 24px; /* Adjust SVG size to match the emoji dropdown */
+    height: 24px;
+    fill: #ffffff; /* White color for the SVG */
 }
-
 
 .clear-emojis {
     margin-left: 10px; /* Space between emoji dropdown and clear button */
 }
-
-.clear-emojis:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-
 
 #groupList {
     list-style: none;
@@ -1254,7 +1254,7 @@ body.night-mode {
     </svg>
 </button>
 <button class="clear-emojis" type="button" onclick="clearRecentEmojis()">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
         <g id="SVGRepo_iconCarrier">
@@ -1852,31 +1852,36 @@ auth.onAuthStateChanged(function(user) {
     }
 });
 
-// Function to clear recent emojis
 function clearRecentEmojis() {
-    // Get the current user
-    const user = auth.currentUser;
+    // Get current user
+    var user = auth.currentUser;
+    
     if (user) {
-        // Reference to the user's recent emojis in Firestore
-        const userEmojiRef = db.collection('users').doc(user.uid);
-
-        // Update Firestore to clear recent emojis
-        userEmojiRef.update({
-            recentEmojis: []  // Assuming 'recentEmojis' is the field where emojis are stored
-        }).then(() => {
-            console.log('Recent emojis cleared in Firestore');
-            
-            // Clear the recent emojis in the UI
+        var userId = user.uid;
+        
+        // Reference to the recentEmojis collection for the current user
+        var recentEmojisRef = db.collection('recentEmojis').doc(userId);
+        
+        // Clear the recent emojis for the current user
+        recentEmojisRef.update({
+            emojis: [] // Assuming 'emojis' is the field storing recent emojis
+        })
+        .then(() => {
+            console.log('Recent emojis cleared successfully.');
+            // Also clear the emojis from the UI
+            var recentEmojisContainer = document.getElementById('recentEmojis');
             if (recentEmojisContainer) {
                 recentEmojisContainer.innerHTML = ''; // Clears the recent emojis
             }
-        }).catch((error) => {
-            console.error('Error clearing recent emojis in Firestore: ', error);
+        })
+        .catch((error) => {
+            console.error('Error clearing recent emojis: ', error);
         });
     } else {
-        console.log('No user is signed in.');
+        console.error('No user is signed in.');
     }
 }
+
     
         function updateOnlineStatus(isOnline) {
             if (auth.currentUser) {
