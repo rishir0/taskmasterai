@@ -459,23 +459,29 @@ body.night-mode {
 }
 
 .emoji-dropdown {
-    background-color: transparent; /* Transparent background for the button */
-    border: none; /* No border around the button */
-    padding: 0; /* Remove padding to ensure proper circle shape */
-    cursor: pointer; /* Pointer cursor to indicate clickability */
-    border-radius: 50%; /* Ensures the button is a circle */
-    width: 40px; /* Set a fixed width */
-    height: 40px; /* Set a fixed height */
-    display: flex; /* Flexbox for alignment */
-    align-items: center; /* Center items vertically */
-    justify-content: center; /* Center items horizontally */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
-    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions for hover effects */
+    background-color: transparent !important; /* No background color */
+    border: none !important; /* Remove any border */
+    padding: 0 !important; /* No padding */
+    cursor: pointer !important; /* Pointer cursor */
+    border-radius: 50% !important; /* Round shape */
+    width: 40px !important; /* Fixed width */
+    height: 40px !important; /* Fixed height */
+    display: flex !important; /* Flexbox layout */
+    align-items: center !important; /* Center vertically */
+    justify-content: center !important; /* Center horizontally */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Optional shadow */
+    transition: background-color 0.3s, box-shadow 0.3s !important; /* Smooth transitions */
 }
 
 .emoji-dropdown:hover {
-    background-color: rgba(0, 0, 0, 0.1); /* Slight background color change on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    background-color: rgba(0, 0, 0, 0.1) !important; /* Light background on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow on hover */
+}
+
+.emoji-dropdown svg {
+    width: 24px; /* Adjust SVG size as needed */
+    height: 24px;
+    fill: currentColor; /* Use current text color */
 }
 
 
@@ -1198,9 +1204,15 @@ body.night-mode {
 <div class="emoji-container">
     <div id="recentEmojis" class="emoji-list"></div>
     <div class="dropdown">
-        <button class="emoji-dropdown" onclick="toggleEmojiPicker()">
-            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#000000" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path></g></svg>
-        </button>
+<button class="emoji-dropdown" type="button" onclick="toggleEmojiPicker()">
+    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path fill="#000000" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+        </g>
+    </svg>
+</button>
         <div id="emojiPicker" class="emoji-picker hidden">
             <!-- List of all emojis -->
         <span onclick="addEmoji('😀')">😀</span>
