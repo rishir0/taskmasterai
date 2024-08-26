@@ -978,46 +978,52 @@ body.night-mode {
     height: 24px;
 }
 
-    .emoji-container {
-        display: flex;
-        align-items: center;
-    }
+.emoji-container {
+    display: flex;
+    align-items: center;
+}
 
-    .emoji-list span, .emoji-picker span {
-        font-size: 24px;
-        padding: 5px;
-        cursor: pointer;
-    }
+.emoji-list span, .emoji-picker span {
+    font-size: 24px;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
 
-    .emoji-dropdown {
-        background-color: transparent;
-        border: none;
-        padding: 5px;
-        margin-left: 5px;
-        cursor: pointer;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.emoji-list span:hover, .emoji-picker span:hover {
+    transform: scale(1.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
 
-    .emoji-picker {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 5px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        position: absolute;
-        z-index: 100;
-        left: auto;
-    }
+.emoji-dropdown {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .emoji-picker.hidden {
-        display: none;
-    }
+.emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    position: absolute;
+    z-index: 100;
+    left: auto;
+}
+
+.emoji-picker.hidden {
+    display: none;
+}
         
     </style>
 </head>
@@ -1316,13 +1322,27 @@ function toggleEmojiPicker() {
 
 // Function to add emoji to input and save it as recent
 function addEmoji(emoji) {
-    // Here you'd add the emoji to your chat input (not implemented in this example)
+    const chatInput = document.getElementById('chatInput');
+    chatInput.value += emoji;
     
-    // Save the emoji to Firestore as a recent emoji
     var user = auth.currentUser;
     if (user) {
-        db.collection("recentEmojis").doc(user.uid).update({
-            emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
+        var userDocRef = db.collection("recentEmojis").doc(user.uid);
+
+        userDocRef.get().then(function(doc) {
+            if (doc.exists) {
+                // If the document exists, update it
+                userDocRef.update({
+                    emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
+                });
+            } else {
+                // If the document doesn't exist, create it with the initial emoji
+                userDocRef.set({
+                    emojis: [emoji]
+                });
+            }
+        }).catch(function(error) {
+            console.error("Error adding emoji: ", error);
         });
     }
 }
