@@ -441,21 +441,16 @@ body.night-mode {
 }
 
 /* Emoji picker and dropdown styling */
-.emoji-container {
-    display: flex;
-    align-items: center;
-    position: relative; /* Ensures emoji picker is correctly aligned */
-}
-
-.emoji-list span, .emoji-picker span {
+.emoji-list span {
     font-size: 24px;
-    padding: 5px;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+    display: inline-block; /* Ensure scaling effect is applied */
 }
 
-.emoji-list span:hover, .emoji-picker span:hover {
-    transform: scale(1.2); /* Pop-up effect */
+/* Pop-up effect on hover */
+.emoji-list span:hover {
+    transform: scale(1.2); /* Scale up on hover */
 }
 
 .emoji-dropdown {
