@@ -459,17 +459,25 @@ body.night-mode {
 }
 
 .emoji-dropdown {
-    background-color: transparent;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: transparent; /* Transparent background for the button */
+    border: none; /* No border around the button */
+    padding: 0; /* Remove padding to ensure proper circle shape */
+    cursor: pointer; /* Pointer cursor to indicate clickability */
+    border-radius: 50%; /* Ensures the button is a circle */
+    width: 40px; /* Set a fixed width */
+    height: 40px; /* Set a fixed height */
+    display: flex; /* Flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions for hover effects */
 }
+
+.emoji-dropdown:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Slight background color change on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
 
 .emoji-picker {
     display: flex;
