@@ -978,42 +978,40 @@ body.night-mode {
     height: 24px;
 }
 
-/* Add the hidden class to hide the emoji picker initially */
-.hidden {
-    display: none;
+.emoji-container {
+    position: relative;
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
+.dropdown-button {
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 .emoji-picker {
-    display: flex;
-    flex-wrap: wrap;
-    background: var(--glass-bg);
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
     padding: 10px;
-    border-radius: var(--border-radius);
-    margin-top: 10px;
-    max-width: 100%; /* Ensures the emoji picker doesn't overflow the container */
-    max-height: 200px; /* Adds a max height and scroll for better UX */
-    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
 }
 
 .emoji-picker span {
     cursor: pointer;
-    font-size: 24px; /* Adjust emoji size */
-    margin: 5px; /* Spacing between emojis */
-    transition: transform 0.2s;
+    font-size: 20px;
 }
 
-.emoji-picker span:hover {
-    transform: scale(1.2); /* Enlarge emoji slightly on hover */
+.emoji-display {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    margin-bottom: 10px;
 }
-
-
-
-
+        
     </style>
 </head>
 <body>
@@ -1169,40 +1167,26 @@ body.night-mode {
         <button onclick="sendMessage(currentGroupId)">Send</button>
     </div>
     
-<!-- Emoji Picker -->
 <div class="emoji-container">
     <!-- Recent or Popular Emojis -->
-    <div id="recentEmojis">
-        <!-- Recent or Popular emojis will be dynamically added here -->
-    </div>
+    <div id="emojiDisplay" class="emoji-display"></div>
 
     <!-- Emoji Picker Dropdown -->
     <div class="dropdown">
-        <button onclick="toggleEmojiPicker()">
-            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                    <path fill="#000000" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-                </g>
+        <button class="dropdown-button" onclick="toggleEmojiPicker()">
+            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000" style="width: 20px; height: 20px;">
+                <path fill="#000000" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
             </svg>
         </button>
         <div id="emojiPicker" class="emoji-picker hidden">
-            <!-- List of all emojis -->
+            <!-- List of all emojis (hidden by default) -->
             <!-- Example: -->
             <span onclick="addEmoji('😀')">😀</span>
-            <span onclick="addEmoji('😁')">😁</span>
-            <span onclick="addEmoji('😂')">😂</span>
-            <span onclick="addEmoji('🤣')">🤣</span>
-            <span onclick="addEmoji('😃')">😃</span>
-            <span onclick="addEmoji('😄')">😄</span>
-            <span onclick="addEmoji('😅')">😅</span>
-            <span onclick="addEmoji('😆')">😆</span>
-            <span onclick="addEmoji('😉')">😉</span>
             <!-- Add more emojis here -->
         </div>
     </div>
 </div>
+
 
 
 
@@ -2564,73 +2548,60 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 
-    // Function to toggle emoji picker dropdown
-    function toggleEmojiPicker() {
-        var emojiPicker = document.getElementById("emojiPicker");
-        emojiPicker.classList.toggle("hidden");
+// Toggle emoji picker visibility
+function toggleEmojiPicker() {
+    var emojiPicker = document.getElementById('emojiPicker');
+    emojiPicker.classList.toggle('hidden');
+}
+
+// Load recent emojis or popular emojis if no recent ones exist
+auth.onAuthStateChanged(function(user) {
+    if (user) {
+        var userId = user.uid;
+        loadRecentEmojis(userId);
+    } else {
+        displayPopularEmojis();
     }
+});
 
-    // Function to add an emoji to the chat
-    function addEmoji(emoji) {
-        // Your code to add emoji to the chat input
-    }
-
-    // Function to load recent emojis from Firestore
-    function loadRecentEmojis() {
-        var recentEmojisContainer = document.getElementById("recentEmojis");
-
-        // Assume a limit for the number of emojis to show based on available space
-        var maxEmojis = 10; // Adjust based on your layout
-
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                var userId = user.uid;
-                db.collection("users").doc(userId).get().then(function(doc) {
-                    if (doc.exists) {
-                        var recentEmojis = doc.data().recentEmojis || [];
-
-                        if (recentEmojis.length > 0) {
-                            displayEmojis(recentEmojis.slice(0, maxEmojis), recentEmojisContainer);
-                        } else {
-                            // Load popular emojis if no recent emojis are available
-                            displayPopularEmojis(recentEmojisContainer, maxEmojis);
-                        }
-                    } else {
-                        // Load popular emojis if no user data exists
-                        displayPopularEmojis(recentEmojisContainer, maxEmojis);
-                    }
-                }).catch(function(error) {
-                    console.error("Error getting document:", error);
-                    displayPopularEmojis(recentEmojisContainer, maxEmojis);
-                });
+function loadRecentEmojis(userId) {
+    db.collection('users').doc(userId).get().then(function(doc) {
+        if (doc.exists) {
+            var recentEmojis = doc.data().recentEmojis || [];
+            if (recentEmojis.length > 0) {
+                displayEmojis(recentEmojis);
             } else {
-                // User is not signed in, load popular emojis
-                displayPopularEmojis(recentEmojisContainer, maxEmojis);
+                displayPopularEmojis();
             }
-        });
-    }
+        } else {
+            displayPopularEmojis();
+        }
+    }).catch(function(error) {
+        console.error("Error getting recent emojis: ", error);
+        displayPopularEmojis();
+    });
+}
 
-    // Function to display emojis in the container
-    function displayEmojis(emojis, container) {
-        container.innerHTML = ""; // Clear current emojis
-        emojis.forEach(function(emoji) {
-            var emojiSpan = document.createElement("span");
-            emojiSpan.innerText = emoji;
-            emojiSpan.onclick = function() {
-                addEmoji(emoji);
-            };
-            container.appendChild(emojiSpan);
-        });
-    }
+function displayPopularEmojis() {
+    var popularEmojis = ['😀', '😂', '😍', '😎', '😊']; // Add more popular emojis here
+    displayEmojis(popularEmojis);
+}
 
-    // Function to display popular emojis
-    function displayPopularEmojis(container, maxEmojis) {
-        var popularEmojis = ["😀", "😁", "😂", "🤣", "😃", "😄", "😅", "😆", "😉"]; // Example set of popular emojis
-        displayEmojis(popularEmojis.slice(0, maxEmojis), container);
-    }
+function displayEmojis(emojis) {
+    var emojiDisplay = document.getElementById('emojiDisplay');
+    emojiDisplay.innerHTML = '';
+    emojis.forEach(function(emoji) {
+        var span = document.createElement('span');
+        span.textContent = emoji;
+        span.onclick = function() { addEmoji(emoji); };
+        emojiDisplay.appendChild(span);
+    });
+}
 
-    // Load recent emojis on page load
-    document.addEventListener("DOMContentLoaded", loadRecentEmojis);
+function addEmoji(emoji) {
+    // Add the emoji to the chat input or wherever it needs to go
+    console.log("Emoji added: " + emoji);
+}
 
 
 </script>
