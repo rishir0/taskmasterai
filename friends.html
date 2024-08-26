@@ -986,21 +986,24 @@ body.night-mode {
 
 /* Style for the fix item */
 .bug-list .fix-item {
-    color: red; /* Color the text in red */
+    color: green; /* Color the text in red */
+    padding-left: 30px; /* Add space for the SVG bullet */
+    position: relative; /* Ensure proper positioning */
 }
 
 /* Add SVG before the fix item */
 .bug-list .fix-item::before {
     content: ""; /* Empty content for the pseudo-element */
     position: absolute;
-    left: -20px; /* Adjust this value to align the SVG properly */
+    left: 5px; /* Adjust to align the SVG properly */
     top: 50%; /* Center vertically */
     transform: translateY(-50%); /* Adjust for centering */
     width: 16px; /* Width of the SVG */
     height: 16px; /* Height of the SVG */
-    background: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3Ljcub3JnL/0lMjBzeW50eHQvMjQyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdiI+PHBhdGggZmlsbC1ydWxlPSJldmVuLWRvbmUiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEwLjc2OTIgMjAuMDI1M1Y5LjU1MjdDNy4wNzgzIDE1LjU1NTIgMi4wMTUzIDcuMzI3MSA0LjAzMzggMy40NjM0ODIgNy41NTU2MzciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PC9wYXRoPjwvc3ZnPg==') no-repeat center center; /* SVG as bullet */
-    background-size: 16px 16px; /* Size of the SVG */
+    background: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3Ljcub3JnL/0lMjBzeW50eHQvMjQyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdiI+PHBhdGggZmlsbC1ydWxlPSJldmVuLWRvbmUiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEwLjc2OTIgMjAuMDI1M1Y5LjU1MjdDNy4wNzgzIDE1LjU1NTIgMi4wMTUzIDcuMzI3MSA0LjAzMzggMy40NjM0ODIgNy41NTU2MzciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCI+PC9wYXRoPjwvc3ZnPg==') no-repeat center center; /* SVG as background */
+    background-size: contain; /* Ensure the SVG scales properly */
 }
+
 
 
 .view-friend-info-button {
@@ -1736,6 +1739,8 @@ body.night-mode {
 <ul class="bug-list">
     <li>Chat Switching Bug: When switching between individual chats, messages may be sent to the previous chat instead of the current one.</li>
     <li class="fix-item">Fix: Refresh the page before switching chats, then select the desired contact.</li>
+    <li>View Friend Info Bug: The view friend modal is still under development, and the close button may be difficult to use.</li>
+    <li class="fix-item">Fix: If possible, try to close the modal or refresh the page to resolve the issue.</li>
 </ul>
     </div>
 </div>
