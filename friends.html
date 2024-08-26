@@ -349,14 +349,16 @@ body.night-mode {
 }
 
 
+/* Ensures the chat window is styled correctly */
 .chat-window {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 200px); /* Increased height to reach closer to the bottom of the page */
+    height: calc(100vh - 200px); /* Adjust height as needed */
     background: var(--glass-bg);
     border-radius: var(--border-radius);
     padding: 15px;
-    max-height: 600px; /* Ensures the chat window doesn't overflow the page */
+    max-height: 600px; /* Limits the height of the chat window */
+    position: relative; /* Allows absolute positioning of child elements */
 }
 
 #chatMessages {
@@ -367,7 +369,7 @@ body.night-mode {
 }
 
 #chatMessages .message {
-    max-width: 70%; /* Limit width for better readability */
+    max-width: 70%;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -376,25 +378,25 @@ body.night-mode {
 }
 
 #chatMessages .message.sent {
-    background: var(--primary-color); /* Customize color for sent messages */
+    background: var(--primary-color);
     color: #fff;
     align-self: flex-end;
     float: right;
     text-align: right;
-    border-top-right-radius: 0; /* Square the top-right corner */
+    border-top-right-radius: 0;
 }
 
 #chatMessages .message.received {
-    background: var(--accent-color); /* Customize color for received messages */
+    background: var(--accent-color);
     color: var(--text-color);
     align-self: flex-start;
     float: left;
     text-align: left;
-    border-top-left-radius: 0; /* Square the top-left corner */
+    border-top-left-radius: 0;
 }
 
 #chatMessages div {
-    background: var(--message-bg); /* Adjusted to use a custom variable for message background */
+    background: var(--message-bg);
     color: var(--text-color);
     padding: 10px;
     border-radius: 5px;
@@ -402,11 +404,12 @@ body.night-mode {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* New container for input and button */
+/* Input and button container styling */
 .chat-input-container {
     display: flex;
-    align-items: center; /* Ensures the input and button are vertically aligned */
-    margin-bottom: 15px; /* Adds spacing below the input container */
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative; /* Ensures emoji picker is positioned relative to this container */
 }
 
 #chatInput {
@@ -414,11 +417,11 @@ body.night-mode {
     border: 1px solid var(--secondary-color);
     border-radius: var(--border-radius);
     font-size: 16px;
-    flex: 1; /* Makes the input field take up all available space */
+    flex: 1;
     box-sizing: border-box;
     background-color: var(--card-bg);
     color: var(--text-color);
-    margin-right: 10px; /* Adds space between the input and the button */
+    margin-right: 10px;
 }
 
 .chat-window button {
@@ -430,11 +433,62 @@ body.night-mode {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
-    width: 80px; /* Fixed width for the send button */
+    width: 80px;
 }
 
 .chat-window button:hover {
     background-color: #3b7bce;
+}
+
+/* Emoji picker and dropdown styling */
+.emoji-container {
+    display: flex;
+    align-items: center;
+    position: relative; /* Ensures emoji picker is correctly aligned */
+}
+
+.emoji-list span, .emoji-picker span {
+    font-size: 24px;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.emoji-list span:hover, .emoji-picker span:hover {
+    transform: scale(1.2); /* Pop-up effect */
+}
+
+.emoji-dropdown {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    background-color: var(--card-bg); /* Matches the chat input background */
+    border: 1px solid var(--secondary-color);
+    border-radius: 10px;
+    position: absolute;
+    top: 100%; /* Positions it right below the emoji dropdown */
+    left: 0;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for visibility */
+    max-height: 200px; /* Adjust based on the number of emojis */
+    overflow-y: auto; /* Adds scroll if needed */
+}
+
+.emoji-picker.hidden {
+    display: none;
 }
 
 
@@ -977,55 +1031,7 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
-
-.emoji-container {
-    display: flex;
-    align-items: center;
-}
-
-.emoji-list span, .emoji-picker span {
-    font-size: 24px;
-    padding: 5px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.emoji-list span:hover, .emoji-picker span:hover {
-    transform: scale(1.2); /* Pop-up effect */
-}
-
-.emoji-dropdown {
-    background-color: transparent;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.emoji-picker {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5px;
-    background-color: #fff; /* Ensure this matches #chatInput background */
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    position: absolute;
-    z-index: 100;
-    top: 100%; /* Position it below the button */
-    left: 0; /* Align with the button */
-    width: max-content; /* Adjust width based on content */
-}
-
-.emoji-picker.hidden {
-    display: none;
-}
-
-        
+      
     </style>
 </head>
 <body>
@@ -1179,6 +1185,7 @@ body.night-mode {
     <div class="chat-input-container">
         <input type="text" id="chatInput" placeholder="Type a message">
         <button onclick="sendMessage(currentGroupId)">Send</button>
+    </div>
     
 <div class="emoji-container">
     <div id="recentEmojis" class="emoji-list"></div>
@@ -1292,8 +1299,6 @@ body.night-mode {
         <span onclick="addEmoji('😿')">😿</span>
         <span onclick="addEmoji('😾')">😾</span>
             <!-- Add more emojis here -->
-                </div>
-            </div>
         </div>
     </div>
 </div>
