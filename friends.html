@@ -440,21 +440,22 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-/* Emoji picker and dropdown styling */
-.emoji-list span {
-    font-size: 24px;
-    cursor: pointer;
+/* Common styles for emojis */
+.emoji-list span, .emoji-picker span {
+    font-size: 24px; /* Emoji size */
+    cursor: pointer; /* Pointer cursor on hover */
     transition: transform 0.3s ease; /* Smooth scaling effect */
     display: inline-block; /* Ensure scaling effect is applied */
 }
 
-/* Pop-up effect on hover */
-.emoji-list span:hover {
+/* Pop-up effect on hover for both emoji list and picker */
+.emoji-list span:hover, .emoji-picker span:hover {
     transform: scale(1.2); /* Scale up on hover */
 }
 
+/* Emoji dropdown styling */
 .emoji-dropdown {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color); /* Background color */
     border: none !important; /* Remove any border */
     padding: 0 !important; /* No padding */
     cursor: pointer !important; /* Pointer cursor */
@@ -469,18 +470,17 @@ body.night-mode {
 }
 
 .emoji-dropdown:hover {
-    background-color: #3b7bce;
+    background-color: #3b7bce; /* Change color on hover */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow on hover */
 }
 
-
 .emoji-dropdown svg {
-    width: 24px; /* Adjust SVG size as needed */
+    width: 24px; /* SVG size */
     height: 24px;
     fill: currentColor; /* Use current text color */
 }
 
-
+/* Emoji picker styling */
 .emoji-picker {
     display: flex;
     flex-wrap: wrap;
@@ -489,9 +489,9 @@ body.night-mode {
     border: 1px solid var(--secondary-color);
     border-radius: 10px;
     position: absolute;
-    top: 100%; /* Positions it right below the emoji dropdown */
+    top: 100%; /* Position below the emoji dropdown */
     left: 0;
-    z-index: 100;
+    z-index: 100; /* Ensure it appears above other content */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for visibility */
     max-height: 200px; /* Adjust based on the number of emojis */
     overflow-y: auto; /* Adds scroll if needed */
@@ -501,12 +501,13 @@ body.night-mode {
     display: none;
 }
 
+/* Emoji container styling */
 #emoji-container {
     display: flex;
     align-items: center;
 }
 
-.emoji-dropdown,
+/* Clear emojis button styling */
 .clear-emojis {
     background-color: var(--primary-color); /* Matches the emoji dropdown */
     border: none !important; /* Remove any border */
@@ -520,6 +521,7 @@ body.night-mode {
     justify-content: center !important; /* Center horizontally */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Optional shadow */
     transition: background-color 0.3s, box-shadow 0.3s !important; /* Smooth transitions */
+    margin-left: 10px; /* Space between emoji dropdown and clear button */
 }
 
 .clear-emojis:hover {
@@ -528,12 +530,9 @@ body.night-mode {
 }
 
 .clear-emojis svg {
-    width: 24px; /* Adjust SVG size to match the emoji dropdown */
+    width: 24px; /* SVG size to match the emoji dropdown */
     height: 24px;
-}
-
-.clear-emojis {
-    margin-left: 10px; /* Space between emoji dropdown and clear button */
+    fill: currentColor; /* Use current text color */
 }
 
 #groupList {
