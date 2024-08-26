@@ -1309,6 +1309,60 @@ body.night-mode {
         var emojiPicker = document.getElementById("emojiPicker");
         var recentEmojisContainer = document.getElementById("recentEmojis");
 
+// Toggle the emoji picker dropdown
+function toggleEmojiPicker() {
+    emojiPicker.classList.toggle("hidden");
+}
+
+// Function to add emoji to input and save it as recent
+function addEmoji(emoji) {
+    // Here you'd add the emoji to your chat input (not implemented in this example)
+    
+    // Save the emoji to Firestore as a recent emoji
+    var user = auth.currentUser;
+    if (user) {
+        db.collection("recentEmojis").doc(user.uid).update({
+            emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
+        });
+    }
+}
+
+// Load recent emojis from Firestore
+function loadRecentEmojis() {
+    var user = auth.currentUser;
+    if (user) {
+        db.collection("recentEmojis").doc(user.uid).get().then(function(doc) {
+            if (doc.exists && doc.data().emojis.length > 0) {
+                var recentEmojis = doc.data().emojis;
+                recentEmojisContainer.innerHTML = "";
+                recentEmojis.reverse().forEach(function(emoji) {
+                    var emojiSpan = document.createElement("span");
+                    emojiSpan.textContent = emoji;
+                    emojiSpan.onclick = function() { addEmoji(emoji); };
+                    recentEmojisContainer.appendChild(emojiSpan);
+                });
+            } else {
+                // Show popular emojis if no recent emojis are available
+                var popularEmojis = ["😀", "😂", "😍", "😭", "🙄"];
+                recentEmojisContainer.innerHTML = "";
+                popularEmojis.forEach(function(emoji) {
+                    var emojiSpan = document.createElement("span");
+                    emojiSpan.textContent = emoji;
+                    emojiSpan.onclick = function() { addEmoji(emoji); };
+                    recentEmojisContainer.appendChild(emojiSpan);
+                });
+            }
+        });
+    }
+}
+
+// Call loadRecentEmojis on page load
+auth.onAuthStateChanged(function(user) {
+    if (user) {
+        loadRecentEmojis();
+    }
+});
+
         function updateOnlineStatus(isOnline) {
             if (auth.currentUser) {
                 db.collection('users').doc(auth.currentUser.uid).set({
@@ -2550,61 +2604,6 @@ firebase.auth().onAuthStateChanged(user => {
         loadGroupChats();
     }
 });
-
-// Toggle the emoji picker dropdown
-function toggleEmojiPicker() {
-    emojiPicker.classList.toggle("hidden");
-}
-
-// Function to add emoji to input and save it as recent
-function addEmoji(emoji) {
-    // Here you'd add the emoji to your chat input (not implemented in this example)
-    
-    // Save the emoji to Firestore as a recent emoji
-    var user = auth.currentUser;
-    if (user) {
-        db.collection("recentEmojis").doc(user.uid).update({
-            emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
-        });
-    }
-}
-
-// Load recent emojis from Firestore
-function loadRecentEmojis() {
-    var user = auth.currentUser;
-    if (user) {
-        db.collection("recentEmojis").doc(user.uid).get().then(function(doc) {
-            if (doc.exists && doc.data().emojis.length > 0) {
-                var recentEmojis = doc.data().emojis;
-                recentEmojisContainer.innerHTML = "";
-                recentEmojis.reverse().forEach(function(emoji) {
-                    var emojiSpan = document.createElement("span");
-                    emojiSpan.textContent = emoji;
-                    emojiSpan.onclick = function() { addEmoji(emoji); };
-                    recentEmojisContainer.appendChild(emojiSpan);
-                });
-            } else {
-                // Show popular emojis if no recent emojis are available
-                var popularEmojis = ["😀", "😂", "😍", "😭", "🙄"];
-                recentEmojisContainer.innerHTML = "";
-                popularEmojis.forEach(function(emoji) {
-                    var emojiSpan = document.createElement("span");
-                    emojiSpan.textContent = emoji;
-                    emojiSpan.onclick = function() { addEmoji(emoji); };
-                    recentEmojisContainer.appendChild(emojiSpan);
-                });
-            }
-        });
-    }
-}
-
-// Call loadRecentEmojis on page load
-auth.onAuthStateChanged(function(user) {
-    if (user) {
-        loadRecentEmojis();
-    }
-});
-
 
 </script>
 
