@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1720,12 +1721,11 @@ function createPlan() {
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('dueDate') // Order by due date if it exists
-        .orderBy('createdAt')
+        .orderBy('dueDate') // First, order by due date (null values will be first)
+        .orderBy('createdAt') // Then, order by creation date
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
-
             snapshot.forEach(doc => {
                 const task = doc.data();
                 const taskDiv = document.createElement('div');
@@ -1733,23 +1733,23 @@ function loadTasks() {
 
                 const taskText = document.createElement('span');
                 taskText.textContent = task.task;
-                taskText.style.flex = '1'; // Ensure the task text is left-aligned
+                taskText.style.flex = '1'; // Ensures task text is left-aligned
                 taskDiv.appendChild(taskText);
 
+                // Check if due date exists and display it
                 if (task.dueDate) {
                     const dueDate = task.dueDate.toDate();
-                    const now = new Date();
+                    const today = new Date();
 
-                    // Create a span for the due date
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
 
-                    // Change styling if the due date has passed
-                    if (dueDate < now) {
-                        taskDiv.style.backgroundColor = 'var(--accent-color)';
+                    // Change background color and text styles if the due date has passed
+                    if (dueDate < today) {
+                        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Change background to accent color
                         dueDateText.style.color = '#FFFFFF'; // White color for due date text
-                        dueDateText.style.fontWeight = 'bold';
+                        dueDateText.style.fontWeight = 'bold'; // Bold text
                     } else {
                         dueDateText.style.color = 'gray';
                     }
@@ -1758,18 +1758,14 @@ function loadTasks() {
                 }
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.style.marginLeft = '10px';
                 buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-
+                
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
         });
 }
-
-
-
 
 function loadProjects() {
     db.collection('projects')
