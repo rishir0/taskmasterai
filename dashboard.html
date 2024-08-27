@@ -1607,19 +1607,23 @@ function createTask() {
     const task = taskInput.value.trim();
     let dueDate = taskDueDate.value ? new Date(taskDueDate.value) : null;
 
-    if (task && dueDate) {
-        // Correct timezone offset issue and add one day
-        dueDate.setHours(0, 0, 0, 0); // Normalize time to midnight
-        dueDate.setDate(dueDate.getDate() + 1); // Increment due date by one day
+    if (task) { // Allow task creation without a due date
+        if (dueDate) {
+            // Correct timezone offset issue and add one day
+            dueDate.setHours(0, 0, 0, 0); // Normalize time to midnight
+            dueDate.setDate(dueDate.getDate() + 1); // Increment due date by one day
+        }
 
         db.collection('tasks').add({
             task: task,
-            dueDate: dueDate, // Store the due date
+            dueDate: dueDate, // Store the due date if provided
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(docRef => {
             console.log('Task created:', task);
-            createTaskEvent(docRef.id, task, dueDate); // Create the event
+            if (dueDate) {
+                createTaskEvent(docRef.id, task, dueDate); // Create the event if due date exists
+            }
         }).catch((error) => {
             console.error('Error creating task:', error);
         });
@@ -1628,6 +1632,7 @@ function createTask() {
         taskDueDate.value = ''; // Clear the date input after task creation
     }
 }
+
 
 async function createTaskEvent(taskId, taskTitle, dueDate) {
     const user = firebase.auth().currentUser;
@@ -1724,20 +1729,25 @@ function loadTasks() {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
-                // Display task and due date
-                const taskText = document.createElement('span');
-                taskText.textContent = `${task.task}`;
-                taskDiv.appendChild(taskText);
-
+                // Check if due date exists and if it's passed
                 if (task.dueDate) {
-                    // Convert dueDate to a local date string
                     const dueDate = task.dueDate.toDate();
+                    const today = new Date();
+                    if (dueDate < today) {
+                        taskDiv.style.backgroundColor = 'var(--accent-color)'; // Set to accent color if due date is passed
+                    }
+
+                    // Display task and due date
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
                     dueDateText.style.color = 'gray';
                     taskDiv.appendChild(dueDateText);
                 }
+
+                const taskText = document.createElement('span');
+                taskText.textContent = `${task.task}`;
+                taskDiv.insertBefore(taskText, taskDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
@@ -1748,6 +1758,7 @@ function loadTasks() {
             });
         });
 }
+
 
 
 function loadProjects() {
