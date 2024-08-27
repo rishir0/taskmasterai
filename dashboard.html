@@ -1724,17 +1724,34 @@ function loadTasks() {
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
+
+            const tasksWithDate = [];
+            const tasksWithoutDate = [];
+
             snapshot.forEach(doc => {
                 const task = doc.data();
+
+                if (task.dueDate) {
+                    tasksWithDate.push({ id: doc.id, task });
+                } else {
+                    tasksWithoutDate.push({ id: doc.id, task });
+                }
+            });
+
+            // Sort tasks with due dates by date
+            tasksWithDate.sort((a, b) => a.task.dueDate.toDate() - b.task.dueDate.toDate());
+
+            const combinedTasks = [...tasksWithDate, ...tasksWithoutDate];
+
+            combinedTasks.forEach(({ id, task }) => {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
-                // Check if due date exists and if it's passed
+                // Change the background color if the due date has passed
                 if (task.dueDate) {
                     const dueDate = task.dueDate.toDate();
-                    const today = new Date();
-                    if (dueDate < today) {
-                        taskDiv.style.backgroundColor = 'var(--accent-color)'; // Set to accent color if due date is passed
+                    if (dueDate < new Date()) {
+                        taskDiv.style.backgroundColor = 'var(--primary-color)';
                     }
 
                     // Display task and due date
@@ -1747,12 +1764,12 @@ function loadTasks() {
 
                 const taskText = document.createElement('span');
                 taskText.textContent = `${task.task}`;
-                taskDiv.insertBefore(taskText, taskDiv.firstChild);
+                taskDiv.appendChild(taskText);
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-                
+                buttonContainer.appendChild(createEditButton(id, 'task', task.task));
+                buttonContainer.appendChild(createDeleteButton(id, 'task'));
+
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
