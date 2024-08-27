@@ -1720,61 +1720,52 @@ function createPlan() {
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('dueDate') // Order by due date if it exists
         .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
-
-            const tasksWithDate = [];
-            const tasksWithoutDate = [];
-
             snapshot.forEach(doc => {
                 const task = doc.data();
-
-                if (task.dueDate) {
-                    tasksWithDate.push({ id: doc.id, task });
-                } else {
-                    tasksWithoutDate.push({ id: doc.id, task });
-                }
-            });
-
-            // Sort tasks with due dates by date
-            tasksWithDate.sort((a, b) => a.task.dueDate.toDate() - b.task.dueDate.toDate());
-
-            const combinedTasks = [...tasksWithDate, ...tasksWithoutDate];
-
-            combinedTasks.forEach(({ id, task }) => {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
-                // Change the background color if the due date has passed
+                const taskText = document.createElement('span');
+                taskText.textContent = `${task.task}`;
+                taskText.style.flex = '1'; // Make sure the task text is left-aligned
+                taskDiv.appendChild(taskText);
+
                 if (task.dueDate) {
                     const dueDate = task.dueDate.toDate();
-                    if (dueDate < new Date()) {
-                        taskDiv.style.backgroundColor = 'var(--primary-color)';
-                    }
+                    const now = new Date();
 
-                    // Display task and due date
+                    // Due date span
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
-                    dueDateText.style.color = 'gray';
+
+                    // If due date has passed
+                    if (dueDate < now) {
+                        taskDiv.style.backgroundColor = 'var(--accent-color)';
+                        dueDateText.style.color = '#FFFFFF'; // White color for due date text
+                        dueDateText.style.fontWeight = 'bold';
+                    } else {
+                        dueDateText.style.color = 'gray';
+                    }
+
                     taskDiv.appendChild(dueDateText);
                 }
 
-                const taskText = document.createElement('span');
-                taskText.textContent = `${task.task}`;
-                taskDiv.appendChild(taskText);
-
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(id, 'task', task.task));
-                buttonContainer.appendChild(createDeleteButton(id, 'task'));
-
+                buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
+                
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
         });
 }
+
 
 
 
