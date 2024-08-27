@@ -401,12 +401,23 @@ body.night-mode {
     padding: 10px 15px;
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
 .calendar-nav-header button:hover {
     background-color: transparent;
+    transform: scale(1.1); /* Slightly increase size */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow */
 }
+
+.calendar-nav-header svg {
+    transition: transform 0.3s;
+}
+
+.calendar-nav-header button:hover svg {
+    transform: scale(1.1); /* Scale SVG on hover */
+}
+
 
 .calendar-header {
     display: grid;
