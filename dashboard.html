@@ -1735,9 +1735,7 @@ function loadTasks() {
                     const dueDate = task.dueDate.toDate();
                     const today = new Date();
                     if (dueDate < today) {
-                        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Set to primary color if due date is passed
-                        dueDateText.style.color = 'white';
-                        dueDateText.style.fontWeight = 'bold';
+                        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Set to accent color if due date is passed
                     }
 
                     // Display task and due date
