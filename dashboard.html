@@ -1725,26 +1725,27 @@ function loadTasks() {
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
+
             snapshot.forEach(doc => {
                 const task = doc.data();
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
                 const taskText = document.createElement('span');
-                taskText.textContent = `${task.task}`;
-                taskText.style.flex = '1'; // Make sure the task text is left-aligned
+                taskText.textContent = task.task;
+                taskText.style.flex = '1'; // Ensure the task text is left-aligned
                 taskDiv.appendChild(taskText);
 
                 if (task.dueDate) {
                     const dueDate = task.dueDate.toDate();
                     const now = new Date();
 
-                    // Due date span
+                    // Create a span for the due date
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
 
-                    // If due date has passed
+                    // Change styling if the due date has passed
                     if (dueDate < now) {
                         taskDiv.style.backgroundColor = 'var(--accent-color)';
                         dueDateText.style.color = '#FFFFFF'; // White color for due date text
@@ -1757,9 +1758,10 @@ function loadTasks() {
                 }
 
                 const buttonContainer = createButtonContainer();
+                buttonContainer.style.marginLeft = '10px';
                 buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-                
+
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
