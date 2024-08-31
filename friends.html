@@ -442,12 +442,17 @@ body.night-mode {
     top: -8px; /* Slightly raised above the message bubble */
     right: -10px; /* Positioned on the right side of the message bubble */
     font-size: 18px;
-    background-color: transparent; /* No background color */
-    border-radius: 50%;
-    padding: 0;
-    /* Styles for the reaction icon, including position, size, and no background */
+    background-color: var(--primary-color); /* Primary color background */
+    color: #fff; /* White color for the reaction icon */
+    border-radius: 50%; /* Makes the background a circle */
+    padding: 5px; /* Adds padding inside the circle */
+    width: 24px; /* Set width for a perfect circle */
+    height: 24px; /* Set height for a perfect circle */
+    display: flex; /* Align icon inside the circle */
+    align-items: center; /* Center the icon vertically */
+    justify-content: center; /* Center the icon horizontally */
+    /* Styles for the reaction icon, with primary color background and circular shape */
 }
-
 
 /* Input and button container styling */
 .chat-input-container {
