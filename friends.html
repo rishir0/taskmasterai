@@ -3466,19 +3466,20 @@ viewMembersButton.onclick = () => {
 };
 buttonContainer.appendChild(viewMembersButton);
 
-
+// Define a custom CSS variable for the SVG size
+const svgSize = '24px'; // Adjust this value as needed
 
 // Edit button
 const editButton = document.createElement('button');
 editButton.classList.add('edit-button');
 editButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" fill="#ffffff" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" fill="#ffffff" width="${svgSize}" height="${svgSize}">
         <path d="m33.332 50v12.5c0 2.3047 1.8672 4.168 4.168 4.168h12.5c1.1055 0 2.1641-0.4375 2.9453-1.2227l32.113-32.113c1.5742-1.5742 2.4414-3.6641 2.4414-5.8906 0-2.2266-0.86719-4.3203-2.4414-5.8906l-6.6094-6.6094c-3.2461-3.25-8.5352-3.25-11.785 0l-32.109 32.113c-0.78125 0.78125-1.2227 1.8398-1.2227 2.9453zm39.227-29.168 6.6094 6.6094-6.25 6.25-6.6094-6.6094zm-30.891 30.895 18.75-18.75 6.6094 6.6094-18.75 18.75h-6.6094zm50-1.7266c0 22.973-18.691 41.668-41.668 41.668s-41.668-18.695-41.668-41.668c0-22.977 18.691-41.668 41.668-41.668 2.3008 0 4.168 1.8672 4.168 4.168s-1.8672 4.168-4.168 4.168c-18.379 0-33.332 14.953-33.332 33.332s14.953 33.332 33.332 33.332 33.332-14.953 33.332-33.332c0-2.3008 1.8633-4.168 4.168-4.168s4.168 1.8672 4.168 4.168z"/>
     </svg>`;
 editButton.style.backgroundColor = 'var(--primary-color)';
 editButton.style.border = 'none';
 editButton.style.borderRadius = '50%';
-editButton.style.padding = '10px';  // Adjusted padding
+editButton.style.padding = '6px'; 
 editButton.style.cursor = 'pointer';
 editButton.style.display = 'flex';
 editButton.style.alignItems = 'center';
@@ -3498,13 +3499,13 @@ buttonContainer.appendChild(editButton);
 const deleteButton = document.createElement('button');
 deleteButton.classList.add('delete-button');
 deleteButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" fill="#ffffff" width="20" height="20">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" fill="#ffffff" width="${svgSize}" height="${svgSize}">
         <path d="m27.082 51.043c-1.832 0-3.582-0.33203-5.207-0.91797v31.125c0 5.168 4.207 9.375 9.375 9.375h37.5c5.168 0 9.375-4.207 9.375-9.375v-31.125c-1.625 0.58203-3.375 0.91797-5.207 0.91797zm17.711 23.957c0 1.707-1.418 3.125-3.125 3.125s-3.125-1.418-3.125-3.125v-12.5c0-1.707 1.418-3.125 3.125-3.125s3.125 1.418 3.125 3.125zm16.664 0c0 1.707-1.418 3.125-3.125 3.125s-3.125-1.418-3.125-3.125v-12.5c0-1.707 1.418-3.125 3.125-3.125s3.125 1.418 3.125 3.125zm11.461-53.125h-7.293v-3.125c0-5.168-4.207-9.375-9.375-9.375h-12.5c-5.168 0-9.375 4.207-9.375 9.375v3.125h-7.293c-5.168 0-9.375 4.207-9.375 9.375v4.168c0 5.168 4.207 9.375 9.375 9.375h45.832c5.168 0 9.375-4.207 9.375-9.375v-4.168c0-5.168-4.207-9.375-9.375-9.375zm-32.293-3.125c0-1.7227 1.4023-3.125 3.125-3.125h12.5c1.7227 0 3.125 1.4023 3.125 3.125v3.125h-18.75z"/>
     </svg>`;
 deleteButton.style.backgroundColor = 'var(--accent-color)';
 deleteButton.style.border = 'none';
 deleteButton.style.borderRadius = '50%';
-deleteButton.style.padding = '10px';  // Adjusted padding
+deleteButton.style.padding = '6px';
 deleteButton.style.cursor = 'pointer';
 deleteButton.style.display = 'flex';
 deleteButton.style.alignItems = 'center';
@@ -3519,6 +3520,7 @@ deleteButton.onclick = () => {
     deleteGroupChat(doc.id);
 };
 buttonContainer.appendChild(deleteButton);
+
 
 
 groupItem.appendChild(buttonContainer);
