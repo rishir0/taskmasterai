@@ -1159,46 +1159,55 @@ body.night-mode {
     background-color: transparent;
 }
 
-/* Modal Styling for modal4 */
+/* Style for the modal4 */
 #modal4 {
-  position: absolute;
+  display: none; /* Initially hidden */
+  position: absolute; /* Positioned relative to the main content */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  z-index: 10; /* Ensures it appears above other content */
+  padding: 20px;
 }
 
-#modal4 .modal-content {
-  background-color: #1c1c1c;
+.modal-content {
+  background-color: #1f1f1f;
   padding: 20px;
   border-radius: 8px;
-  color: white;
-  max-width: 600px;
-  text-align: center;
+  color: #fff;
 }
 
-#modal4 .modal-step {
-  display: none;
+.section {
+  margin-bottom: 20px;
 }
 
-#modal4 .modal-step.active {
+.continue-btn,
+.final-continue-btn {
+  background-color: #5a5a5a;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.continue-btn:hover,
+.final-continue-btn:hover {
+  background-color: #787878;
+}
+
+#main-content {
+  position: relative;
+}
+
+/* Ensure the modal doesn't cover other content */
+#modal4.active {
   display: block;
 }
 
-#modal4 .continue-button {
-  background-color: #6a5acd;
-  border: none;
-  padding: 10px 20px;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-}
 
       
     </style>
@@ -1310,7 +1319,8 @@ body.night-mode {
                     </svg>
                 </div>
             </div>
-        </div>  
+        </div>
+
 <div class="main-content">
     <div class="dashboard-header">
         <h1>
@@ -2239,39 +2249,51 @@ body.night-mode {
     </div>
 </div>
 
-<!-- Modal Structure -->
-<div id="modal4" class="modal">
-  <div class="modal-content">
-    <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
-    <button class="continue-button" onclick="nextStep()">Continue</button>
+<div id="main-content">
+  <!-- Main content where modal should be displayed -->
+  <div id="modal4" class="modal">
+    <div class="modal-content">
+      
+      <!-- Section 1: Welcome -->
+      <div class="section" id="section1">
+        <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
+        <button class="continue-btn" data-next="section2">Continue</button>
+      </div>
 
-    <div class="modal-step" id="step1">
-      <p>To add a friend simply type your friend's email and hit the add friend button, your friend will receive a friend request, to which they will accept.</p>
-      <img src="file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
-      <button class="continue-button" onclick="nextStep()">Continue</button>
-    </div>
+      <!-- Section 2: Add a Friend -->
+      <div class="section" id="section2" style="display: none;">
+        <p>To add a friend simply type your friend's email and hit the add friend button, your friend will receive a friend request, to which they will accept.</p>
+        <img src="/mnt/data/file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
+        <button class="continue-btn" data-next="section3">Continue</button>
+      </div>
 
-    <div class="modal-step" id="step2">
-      <p>To chat with a user, click on their name in the Online Friends section, (make sure they have accepted your friend request first) and chat with them in the chat window. If you are having trouble viewing them, please hit the refresh button.</p>
-      <img src="file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
-      <button class="continue-button" onclick="nextStep()">Continue</button>
-    </div>
+      <!-- Section 3: Chat with a Friend -->
+      <div class="section" id="section3" style="display: none;">
+        <p>To chat with a user, click on their name in the Online Friends section, and chat with them in the chat window.</p>
+        <img src="/mnt/data/file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
+        <button class="continue-btn" data-next="section4">Continue</button>
+      </div>
 
-    <div class="modal-step" id="step3">
-      <p>Pinned Friends</p>
-      <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section. To remove a pinned friend, please click on the unpin button for your friend.</p>
-      <button class="continue-button" onclick="nextStep()">Continue</button>
-    </div>
+      <!-- Section 4: Pinned Friends -->
+      <div class="section" id="section4" style="display: none;">
+        <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section.</p>
+        <button class="continue-btn" data-next="section5">Continue</button>
+      </div>
 
-    <div class="modal-step" id="step4">
-      <p>Group Chats</p>
-      <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will displayed below Your Groups</p>
-      <p>Ex. friend1@gmail.com, friend2@gmail.com</p>
-      <img src="file-u3ny2r22AlzPoi9M4lu0K669" alt="Add to Group" />
-      <button class="continue-button" onclick="closeModal()">Continue</button>
+      <!-- Section 5: Group Chats -->
+      <div class="section" id="section5" style="display: none;">
+        <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will be displayed below Your Groups</p>
+        <img src="/mnt/data/file-u3ny2r22AlzPoi9M4lu0K669" alt="Group Chats" />
+        <button class="final-continue-btn">Continue</button>
+      </div>
+
     </div>
   </div>
+
+  <!-- Other content of the main section -->
+  <!-- Your existing main content goes here -->
 </div>
+
         
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -3974,34 +3996,34 @@ document.getElementById('refreshButton').addEventListener('click', () => {
 
 <script>
 let currentStep = 0;
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById('modal4');
+    const continueButtons = modal.querySelectorAll('.continue-btn');
+    const finalContinueBtn = modal.querySelector('.final-continue-btn');
 
-const steps = document.querySelectorAll('.modal-step');
+    // Show the modal on page load (for first-time users)
+    if (!localStorage.getItem('modal4_shown')) {
+        modal.classList.add('active');
+    }
 
-function nextStep() {
-  steps[currentStep].classList.remove('active');
-  currentStep++;
+    continueButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const currentSection = button.closest('.section');
+            const nextSectionId = button.getAttribute('data-next');
+            const nextSection = document.getElementById(nextSectionId);
 
-  if (currentStep < steps.length) {
-    steps[currentStep].classList.add('active');
-  } else {
-    closeModal();
-  }
-}
+            currentSection.style.display = 'none';
+            if (nextSection) {
+                nextSection.style.display = 'block';
+            }
+        });
+    });
 
-function closeModal() {
-  document.getElementById('modal4').style.display = 'none';
-  localStorage.setItem('modalSeen', 'true'); // Save to local storage
-}
-
-// Check if modal has been seen
-window.onload = function() {
-  const modalSeen = localStorage.getItem('modalSeen');
-
-  if (!modalSeen) {
-    document.getElementById('modal4').style.display = 'flex';
-    steps[currentStep].classList.add('active');
-  }
-};
+    finalContinueBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        localStorage.setItem('modal4_shown', 'true');
+    });
+});
 </script>
 
         
