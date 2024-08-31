@@ -1161,15 +1161,15 @@ body.night-mode {
 
 /* Main content container */
 #main-content {
-    position: relative; /* To position the modal relative to this section */
+    position: relative;
     flex-grow: 1;
     padding: 20px;
     overflow-y: auto;
     background: transparent;
 }
 
-/* Style for modal4 */
-#modal4 {
+/* Full-page overlay that covers the main content */
+#overlay {
     display: none; /* Initially hidden */
     position: absolute; /* Positioned relative to the main content */
     top: 0;
@@ -1184,10 +1184,11 @@ body.night-mode {
     display: flex; /* Flexbox to center content */
     justify-content: center;
     align-items: center;
+    flex-direction: column; /* Arrange content vertically */
 }
 
-/* Modal content */
-.modal-content {
+/* Overlay content */
+.overlay-content {
     background: #333; /* Or your desired background color */
     padding: 20px;
     border-radius: 8px;
@@ -1219,11 +1220,10 @@ body.night-mode {
     background-color: #787878;
 }
 
-/* Modal visibility */
-#modal4.active {
+/* Overlay visibility */
+#overlay.active {
     display: flex; /* Display as flexbox when active */
 }
-
         
     </style>
 </head>
@@ -1337,41 +1337,6 @@ body.night-mode {
         </div>
 
   <div class="main-content">
- <div id="modal4" class="modal">
-    <div class="modal-content">
-      
-      <!-- Section 1: Welcome -->
-      <div class="section" id="section1">
-        <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
-        <button class="continue-btn" data-next="section2">Continue</button>
-      </div>
-
-      <!-- Section 2: Add a Friend -->
-      <div class="section" id="section2" style="display: none;">
-        <p>To add a friend simply type your friend's email and hit the add friend button, your friend will receive a friend request, to which they will accept.</p>
-        <img src="/mnt/data/file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
-        <button class="continue-btn" data-next="section3">Continue</button>
-      </div>
-
-      <!-- Section 3: Chat with a Friend -->
-      <div class="section" id="section3" style="display: none;">
-        <p>To chat with a user, click on their name in the Online Friends section, and chat with them in the chat window.</p>
-        <img src="/mnt/data/file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
-        <button class="continue-btn" data-next="section4">Continue</button>
-      </div>
-
-      <!-- Section 4: Pinned Friends -->
-      <div class="section" id="section4" style="display: none;">
-        <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section.</p>
-        <button class="continue-btn" data-next="section5">Continue</button>
-      </div>
-
-      <!-- Section 5: Group Chats -->
-      <div class="section" id="section5" style="display: none;">
-        <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will be displayed below Your Groups</p>
-        <img src="/mnt/data/file-u3ny2r22AlzPoi9M4lu0K669" alt="Group Chats" />
-        <button class="final-continue-btn">Continue</button>
-      </div>
     <div class="dashboard-header">
         <h1>
             Friends
@@ -2295,6 +2260,43 @@ body.night-mode {
         <label for="editFriendName">Edit Friend Name:</label>
         <input type="text" id="editFriendName" class="input-style">
         <button id="saveFriendName" class="save-button">Save</button>
+    </div>
+</div>
+
+<div id="overlay" class="overlay">
+    <div class="overlay-content">
+        <!-- Section 1: Welcome -->
+        <div class="section" id="section1">
+            <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
+            <button class="continue-btn" data-next="section2">Continue</button>
+        </div>
+
+        <!-- Section 2: Add a Friend -->
+        <div class="section" id="section2" style="display: none;">
+            <p>To add a friend, simply type your friend's email and hit the add friend button. Your friend will receive a friend request, which they can accept.</p>
+            <img src="/mnt/data/file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
+            <button class="continue-btn" data-next="section3">Continue</button>
+        </div>
+
+        <!-- Section 3: Chat with a Friend -->
+        <div class="section" id="section3" style="display: none;">
+            <p>To chat with a user, click on their name in the Online Friends section, and chat with them in the chat window.</p>
+            <img src="/mnt/data/file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
+            <button class="continue-btn" data-next="section4">Continue</button>
+        </div>
+
+        <!-- Section 4: Pinned Friends -->
+        <div class="section" id="section4" style="display: none;">
+            <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section.</p>
+            <button class="continue-btn" data-next="section5">Continue</button>
+        </div>
+
+        <!-- Section 5: Group Chats -->
+        <div class="section" id="section5" style="display: none;">
+            <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will be displayed below Your Groups.</p>
+            <img src="/mnt/data/file-u3ny2r22AlzPoi9M4lu0K669" alt="Group Chats" />
+            <button class="final-continue-btn">Continue</button>
+        </div>
     </div>
 </div>
 
@@ -4001,16 +4003,16 @@ document.getElementById('refreshButton').addEventListener('click', () => {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('modal4');
+    const overlay = document.getElementById('overlay');
     const continueBtns = document.querySelectorAll('.continue-btn');
     let currentSection = 0;
 
-    function showModal() {
-        modal.style.display = 'flex';
+    function showOverlay() {
+        overlay.classList.add('active');
     }
 
-    function hideModal() {
-        modal.style.display = 'none';
+    function hideOverlay() {
+        overlay.classList.remove('active');
     }
 
     function showNextSection() {
@@ -4020,7 +4022,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentSection++;
             sections[currentSection].style.display = 'block'; // Show next section
         } else {
-            hideModal(); // Hide modal if last section
+            hideOverlay(); // Hide overlay if last section
         }
     }
 
@@ -4034,8 +4036,8 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', showNextSection);
     });
 
-    // To show the modal when needed
-    showModal();
+    // To show the overlay when needed
+    showOverlay();
 });
 </script>
 
