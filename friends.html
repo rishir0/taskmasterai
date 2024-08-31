@@ -403,6 +403,7 @@ body.night-mode {
     overflow-y: auto;
     padding-right: 10px;
     margin-bottom: 15px;
+    /* Provides the main container for chat messages with scrolling enabled */
 }
 
 #chatMessages .message {
@@ -412,7 +413,8 @@ body.night-mode {
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     clear: both;
-    position: relative; /* Added for reaction positioning */
+    position: relative; /* Allows positioning of the reaction relative to the message */
+    /* Styles for individual message bubbles, including padding, border radius, and shadows */
 }
 
 #chatMessages .message.sent {
@@ -422,6 +424,7 @@ body.night-mode {
     float: right;
     text-align: right;
     border-top-right-radius: 0;
+    /* Styles for messages sent by the user, including background color and text alignment */
 }
 
 #chatMessages .message.received {
@@ -431,17 +434,20 @@ body.night-mode {
     float: left;
     text-align: left;
     border-top-left-radius: 0;
+    /* Styles for messages received from others, including background color and text alignment */
 }
 
 #chatMessages .message-reaction {
     position: absolute;
-    top: -10px; /* Positioning at the top left */
-    left: -10px;
+    top: -8px; /* Slightly raised above the message bubble */
+    right: -10px; /* Positioned on the right side of the message bubble */
     font-size: 18px;
-    background-color: rgba(255, 255, 255, 0.7); /* Background for visibility */
+    background-color: transparent; /* No background color */
     border-radius: 50%;
-    padding: 5px;
+    padding: 0;
+    /* Styles for the reaction icon, including position, size, and no background */
 }
+
 
 /* Input and button container styling */
 .chat-input-container {
@@ -1218,16 +1224,6 @@ body.night-mode {
 #refreshButton:hover, #refreshPinnedButton:hover {
     background-color: transparent;
 }
-
-.message-reaction {
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 14px;
-    margin-left: 5px;
-    margin-top: 5px;
-}
-
       
     </style>
 </head>
