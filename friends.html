@@ -3224,6 +3224,7 @@ function unfriendUser(friendEmail) {
 
                         // Refresh the list of online friends
                         loadOnlineFriends();
+                        loadPinnedFriends();
                     }
                 }
             })
@@ -3936,7 +3937,10 @@ function loadGroupMessages(groupId) {
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = ''; // Clear the chat window
 
-            const messages = snapshot.docs.map(doc => doc.data());
+            const messages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
 
             // Fetch all display names before rendering
             const fetchDisplayNamesPromises = messages.map(async (message) => {
@@ -3958,7 +3962,7 @@ function loadGroupMessages(groupId) {
             Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
                 messagesWithDisplayNames.forEach(message => {
                     const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-container'); // Add class for positioning
+                    messageElement.classList.add('message-container');
 
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
@@ -3986,7 +3990,6 @@ function loadGroupMessages(groupId) {
                     const textElement = document.createElement('span');
                     textElement.classList.add('message-text');
                     textElement.textContent = message.message;
-
                     messageElement.appendChild(textElement);
 
                     if (message.sender === firebase.auth().currentUser.email) {
@@ -3994,6 +3997,42 @@ function loadGroupMessages(groupId) {
                     } else {
                         messageElement.classList.add('message', 'received');
                     }
+
+                    // Container for reply and reaction options
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.classList.add('message-options');
+                    optionsContainer.style.display = 'none'; // Initially hidden
+
+                    // Reply option
+                    const replyOption = document.createElement('button');
+                    replyOption.textContent = 'Reply';
+                    replyOption.classList.add('reply-option');
+                    replyOption.addEventListener('click', () => {
+                        // Add your reply logic here
+                        alert(`Reply to message: "${message.message}"`);
+                    });
+
+                    // Reaction options
+                    const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                    reactions.forEach(reaction => {
+                        const reactionButton = document.createElement('button');
+                        reactionButton.textContent = reaction;
+                        reactionButton.classList.add('reaction-button');
+                        reactionButton.addEventListener('click', () => {
+                            // Add reaction to the message
+                            addReactionToMessage(groupId, message.id, reaction);
+                            messageElement.appendChild(createReactionIcon(reaction));
+                        });
+                        optionsContainer.appendChild(reactionButton);
+                    });
+
+                    optionsContainer.appendChild(replyOption);
+                    messageElement.appendChild(optionsContainer);
+
+                    messageElement.addEventListener('click', () => {
+                        // Toggle the visibility of the options container
+                        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'block' : 'none';
+                    });
 
                     chatMessages.appendChild(messageElement);
                 });
@@ -4003,6 +4042,27 @@ function loadGroupMessages(groupId) {
             });
         });
 }
+
+// Function to create a reaction icon element
+function createReactionIcon(reaction) {
+    const reactionElement = document.createElement('span');
+    reactionElement.classList.add('message-reaction');
+    reactionElement.textContent = reaction;
+    return reactionElement;
+}
+
+// Function to add a reaction to a message in Firestore
+function addReactionToMessage(groupId, messageId, reaction) {
+    db.collection('groupchats').doc(groupId).collection('messages').doc(messageId).update({
+        reactions: firebase.firestore.FieldValue.arrayUnion({
+            user: firebase.auth().currentUser.email,
+            reaction
+        })
+    }).catch((error) => {
+        console.error('Error adding reaction:', error);
+    });
+}
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
