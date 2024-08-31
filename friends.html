@@ -2773,6 +2773,79 @@ function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
     }
 }
 
+function refreshOnlineFriends() {
+    loadOnlineFriends();
+    loadPinnedFriends(); // Call the loadPinnedFriends function here
+}
+
+document.getElementById('refreshPinnedButton').addEventListener('click', () => {
+    refreshOnlineFriends();
+
+    // Optional: Add a simple rotation animation
+    const button = document.getElementById('refreshPinnedButton');
+    button.style.transition = 'transform 0.5s ease-in-out';
+    button.style.transform = 'rotate(360deg)';
+
+    setTimeout(() => {
+        button.style.transform = 'none';
+    }, 500);
+});
+
+function loadPinnedFriends() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+
+        // Fetch the current user's pinned friends
+        db.collection('pinnedFriends').doc(currentUserUID).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const pinnedFriends = doc.data().pinnedFriends || [];
+                    const pinnedFriendsList = document.getElementById('pinnedFriends');
+                    pinnedFriendsList.innerHTML = ''; // Clear the list before appending new items
+
+                    pinnedFriends.forEach((friendEmail) => {
+                        // Fetch friend's information
+                        db.collection('users').where('email', '==', friendEmail).get()
+                            .then((querySnapshot) => {
+                                querySnapshot.forEach((doc) => {
+                                    const friend = doc.data();
+                                    const friendDisplayName = friend.displayName === 'Anonymous' ? friend.email : friend.displayName;
+
+                                    const listItem = document.createElement('li');
+                                    listItem.classList.add('friend-item');
+
+                                    // Create a span for the friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.textContent = friendDisplayName;
+                                    friendName.classList.add('friend-name');
+
+                                    // Append the friend's name to the list item
+                                    listItem.appendChild(friendName);
+
+                                    // Add list item to the pinned friends list
+                                    pinnedFriendsList.appendChild(listItem);
+                                });
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching friend data: ", error);
+                            });
+                    });
+                } else {
+                    console.log("No pinned friends found.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching pinned friends: ", error);
+            });
+    }
+}
+
+// Ensure this is called initially to load pinned friends on page load
+refreshOnlineFriends();
+
+
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
     button.className = 'unfriend-button';
