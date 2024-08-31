@@ -2489,6 +2489,23 @@ function addToAcceptedFriends(userId, senderEmail) {
 
 
 
+function refreshOnlineFriends() {
+    loadOnlineFriends();
+}
+
+document.getElementById('refreshButton').addEventListener('click', () => {
+    refreshOnlineFriends();
+
+    // Optional: Add a simple rotation animation
+    const button = document.getElementById('refreshButton');
+    button.style.transition = 'transform 0.5s ease-in-out';
+    button.style.transform = 'rotate(360deg)';
+
+    setTimeout(() => {
+        button.style.transform = 'none';
+    }, 500);
+});
+
 function loadOnlineFriends() {
     const currentUser = firebase.auth().currentUser;
 
@@ -2515,7 +2532,7 @@ function loadOnlineFriends() {
                     db.collection('users').where('online', '==', true)
                         .onSnapshot((querySnapshot) => {
                             const onlineFriendsList = document.getElementById('onlineFriends');
-                            onlineFriendsList.innerHTML = '';
+                            onlineFriendsList.innerHTML = ''; // Clear the list before appending new items
 
                             querySnapshot.forEach((doc) => {
                                 const friendRef = doc.ref; // Reference to the friend's document
@@ -2523,10 +2540,9 @@ function loadOnlineFriends() {
                                 const friendEmail = friend.email;
                                 let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-
                                 if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                    // Update display name if changed
                                     if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                        // Update display name if changed
                                         displayNameMap.set(friendEmail, friendDisplayName);
 
                                         const listItem = document.createElement('li');
@@ -2615,6 +2631,7 @@ function loadOnlineFriends() {
             });
     }
 }
+
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
