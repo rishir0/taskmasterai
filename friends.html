@@ -1174,6 +1174,8 @@ body.night-mode {
     position: absolute; /* Positioned relative to the main content */
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
@@ -1221,6 +1223,7 @@ body.night-mode {
 #modal4.active {
     display: flex; /* Display as flexbox when active */
 }
+
         
     </style>
 </head>
@@ -3999,23 +4002,43 @@ document.getElementById('refreshButton').addEventListener('click', () => {
 </script>
 
 <script>
-document.querySelectorAll('.continue-button').forEach(button => {
-    button.addEventListener('click', function() {
-        const currentSlide = this.closest('.modal-slide');
-        const nextSlide = currentSlide.nextElementSibling;
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modal4');
+    const continueBtns = document.querySelectorAll('.continue-btn');
+    let currentSection = 0;
 
-        if (nextSlide) {
-            currentSlide.style.display = 'none';
-            nextSlide.style.display = 'block';
+    function showModal() {
+        modal.style.display = 'flex';
+    }
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    function showNextSection() {
+        const sections = document.querySelectorAll('.section');
+        if (currentSection < sections.length - 1) {
+            sections[currentSection].style.display = 'none'; // Hide current section
+            currentSection++;
+            sections[currentSection].style.display = 'block'; // Show next section
         } else {
-            document.getElementById('modal4').classList.remove('active');
+            hideModal(); // Hide modal if last section
         }
+    }
+
+    // Initially show the first section only
+    document.querySelectorAll('.section').forEach((section, index) => {
+        section.style.display = index === 0 ? 'block' : 'none';
     });
+
+    // Add click event to continue buttons
+    continueBtns.forEach(btn => {
+        btn.addEventListener('click', showNextSection);
+    });
+
+    // To show the modal when needed
+    showModal();
 });
-
-// To open the modal
-document.getElementById('modal4').classList.add('active');
-
 </script>
 
         
