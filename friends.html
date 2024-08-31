@@ -1321,7 +1321,48 @@ body.night-mode {
             </div>
         </div>
 
-<div class="main-content">
+<div id="main-content">
+  <!-- Main content where modal should be displayed -->
+  <div id="modal4" class="modal">
+    <div class="modal-content">
+      
+      <!-- Section 1: Welcome -->
+      <div class="section" id="section1">
+        <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
+        <button class="continue-btn" data-next="section2">Continue</button>
+      </div>
+
+      <!-- Section 2: Add a Friend -->
+      <div class="section" id="section2" style="display: none;">
+        <p>To add a friend simply type your friend's email and hit the add friend button, your friend will receive a friend request, to which they will accept.</p>
+        <img src="/mnt/data/file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
+        <button class="continue-btn" data-next="section3">Continue</button>
+      </div>
+
+      <!-- Section 3: Chat with a Friend -->
+      <div class="section" id="section3" style="display: none;">
+        <p>To chat with a user, click on their name in the Online Friends section, and chat with them in the chat window.</p>
+        <img src="/mnt/data/file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
+        <button class="continue-btn" data-next="section4">Continue</button>
+      </div>
+
+      <!-- Section 4: Pinned Friends -->
+      <div class="section" id="section4" style="display: none;">
+        <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section.</p>
+        <button class="continue-btn" data-next="section5">Continue</button>
+      </div>
+
+      <!-- Section 5: Group Chats -->
+      <div class="section" id="section5" style="display: none;">
+        <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will be displayed below Your Groups</p>
+        <img src="/mnt/data/file-u3ny2r22AlzPoi9M4lu0K669" alt="Group Chats" />
+        <button class="final-continue-btn">Continue</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="main-content">
     <div class="dashboard-header">
         <h1>
             Friends
@@ -2154,10 +2195,9 @@ body.night-mode {
     </div>
 </div>
 
-
-
-
 </div>
+
+
 
 <!-- Modal for Viewing Group Members -->
 <div id="viewMembersModal" class="modal2">
@@ -2249,50 +2289,6 @@ body.night-mode {
     </div>
 </div>
 
-<div id="main-content">
-  <!-- Main content where modal should be displayed -->
-  <div id="modal4" class="modal">
-    <div class="modal-content">
-      
-      <!-- Section 1: Welcome -->
-      <div class="section" id="section1">
-        <h2>Welcome to Friends, an easy way to communicate with your friends and stay productive.</h2>
-        <button class="continue-btn" data-next="section2">Continue</button>
-      </div>
-
-      <!-- Section 2: Add a Friend -->
-      <div class="section" id="section2" style="display: none;">
-        <p>To add a friend simply type your friend's email and hit the add friend button, your friend will receive a friend request, to which they will accept.</p>
-        <img src="/mnt/data/file-pvvRFD1aICHi5giOiI6mT6VE" alt="Add Friend" />
-        <button class="continue-btn" data-next="section3">Continue</button>
-      </div>
-
-      <!-- Section 3: Chat with a Friend -->
-      <div class="section" id="section3" style="display: none;">
-        <p>To chat with a user, click on their name in the Online Friends section, and chat with them in the chat window.</p>
-        <img src="/mnt/data/file-StL3XUYSswlCyFo5OQdxcIS5" alt="Online Friends" />
-        <button class="continue-btn" data-next="section4">Continue</button>
-      </div>
-
-      <!-- Section 4: Pinned Friends -->
-      <div class="section" id="section4" style="display: none;">
-        <p>To pin a friend, please click on the pin button for your friend. Once pinned, they will appear in the Pinned Friends section.</p>
-        <button class="continue-btn" data-next="section5">Continue</button>
-      </div>
-
-      <!-- Section 5: Group Chats -->
-      <div class="section" id="section5" style="display: none;">
-        <p>To create a group chat, type your friends' emails followed by commas. After creating a group, it will be displayed below Your Groups</p>
-        <img src="/mnt/data/file-u3ny2r22AlzPoi9M4lu0K669" alt="Group Chats" />
-        <button class="final-continue-btn">Continue</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Other content of the main section -->
-  <!-- Your existing main content goes here -->
-</div>
 
         
  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
