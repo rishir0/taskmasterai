@@ -2523,6 +2523,8 @@ function loadOnlineFriends() {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
         const displayNameMap = new Map(); // To store the display names of friends
+        const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
+
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -2535,6 +2537,13 @@ function loadOnlineFriends() {
                         data.acceptedFriends.forEach((email) => {
                             acceptedFriends.add(email);
                             displayNameMap.set(email, null); // Initialize with null
+                        });
+                    }
+
+                    // Populate the pinnedFriendsSet with the user's pinned friends
+                    if (data.pinnedFriends) {
+                        data.pinnedFriends.forEach((email) => {
+                            pinnedFriendsSet.add(email);
                         });
                     }
                     
@@ -2644,6 +2653,7 @@ pinnedFriendsButton.style.cursor = 'pointer';
 pinnedFriendsButton.style.display = 'flex';
 pinnedFriendsButton.style.alignItems = 'center';
 pinnedFriendsButton.style.justifyContent = 'center';
+pinnedFriendsButton.style.marginLeft = '5px';
 
 pinnedFriendsButton.addEventListener('mouseover', () => {
     pinnedFriendsButton.style.backgroundColor = '#3b7bce';
