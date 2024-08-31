@@ -1100,6 +1100,23 @@ body.night-mode {
     width: 24px;
     height: 24px;
 }
+
+#refreshButton {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    padding: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#refreshButton:hover {
+    background-color: #3b7bce;
+}
+
       
     </style>
 </head>
@@ -1223,12 +1240,19 @@ body.night-mode {
                 </g>
             </svg>
         </div>
-    <div class="friends-list">
-        <h2>Online Friends</h2>
-        <div id="onlineFriends">
-            <!-- Friends will be dynamically added here -->
-        </div>
+<div class="friends-list">
+    <h2>
+        Online Friends
+        <button id="refreshButton">
+            <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+    </h2>
+    <div id="onlineFriends">
+        <!-- Friends will be dynamically added here -->
     </div>
+</div>
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
         <button onclick="addFriend()">Add Friend</button>
@@ -2323,6 +2347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.getElementById('refreshButton').addEventListener('click', loadOnlineFriends);
 
 
 function addFriend() {
