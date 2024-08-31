@@ -4044,13 +4044,30 @@ function loadReactions(groupId, messageId, messageElement) {
         .onSnapshot((doc) => {
             if (doc.exists && doc.data().reaction) {
                 const reaction = doc.data().reaction.reaction; // Only display the reaction emoji
+                const currentUser = firebase.auth().currentUser.email; // Get the current user's email
+                const sender = doc.data().sender; // Get the sender of the message
                 
                 const existingReactionIcon = messageElement.querySelector('.message-reaction');
                 if (existingReactionIcon) {
                     existingReactionIcon.textContent = reaction; // Update existing reaction
                 } else {
                     const reactionIcon = createReactionIcon(reaction);
-                    messageElement.prepend(reactionIcon); // Add at the top left of the message bubble
+
+                    if (sender === currentUser) {
+                        // If the current user sent the message, place the reaction at the top left with accent color
+                        reactionIcon.style.position = 'absolute';
+                        reactionIcon.style.top = '-8px';
+                        reactionIcon.style.left = '-10px';
+                        reactionIcon.style.backgroundColor = 'var(--accent-color)';
+                    } else {
+                        // For other users, keep the reaction on the top right with the primary color
+                        reactionIcon.style.position = 'absolute';
+                        reactionIcon.style.top = '-8px';
+                        reactionIcon.style.right = '-10px';
+                        reactionIcon.style.backgroundColor = 'var(--primary-color)';
+                    }
+
+                    messageElement.prepend(reactionIcon); // Add the reaction icon to the message element
                 }
             }
         });
