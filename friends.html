@@ -638,23 +638,17 @@ body.night-mode {
 
 .group-item .edit-button,
 .group-item .delete-button {
-    width: 40px; /* Ensure the button is circular */
-    height: 40px; /* Ensure the button is circular */
-    padding: 5px; /* Adjust padding to fit the circular shape */
+    padding: 5px 10px;
     color: #fff;
     border: none;
-    border-radius: 50%; /* Make the button circular */
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent; /* Set background to transparent */
 }
 
 .group-item .edit-button {
-    background-color: var(--primary-color); /* Primary color */
+    background-color: var(--primary-color); /* Background color */
 }
 
 .group-item .edit-button:hover {
