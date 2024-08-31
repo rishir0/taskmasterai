@@ -412,6 +412,7 @@ body.night-mode {
     margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     clear: both;
+    position: relative; /* Added for reaction positioning */
 }
 
 #chatMessages .message.sent {
@@ -432,13 +433,14 @@ body.night-mode {
     border-top-left-radius: 0;
 }
 
-#chatMessages div {
-    background: var(--message-bg);
-    color: var(--text-color);
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+#chatMessages .message-reaction {
+    position: absolute;
+    top: -10px; /* Positioning at the top left */
+    left: -10px;
+    font-size: 18px;
+    background-color: rgba(255, 255, 255, 0.7); /* Background for visibility */
+    border-radius: 50%;
+    padding: 5px;
 }
 
 /* Input and button container styling */
@@ -3939,7 +3941,6 @@ function sendFriendRequest(friendEmail) {
 }
 
 
-// Function to load group messages
 function loadGroupMessages(groupId) {
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
@@ -3979,22 +3980,6 @@ function loadGroupMessages(groupId) {
                         senderElement.classList.add('message-sender');
                         senderElement.textContent = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
-
-                        // Check if user is not friends with the sender
-                        const currentUser = firebase.auth().currentUser;
-                        db.collection('users').where('email', '==', message.sender).get()
-                            .then((snapshot) => {
-                                if (!snapshot.empty) {
-                                    const friendData = snapshot.docs[0].data();
-                                    if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
-                                        const addFriendButton = createAddFriendButton(message.sender);
-                                        messageElement.appendChild(addFriendButton); // Append button to message container
-                                    }
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Error checking friend status:', error);
-                            });
                     }
 
                     const textElement = document.createElement('span');
@@ -4018,7 +4003,6 @@ function loadGroupMessages(groupId) {
                     replyOption.textContent = 'Reply';
                     replyOption.classList.add('reply-option');
                     replyOption.addEventListener('click', () => {
-                        // Add your reply logic here
                         alert(`Reply to message: "${message.message}"`);
                     });
 
@@ -4029,7 +4013,6 @@ function loadGroupMessages(groupId) {
                         reactionButton.textContent = reaction;
                         reactionButton.classList.add('reaction-button');
                         reactionButton.addEventListener('click', () => {
-                            // Ensure only one reaction per message
                             addReactionToMessage(groupId, message.id, reaction);
                         });
                         optionsContainer.appendChild(reactionButton);
@@ -4039,7 +4022,6 @@ function loadGroupMessages(groupId) {
                     messageElement.appendChild(optionsContainer);
 
                     messageElement.addEventListener('click', () => {
-                        // Toggle the visibility of the options container
                         optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'block' : 'none';
                     });
 
@@ -4055,21 +4037,20 @@ function loadGroupMessages(groupId) {
         });
 }
 
+// Load Reactions
 function loadReactions(groupId, messageId, messageElement) {
     db.collection('groupchats').doc(groupId).collection('messages').doc(messageId)
         .onSnapshot((doc) => {
             if (doc.exists && doc.data().reaction) {
-                const reaction = doc.data().reaction;
+                const reaction = doc.data().reaction.reaction; // Only display the reaction emoji
                 
-                // Remove existing reaction icon if any
                 const existingReactionIcon = messageElement.querySelector('.message-reaction');
                 if (existingReactionIcon) {
-                    existingReactionIcon.remove();
+                    existingReactionIcon.textContent = reaction; // Update existing reaction
+                } else {
+                    const reactionIcon = createReactionIcon(reaction);
+                    messageElement.prepend(reactionIcon); // Add at the top left of the message bubble
                 }
-
-                // Create and append the reaction icon
-                const reactionIcon = createReactionIcon(reaction);
-                messageElement.prepend(reactionIcon); // Add at the top left of the message bubble
             }
         });
 }
@@ -4081,17 +4062,18 @@ function createReactionIcon(reaction) {
     return reactionElement;
 }
 
-// Update Firestore for Reactions
+// Add Reaction to Firestore
 function addReactionToMessage(groupId, messageId, reaction) {
     db.collection('groupchats').doc(groupId).collection('messages').doc(messageId).set({
         reaction: {
             user: firebase.auth().currentUser.email,
-            reaction
+            reaction: reaction
         }
     }, { merge: true }).catch((error) => {
         console.error('Error adding reaction:', error);
     });
 }
+
 
 
 
