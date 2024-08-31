@@ -1115,6 +1115,7 @@ body.night-mode {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.2s ease-in-out;
 }
 
 #refreshButton svg {
@@ -1122,14 +1123,18 @@ body.night-mode {
     height: 24px;
 }
 
+#refreshButton:active {
+    transform: scale(1.2);
+}
+
+#refreshButton:active svg path {
+    stroke: #ffffff; /* Keep the stroke white during the animation */
+}
+
+
 #refreshButton:hover {
     background-color: transparent;
 }
-
-#refreshButton svg path {
-    stroke: white; /* Ensure the stroke is white */
-}
-
 
       
     </style>
@@ -3624,7 +3629,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+document.getElementById('refreshButton').addEventListener('click', () => {
+    const button = document.getElementById('refreshButton');
+    button.style.transition = 'transform 0.5s ease-in-out';
+    button.style.transform = 'rotate(360deg)';
 
+    // Reset the transform after the animation is done
+    setTimeout(() => {
+        button.style.transform = 'none';
+    }, 500);
+});
+</script>
+        
 <script>
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
