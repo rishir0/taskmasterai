@@ -1216,6 +1216,16 @@ body.night-mode {
 #refreshButton:hover, #refreshPinnedButton:hover {
     background-color: transparent;
 }
+
+.message-reaction {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 14px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
       
     </style>
 </head>
@@ -4019,9 +4029,8 @@ function loadGroupMessages(groupId) {
                         reactionButton.textContent = reaction;
                         reactionButton.classList.add('reaction-button');
                         reactionButton.addEventListener('click', () => {
-                            // Add reaction to the message
+                            // Ensure only one reaction per message
                             addReactionToMessage(groupId, message.id, reaction);
-                            messageElement.appendChild(createReactionIcon(reaction));
                         });
                         optionsContainer.appendChild(reactionButton);
                     });
@@ -4035,6 +4044,9 @@ function loadGroupMessages(groupId) {
                     });
 
                     chatMessages.appendChild(messageElement);
+
+                    // Load reactions for this message
+                    loadReactions(groupId, message.id, messageElement);
                 });
 
                 // Scroll to the bottom of the chat
@@ -4043,7 +4055,25 @@ function loadGroupMessages(groupId) {
         });
 }
 
-// Function to create a reaction icon element
+function loadReactions(groupId, messageId, messageElement) {
+    db.collection('groupchats').doc(groupId).collection('messages').doc(messageId)
+        .onSnapshot((doc) => {
+            if (doc.exists && doc.data().reaction) {
+                const reaction = doc.data().reaction;
+                
+                // Remove existing reaction icon if any
+                const existingReactionIcon = messageElement.querySelector('.message-reaction');
+                if (existingReactionIcon) {
+                    existingReactionIcon.remove();
+                }
+
+                // Create and append the reaction icon
+                const reactionIcon = createReactionIcon(reaction);
+                messageElement.prepend(reactionIcon); // Add at the top left of the message bubble
+            }
+        });
+}
+
 function createReactionIcon(reaction) {
     const reactionElement = document.createElement('span');
     reactionElement.classList.add('message-reaction');
@@ -4051,17 +4081,18 @@ function createReactionIcon(reaction) {
     return reactionElement;
 }
 
-// Function to add a reaction to a message in Firestore
+// Update Firestore for Reactions
 function addReactionToMessage(groupId, messageId, reaction) {
-    db.collection('groupchats').doc(groupId).collection('messages').doc(messageId).update({
-        reactions: firebase.firestore.FieldValue.arrayUnion({
+    db.collection('groupchats').doc(groupId).collection('messages').doc(messageId).set({
+        reaction: {
             user: firebase.auth().currentUser.email,
             reaction
-        })
-    }).catch((error) => {
+        }
+    }, { merge: true }).catch((error) => {
         console.error('Error adding reaction:', error);
     });
 }
+
 
 
 // Call this function after user logs in to load existing group chats
