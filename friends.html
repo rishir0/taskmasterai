@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1105,81 +1104,31 @@ body.night-mode {
 .friends-list h2 {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    color: #ffffff;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #1f1f1f;
-    border-radius: 5px;
 }
 
-.friends-list ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0 0 20px 0;
-}
-
-.friend-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    margin-bottom: 5px;
-    background-color: #2b2b2b;
-    border-radius: 4px;
-    color: #ffffff;
-}
-
-.friend-name {
-    flex: 1;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.friend-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.button-icon {
+#refreshButton {
     background-color: transparent;
     border: none;
+    padding: 0;
+    margin-left: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
+    transition: transform 0.2s ease-in-out;
 }
 
-.button-icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+#refreshButton svg {
+    width: 24px;
+    height: 24px;
 }
 
-.button-icon svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: #ffffff;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+#refreshButton:active {
+    transform: scale(1.2);
 }
 
-#refreshOnlineButton,
-#refreshPinnedButton {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-}
-
-#refreshOnlineButton:active,
-#refreshPinnedButton:active {
-    transform: rotate(360deg);
+#refreshButton:active svg path {
+    stroke: #ffffff; /* Keep the stroke white during the animation */
 }
 
 
@@ -1311,32 +1260,27 @@ body.night-mode {
             </svg>
         </div>
 <div class="friends-list">
-    <h2>
-        Pinned Friends
-        <button id="refreshPinnedButton">
-            <!-- Refresh Icon SVG -->
+    <h2>Pinned Friends</h2>
+        <button id="refreshButton">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
-        </button>
-    </h2>
-    <ul id="pinnedFriends">
+    <div id="pinnedFriends">
         <!-- Pinned friends will be dynamically added here -->
-    </ul>
+    </div>
 
     <h2>
         Online Friends
-        <button id="refreshOnlineButton">
-            <!-- Refresh Icon SVG -->
+        <button id="refreshButton">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </button>
     </h2>
-    <ul id="onlineFriends">
-        <!-- Online friends will be dynamically added here -->
-    </ul>
-</div>
+    <div id="onlineFriends">
+        <!-- Friends will be dynamically added here -->
+    </div>
+</div
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
         <button onclick="addFriend()">Add Friend</button>
