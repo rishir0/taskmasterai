@@ -20,6 +20,8 @@
     --glass-bg: rgba(255, 255, 255, 0.1); /* Frosted Glass Effect */
     --hover-bg: rgba(255, 255, 255, 0.1); /* Slightly Darker Hover Background */
     --border-radius: 15px;
+    --svg-size: 50px; /* Default size */
+
 }
 
 
@@ -208,16 +210,15 @@ body.night-mode {
 }
 
 .dashboard-header h1 {
-    font-size: 2.5rem;
-    margin: 0; /* Remove default margin to align with icon */
     display: flex;
-    align-items: center; /* Center align text and icon vertically */
+    align-items: center;
+    font-size: 2.5rem; /* Adjust as needed */
 }
 
 .dashboard-header svg {
-    width: 1.5rem; /* Adjust the size to fit nicely with the text */
-    height: 1.5rem;
-    margin-left: 10px; /* Space between the icon and text */
+    width: var(--svg-size); /* Use the variable for size */
+    height: var(--svg-size); /* Maintain aspect ratio */
+    margin-left: 8px; /* Adjust space between text and icon */
 }
 
 
