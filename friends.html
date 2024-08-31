@@ -2601,6 +2601,8 @@ function loadOnlineFriends() {
                                         viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
                                         viewFriendInfoButton.style.border = 'none';
                                         viewFriendInfoButton.style.borderRadius = '50%';
+                                        viewFriendInfoButton.style.marginLeft = '8px';
+                                        viewFriendInfoButton.style.marginRight = '0';
                                         viewFriendInfoButton.style.padding = '6px';
                                         viewFriendInfoButton.style.cursor = 'pointer';
                                         viewFriendInfoButton.style.display = 'flex';
@@ -2648,12 +2650,13 @@ pinnedFriendsButton.innerHTML = `
 pinnedFriendsButton.style.backgroundColor = 'var(--primary-color)';
 pinnedFriendsButton.style.border = 'none';
 pinnedFriendsButton.style.borderRadius = '50%';
+pinnedFriendsButton.style.marginLeft = '8px';
+pinnedFriendsButton.style.marginRight = '0';
 pinnedFriendsButton.style.padding = '6px';
 pinnedFriendsButton.style.cursor = 'pointer';
 pinnedFriendsButton.style.display = 'flex';
 pinnedFriendsButton.style.alignItems = 'center';
 pinnedFriendsButton.style.justifyContent = 'center';
-pinnedFriendsButton.style.marginLeft = '5px';
 
 pinnedFriendsButton.addEventListener('mouseover', () => {
     pinnedFriendsButton.style.backgroundColor = '#3b7bce';
@@ -2665,7 +2668,43 @@ pinnedFriendsButton.addEventListener('mouseout', () => {
 
 // Add click event to handle pinning functionality
 pinnedFriendsButton.onclick = () => {
-    togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet);
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+        const pinnedUserEmail = friendEmail;
+
+        // Reference to the current user's document in the 'pinnedFriends' collection
+        const userRef = db.collection('pinnedFriends').doc(currentUserUID);
+
+        // Get the user's pinned friends
+        userRef.get()
+            .then((doc) => {
+                let pinnedFriends = [];
+                if (doc.exists) {
+                    pinnedFriends = doc.data().pinnedFriends || [];
+                } else {
+                    // If the document doesn't exist, create it with an empty pinnedFriends array
+                    userRef.set({ pinnedFriends: [] });
+                }
+
+                // Add the pinned friend's email if not already in the list
+                if (!pinnedFriends.includes(pinnedUserEmail)) {
+                    pinnedFriends.push(pinnedUserEmail);
+
+                    // Update the user's pinned friends list in Firestore
+                    return userRef.update({
+                        pinnedFriends: pinnedFriends
+                    });
+                } else {
+                    console.log('This friend is already pinned.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error pinning friend: ', error);
+            });
+    } else {
+        console.error('User not authenticated');
+    }
 };
 
 
