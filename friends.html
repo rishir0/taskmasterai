@@ -1104,39 +1104,82 @@ body.night-mode {
 .friends-list h2 {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #1f1f1f;
+    border-radius: 5px;
 }
 
-#refreshButton {
+.friends-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    background-color: #2b2b2b;
+    border-radius: 4px;
+    color: #ffffff;
+}
+
+.friend-name {
+    flex: 1;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.friend-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.button-icon {
     background-color: transparent;
     border: none;
-    padding: 0;
-    margin-left: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease-in-out;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
 }
 
-#refreshButton svg {
-    width: 24px;
-    height: 24px;
+.button-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-#refreshButton:active {
-    transform: scale(1.2);
+.button-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-#refreshButton:active svg path {
-    stroke: #ffffff; /* Keep the stroke white during the animation */
-}
-
-
-#refreshButton:hover {
+#refreshOnlineButton,
+#refreshPinnedButton {
     background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
 }
 
-      
+#refreshOnlineButton:active,
+#refreshPinnedButton:active {
+    transform: rotate(360deg);
+}
     </style>
 </head>
 <body>
@@ -1261,16 +1304,30 @@ body.night-mode {
         </div>
 <div class="friends-list">
     <h2>
-        Online Friends
-        <button id="refreshButton">
+        Pinned Friends
+        <button id="refreshPinnedButton">
+            <!-- Refresh Icon SVG -->
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
     </h2>
-    <div id="onlineFriends">
-        <!-- Friends will be dynamically added here -->
-    </div>
+    <ul id="pinnedFriends">
+        <!-- Pinned friends will be dynamically added here -->
+    </ul>
+
+    <h2>
+        Online Friends
+        <button id="refreshOnlineButton">
+            <!-- Refresh Icon SVG -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </h2>
+    <ul id="onlineFriends">
+        <!-- Online friends will be dynamically added here -->
+    </ul>
 </div>
     <div class="add-friend">
         <input type="text" id="friendEmail" placeholder="Enter friend's email">
@@ -2513,6 +2570,8 @@ function loadOnlineFriends() {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
         const displayNameMap = new Map(); // To store the display names of friends
+        const pinnedFriends = new Set(); // To store pinned friends
+
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -2527,6 +2586,16 @@ function loadOnlineFriends() {
                             displayNameMap.set(email, null); // Initialize with null
                         });
                     }
+                    
+                    // Get pinned friends
+                    if (data.pinnedFriends) {
+                        data.pinnedFriends.forEach((email) => {
+                            pinnedFriends.add(email);
+                        });
+                    }
+
+                    // Fetch and display pinned friends
+                    displayPinnedFriends(pinnedFriends, displayNameMap);
                     
                     // Now fetch online users
                     db.collection('users').where('online', '==', true)
@@ -2612,11 +2681,27 @@ function loadOnlineFriends() {
                                             };
                                         };
 
+                                       // Pin button
+                                        const pinButton = document.createElement('button');
+                                        pinButton.innerHTML = `
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                                                <!-- SVG content as provided -->
+                                            </svg>
+                                        `;
+                                        pinButton.style.backgroundColor = 'transparent';
+                                        pinButton.style.border = 'none';
+                                        pinButton.style.cursor = 'pointer';
+
+                                        pinButton.addEventListener('click', () => {
+                                            pinFriend(friendEmail, friendDisplayName);
+                                        });
+
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
+                                        listItem.appendChild(pinButton);
                                         listItem.appendChild(viewFriendInfoButton);
                                         listItem.appendChild(unfriendButton);
                                         onlineFriendsList.appendChild(listItem);
@@ -2632,6 +2717,62 @@ function loadOnlineFriends() {
     }
 }
 
+function displayPinnedFriends(pinnedFriends, displayNameMap) {
+    const pinnedFriendsList = document.getElementById('pinnedFriends');
+    pinnedFriendsList.innerHTML = '';
+
+    pinnedFriends.forEach((email) => {
+        const displayName = displayNameMap.get(email);
+
+        const listItem = document.createElement('li');
+        listItem.classList.add('friend-item');
+
+        const friendName = document.createElement('span');
+        friendName.textContent = displayName || email;
+        friendName.classList.add('friend-name');
+
+        // Pin button (active state)
+        const pinButton = document.createElement('button');
+        pinButton.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                <!-- SVG content as provided -->
+            </svg>
+        `;
+        pinButton.style.backgroundColor = 'transparent';
+        pinButton.style.border = 'none';
+        pinButton.style.cursor = 'pointer';
+
+        listItem.appendChild(friendName);
+        listItem.appendChild(pinButton);
+        pinnedFriendsList.appendChild(listItem);
+    });
+}
+
+function pinFriend(email, displayName) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserEmail = currentUser.email;
+
+        db.collection('users').where('email', '==', currentUserEmail).get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const userRef = userDoc.ref;
+
+                    userRef.update({
+                        pinnedFriends: firebase.firestore.FieldValue.arrayUnion(email)
+                    }).then(() => {
+                        console.log(`${displayName} has been pinned.`);
+                    }).catch((error) => {
+                        console.error("Error pinning friend: ", error);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data for pinning friend: ", error);
+            });
+    }
+}
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
