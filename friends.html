@@ -1159,36 +1159,32 @@ body.night-mode {
     background-color: transparent;
 }
 
-/* Style for the modal4 */
-#modal4 {
-  display: none; /* Initially hidden */
-  position: absolute; /* Positioned relative to the main content */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-  z-index: 10; /* Ensures it appears above other content */
-  padding: 20px;
+/* Main content container */
+#main-content {
+    position: relative; /* To position the modal relative to this section */
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: transparent;
 }
 
-.modal {
-    position: absolute;
+/* Style for modal4 */
+#modal4 {
+    display: none; /* Initially hidden */
+    position: absolute; /* Positioned relative to the main content */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Slight transparency for overlay effect */
-    z-index: 10; /* Ensure it's on top */
-    display: none; /* Hidden by default */
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    z-index: 10; /* Ensures it appears above other content */
+    padding: 20px;
+    display: flex; /* Flexbox to center content */
     justify-content: center;
     align-items: center;
 }
 
-.modal.active {
-    display: flex; /* Flexbox to center content */
-}
-
+/* Modal content */
 .modal-content {
     background: #333; /* Or your desired background color */
     padding: 20px;
@@ -1199,37 +1195,33 @@ body.night-mode {
     color: white; /* Or your preferred text color */
 }
 
+/* Section spacing */
 .section {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
+/* Button styling */
 .continue-btn,
 .final-continue-btn {
-  background-color: #5a5a5a;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
+    background-color: #5a5a5a;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 .continue-btn:hover,
 .final-continue-btn:hover {
-  background-color: #787878;
+    background-color: #787878;
 }
 
-#main-content {
-  position: relative;
-}
-
-/* Ensure the modal doesn't cover other content */
+/* Modal visibility */
 #modal4.active {
-  display: block;
+    display: flex; /* Display as flexbox when active */
 }
-
-
-      
+        
     </style>
 </head>
 <body>
@@ -4007,35 +3999,23 @@ document.getElementById('refreshButton').addEventListener('click', () => {
 </script>
 
 <script>
-let currentStep = 0;
-document.addEventListener("DOMContentLoaded", function() {
-    const modal = document.getElementById('modal4');
-    const continueButtons = modal.querySelectorAll('.continue-btn');
-    const finalContinueBtn = modal.querySelector('.final-continue-btn');
+document.querySelectorAll('.continue-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const currentSlide = this.closest('.modal-slide');
+        const nextSlide = currentSlide.nextElementSibling;
 
-    // Show the modal on page load (for first-time users)
-    if (!localStorage.getItem('modal4_shown')) {
-        modal.classList.add('active');
-    }
-
-    continueButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const currentSection = button.closest('.section');
-            const nextSectionId = button.getAttribute('data-next');
-            const nextSection = document.getElementById(nextSectionId);
-
-            currentSection.style.display = 'none';
-            if (nextSection) {
-                nextSection.style.display = 'block';
-            }
-        });
-    });
-
-    finalContinueBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
-        localStorage.setItem('modal4_shown', 'true');
+        if (nextSlide) {
+            currentSlide.style.display = 'none';
+            nextSlide.style.display = 'block';
+        } else {
+            document.getElementById('modal4').classList.remove('active');
+        }
     });
 });
+
+// To open the modal
+document.getElementById('modal4').classList.add('active');
+
 </script>
 
         
