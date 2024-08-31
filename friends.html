@@ -279,6 +279,29 @@ body.night-mode {
     background: var(--hover-bg);
 }
 
+#pinnedFriends {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#pinnedFriends .friend-item {
+    background: var(--glass-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: space-between; /* Ensure the friend name and buttons are spaced out */
+    align-items: center; /* Align items in the center vertically */
+}
+
+#pinnedFriends .friend-item:hover {
+    background: var(--hover-bg);
+}
+
+
 .friend-name {
     flex-grow: 1; /* Make the friend name take up remaining space */
     margin-right: 10px; /* Add some spacing between the name and the button */
@@ -2345,6 +2368,7 @@ function clearRecentEmojis() {
             if (user) {
                 loadOnlineFriends();
                 listenForFriendRequests();
+                refreshOnlineFriends();
             } else {
                 window.location.href = "login.html";
             }
@@ -2729,50 +2753,7 @@ pinnedFriendsButton.onclick = () => {
             });
     }
 }
-
-function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
-    const currentUser = firebase.auth().currentUser;
-
-    if (currentUser) {
-        const currentUserEmail = currentUser.email;
-        const userRef = db.collection('users').doc(currentUserEmail);
-
-        userRef.get()
-            .then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    let pinnedFriends = userData.pinnedFriends || [];
-
-                    if (pinnedFriendsSet.has(friendEmail)) {
-                        // Unpin friend
-                        pinnedFriends = pinnedFriends.filter(email => email !== friendEmail);
-                        pinnedFriendsSet.delete(friendEmail);
-                    } else {
-                        // Pin friend
-                        pinnedFriends.push(friendEmail);
-                        pinnedFriendsSet.add(friendEmail);
-                    }
-
-                    // Update the user's pinned friends list in Firestore
-                    return userRef.update({
-                        pinnedFriends: pinnedFriends
-                    });
-                } else {
-                    console.error('User document does not exist');
-                }
-            })
-            .then(() => {
-                console.log(`${friendDisplayName} has been ${pinnedFriendsSet.has(friendEmail) ? 'pinned' : 'unpinned'}.`);
-                refreshOnlineFriends(); // Refresh the friends list
-            })
-            .catch((error) => {
-                console.error('Error updating pinned friends:', error);
-            });
-    } else {
-        console.error('No user is signed in.');
-    }
-}
-
+        
 function refreshOnlineFriends() {
     loadOnlineFriends();
     loadPinnedFriends(); // Call the loadPinnedFriends function here
@@ -2844,6 +2825,50 @@ function loadPinnedFriends() {
 
 // Ensure this is called initially to load pinned friends on page load
 refreshOnlineFriends();
+
+        
+function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+        const currentUserEmail = currentUser.email;
+        const userRef = db.collection('users').doc(currentUserEmail);
+
+        userRef.get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    let pinnedFriends = userData.pinnedFriends || [];
+
+                    if (pinnedFriendsSet.has(friendEmail)) {
+                        // Unpin friend
+                        pinnedFriends = pinnedFriends.filter(email => email !== friendEmail);
+                        pinnedFriendsSet.delete(friendEmail);
+                    } else {
+                        // Pin friend
+                        pinnedFriends.push(friendEmail);
+                        pinnedFriendsSet.add(friendEmail);
+                    }
+
+                    // Update the user's pinned friends list in Firestore
+                    return userRef.update({
+                        pinnedFriends: pinnedFriends
+                    });
+                } else {
+                    console.error('User document does not exist');
+                }
+            })
+            .then(() => {
+                console.log(`${friendDisplayName} has been ${pinnedFriendsSet.has(friendEmail) ? 'pinned' : 'unpinned'}.`);
+                refreshOnlineFriends(); // Refresh the friends list
+            })
+            .catch((error) => {
+                console.error('Error updating pinned friends:', error);
+            });
+    } else {
+        console.error('No user is signed in.');
+    }
+}
 
 
 function createUnfriendButton(friendEmail) {
