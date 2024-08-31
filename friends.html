@@ -2588,7 +2588,7 @@ function loadOnlineFriends() {
                                 const friendEmail = friend.email;
                                 let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-                                if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                if (acceptedFriends.has(friendEmail) && !pinnedFriendsSet.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     // Update display name if changed
                                     if (displayNameMap.get(friendEmail) !== friendDisplayName) {
                                         displayNameMap.set(friendEmail, friendDisplayName);
