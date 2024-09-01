@@ -1458,7 +1458,14 @@ body.night-mode {
         <!-- Chat messages will be displayed here -->
     </div>
     <div class="chat-input-container">
-        <input type="text" id="chatInput" placeholder="Type a message">
+        <input 
+            type="text" 
+            id="chatInput" 
+            placeholder="Type a message" 
+            spellcheck="true" 
+            autocomplete="on" 
+            aria-label="Chat message input"
+        >
         <button onclick="sendMessage(currentGroupId)">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -1468,7 +1475,7 @@ body.night-mode {
                 </g>
             </svg>
         </button>
-    </div>    
+    </div>
 <div class="emoji-container">
     <div id="recentEmojis" class="emoji-list"></div>
     <div class="dropdown">
@@ -2860,6 +2867,10 @@ pinnedFriendsButton.onclick = () => {
                     console.log('This friend is already pinned.');
                 }
             })
+            .then(() => {
+                // Refresh the list of pinned friends after updating Firestore
+                loadPinnedFriends();
+            })
             .catch((error) => {
                 console.error('Error pinning friend: ', error);
             });
@@ -2867,7 +2878,6 @@ pinnedFriendsButton.onclick = () => {
         console.error('User not authenticated');
     }
 };
-
 
 
                                         // Add click event to open chat
