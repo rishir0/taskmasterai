@@ -2617,7 +2617,7 @@ function acceptFriendRequest(requestId, senderEmail) {
             console.log('Friend request accepted!');
             // Add both users to accepted friends
             addToAcceptedFriends(userId, senderEmail);
-            loadMessages(senderEmail);
+            openChat(senderEmail);
         }).catch((error) => {
             console.error('Error accepting friend request:', error);
         });
@@ -2871,7 +2871,8 @@ pinnedFriendsButton.onclick = () => {
 
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => loadMessages(friendEmail);
+                                        friendName.onclick = () => openChat(friendEmail);
+               
 
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
@@ -3040,7 +3041,7 @@ unpinButton.onclick = () => {
 };
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => loadMessages(friendEmail);
+                                        friendName.onclick = () => openChat(friendEmail);
 
                                     // Append buttons to the list item
                                     listItem.appendChild(unpinButton);
@@ -3381,13 +3382,24 @@ function startChat(friendEmail) {
 });
 
 
-function loadMessages(friendEmail) {
+function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
     currentChatFriend = friendEmail;
+
+    // Load messages for the individual chat
+    loadMessages(friendEmail);
+}
+
+
+function loadMessages(friendEmail) {
+    const chatWithSpan = document.getElementById('chatWith');
+    const chatWindow = document.getElementById('chatMessages');
+    const currentUser = firebase.auth().currentUser;
+    const chatId = getChatId(currentUser.email, friendEmail);
 
     db.collection('users').where('email', '==', friendEmail).get()
         .then((querySnapshot) => {
