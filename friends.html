@@ -3282,9 +3282,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let chatId = ''; // Define chatId variable here
 
     // Function to update chatId based on the current chat
-    function updateChatId(userEmail, chatFriend) {
+    function updateChatId(userEmail, chatFriend, callback) {
         chatId = getChatId(userEmail, chatFriend);
-        setupMessageListener(); // Set up message listener with the new chatId
+        setupMessageListener(callback); // Set up message listener with the new chatId
     }
 
     function sendMessage() {
@@ -3312,9 +3312,9 @@ document.addEventListener("DOMContentLoaded", function() {
         } else if (currentChatFriend) {
             // Sending a message to an individual
             if (!chatId) {
-                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-                // Wait for chatId to be updated before sending the message
-                sendButton.disabled = false; // Re-enable the send button
+                updateChatId(currentUser.email, currentChatFriend, function() {
+                    sendMessage(); // Retry sending the message once chatId is set
+                });
                 return; // Exit the function to wait for the chatId update
             }
 
@@ -3341,7 +3341,7 @@ document.addEventListener("DOMContentLoaded", function() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
     }
 
-    function setupMessageListener() {
+    function setupMessageListener(callback) {
         if (chatId) {
             db.collection('chats').doc(chatId).collection('messages')
                 .orderBy('timestamp')
@@ -3352,6 +3352,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             scrollToBottom(); // Scroll to the bottom when a new message is added
                         }
                     });
+                    if (callback) callback(); // Execute callback if provided
                 });
         } else if (currentGroupId) {
             db.collection('groupchats').doc(currentGroupId).collection('messages')
@@ -3363,6 +3364,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             scrollToBottom(); // Scroll to the bottom when a new message is added
                         }
                     });
+                    if (callback) callback(); // Execute callback if provided
                 });
         }
     }
@@ -3378,18 +3380,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-
-// Example function to start or switch chats
-function startChat(friendEmail) {
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser) {
-        updateChatId(currentUser.email, friendEmail);
-    }
-}
-
-    // Use startChat(friendEmail) when starting or switching chats
-});
-
 
 // Function to open an individual chat
 function openChat(friendEmail) {
