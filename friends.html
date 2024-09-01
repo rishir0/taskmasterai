@@ -1262,39 +1262,27 @@ body.night-mode {
 
 /* The Modal (background) */
 .modal4 {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
-}
-
-/* The Modal (background) */
-.modal4 {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+    background-color: rgba(128, 128, 128, 0.8); /* Gray with semi-transparency */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
 }
 
 /* Modal Content */
 .modal4-content {
-    background-color: rgba(255, 255, 255, 0.8); /* White with opacity */
-    margin: 15% auto; /* 15% from the top and centered */
+    background-color: rgba(255, 255, 255, 0.9); /* White with slight opacity */
     padding: 20px;
     border: none;
     border-radius: 20px; /* Rounded corners for the modal */
-    width: 80%; /* Could be more or less, depending on screen size */
-    position: relative;
+    width: 60%; /* Smaller width */
+    max-width: 500px; /* Max width to ensure it's not too large on wider screens */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
 }
 
@@ -3620,9 +3608,28 @@ function openChat(friendEmail) {
 function openReplyModal(chatId, messageId, originalMessage) {
     const modal = document.getElementById('modal4');
     const modalMessage = document.getElementById('modal4Message');
-    modalMessage.textContent = `Replying to: "${originalMessage}"`;
+    
+    // Clear previous replies
+    modalMessage.innerHTML = `<p>Replying to: "${originalMessage}"</p>`;
+    
+    // Fetch replies from Firestore
+    db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const replyData = doc.data();
+                const replyText = replyData.replyText;
+                const sender = replyData.sender;
 
-    modal.style.display = "block";
+                const replyElement = document.createElement('p');
+                replyElement.textContent = `${sender}: ${replyText}`;
+                modalMessage.appendChild(replyElement);
+            });
+
+            modal.style.display = "block";
+        })
+        .catch((error) => {
+            console.error('Error fetching replies from Firestore:', error);
+        });
 
     const sendReplyButton = document.getElementById('sendReplyButton');
     sendReplyButton.onclick = () => {
@@ -3643,34 +3650,51 @@ function openReplyModal(chatId, messageId, originalMessage) {
 }
 
 
+
 function addReplyToMessage(chatId, messageId, replyText) {
-    if (!replies[messageId]) {
-        replies[messageId] = [];
-    }
-    replies[messageId].push(replyText);
+    const currentUser = firebase.auth().currentUser;
+    
+    // Add the reply to Firestore under the 'replies' collection
+    db.collection('replies').add({
+        chatId: chatId,
+        messageId: messageId,
+        sender: currentUser.email,
+        replyText: replyText,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        console.log('Reply successfully added to Firestore.');
+        
+        // Update the UI to reflect the number of replies
+        const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (messageDiv) {
+            let replyCountText = messageDiv.querySelector('.reply-count');
 
-    const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+            // Fetch the updated count of replies
+            db.collection('replies').where('messageId', '==', messageId).get().then((querySnapshot) => {
+                const replyCount = querySnapshot.size;
 
-    if (messageDiv) {
-        let replyCountText = messageDiv.querySelector('.reply-count');
-        const replyCount = replies[messageId].length;
+                if (replyCountText) {
+                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                } else {
+                    replyCountText = document.createElement('span');
+                    replyCountText.classList.add('reply-count');
+                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                    messageDiv.appendChild(replyCountText);
 
-        if (replyCountText) {
-            replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
-        } else {
-            replyCountText = document.createElement('span');
-            replyCountText.classList.add('reply-count');
-            replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
-            messageDiv.appendChild(replyCountText);
-
-            // Add an event listener to the reply count to open the modal
-            replyCountText.addEventListener('click', () => {
-                openReplyModal(chatId, messageId, replies[messageId].join('\n'));
+                    // Add an event listener to the reply count to open the modal
+                    replyCountText.addEventListener('click', () => {
+                        openReplyModal(chatId, messageId, replyText);
+                    });
+                }
             });
+        } else {
+            console.error('Message div not found for messageId:', messageId);
         }
-    } else {
-        console.error('Message div not found for messageId:', messageId);
-    }
+    })
+    .catch((error) => {
+        console.error('Error adding reply to Firestore:', error);
+    });
 }
 
 // Make sure each message div has a data-message-id attribute
