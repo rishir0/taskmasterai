@@ -1255,9 +1255,7 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
-.reaction-current-user {
-    background-color: var(--accent-color); /* Accent color */
-}
+
       
     </style>
 </head>
@@ -3557,10 +3555,11 @@ function loadReactionsV2(chatId, messageId, messageElement) {
                     if (sender === currentUser) {
                         // If the current user sent the message, place the reaction at the top left with accent color
                         reactionIcon.style.position = 'absolute';
-                        reactionIcon.classList.add('reaction-current-user');
                         reactionIcon.style.top = '-8px';
                         reactionIcon.style.left = '-10px';
                         reactionIcon.style.backgroundColor = 'var(--accent-color)';
+                        reactionButton.style.backgroundColor = 'var(--accent-color)';
+                        removeReactionButton.style.backgroundColor = 'var(--accent-color)';
                     } else {
                         // For other users, keep the reaction on the top right with the primary color
                         reactionIcon.style.position = 'absolute';
