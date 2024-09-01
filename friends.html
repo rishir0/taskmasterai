@@ -3036,8 +3036,43 @@ unpinButton.addEventListener('mouseout', () => {
 });
 
 unpinButton.onclick = () => {
-    // Implement the unpin functionality here
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+        
+        // Get the friend's email to unpin
+        const friendEmailToUnpin = friendEmail; // Use the variable for friend's email
+
+        // Fetch the current user's pinned friends
+        db.collection('pinnedFriends').doc(currentUserUID).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    let pinnedFriends = doc.data().pinnedFriends || [];
+                    
+                    // Remove the friend from the pinned friends list
+                    pinnedFriends = pinnedFriends.filter(email => email !== friendEmailToUnpin);
+                    
+                    // Update the pinned friends list in Firestore
+                    return db.collection('pinnedFriends').doc(currentUserUID).update({
+                        pinnedFriends: pinnedFriends
+                    });
+                } else {
+                    console.log('No pinned friends found');
+                }
+            })
+            .then(() => {
+                console.log('Friend unpinned successfully');
+                // Optionally, you can refresh the list of pinned friends to reflect changes
+                loadPinnedFriends();
+            })
+            .catch((error) => {
+                console.error('Error unpinning friend:', error);
+            });
+    } else {
+        console.log('No current user found');
+    }
 };
+
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
