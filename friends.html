@@ -3366,6 +3366,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Function to open an individual chat
 function openChat(friendEmail) {
+    currentChatFriend = friendEmail;  // Set the current chat friend
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
