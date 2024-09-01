@@ -3377,7 +3377,7 @@ function openChat(friendEmail) {
             document.getElementById('chatWith').textContent = friendName;
 
             // Load messages for the individual chat
-            loadChatMessages(chatId);
+            loadMessages(chatId);
         } else {
             console.error('Friend not found in the database');
         }
