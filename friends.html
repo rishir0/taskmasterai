@@ -1255,7 +1255,9 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
-
+.reaction-current-user {
+    background-color: var(--accent-color); /* Accent color */
+}
       
     </style>
 </head>
@@ -3477,16 +3479,8 @@ function openChat(friendEmail) {
                             optionsContainer.classList.add('message-options');
                             optionsContainer.style.display = 'none'; // Initially hidden
 
-                            // Reply option
-                            const replyOption = document.createElement('button');
-                            replyOption.textContent = 'Reply';
-                            replyOption.classList.add('reply-option');
-                            replyOption.addEventListener('click', () => {
-                                alert(`Reply to message: "${message.message}"`);
-                            });
-
-                            // Reaction options
-                            const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                            // Reaction options in the specified order
+                            const reactions = ['❤️', '👍', '👎', '😆', '‼️', '?'];
                             reactions.forEach(reaction => {
                                 const reactionButton = document.createElement('button');
                                 reactionButton.textContent = reaction;
@@ -3505,6 +3499,15 @@ function openChat(friendEmail) {
                                 removeReactionFromMessageV2(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
+
+                            // Reply option (moved after the remove button)
+                            const replyOption = document.createElement('button');
+                            replyOption.textContent = 'Reply';
+                            replyOption.classList.add('reply-option');
+                            replyOption.addEventListener('click', () => {
+                                alert(`Reply to message: "${message.message}"`);
+                            });
+                            optionsContainer.appendChild(replyOption);
 
                             messageDiv.appendChild(optionsContainer);
 
@@ -3527,6 +3530,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 // Function to remove reaction
 function removeReactionFromMessageV2(chatId, messageId) {
@@ -3558,8 +3562,6 @@ function loadReactionsV2(chatId, messageId, messageElement) {
                         reactionIcon.style.top = '-8px';
                         reactionIcon.style.left = '-10px';
                         reactionIcon.style.backgroundColor = 'var(--accent-color)';
-                        reactionButton.style.backgroundColor = 'var(--accent-color)';
-                        removeReactionButton.style.backgroundColor = 'var(--accent-color)';
                     } else {
                         // For other users, keep the reaction on the top right with the primary color
                         reactionIcon.style.position = 'absolute';
