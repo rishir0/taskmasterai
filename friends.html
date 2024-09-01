@@ -1236,7 +1236,7 @@ body.night-mode {
     margin-top: 5px;
 }
 
-.reaction-button, .remove-reaction-button {
+.reaction-button, .remove-reaction-button, .reply-option {
     background-color: var(--primary-color);
     color: #fff;
     border: none;
@@ -1251,9 +1251,10 @@ body.night-mode {
     cursor: pointer;
 }
 
-.reaction-button:hover, .remove-reaction-button:hover {
+.reaction-button:hover, .remove-reaction-button:hover, .reply-option:hover {
     background-color: var(--accent-color);
 }
+
 
 .reaction-current-user {
     background-color: var(--accent-color); /* Accent color */
@@ -2340,6 +2341,15 @@ body.night-mode {
     </div>
 </div>
 
+<!-- Modal for Replies -->
+<div id="modal4" class="modal4">
+    <div class="modal4-content">
+        <span class="modal4-close">&times;</span>
+        <div id="modal4Message"></div>
+        <textarea id="replyInput" placeholder="Write your reply here..."></textarea>
+        <button id="sendReplyButton">Send Reply</button>
+    </div>
+</div>
 
 
 
@@ -3427,6 +3437,7 @@ function startChat(friendEmail) {
     // Use startChat(friendEmail) when starting or switching chats
 });
 
+let replies = {};
 
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
@@ -3505,9 +3516,10 @@ function openChat(friendEmail) {
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
                             replyOption.addEventListener('click', () => {
-                                alert(`Reply to message: "${message.message}"`);
+                            openReplyModal(chatId, messageId, message.message);
                             });
                             optionsContainer.appendChild(replyOption);
+
 
                             messageDiv.appendChild(optionsContainer);
 
@@ -3531,6 +3543,77 @@ function openChat(friendEmail) {
         });
 }
 
+
+// Function to open the modal
+function openReplyModal(chatId, messageId, originalMessage) {
+    const modal = document.getElementById('modal4');
+    const modalMessage = document.getElementById('modal4Message');
+    modalMessage.textContent = `Replying to: "${originalMessage}"`;
+
+    modal.style.display = "block";
+
+    const sendReplyButton = document.getElementById('sendReplyButton');
+    sendReplyButton.onclick = () => {
+        const replyText = document.getElementById('replyInput').value.trim();
+        if (replyText) {
+            addReplyToMessage(chatId, messageId, replyText);
+            document.getElementById('replyInput').value = ''; // Clear the text area
+        }
+        modal.style.display = "none";
+    };
+
+    // Close the modal when clicking anywhere outside the modal content
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    // Close the modal when clicking the close button
+    const closeModal = document.getElementsByClassName("modal4-close")[0];
+    closeModal.onclick = () => {
+        modal.style.display = "none";
+    };
+}
+
+// Function to add a reply to the message
+function addReplyToMessage(chatId, messageId, replyText) {
+    if (!replies[messageId]) {
+        replies[messageId] = [];
+    }
+    replies[messageId].push(replyText);
+
+    const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+    const replyCountText = messageDiv.querySelector('.reply-count');
+    const replyCount = replies[messageId].length;
+
+    if (replyCountText) {
+        replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+    } else {
+        const newReplyCount = document.createElement('span');
+        newReplyCount.classList.add('reply-count');
+        newReplyCount.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+        messageDiv.appendChild(newReplyCount);
+    }
+
+    // Add an event listener to the reply count to open the modal
+    if (!replyCountText) {
+        messageDiv.querySelector('.reply-count').addEventListener('click', () => {
+            openReplyModal(chatId, messageId, replies[messageId].join('\n'));
+        });
+    }
+}
+
+// Make sure each message div has a data-message-id attribute
+function createMessageDiv(message, messageId) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message-container');
+    messageDiv.setAttribute('data-message-id', messageId);
+
+    // Add text, options, etc. to messageDiv
+
+    return messageDiv;
+}
 
 // Function to remove reaction
 function removeReactionFromMessageV2(chatId, messageId) {
