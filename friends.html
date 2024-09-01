@@ -1275,26 +1275,27 @@ body.night-mode {
 
 /* The Modal (background) */
 .modal4 {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+    background-color: rgba(128, 128, 128, 0.8); /* Gray with semi-transparency */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
 }
 
 /* Modal Content */
 .modal4-content {
-    background-color: rgba(255, 255, 255, 0.8); /* White with opacity */
-    margin: 15% auto; /* 15% from the top and centered */
+    background-color: rgba(255, 255, 255, 0.9); /* White with slight opacity */
     padding: 20px;
     border: none;
     border-radius: 20px; /* Rounded corners for the modal */
-    width: 80%; /* Could be more or less, depending on screen size */
-    position: relative;
+    width: 60%; /* Smaller width */
+    max-width: 500px; /* Max width to ensure it's not too large on wider screens */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
 }
 
@@ -3588,10 +3589,9 @@ function openChat(friendEmail) {
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
                             replyOption.addEventListener('click', () => {
-                            openReplyModal(chatId, messageId, message.message);
+                                openReplyModal(chatId, messageId, message.message);
                             });
                             optionsContainer.appendChild(replyOption);
-
 
                             messageDiv.appendChild(optionsContainer);
 
@@ -3603,6 +3603,9 @@ function openChat(friendEmail) {
 
                             // Load reactions for this message
                             loadReactionsV2(chatId, messageId, messageDiv);
+
+                            // Load replies for this message
+                            loadReplies(chatId, messageId, messageDiv);
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3718,6 +3721,42 @@ function createMessageDiv(message, messageId) {
 
     return messageDiv;
 }
+
+function loadReplies(chatId, messageId, messageDiv) {
+    // Query Firestore to count the number of replies for the specific message
+    db.collection('replies').where('messageId', '==', messageId).get()
+        .then((querySnapshot) => {
+            const replyCount = querySnapshot.size;
+            let replyCountText = messageDiv.querySelector('.reply-count');
+
+            if (replyCount > 0) {
+                const replyText = `${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`;
+                
+                // If the reply count element exists, update it
+                if (replyCountText) {
+                    replyCountText.textContent = replyText;
+                } else {
+                    // If it doesn't exist, create it and append it to the messageDiv
+                    replyCountText = document.createElement('span');
+                    replyCountText.classList.add('reply-count');
+                    replyCountText.textContent = replyText;
+                    messageDiv.appendChild(replyCountText);
+
+                    // Add an event listener to the reply count to open the modal
+                    replyCountText.addEventListener('click', () => {
+                        openReplyModal(chatId, messageId, messageDiv.querySelector('.message-text').textContent);
+                    });
+                }
+            } else if (replyCountText) {
+                // If no replies exist, remove the reply count element
+                replyCountText.remove();
+            }
+        })
+        .catch((error) => {
+            console.error('Error loading replies from Firestore:', error);
+        });
+}
+
 
 // Function to remove reaction
 function removeReactionFromMessageV2(chatId, messageId) {
