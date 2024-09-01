@@ -2357,6 +2357,8 @@ var auth = firebase.auth();
 var emojiPicker = document.getElementById("emojiPicker");
 var recentEmojisContainer = document.getElementById("recentEmojis");
 
+
+
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
     emojiPicker.classList.toggle("hidden");
@@ -2512,6 +2514,24 @@ function clearRecentEmojis() {
         });
     });
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
+    
+    // Define chatId and currentChatFriend variables here
+    let chatId = ''; // This will store the ID of the current chat (individual chat)
+    let currentChatFriend = ''; // This will store the email of the current chat friend
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        currentChatFriend = chatFriend; // Set the current chat friend here
+        setupMessageListener(); // Set up message listener with the new chatId
+    }
+
+    
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     event.waitUntil(
@@ -3273,27 +3293,12 @@ function unfriendUser(friendEmail) {
     }
 }
 
-
-document.addEventListener("DOMContentLoaded", function() {
-    const chatInputElement = document.getElementById('chatInput');
-    const sendButton = document.querySelector('.chat-window button');
-    const chatMessagesElement = document.getElementById('chatMessages');
-    
-    let chatId = ''; // Define chatId variable here
-
-    // Function to update chatId based on the current chat
-    function updateChatId(userEmail, chatFriend, callback) {
-        chatId = getChatId(userEmail, chatFriend);
-        setupMessageListener(callback); // Set up message listener with the new chatId
-    }
-
+    // Define the sendMessage function here
     function sendMessage() {
         const chatInput = chatInputElement.value.trim();
         const currentUser = firebase.auth().currentUser;
 
         if (!chatInput || !currentUser) return; // Exit if no input or no current user
-
-        sendButton.disabled = true; // Disable the send button to prevent duplicate sends
 
         if (currentGroupId) {
             // Sending a message to a group
@@ -3302,19 +3307,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 message: chatInput,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
+                console.log('Group message sent!');
                 chatInputElement.value = ''; // Clear the input field after sending
-                scrollToBottom(); // Scroll to the bottom after sending the message
             }).catch((error) => {
                 console.error('Error sending group message: ', error);
-            }).finally(() => {
-                sendButton.disabled = false; // Re-enable the send button
             });
         } else if (currentChatFriend) {
             // Sending a message to an individual
             if (!chatId) {
-                updateChatId(currentUser.email, currentChatFriend, function() {
-                    sendMessage(); // Retry sending the message once chatId is set
-                });
+                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
                 return; // Exit the function to wait for the chatId update
             }
 
@@ -3324,16 +3325,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 message: chatInput,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
+                console.log('Message sent!');
                 chatInputElement.value = ''; // Clear the input field after sending
-                scrollToBottom(); // Scroll to the bottom after sending the message
             }).catch((error) => {
                 console.error('Error sending message: ', error);
-            }).finally(() => {
-                sendButton.disabled = false; // Re-enable the send button
             });
         } else {
             console.error('No recipient or group chat selected.');
-            sendButton.disabled = false; // Re-enable the send button in case of error
         }
     }
 
@@ -3341,7 +3339,7 @@ document.addEventListener("DOMContentLoaded", function() {
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
     }
 
-    function setupMessageListener(callback) {
+    function setupMessageListener() {
         if (chatId) {
             db.collection('chats').doc(chatId).collection('messages')
                 .orderBy('timestamp')
@@ -3352,7 +3350,6 @@ document.addEventListener("DOMContentLoaded", function() {
                             scrollToBottom(); // Scroll to the bottom when a new message is added
                         }
                     });
-                    if (callback) callback(); // Execute callback if provided
                 });
         } else if (currentGroupId) {
             db.collection('groupchats').doc(currentGroupId).collection('messages')
@@ -3364,7 +3361,6 @@ document.addEventListener("DOMContentLoaded", function() {
                             scrollToBottom(); // Scroll to the bottom when a new message is added
                         }
                     });
-                    if (callback) callback(); // Execute callback if provided
                 });
         }
     }
