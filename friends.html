@@ -3287,87 +3287,96 @@ document.addEventListener("DOMContentLoaded", function() {
         setupMessageListener(); // Set up message listener with the new chatId
     }
 
-function sendMessage() {
-    const chatInput = chatInputElement.value.trim();
-    const currentUser = firebase.auth().currentUser;
+    function sendMessage() {
+        const chatInput = chatInputElement.value.trim();
+        const currentUser = firebase.auth().currentUser;
 
-    if (!chatInput || !currentUser) return; // Exit if no input or no current user
+        if (!chatInput || !currentUser) return; // Exit if no input or no current user
 
-    if (currentGroupId) {
-        // Sending a message to a group
-        db.collection('groupchats').doc(currentGroupId).collection('messages').add({
-            sender: currentUser.email,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Group message sent!');
-            chatInputElement.value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending group message: ', error);
-        });
-    } else if (currentChatFriend) {
-        // Sending a message to an individual
-        if (!chatId) {
-            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            // Wait for chatId to be updated before sending the message
-            return; // Exit the function to wait for the chatId update
+        sendButton.disabled = true; // Disable the send button to prevent duplicate sends
+
+        if (currentGroupId) {
+            // Sending a message to a group
+            db.collection('groupchats').doc(currentGroupId).collection('messages').add({
+                sender: currentUser.email,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                chatInputElement.value = ''; // Clear the input field after sending
+                scrollToBottom(); // Scroll to the bottom after sending the message
+            }).catch((error) => {
+                console.error('Error sending group message: ', error);
+            }).finally(() => {
+                sendButton.disabled = false; // Re-enable the send button
+            });
+        } else if (currentChatFriend) {
+            // Sending a message to an individual
+            if (!chatId) {
+                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+                // Wait for chatId to be updated before sending the message
+                sendButton.disabled = false; // Re-enable the send button
+                return; // Exit the function to wait for the chatId update
+            }
+
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                chatInputElement.value = ''; // Clear the input field after sending
+                scrollToBottom(); // Scroll to the bottom after sending the message
+            }).catch((error) => {
+                console.error('Error sending message: ', error);
+            }).finally(() => {
+                sendButton.disabled = false; // Re-enable the send button
+            });
+        } else {
+            console.error('No recipient or group chat selected.');
+            sendButton.disabled = false; // Re-enable the send button in case of error
         }
-
-        db.collection('chats').doc(chatId).collection('messages').add({
-            sender: currentUser.email,
-            recipient: currentChatFriend,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Message sent!');
-            chatInputElement.value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending message: ', error);
-        });
-    } else {
-        console.error('No recipient or group chat selected.');
     }
-}
 
-function scrollToBottom() {
-    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
-}
+    function scrollToBottom() {
+        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+    }
 
-function setupMessageListener() {
-    if (chatId) {
-        db.collection('chats').doc(chatId).collection('messages')
-            .orderBy('timestamp')
-            .onSnapshot(snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        // Code to display the message
-                        scrollToBottom(); // Scroll to the bottom when a new message is added
-                    }
+    function setupMessageListener() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
+                        }
+                    });
                 });
-            });
-    } else if (currentGroupId) {
-        db.collection('groupchats').doc(currentGroupId).collection('messages')
-            .orderBy('timestamp')
-            .onSnapshot(snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        // Code to display the message
-                        scrollToBottom(); // Scroll to the bottom when a new message is added
-                    }
+        } else if (currentGroupId) {
+            db.collection('groupchats').doc(currentGroupId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
+                        }
+                    });
                 });
-            });
+        }
     }
-}
 
-// Send message when the "Send" button is clicked
-sendButton.addEventListener('click', sendMessage);
+    // Send message when the "Send" button is clicked
+    sendButton.addEventListener('click', sendMessage);
 
-// Send message when the "Enter" key is pressed
-chatInputElement.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevents the default behavior of the "Enter" key
-        sendMessage();
-    }
+    // Send message when the "Enter" key is pressed
+    chatInputElement.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of the "Enter" key
+            sendMessage();
+        }
+    });
 });
 
 // Example function to start or switch chats
@@ -3382,120 +3391,139 @@ function startChat(friendEmail) {
 });
 
 
+// Function to open an individual chat
 function openChat(friendEmail) {
-    const chatWithSpan = document.getElementById('chatWith');
-    const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
-    currentChatFriend = friendEmail;
+    // Retrieve friend's display name or email to show in the chat header
+    db.collection('users').where('email', '==', friendEmail).get().then((snapshot) => {
+        if (!snapshot.empty) {
+            const friendData = snapshot.docs[0].data();
+            const friendName = friendData.displayName || friendEmail;
+            document.getElementById('chatWith').textContent = friendName;
 
-    // Load messages for the individual chat
-    loadMessages(friendEmail);
+            // Load messages for the individual chat
+            loadChatMessages(chatId);
+        } else {
+            console.error('Friend not found in the database');
+        }
+    }).catch((error) => {
+        console.error('Error opening chat:', error);
+    });
 }
 
 
-function loadMessages(friendEmail) {
-    const chatWithSpan = document.getElementById('chatWith');
-    const chatWindow = document.getElementById('chatMessages');
-    const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, friendEmail);
+// Function to load chat messages with reactions
+function loadMessages(chatId) {
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot((snapshot) => {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = ''; // Clear the chat window
 
-    db.collection('users').where('email', '==', friendEmail).get()
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                const friendDoc = querySnapshot.docs[0];
-                const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
-                chatWithSpan.textContent = friendDisplayName;
+            const messages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
 
-                db.collection('chats').doc(chatId).collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((querySnapshot) => {
-                        chatWindow.innerHTML = '';
-                        querySnapshot.forEach((doc) => {
-                            const message = doc.data();
-                            const messageId = doc.id;
-                            const senderEmail = message.sender;
-                            const messageDiv = document.createElement('div');
-                            messageDiv.classList.add('message-container');
+            const fetchDisplayNamesPromises = messages.map(async (message) => {
+                if (message.sender === firebase.auth().currentUser.email) {
+                    return { ...message, senderDisplayName: null };
+                } else {
+                    const userSnapshot = await db.collection('users')
+                        .where('email', '==', message.sender)
+                        .get();
 
-                            // Sender display name
-                            if (senderEmail !== currentUser.email) {
-                                db.collection('users').where('email', '==', senderEmail).get()
-                                    .then((querySnapshot) => {
-                                        const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                        messageDiv.appendChild(createSenderElement(senderDisplayName));
-                                    });
-                            }
+                    const senderDisplayName = !userSnapshot.empty 
+                        ? userSnapshot.docs[0].data().displayName || message.sender 
+                        : message.sender;
 
-                            const textElement = document.createElement('span');
-                            textElement.classList.add('message-text');
-                            textElement.textContent = message.message;
-                            messageDiv.appendChild(textElement);
+                    return { ...message, senderDisplayName };
+                }
+            });
 
-                            if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
-                            } else {
-                                messageDiv.classList.add('message', 'received');
-                            }
+            Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
+                messagesWithDisplayNames.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-container');
 
-                            // Add options for reply and reactions
-                            const optionsContainer = document.createElement('div');
-                            optionsContainer.classList.add('message-options');
-                            optionsContainer.style.display = 'none'; // Initially hidden
+                    if (message.senderDisplayName) {
+                        const senderElement = document.createElement('span');
+                        senderElement.classList.add('message-sender');
+                        senderElement.textContent = `${message.senderDisplayName}: `;
+                        messageElement.appendChild(senderElement);
 
-                            // Reply option
-                            const replyOption = document.createElement('button');
-                            replyOption.textContent = 'Reply';
-                            replyOption.classList.add('reply-option');
-                            replyOption.addEventListener('click', () => {
-                                alert(`Reply to message: "${message.message}"`);
+                        // Check if user is not friends with the sender
+                        const currentUser = firebase.auth().currentUser;
+                        db.collection('users').where('email', '==', message.sender).get()
+                            .then((snapshot) => {
+                                if (!snapshot.empty) {
+                                    const friendData = snapshot.docs[0].data();
+                                    if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
+                                        const addFriendButton = createAddFriendButton(message.sender);
+                                        messageElement.appendChild(addFriendButton); // Append button to message container
+                                    }
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Error checking friend status:', error);
                             });
+                    }
 
-                            // Reaction options
-                            const reactions = ['👍', '👎', '❤️', '‼', '?'];
-                            reactions.forEach(reaction => {
-                                const reactionButton = document.createElement('button');
-                                reactionButton.textContent = reaction;
-                                reactionButton.classList.add('reaction-button');
-                                reactionButton.addEventListener('click', () => {
-                                    addReactionToMessage(chatId, messageId, reaction);
-                                });
-                                optionsContainer.appendChild(reactionButton);
-                            });
+                    const textElement = document.createElement('span');
+                    textElement.classList.add('message-text');
+                    textElement.textContent = message.message;
+                    messageElement.appendChild(textElement);
 
-                            // Remove Reaction option
-                            const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = 'Remove'; // Changed to 'Remove'
-                            removeReactionButton.classList.add('remove-reaction-button');
-                            removeReactionButton.addEventListener('click', () => {
-                                removeReactionFromMessage(chatId, messageId);
-                            });
-                            optionsContainer.appendChild(removeReactionButton);
+                    if (message.sender === firebase.auth().currentUser.email) {
+                        messageElement.classList.add('message', 'sent');
+                    } else {
+                        messageElement.classList.add('message', 'received');
+                    }
 
-                            messageDiv.appendChild(optionsContainer);
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.classList.add('message-options');
+                    optionsContainer.style.display = 'none'; // Initially hidden
 
-                            messageDiv.addEventListener('click', () => {
-                                optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
-                            });
-
-                            chatWindow.appendChild(messageDiv);
-
-                            // Load reactions for this message
-                            loadReactions(chatId, messageId, messageDiv);
-
-                            // Scroll to the bottom of the chat window after a new message is added
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                    // Reaction options
+                    const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                    reactions.forEach(reaction => {
+                        const reactionButton = document.createElement('button');
+                        reactionButton.textContent = reaction;
+                        reactionButton.classList.add('reaction-button');
+                        reactionButton.addEventListener('click', () => {
+                            addReactionToMessage(chatId, message.id, reaction);
                         });
+                        optionsContainer.appendChild(reactionButton);
                     });
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching user data:', error);
+
+                    // Remove Reaction option
+                    const removeReactionButton = document.createElement('button');
+                    removeReactionButton.textContent = 'Remove';
+                    removeReactionButton.classList.add('remove-reaction-button');
+                    removeReactionButton.addEventListener('click', () => {
+                        removeReactionFromMessage(chatId, message.id);
+                    });
+                    optionsContainer.appendChild(removeReactionButton);
+
+                    messageElement.appendChild(optionsContainer);
+
+                    messageElement.addEventListener('click', () => {
+                        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
+                    });
+
+                    chatMessages.appendChild(messageElement);
+
+                    // Load reactions for this message
+                    loadReactions(chatId, message.id, messageElement);
+                });
+
+                // Scroll to the bottom of the chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
         });
 }
-
 
 
 // Function to remove reaction
@@ -3566,7 +3594,6 @@ function addReactionToMessage(chatId, messageId, reaction) {
         console.error('Error adding reaction:', error);
     });
 }
-
 
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
