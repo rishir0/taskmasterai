@@ -3439,13 +3439,13 @@ function openChat(friendEmail) {
                             });
 
                             // Reaction options
-                            const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                            const reactions = ['❤️', '👍', '👎', '😆' '‼', '?'];
                             reactions.forEach(reaction => {
                                 const reactionButton = document.createElement('button');
                                 reactionButton.textContent = reaction;
                                 reactionButton.classList.add('reaction-button');
                                 reactionButton.addEventListener('click', () => {
-                                    addReactionToMessage(chatId, messageId, reaction);
+                                    addReactionToMessage1(chatId, messageId, reaction);
                                 });
                                 optionsContainer.appendChild(reactionButton);
                             });
@@ -3455,7 +3455,7 @@ function openChat(friendEmail) {
                             removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
                             removeReactionButton.classList.add('remove-reaction-button');
                             removeReactionButton.addEventListener('click', () => {
-                                removeReactionFromMessage(chatId, messageId);
+                                removeReactionFromMessage1(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
 
@@ -3468,7 +3468,7 @@ function openChat(friendEmail) {
                             chatWindow.appendChild(messageDiv);
 
                             // Load reactions for this message
-                            loadReactions(chatId, messageId, messageDiv);
+                            loadReactions1(chatId, messageId, messageDiv);
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3483,7 +3483,7 @@ function openChat(friendEmail) {
 
 
 // Function to remove reaction
-function removeReactionFromMessage(chatId, messageId) {
+function removeReactionFromMessage1(chatId, messageId) {
     db.collection('chats').doc(chatId).collection('messages').doc(messageId).update({
         reaction: firebase.firestore.FieldValue.delete()
     }).catch(error => {
@@ -3492,7 +3492,7 @@ function removeReactionFromMessage(chatId, messageId) {
 }
 
 // Load Reactions
-function loadReactions(chatId, messageId, messageElement) {
+function loadReactions1(chatId, messageId, messageElement) {
     db.collection('chats').doc(chatId).collection('messages').doc(messageId)
         .onSnapshot((doc) => {
             if (doc.exists && doc.data().reaction) {
@@ -3532,7 +3532,7 @@ function loadReactions(chatId, messageId, messageElement) {
         });
 }
 
-function createReactionIcon(reaction) {
+function createReactionIcon1(reaction) {
     const reactionElement = document.createElement('span');
     reactionElement.classList.add('message-reaction');
     reactionElement.textContent = reaction;
@@ -3540,7 +3540,7 @@ function createReactionIcon(reaction) {
 }
 
 // Add Reaction to Firestore
-function addReactionToMessage(chatId, messageId, reaction) {
+function addReactionToMessage1(chatId, messageId, reaction) {
     db.collection('chats').doc(chatId).collection('messages').doc(messageId).set({
         reaction: {
             user: firebase.auth().currentUser.email,
@@ -4154,7 +4154,7 @@ function loadGroupMessages(groupId) {
                     optionsContainer.style.display = 'none'; // Initially hidden
 
                     // Reaction options
-                    const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                    const reactions = ['❤️', '👍', '👎', '😆' '‼', '?'];
                     reactions.forEach(reaction => {
                         const reactionButton = document.createElement('button');
                         reactionButton.textContent = reaction;
