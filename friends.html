@@ -3402,29 +3402,77 @@ function openChat(friendEmail) {
                         chatWindow.innerHTML = '';
                         querySnapshot.forEach((doc) => {
                             const message = doc.data();
+                            const messageId = doc.id;
                             const senderEmail = message.sender;
                             const messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message-container');
 
-                            if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
-                                messageDiv.textContent = `${message.message}`;
-                            } else {
-                                messageDiv.classList.add('message', 'received');
+                            // Sender display name
+                            if (senderEmail !== currentUser.email) {
                                 db.collection('users').where('email', '==', senderEmail).get()
                                     .then((querySnapshot) => {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                        messageDiv.textContent = `${message.message}`;
-
-                                        if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-                                            new Notification(`New message from ${senderDisplayName}`, {
-                                                body: message.message,
-                                                icon: '/path/to/icon.png' // Optional: Add an icon if desired
-                                            });
-                                        }
+                                        messageDiv.appendChild(createSenderElement(senderDisplayName));
                                     });
                             }
+
+                            const textElement = document.createElement('span');
+                            textElement.classList.add('message-text');
+                            textElement.textContent = message.message;
+                            messageDiv.appendChild(textElement);
+
+                            if (senderEmail === currentUser.email) {
+                                messageDiv.classList.add('message', 'sent');
+                            } else {
+                                messageDiv.classList.add('message', 'received');
+                            }
+
+                            // Add options for reply and reactions
+                            const optionsContainer = document.createElement('div');
+                            optionsContainer.classList.add('message-options');
+                            optionsContainer.style.display = 'none'; // Initially hidden
+
+                            // Reply option
+                            const replyOption = document.createElement('button');
+                            replyOption.textContent = 'Reply';
+                            replyOption.classList.add('reply-option');
+                            replyOption.addEventListener('click', () => {
+                                alert(`Reply to message: "${message.message}"`);
+                            });
+
+                            // Reaction options
+                            const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                            reactions.forEach(reaction => {
+                                const reactionButton = document.createElement('button');
+                                reactionButton.textContent = reaction;
+                                reactionButton.classList.add('reaction-button');
+                                reactionButton.addEventListener('click', () => {
+                                    addReactionToMessage(chatId, messageId, reaction);
+                                });
+                                optionsContainer.appendChild(reactionButton);
+                            });
+
+                            // Remove reaction button
+                            const removeReactionButton = document.createElement('button');
+                            removeReactionButton.textContent = '❌'; // Or any other icon
+                            removeReactionButton.classList.add('remove-reaction-button');
+                            removeReactionButton.addEventListener('click', () => {
+                                removeReactionFromMessage(chatId, messageId);
+                            });
+                            optionsContainer.appendChild(removeReactionButton);
+
+                            optionsContainer.appendChild(replyOption);
+                            messageDiv.appendChild(optionsContainer);
+
+                            messageDiv.addEventListener('click', () => {
+                                optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'block' : 'none';
+                            });
+
                             chatWindow.appendChild(messageDiv);
+
+                            // Load reactions for this message
+                            loadReactions(chatId, messageId, messageDiv);
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3436,6 +3484,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 
 function getChatId(userEmail, friendEmail) {
