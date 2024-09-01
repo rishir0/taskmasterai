@@ -3453,20 +3453,19 @@ function openChat(friendEmail) {
                                 optionsContainer.appendChild(reactionButton);
                             });
 
-                            // Remove reaction button
+                            // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = '❌'; // Or any other icon
+                            removeReactionButton.textContent = '❌'; // Remove icon
                             removeReactionButton.classList.add('remove-reaction-button');
                             removeReactionButton.addEventListener('click', () => {
                                 removeReactionFromMessage(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
 
-                            optionsContainer.appendChild(replyOption);
                             messageDiv.appendChild(optionsContainer);
 
                             messageDiv.addEventListener('click', () => {
-                                optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'block' : 'none';
+                                optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                             });
 
                             chatWindow.appendChild(messageDiv);
@@ -3484,6 +3483,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 
 
