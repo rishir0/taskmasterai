@@ -3437,8 +3437,7 @@ function openChat(friendEmail) {
                             const replyOption = document.createElement('button');
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
-                            replyOption.addEventListener('click', (event) => {
-                                event.stopPropagation(); // Prevent click from toggling options
+                            replyOption.addEventListener('click', () => {
                                 alert(`Reply to message: "${message.message}"`);
                             });
 
@@ -3448,8 +3447,7 @@ function openChat(friendEmail) {
                                 const reactionButton = document.createElement('button');
                                 reactionButton.textContent = reaction;
                                 reactionButton.classList.add('reaction-button');
-                                reactionButton.addEventListener('click', (event) => {
-                                    event.stopPropagation(); // Prevent click from toggling options
+                                reactionButton.addEventListener('click', () => {
                                     addReactionToMessage(chatId, messageId, reaction);
                                 });
                                 optionsContainer.appendChild(reactionButton);
@@ -3457,10 +3455,9 @@ function openChat(friendEmail) {
 
                             // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = 'Remove'; // Changed from ❌ to Remove
+                            removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
                             removeReactionButton.classList.add('remove-reaction-button');
-                            removeReactionButton.addEventListener('click', (event) => {
-                                event.stopPropagation(); // Prevent click from toggling options
+                            removeReactionButton.addEventListener('click', () => {
                                 removeReactionFromMessage(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
@@ -3487,9 +3484,10 @@ function openChat(friendEmail) {
         });
 }
 
+
 // Function to remove reaction
-function removeReactionFromMessage(groupId, messageId) {
-    db.collection('chats').doc(groupId).collection('messages').doc(messageId).update({
+function removeReactionFromMessage(chatId, messageId) {
+    db.collection('chats').doc(chatId).collection('messages').doc(messageId).update({
         reaction: firebase.firestore.FieldValue.delete()
     }).catch(error => {
         console.error("Error removing reaction: ", error);
@@ -3497,8 +3495,8 @@ function removeReactionFromMessage(groupId, messageId) {
 }
 
 // Load Reactions
-function loadReactions(groupId, messageId, messageElement) {
-    db.collection('chats').doc(groupId).collection('messages').doc(messageId)
+function loadReactions(chatId, messageId, messageElement) {
+    db.collection('chats').doc(chatId).collection('messages').doc(messageId)
         .onSnapshot((doc) => {
             if (doc.exists && doc.data().reaction) {
                 const reaction = doc.data().reaction.reaction; // Only display the reaction emoji
@@ -3545,8 +3543,8 @@ function createReactionIcon(reaction) {
 }
 
 // Add Reaction to Firestore
-function addReactionToMessage(groupId, messageId, reaction) {
-    db.collection('chats').doc(groupId).collection('messages').doc(messageId).set({
+function addReactionToMessage(chatId, messageId, reaction) {
+    db.collection('chats').doc(chatId).collection('messages').doc(messageId).set({
         reaction: {
             user: firebase.auth().currentUser.email,
             reaction: reaction
