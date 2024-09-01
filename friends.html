@@ -3299,7 +3299,6 @@ function sendMessage() {
             message: chatInput,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            console.log('Group message sent!');
             chatInputElement.value = ''; // Clear the input field after sending
         }).catch((error) => {
             console.error('Error sending group message: ', error);
@@ -3318,7 +3317,6 @@ function sendMessage() {
             message: chatInput,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            console.log('Message sent!');
             chatInputElement.value = ''; // Clear the input field after sending
         }).catch((error) => {
             console.error('Error sending message: ', error);
