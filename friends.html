@@ -2503,23 +2503,6 @@ function clearRecentEmojis() {
         });
 
 
-document.addEventListener("DOMContentLoaded", function() {
-    const chatInputElement = document.getElementById('chatInput');
-    const sendButton = document.querySelector('.chat-window button');
-    const chatMessagesElement = document.getElementById('chatMessages');
-    
-    // Define chatId and currentChatFriend variables here
-    let chatId = ''; // This will store the ID of the current chat (individual chat)
-    let currentChatFriend = ''; // This will store the email of the current chat friend
-
-    // Function to update chatId based on the current chat
-    function updateChatId(userEmail, chatFriend) {
-        chatId = getChatId(userEmail, chatFriend);
-        currentChatFriend = chatFriend; // Set the current chat friend here
-        setupMessageListener(); // Set up message listener with the new chatId
-    }
-
-
             document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -3279,6 +3262,23 @@ function unfriendUser(friendEmail) {
             });
     }
 }
+        
+document.addEventListener("DOMContentLoaded", function() {
+    const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
+    
+    // Define chatId and currentChatFriend variables here
+    let chatId = ''; // This will store the ID of the current chat (individual chat)
+    let currentChatFriend = ''; // This will store the email of the current chat friend
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        currentChatFriend = chatFriend; // Set the current chat friend here
+        setupMessageListener(); // Set up message listener with the new chatId
+    }
+
 
     // Define the sendMessage function here
     function sendMessage() {
