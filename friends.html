@@ -2353,14 +2353,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var auth = firebase.auth();
+
 var emojiPicker = document.getElementById("emojiPicker");
 var recentEmojisContainer = document.getElementById("recentEmojis");
-
-let currentChatFriend = ''; // Email of the current chat friend
-let chatId = ''; // ID of the current chat (for individual chats)
-let currentGroupId = ''; // ID of the current group chat
-
-
 
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
@@ -2505,7 +2500,6 @@ function clearRecentEmojis() {
             });
         });
 
-
             document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -2517,6 +2511,19 @@ function clearRecentEmojis() {
             }
         });
     });
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(function(clientList) {
+            if (clientList.length > 0) {
+                return clientList[0].focus();
+            }
+            return clients.openWindow('/chat.html'); // Or the URL of your chat page
+        })
+    );
+});
+
 
 document.addEventListener('DOMContentLoaded', function() {
     if (Notification.permission === 'default') {
@@ -2865,7 +2872,6 @@ pinnedFriendsButton.onclick = () => {
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
-               
 
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
@@ -3265,22 +3271,22 @@ function unfriendUser(friendEmail) {
             });
     }
 }
-        
-// Function to update chatId based on the current chat
-function updateChatId(userEmail, chatFriend) {
-    chatId = getChatId(userEmail, chatFriend);
-    currentChatFriend = chatFriend; // Set the current chat friend
-    setupMessageListener(); // Set up message listener with the new chatId
-}
 
-// Function to get chat ID based on user and friend email
-function getChatId(userEmail, friendEmail) {
-    return userEmail < friendEmail ? userEmail + '_' + friendEmail : friendEmail + '_' + userEmail;
-}
 
-// Function to send a message
-function sendMessage() {
+document.addEventListener("DOMContentLoaded", function() {
     const chatInputElement = document.getElementById('chatInput');
+    const sendButton = document.querySelector('.chat-window button');
+    const chatMessagesElement = document.getElementById('chatMessages');
+    
+    let chatId = ''; // Define chatId variable here
+
+    // Function to update chatId based on the current chat
+    function updateChatId(userEmail, chatFriend) {
+        chatId = getChatId(userEmail, chatFriend);
+        setupMessageListener(); // Set up message listener with the new chatId
+    }
+
+function sendMessage() {
     const chatInput = chatInputElement.value.trim();
     const currentUser = firebase.auth().currentUser;
 
@@ -3293,6 +3299,7 @@ function sendMessage() {
             message: chatInput,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
+            console.log('Group message sent!');
             chatInputElement.value = ''; // Clear the input field after sending
         }).catch((error) => {
             console.error('Error sending group message: ', error);
@@ -3301,6 +3308,7 @@ function sendMessage() {
         // Sending a message to an individual
         if (!chatId) {
             updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+            // Wait for chatId to be updated before sending the message
             return; // Exit the function to wait for the chatId update
         }
 
@@ -3310,6 +3318,7 @@ function sendMessage() {
             message: chatInput,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
+            console.log('Message sent!');
             chatInputElement.value = ''; // Clear the input field after sending
         }).catch((error) => {
             console.error('Error sending message: ', error);
@@ -3319,7 +3328,10 @@ function sendMessage() {
     }
 }
 
-// Function to set up the message listener for real-time updates
+function scrollToBottom() {
+    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+}
+
 function setupMessageListener() {
     if (chatId) {
         db.collection('chats').doc(chatId).collection('messages')
@@ -3346,159 +3358,129 @@ function setupMessageListener() {
     }
 }
 
-// Function to scroll to the bottom of the chat
-function scrollToBottom() {
-    const chatMessagesElement = document.getElementById('chatMessages');
-    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
-}
+// Send message when the "Send" button is clicked
+sendButton.addEventListener('click', sendMessage);
 
-// Add event listeners for sending messages
-document.addEventListener("DOMContentLoaded", function() {
-    const sendButton = document.querySelector('.chat-window button');
-    const chatInputElement = document.getElementById('chatInput');
-
-    sendButton.addEventListener('click', sendMessage);
-
-    chatInputElement.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevents the default behavior of the "Enter" key
-            sendMessage();
-        }
-    });
+// Send message when the "Enter" key is pressed
+chatInputElement.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevents the default behavior of the "Enter" key
+        sendMessage();
+    }
 });
 
-// Function to open an individual chat
+// Example function to start or switch chats
+function startChat(friendEmail) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        updateChatId(currentUser.email, friendEmail);
+    }
+}
+
+    // Use startChat(friendEmail) when starting or switching chats
+});
+
+
 function openChat(friendEmail) {
-    currentChatFriend = friendEmail;  // Set the current chat friend
+    const chatWithSpan = document.getElementById('chatWith');
+    const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
-    // Retrieve friend's display name or email to show in the chat header
-    db.collection('users').where('email', '==', friendEmail).get().then((snapshot) => {
-        if (!snapshot.empty) {
-            const friendData = snapshot.docs[0].data();
-            const friendName = friendData.displayName || friendEmail;
-            document.getElementById('chatWith').textContent = friendName;
+    currentChatFriend = friendEmail;
 
-            // Load messages for the individual chat
-            loadMessages(chatId);
-        } else {
-            console.error('Friend not found in the database');
-        }
-    }).catch((error) => {
-        console.error('Error opening chat:', error);
-    });
-}
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const friendDoc = querySnapshot.docs[0];
+                const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
+                chatWithSpan.textContent = friendDisplayName;
 
+                db.collection('chats').doc(chatId).collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((querySnapshot) => {
+                        chatWindow.innerHTML = '';
+                        querySnapshot.forEach((doc) => {
+                            const message = doc.data();
+                            const messageId = doc.id;
+                            const senderEmail = message.sender;
+                            const messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message-container');
 
-// Function to load chat messages with reactions
-function loadMessages(chatId) {
-    db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('timestamp')
-        .onSnapshot((snapshot) => {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = ''; // Clear the chat window
+                            // Sender display name
+                            if (senderEmail !== currentUser.email) {
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                        messageDiv.appendChild(createSenderElement(senderDisplayName));
+                                    });
+                            }
 
-            const messages = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+                            const textElement = document.createElement('span');
+                            textElement.classList.add('message-text');
+                            textElement.textContent = message.message;
+                            messageDiv.appendChild(textElement);
 
-            const fetchDisplayNamesPromises = messages.map(async (message) => {
-                if (message.sender === firebase.auth().currentUser.email) {
-                    return { ...message, senderDisplayName: null };
-                } else {
-                    const userSnapshot = await db.collection('users')
-                        .where('email', '==', message.sender)
-                        .get();
+                            if (senderEmail === currentUser.email) {
+                                messageDiv.classList.add('message', 'sent');
+                            } else {
+                                messageDiv.classList.add('message', 'received');
+                            }
 
-                    const senderDisplayName = !userSnapshot.empty 
-                        ? userSnapshot.docs[0].data().displayName || message.sender 
-                        : message.sender;
+                            // Add options for reply and reactions
+                            const optionsContainer = document.createElement('div');
+                            optionsContainer.classList.add('message-options');
+                            optionsContainer.style.display = 'none'; // Initially hidden
 
-                    return { ...message, senderDisplayName };
-                }
-            });
-
-            Promise.all(fetchDisplayNamesPromises).then(messagesWithDisplayNames => {
-                messagesWithDisplayNames.forEach(message => {
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('message-container');
-
-                    if (message.senderDisplayName) {
-                        const senderElement = document.createElement('span');
-                        senderElement.classList.add('message-sender');
-                        senderElement.textContent = `${message.senderDisplayName}: `;
-                        messageElement.appendChild(senderElement);
-
-                        // Check if user is not friends with the sender
-                        const currentUser = firebase.auth().currentUser;
-                        db.collection('users').where('email', '==', message.sender).get()
-                            .then((snapshot) => {
-                                if (!snapshot.empty) {
-                                    const friendData = snapshot.docs[0].data();
-                                    if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
-                                        const addFriendButton = createAddFriendButton(message.sender);
-                                        messageElement.appendChild(addFriendButton); // Append button to message container
-                                    }
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Error checking friend status:', error);
+                            // Reply option
+                            const replyOption = document.createElement('button');
+                            replyOption.textContent = 'Reply';
+                            replyOption.classList.add('reply-option');
+                            replyOption.addEventListener('click', () => {
+                                alert(`Reply to message: "${message.message}"`);
                             });
-                    }
 
-                    const textElement = document.createElement('span');
-                    textElement.classList.add('message-text');
-                    textElement.textContent = message.message;
-                    messageElement.appendChild(textElement);
+                            // Reaction options
+                            const reactions = ['👍', '👎', '❤️', '‼', '?'];
+                            reactions.forEach(reaction => {
+                                const reactionButton = document.createElement('button');
+                                reactionButton.textContent = reaction;
+                                reactionButton.classList.add('reaction-button');
+                                reactionButton.addEventListener('click', () => {
+                                    addReactionToMessage(chatId, messageId, reaction);
+                                });
+                                optionsContainer.appendChild(reactionButton);
+                            });
 
-                    if (message.sender === firebase.auth().currentUser.email) {
-                        messageElement.classList.add('message', 'sent');
-                    } else {
-                        messageElement.classList.add('message', 'received');
-                    }
+                            // Remove Reaction option
+                            const removeReactionButton = document.createElement('button');
+                            removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
+                            removeReactionButton.classList.add('remove-reaction-button');
+                            removeReactionButton.addEventListener('click', () => {
+                                removeReactionFromMessage(chatId, messageId);
+                            });
+                            optionsContainer.appendChild(removeReactionButton);
 
-                    const optionsContainer = document.createElement('div');
-                    optionsContainer.classList.add('message-options');
-                    optionsContainer.style.display = 'none'; // Initially hidden
+                            messageDiv.appendChild(optionsContainer);
 
-                    // Reaction options
-                    const reactions = ['👍', '👎', '❤️', '‼', '?'];
-                    reactions.forEach(reaction => {
-                        const reactionButton = document.createElement('button');
-                        reactionButton.textContent = reaction;
-                        reactionButton.classList.add('reaction-button');
-                        reactionButton.addEventListener('click', () => {
-                            addReactionToMessage(chatId, message.id, reaction);
+                            messageDiv.addEventListener('click', () => {
+                                optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
+                            });
+
+                            chatWindow.appendChild(messageDiv);
+
+                            // Load reactions for this message
+                            loadReactions(chatId, messageId, messageDiv);
+
+                            // Scroll to the bottom of the chat window after a new message is added
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
-                        optionsContainer.appendChild(reactionButton);
                     });
-
-                    // Remove Reaction option
-                    const removeReactionButton = document.createElement('button');
-                    removeReactionButton.textContent = 'Remove';
-                    removeReactionButton.classList.add('remove-reaction-button');
-                    removeReactionButton.addEventListener('click', () => {
-                        removeReactionFromMessage(chatId, message.id);
-                    });
-                    optionsContainer.appendChild(removeReactionButton);
-
-                    messageElement.appendChild(optionsContainer);
-
-                    messageElement.addEventListener('click', () => {
-                        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
-                    });
-
-                    chatMessages.appendChild(messageElement);
-
-                    // Load reactions for this message
-                    loadReactions(chatId, message.id, messageElement);
-                });
-
-                // Scroll to the bottom of the chat
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching user data:', error);
         });
 }
 
@@ -3571,6 +3553,7 @@ function addReactionToMessage(chatId, messageId, reaction) {
         console.error('Error adding reaction:', error);
     });
 }
+
 
 function getChatId(userEmail, friendEmail) {
     return [userEmail, friendEmail].sort().join('_');
