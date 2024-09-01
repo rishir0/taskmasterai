@@ -3437,7 +3437,8 @@ function openChat(friendEmail) {
                             const replyOption = document.createElement('button');
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
-                            replyOption.addEventListener('click', () => {
+                            replyOption.addEventListener('click', (event) => {
+                                event.stopPropagation(); // Prevent click from toggling options
                                 alert(`Reply to message: "${message.message}"`);
                             });
 
@@ -3447,7 +3448,8 @@ function openChat(friendEmail) {
                                 const reactionButton = document.createElement('button');
                                 reactionButton.textContent = reaction;
                                 reactionButton.classList.add('reaction-button');
-                                reactionButton.addEventListener('click', () => {
+                                reactionButton.addEventListener('click', (event) => {
+                                    event.stopPropagation(); // Prevent click from toggling options
                                     addReactionToMessage(chatId, messageId, reaction);
                                 });
                                 optionsContainer.appendChild(reactionButton);
@@ -3455,9 +3457,10 @@ function openChat(friendEmail) {
 
                             // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = '❌'; // Remove icon
+                            removeReactionButton.textContent = 'Remove'; // Changed from ❌ to Remove
                             removeReactionButton.classList.add('remove-reaction-button');
-                            removeReactionButton.addEventListener('click', () => {
+                            removeReactionButton.addEventListener('click', (event) => {
+                                event.stopPropagation(); // Prevent click from toggling options
                                 removeReactionFromMessage(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
@@ -3484,7 +3487,74 @@ function openChat(friendEmail) {
         });
 }
 
+// Function to remove reaction
+function removeReactionFromMessage(groupId, messageId) {
+    db.collection('chats').doc(groupId).collection('messages').doc(messageId).update({
+        reaction: firebase.firestore.FieldValue.delete()
+    }).catch(error => {
+        console.error("Error removing reaction: ", error);
+    });
+}
 
+// Load Reactions
+function loadReactions(groupId, messageId, messageElement) {
+    db.collection('chats').doc(groupId).collection('messages').doc(messageId)
+        .onSnapshot((doc) => {
+            if (doc.exists && doc.data().reaction) {
+                const reaction = doc.data().reaction.reaction; // Only display the reaction emoji
+                const currentUser = firebase.auth().currentUser.email; // Get the current user's email
+                const sender = doc.data().sender; // Get the sender of the message
+                
+                const existingReactionIcon = messageElement.querySelector('.message-reaction');
+                if (existingReactionIcon) {
+                    existingReactionIcon.textContent = reaction; // Update existing reaction
+                } else {
+                    const reactionIcon = createReactionIcon(reaction);
+
+                    if (sender === currentUser) {
+                        // If the current user sent the message, place the reaction at the top left with accent color
+                        reactionIcon.style.position = 'absolute';
+                        reactionIcon.style.top = '-8px';
+                        reactionIcon.style.left = '-10px';
+                        reactionIcon.style.backgroundColor = 'var(--accent-color)';
+                    } else {
+                        // For other users, keep the reaction on the top right with the primary color
+                        reactionIcon.style.position = 'absolute';
+                        reactionIcon.style.top = '-8px';
+                        reactionIcon.style.right = '-10px';
+                        reactionIcon.style.backgroundColor = 'var(--primary-color)';
+                    }
+
+                    messageElement.prepend(reactionIcon); // Add the reaction icon to the message element
+                }
+            } else {
+                // If there are no reactions, remove any existing reaction icon
+                const existingReactionIcon = messageElement.querySelector('.message-reaction');
+                if (existingReactionIcon) {
+                    existingReactionIcon.remove();
+                }
+            }
+        });
+}
+
+function createReactionIcon(reaction) {
+    const reactionElement = document.createElement('span');
+    reactionElement.classList.add('message-reaction');
+    reactionElement.textContent = reaction;
+    return reactionElement;
+}
+
+// Add Reaction to Firestore
+function addReactionToMessage(groupId, messageId, reaction) {
+    db.collection('chats').doc(groupId).collection('messages').doc(messageId).set({
+        reaction: {
+            user: firebase.auth().currentUser.email,
+            reaction: reaction
+        }
+    }, { merge: true }).catch((error) => {
+        console.error('Error adding reaction:', error);
+    });
+}
 
 
 function getChatId(userEmail, friendEmail) {
