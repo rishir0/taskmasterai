@@ -1230,43 +1230,30 @@ body.night-mode {
     background-color: transparent;
 }
 
-/* Style for the reaction buttons */
-.reaction-button {
-    font-size: 16px; /* Smaller size */
-    width: 30px; /* Smaller circular button */
-    height: 30px; /* Same as width to make it circular */
-    border-radius: 50%; /* Circular button */
-    background-color: var(--primary-color); /* Use primary color */
+.message-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 5px;
+}
+
+.reaction-button, .remove-reaction-button {
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
-    margin: 5px; /* Spread out buttons a bit */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    margin: 0 5px;
     cursor: pointer;
 }
 
-.reaction-button:hover {
-    background-color: var(--accent-color); /* Change color on hover for better visibility */
+.reaction-button:hover, .remove-reaction-button:hover {
+    background-color: var(--accent-color);
 }
-
-/* Style for the reaction icon in the chat */
-.message-reaction {
-    position: absolute;
-    top: -8px; /* Slightly raised above the message bubble */
-    right: -10px; /* Positioned on the right side of the message bubble */
-    font-size: 18px;
-    background-color: var(--primary-color); /* Primary color for reactions */
-    color: #fff;
-    border-radius: 50%;
-    padding: 5px; /* Padding to center the emoji inside the circle */
-    width: 24px; /* Adjust width to make it circular */
-    height: 24px; /* Same as width to make it circular */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
       
     </style>
 </head>
@@ -3992,7 +3979,6 @@ function loadGroupMessages(groupId) {
                 ...doc.data()
             }));
 
-            // Fetch all display names before rendering
             const fetchDisplayNamesPromises = messages.map(async (message) => {
                 if (message.sender === firebase.auth().currentUser.email) {
                     return { ...message, senderDisplayName: null };
@@ -4032,18 +4018,9 @@ function loadGroupMessages(groupId) {
                         messageElement.classList.add('message', 'received');
                     }
 
-                    // Container for reply and reaction options
                     const optionsContainer = document.createElement('div');
                     optionsContainer.classList.add('message-options');
                     optionsContainer.style.display = 'none'; // Initially hidden
-
-                    // Reply option
-                    const replyOption = document.createElement('button');
-                    replyOption.textContent = 'Reply';
-                    replyOption.classList.add('reply-option');
-                    replyOption.addEventListener('click', () => {
-                        alert(`Reply to message: "${message.message}"`);
-                    });
 
                     // Reaction options
                     const reactions = ['👍', '👎', '❤️', '‼', '?'];
@@ -4059,18 +4036,17 @@ function loadGroupMessages(groupId) {
 
                     // Remove Reaction option
                     const removeReactionButton = document.createElement('button');
-                    removeReactionButton.textContent = '❌'; // Using a cross to indicate removal
-                    removeReactionButton.classList.add('reaction-button', 'remove-reaction-button');
+                    removeReactionButton.textContent = 'Remove';
+                    removeReactionButton.classList.add('remove-reaction-button');
                     removeReactionButton.addEventListener('click', () => {
                         removeReactionFromMessage(groupId, message.id);
                     });
                     optionsContainer.appendChild(removeReactionButton);
 
-                    optionsContainer.appendChild(replyOption);
                     messageElement.appendChild(optionsContainer);
 
                     messageElement.addEventListener('click', () => {
-                        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'block' : 'none';
+                        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                     });
 
                     chatMessages.appendChild(messageElement);
@@ -4085,6 +4061,14 @@ function loadGroupMessages(groupId) {
         });
 }
 
+// Function to remove reaction
+function removeReactionFromMessage(groupId, messageId) {
+    db.collection('groupchats').doc(groupId).collection('messages').doc(messageId).update({
+        reaction: firebase.firestore.FieldValue.delete()
+    }).catch(error => {
+        console.error("Error removing reaction: ", error);
+    });
+}
 
 // Load Reactions
 function loadReactions(groupId, messageId, messageElement) {
