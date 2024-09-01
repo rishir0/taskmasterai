@@ -1273,29 +1273,34 @@ body.night-mode {
     background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
 }
 
+/* The Modal (background) */
+.modal4 {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
+
 /* Modal Content */
 .modal4-content {
-    background-color: #fefefe;
+    background-color: rgba(255, 255, 255, 0.8); /* White with opacity */
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
+    border: none;
+    border-radius: 20px; /* Rounded corners for the modal */
     width: 80%; /* Could be more or less, depending on screen size */
     position: relative;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
 }
 
-/* Close Button */
+/* Remove Close Button */
 .modal4-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.modal4-close:hover,
-.modal4-close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+    display: none;
 }
 
 /* Text Area and Button */
@@ -1305,21 +1310,27 @@ body.night-mode {
     margin-top: 10px;
     padding: 10px;
     font-size: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
 }
 
+/* Send Reply Button as a Squricle */
 #sendReplyButton {
     background-color: var(--primary-color);
     color: white;
-    padding: 10px 20px;
+    padding: 15px;
     border: none;
+    border-radius: 20px; /* Rounded corners (squricle) */
     cursor: pointer;
     margin-top: 10px;
     width: 100%;
+    font-size: 16px;
 }
 
 #sendReplyButton:hover {
     background-color: var(--accent-color);
 }
+
 
       
     </style>
@@ -3606,7 +3617,6 @@ function openChat(friendEmail) {
 }
 
 
-// Function to open the modal
 function openReplyModal(chatId, messageId, originalMessage) {
     const modal = document.getElementById('modal4');
     const modalMessage = document.getElementById('modal4Message');
@@ -3630,15 +3640,9 @@ function openReplyModal(chatId, messageId, originalMessage) {
             modal.style.display = "none";
         }
     };
-
-    // Close the modal when clicking the close button
-    const closeModal = document.getElementsByClassName("modal4-close")[0];
-    closeModal.onclick = () => {
-        modal.style.display = "none";
-    };
 }
 
-// Function to add a reply to the message
+
 function addReplyToMessage(chatId, messageId, replyText) {
     if (!replies[messageId]) {
         replies[messageId] = [];
@@ -3646,23 +3650,26 @@ function addReplyToMessage(chatId, messageId, replyText) {
     replies[messageId].push(replyText);
 
     const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
-    const replyCountText = messageDiv.querySelector('.reply-count');
-    const replyCount = replies[messageId].length;
 
-    if (replyCountText) {
-        replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+    if (messageDiv) {
+        let replyCountText = messageDiv.querySelector('.reply-count');
+        const replyCount = replies[messageId].length;
+
+        if (replyCountText) {
+            replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+        } else {
+            replyCountText = document.createElement('span');
+            replyCountText.classList.add('reply-count');
+            replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+            messageDiv.appendChild(replyCountText);
+
+            // Add an event listener to the reply count to open the modal
+            replyCountText.addEventListener('click', () => {
+                openReplyModal(chatId, messageId, replies[messageId].join('\n'));
+            });
+        }
     } else {
-        const newReplyCount = document.createElement('span');
-        newReplyCount.classList.add('reply-count');
-        newReplyCount.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
-        messageDiv.appendChild(newReplyCount);
-    }
-
-    // Add an event listener to the reply count to open the modal
-    if (!replyCountText) {
-        messageDiv.querySelector('.reply-count').addEventListener('click', () => {
-            openReplyModal(chatId, messageId, replies[messageId].join('\n'));
-        });
+        console.error('Message div not found for messageId:', messageId);
     }
 }
 
