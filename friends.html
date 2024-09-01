@@ -2617,7 +2617,7 @@ function acceptFriendRequest(requestId, senderEmail) {
             console.log('Friend request accepted!');
             // Add both users to accepted friends
             addToAcceptedFriends(userId, senderEmail);
-            openChat(senderEmail);
+            loadMessages(senderEmail);
         }).catch((error) => {
             console.error('Error accepting friend request:', error);
         });
@@ -2871,7 +2871,7 @@ pinnedFriendsButton.onclick = () => {
 
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => openChat(friendEmail);
+                                        friendName.onclick = () => loadMessages(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
                                         listItem.appendChild(friendName);
@@ -3040,7 +3040,7 @@ unpinButton.onclick = () => {
 };
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => openChat(friendEmail);
+                                        friendName.onclick = () => loadMessages(friendEmail);
 
                                     // Append buttons to the list item
                                     listItem.appendChild(unpinButton);
@@ -3381,7 +3381,7 @@ function startChat(friendEmail) {
 });
 
 
-function openChat(friendEmail) {
+function loadMessages(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
     const currentUser = firebase.auth().currentUser;
@@ -3455,7 +3455,7 @@ function openChat(friendEmail) {
 
                             // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
+                            removeReactionButton.textContent = 'Remove'; // Changed to 'Remove'
                             removeReactionButton.classList.add('remove-reaction-button');
                             removeReactionButton.addEventListener('click', () => {
                                 removeReactionFromMessage(chatId, messageId);
@@ -3483,6 +3483,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 
 // Function to remove reaction
