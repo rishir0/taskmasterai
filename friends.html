@@ -3413,7 +3413,6 @@ function openChat(friendEmail) {
                                     .then((querySnapshot) => {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                        messageDiv.appendChild(createSenderElement(senderDisplayName));
                                     });
                             }
 
