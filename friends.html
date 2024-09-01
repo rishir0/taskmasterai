@@ -4005,6 +4005,23 @@ function loadGroupMessages(groupId) {
                         senderElement.classList.add('message-sender');
                         senderElement.textContent = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
+
+                                                // Check if user is not friends with the sender
+                        const currentUser = firebase.auth().currentUser;
+                        db.collection('users').where('email', '==', message.sender).get()
+                            .then((snapshot) => {
+                                if (!snapshot.empty) {
+                                    const friendData = snapshot.docs[0].data();
+                                    if (friendData.acceptedFriends && !friendData.acceptedFriends.includes(currentUser.email)) {
+                                        const addFriendButton = createAddFriendButton(message.sender);
+                                        messageElement.appendChild(addFriendButton); // Append button to message container
+                                    }
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Error checking friend status:', error);
+                            });
+
                     }
 
                     const textElement = document.createElement('span');
@@ -4123,9 +4140,6 @@ function addReactionToMessage(groupId, messageId, reaction) {
         console.error('Error adding reaction:', error);
     });
 }
-
-
-
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
