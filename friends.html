@@ -3706,6 +3706,9 @@ function addReplyToMessage(chatId, messageId, replyText) {
         // Update the UI to reflect the number of replies
         const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageDiv) {
+            // Load and display replies for the updated message
+            loadReplies(chatId, messageId, messageDiv); // Refresh replies and reply count
+            
             // Fetch the updated count of replies
             db.collection('replies').where('messageId', '==', messageId).get().then((querySnapshot) => {
                 const replyCount = querySnapshot.size;
@@ -3724,12 +3727,6 @@ function addReplyToMessage(chatId, messageId, replyText) {
                         openReplyModal(chatId, messageId, replyText);
                     });
                 }
-
-                // Load and display replies for the updated message
-                loadReplies(chatId, messageId); // Ensure this function exists and is implemented to refresh replies
-
-                // Update the open chat to reflect changes
-                openChat(chatId); // Ensure this function refreshes the chat view
             });
         } else {
             console.error('Message div not found for messageId:', messageId);
@@ -3739,6 +3736,7 @@ function addReplyToMessage(chatId, messageId, replyText) {
         console.error('Error adding reply to Firestore:', error);
     });
 }
+
 
 function createMessageDiv(message, messageId) {
     const messageDiv = document.createElement('div');
