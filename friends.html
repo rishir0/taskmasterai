@@ -3522,8 +3522,6 @@ function startChat(friendEmail) {
     // Use startChat(friendEmail) when starting or switching chats
 });
 
-let replies = {};
-
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
@@ -3549,6 +3547,7 @@ function openChat(friendEmail) {
                             const senderEmail = message.sender;
                             const messageDiv = document.createElement('div');
                             messageDiv.classList.add('message-container');
+                            messageDiv.setAttribute('data-message-id', messageId); // Set data attribute for message ID
 
                             // Sender display name
                             if (senderEmail !== currentUser.email) {
@@ -3629,6 +3628,7 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
+
 
 
 function openReplyModal(chatId, messageId, originalMessage) {
