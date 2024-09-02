@@ -283,78 +283,127 @@ body.night-mode {
     transform: scale(1.1);
 }
 
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: transparent;
-        }
+/* Main Content and Form Styles */
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: transparent;
+}
 
-        .settings-header {
-            margin-bottom: 30px;
-        }
+.settings-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
 
-        .settings-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+.settings-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
 
-        .settings-form {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-        }
+.form-group {
+    margin-bottom: 20px;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+.form-group label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border-color, #ccc);
+    background-color: var(--input-bg-color, #fff);
+    color: var(--input-text-color, #333);
+}
 
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
+.profile-picture-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
 
-        .form-group button {
-            background-color: var(--hover-bg);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+.profile-picture-group label {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
 
-        .form-group button:hover {
-            background-color: var(--accent-color);
-        }
+.profile-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-top: 10px;
+    object-fit: cover;
+    border: 2px solid var(--primary-color, #3F3D56);
+}
+
+.settings-form button {
+    width: 100%;
+}
 
 .sign-out-btn {
-    background-color: var(--hover-bg));
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
+    background-color: var(--danger-color, #d9534f);
+    color: #fff;
 }
-
-
 
 .sign-out-btn:hover {
-    background-color: var(--accent-color); /* Use hover-bg for background on hover */
-    color: var(--text-color);
+    background-color: var(--danger-hover-color, #c9302c);
 }
+
+/* Advanced Themes Card Styles */
+.card {
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    background: var(--card-bg);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.theme-option {
+    margin-bottom: 20px;
+}
+
+.theme-option h5 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius, 15px);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--glass-bg, #3F3D56); /* Fallback color */
+    color: var(--text-color, #ffffff);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color, #009bf5);
+}
+
+.btn-secondary {
+    background-color: var(--bg-color, #f0f0f0); /* Fallback color */
+    color: var(--text-color, #333333);
+}
+
+.btn-secondary:hover {
+    background-color: var(--hover-bg, #e0e0e0);
+}
+
 
 
 /* Existing styles */
@@ -430,65 +479,6 @@ body.night-mode {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
-
-/* Advanced Themes Card Styles */
-.card {
-            margin-bottom: 20px;
-            border-radius: var(--border-radius);
-            background: var(--card-bg);
-        }
-
-        .card-header {
-            background-color: var(--primary-color);
-            border-bottom: 1px solid var(--secondary-color);
-            padding: 10px 15px;
-        }
-
-        .card-body {
-            padding: 15px;
-        }
-
-        #theme-toggle-buttons {
-            margin: 20px;
-        }
-
-.theme-option {
-    margin-bottom: 20px;
-}
-
-.theme-option h5 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.btn {
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius, 15px);
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.btn-primary {
-    background-color: var(--glass-bg, #3F3D56); /* Fallback color */
-    color: var(--text-color, #ffffff);
-}
-
-.btn-primary:hover {
-    background-color: var(--accent-color, #009bf5);
-}
-
-.btn-secondary {
-    background-color: var(--bg-color, #f0f0f0); /* Fallback color */
-    color: var(--text-color, #333333);
-}
-
-.btn-secondary:hover {
-    background-color: var(--hover-bg, #e0e0e0);
-}
-
 
 
     </style>
@@ -665,43 +655,51 @@ function signOut() {
                 </div>
             </div>
         </div>
-        <div class="main-content">
-            <div class="settings-header">
-                <h1>Account Settings</h1>
+<div class="main-content">
+    <div class="settings-header">
+        <h1>Account Settings</h1>
+    </div>
+    <div class="settings-form">
+        <div class="form-group profile-picture-group">
+            <label for="profilePicture">Profile Picture</label>
+            <input type="file" id="profilePicture" accept="image/*">
+            <img id="profilePreview" src="default-profile.png" alt="Profile Picture" class="profile-preview">
+        </div>
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" disabled>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+            <button type="button" onclick="updateAccount()">Save Changes</button>
+        </div>
+        <div class="form-group">
+            <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="theme-option">
+                    <h5>Light Glass Style</h5>
+                    <button id="apply-light-theme" class="btn btn-primary">Apply</button>
+                    <button id="remove-light-theme" class="btn btn-secondary" style="display: none;">Remove</button>
+                </div>
+                <div class="theme-option">
+                    <h5>Dark Glass Style</h5>
+                    <button id="apply-dark-theme" class="btn btn-primary">Apply</button>
+                    <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
+                </div>
             </div>
-            <div class="settings-form">
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter new password">
-                </div>
-                <div class="form-group">
-                    <button type="button" onclick="updateAccount()">Save Changes</button>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="theme-option">
-                            <h5>Light Glass Style</h5>
-                            <button id="apply-light-theme" class="btn btn-primary">Apply</button>
-                            <button id="remove-light-theme" class="btn btn-secondary" style="display: none;">Remove</button>
-                        </div>
-                        <div class="theme-option">
-                            <h5>Dark Glass Style</h5>
-                            <button id="apply-dark-theme" class="btn btn-primary">Apply</button>
-                            <button id="remove-dark-theme" class="btn btn-secondary" style="display: none;">Remove</button>
-                        </div>
-                    </div>
-                </div>
+        </div>
+    </div>
+</div>
+
                                     
     </script>
 
