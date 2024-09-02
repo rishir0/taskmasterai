@@ -294,6 +294,7 @@ body.night-mode {
 .settings-header h1 {
     font-size: 2.5rem;
     margin-bottom: 30px;
+    color: var(--primary-color, #3F3D56); /* Consistent primary color */
 }
 
 .settings-form {
@@ -309,6 +310,7 @@ body.night-mode {
     display: block;
     font-size: 1.1rem;
     margin-bottom: 10px;
+    color: var(--text-color, #333);
 }
 
 .form-group input[type="text"],
@@ -316,10 +318,18 @@ body.night-mode {
 .form-group input[type="password"] {
     width: 100%;
     padding: 10px;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius, 8px);
     border: 1px solid var(--input-border-color, #ccc);
     background-color: var(--input-bg-color, #fff);
     color: var(--input-text-color, #333);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: var(--accent-color, #009bf5);
+    box-shadow: 0 0 5px rgba(0, 155, 245, 0.5);
 }
 
 .profile-picture-group {
@@ -332,6 +342,7 @@ body.night-mode {
 .profile-picture-group label {
     font-size: 1.1rem;
     margin-bottom: 10px;
+    color: var(--text-color, #333);
 }
 
 .profile-preview {
@@ -345,6 +356,31 @@ body.night-mode {
 
 .settings-form button {
     width: 100%;
+    padding: 12px;
+    border-radius: var(--border-radius, 8px);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: none;
+}
+
+.settings-form .btn-primary {
+    background-color: var(--primary-color, #3F3D56);
+    color: #fff;
+}
+
+.settings-form .btn-primary:hover {
+    background-color: var(--accent-color, #009bf5);
+}
+
+.settings-form .btn-secondary {
+    background-color: var(--bg-color, #f0f0f0);
+    color: var(--text-color, #333);
+}
+
+.settings-form .btn-secondary:hover {
+    background-color: var(--hover-bg, #e0e0e0);
 }
 
 .sign-out-btn {
@@ -359,8 +395,9 @@ body.night-mode {
 /* Advanced Themes Card Styles */
 .card {
     margin-bottom: 20px;
-    border-radius: var(--border-radius);
-    background: var(--card-bg);
+    border-radius: var(--border-radius, 8px);
+    background: var(--card-bg, #fff);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Consistent card shadow */
 }
 
 .card-body {
@@ -374,21 +411,23 @@ body.night-mode {
 .theme-option h5 {
     font-size: 1.2rem;
     margin-bottom: 10px;
+    color: var(--text-color, #333);
 }
 
 .btn {
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius, 15px);
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--border-radius, 8px);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
+    border: none;
 }
 
 .btn-primary {
-    background-color: var(--glass-bg, #3F3D56); /* Fallback color */
-    color: var(--text-color, #ffffff);
+    background-color: var(--primary-color, #3F3D56);
+    color: #fff;
 }
 
 .btn-primary:hover {
@@ -396,14 +435,13 @@ body.night-mode {
 }
 
 .btn-secondary {
-    background-color: var(--bg-color, #f0f0f0); /* Fallback color */
-    color: var(--text-color, #333333);
+    background-color: var(--bg-color, #f0f0f0);
+    color: var(--text-color, #333);
 }
 
 .btn-secondary:hover {
     background-color: var(--hover-bg, #e0e0e0);
 }
-
 
 
 /* Existing styles */
