@@ -3522,6 +3522,8 @@ function startChat(friendEmail) {
     // Use startChat(friendEmail) when starting or switching chats
 });
 
+let replies = {};
+
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
@@ -3547,26 +3549,20 @@ function openChat(friendEmail) {
                             const senderEmail = message.sender;
                             const messageDiv = document.createElement('div');
                             messageDiv.classList.add('message-container');
-                            messageDiv.setAttribute('data-message-id', messageId); // Set data attribute for message ID
+                            messageDiv.setAttribute('data-message-id', messageId);
 
-                            // Sender display name
-                            if (senderEmail !== currentUser.email) {
-                                db.collection('users').where('email', '==', senderEmail).get()
-                                    .then((querySnapshot) => {
-                                        const senderDoc = querySnapshot.docs[0];
-                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                    });
-                            }
+                            const messageBubble = document.createElement('div');
+                            messageBubble.classList.add('message-bubble');
 
                             const textElement = document.createElement('span');
                             textElement.classList.add('message-text');
                             textElement.textContent = message.message;
-                            messageDiv.appendChild(textElement);
+                            messageBubble.appendChild(textElement);
 
                             if (senderEmail === currentUser.email) {
-                                messageDiv.classList.add('message', 'sent');
+                                messageBubble.classList.add('message', 'sent');
                             } else {
-                                messageDiv.classList.add('message', 'received');
+                                messageBubble.classList.add('message', 'received');
                             }
 
                             // Add options for reply and reactions
@@ -3574,7 +3570,6 @@ function openChat(friendEmail) {
                             optionsContainer.classList.add('message-options');
                             optionsContainer.style.display = 'none'; // Initially hidden
 
-                            // Reaction options in the specified order
                             const reactions = ['❤️', '👍', '👎', '😆', '‼️', '?'];
                             reactions.forEach(reaction => {
                                 const reactionButton = document.createElement('button');
@@ -3586,16 +3581,14 @@ function openChat(friendEmail) {
                                 optionsContainer.appendChild(reactionButton);
                             });
 
-                            // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
+                            removeReactionButton.textContent = 'Remove';
                             removeReactionButton.classList.add('remove-reaction-button');
                             removeReactionButton.addEventListener('click', () => {
                                 removeReactionFromMessageV2(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
 
-                            // Reply option (moved after the remove button)
                             const replyOption = document.createElement('button');
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
@@ -3604,12 +3597,13 @@ function openChat(friendEmail) {
                             });
                             optionsContainer.appendChild(replyOption);
 
-                            messageDiv.appendChild(optionsContainer);
+                            messageBubble.appendChild(optionsContainer);
 
-                            messageDiv.addEventListener('click', () => {
+                            messageBubble.addEventListener('click', () => {
                                 optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                             });
 
+                            messageDiv.appendChild(messageBubble);
                             chatWindow.appendChild(messageDiv);
 
                             // Load reactions for this message
@@ -3618,7 +3612,6 @@ function openChat(friendEmail) {
                             // Load replies for this message
                             loadReplies(chatId, messageId, messageDiv);
 
-                            // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
                     });
@@ -3628,7 +3621,6 @@ function openChat(friendEmail) {
             console.error('Error fetching user data:', error);
         });
 }
-
 
 
 function openReplyModal(chatId, messageId, originalMessage) {
@@ -3735,44 +3727,44 @@ function createMessageDiv(message, messageId) {
 }
 
 function loadReplies(chatId, messageId, messageDiv) {
-    // Remove any existing replies container to avoid duplicates
-    let existingRepliesContainer = messageDiv.querySelector('.replies-container');
-    if (existingRepliesContainer) {
-        existingRepliesContainer.remove();
-    }
-
-    // Create a container for the replies
-    const repliesContainer = document.createElement('div');
-    repliesContainer.classList.add('replies-container');
-
-    // Fetch replies from Firestore
-    db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
+    db.collection('replies').where('messageId', '==', messageId).get()
         .then((querySnapshot) => {
             const replyCount = querySnapshot.size;
+            let replyContainer = messageDiv.querySelector('.reply-container');
 
             if (replyCount > 0) {
+                if (!replyContainer) {
+                    replyContainer = document.createElement('div');
+                    replyContainer.classList.add('reply-container');
+                    messageDiv.appendChild(replyContainer);
+                }
+                
+                replyContainer.innerHTML = ''; // Clear any previous replies
+
                 querySnapshot.forEach((doc) => {
                     const replyData = doc.data();
                     const replyText = replyData.replyText;
+                    const sender = replyData.sender;
 
-                    // Create a reply element
                     const replyElement = document.createElement('div');
                     replyElement.classList.add('reply');
-
-                    // If it's only one reply, show just the message
-                    if (replyCount === 1) {
-                        replyElement.textContent = replyText;
-                    } else {
-                        // If more than one reply, include the sender's name
-                        const sender = replyData.sender;
-                        replyElement.textContent = `${sender}: ${replyText}`;
-                    }
-
-                    repliesContainer.appendChild(replyElement);
+                    replyElement.textContent = `${sender}: ${replyText}`;
+                    replyContainer.appendChild(replyElement);
                 });
 
-                // Append the replies container after the messageDiv
-                messageDiv.parentNode.insertBefore(repliesContainer, messageDiv.nextSibling);
+                let replyCountText = messageDiv.querySelector('.reply-count');
+                if (!replyCountText) {
+                    replyCountText = document.createElement('span');
+                    replyCountText.classList.add('reply-count');
+                    messageDiv.appendChild(replyCountText);
+                }
+                replyCountText.textContent = `${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`;
+                replyCountText.addEventListener('click', () => {
+                    openReplyModal(chatId, messageId, messageDiv.querySelector('.message-text').textContent);
+                });
+
+            } else if (replyContainer) {
+                replyContainer.remove();
             }
         })
         .catch((error) => {
