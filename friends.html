@@ -454,15 +454,19 @@ body.night-mode {
 
 .reply-container {
     margin-top: 5px; /* Space between the message and reply count */
-    padding-left: 5px; /* Align with message bubble padding */
+    padding-left: 0; /* Remove left padding */
+    position: relative; /* Relative positioning to ensure it’s placed correctly */
 }
+
 
 .reply-count {
     display: block;
     font-size: 12px;
     color: #555;
-    text-align: left;
+    text-align: left; /* Align to the left for received messages */
+    margin-top: 5px; /* Space from the message bubble */
 }
+
 
 
 
