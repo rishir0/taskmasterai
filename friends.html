@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1284,12 +1285,12 @@ body.night-mode {
     width: 100%;
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
-    background-color: var(--glass-bg); /* Black with opacity */
+    background-color: var(--card-bg); /* Black with opacity */
 }
 
 /* Modal Content */
 .modal4-content {
-    background-color: var(--glass-bg);
+    background-color: var(--accent-color);
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: none;
@@ -3599,18 +3600,13 @@ function openChat(friendEmail) {
                                 optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                             });
 
-                            // Create a container for replies
-                            const repliesContainer = document.createElement('div');
-                            repliesContainer.classList.add('replies-container');
-                            messageDiv.appendChild(repliesContainer);
-
                             chatWindow.appendChild(messageDiv);
 
                             // Load reactions for this message
                             loadReactionsV2(chatId, messageId, messageDiv);
 
                             // Load replies for this message
-                            loadReplies(chatId, messageId, repliesContainer);
+                            loadReplies(chatId, messageId, messageDiv);
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3669,6 +3665,7 @@ function openReplyModal(chatId, messageId, originalMessage) {
 }
 
 
+
 function addReplyToMessage(chatId, messageId, replyText) {
     const currentUser = firebase.auth().currentUser;
     
@@ -3683,16 +3680,29 @@ function addReplyToMessage(chatId, messageId, replyText) {
     .then(() => {
         console.log('Reply successfully added to Firestore.');
         
-        // Update the UI to reflect the new reply
-        const messageDiv = document.querySelector(`[data-message-id="${messageId}"] .replies-container`);
+        // Update the UI to reflect the number of replies
+        const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageDiv) {
-            // Create and append the new reply element
-            const replyElement = document.createElement('p');
-            replyElement.textContent = `${currentUser.email}: ${replyText}`;
-            messageDiv.appendChild(replyElement);
+            let replyCountText = messageDiv.querySelector('.reply-count');
 
-            // Update the reply count
-            loadReplies(chatId, messageId, messageDiv.parentElement);
+            // Fetch the updated count of replies
+            db.collection('replies').where('messageId', '==', messageId).get().then((querySnapshot) => {
+                const replyCount = querySnapshot.size;
+
+                if (replyCountText) {
+                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                } else {
+                    replyCountText = document.createElement('span');
+                    replyCountText.classList.add('reply-count');
+                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                    messageDiv.appendChild(replyCountText);
+
+                    // Add an event listener to the reply count to open the modal
+                    replyCountText.addEventListener('click', () => {
+                        openReplyModal(chatId, messageId, replyText);
+                    });
+                }
+            });
         } else {
             console.error('Message div not found for messageId:', messageId);
         }
@@ -3702,40 +3712,49 @@ function addReplyToMessage(chatId, messageId, replyText) {
     });
 }
 
-function loadReplies(chatId, messageId, repliesContainer) {
+// Make sure each message div has a data-message-id attribute
+function createMessageDiv(message, messageId) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message-container');
+    messageDiv.setAttribute('data-message-id', messageId);
+
+    // Add text, options, etc. to messageDiv
+
+    return messageDiv;
+}
+
+function loadReplies(chatId, messageId, messageDiv) {
     // Query Firestore to get the replies for the specific message
     db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
         .then((querySnapshot) => {
-            repliesContainer.innerHTML = ''; // Clear any existing replies
-            querySnapshot.forEach((doc) => {
+            const repliesContainer = document.createElement('div');
+            repliesContainer.classList.add('replies-container');
+            
+            // Clear any existing replies container
+            const existingRepliesContainer = messageDiv.nextElementSibling;
+            if (existingRepliesContainer && existingRepliesContainer.classList.contains('replies-container')) {
+                existingRepliesContainer.remove();
+            }
+
+            const replyCount = querySnapshot.size;
+            querySnapshot.forEach((doc, index) => {
                 const replyData = doc.data();
                 const replyElement = document.createElement('p');
-                replyElement.textContent = `${replyData.sender}: ${replyData.replyText}`;
+
+                // If there's only one reply, just show the reply message
+                if (replyCount === 1) {
+                    replyElement.textContent = replyData.replyText;
+                } else {
+                    // For multiple replies, show the sender's name followed by the reply
+                    replyElement.textContent = `${replyData.sender}: ${replyData.replyText}`;
+                }
+
                 repliesContainer.appendChild(replyElement);
             });
 
-            // Update the reply count
-            const replyCount = querySnapshot.size;
-            const replyCountText = repliesContainer.parentElement.querySelector('.reply-count');
-
+            // Only append the repliesContainer if there are replies
             if (replyCount > 0) {
-                const replyText = `${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`;
-                
-                if (replyCountText) {
-                    replyCountText.textContent = replyText;
-                } else {
-                    const newReplyCountText = document.createElement('span');
-                    newReplyCountText.classList.add('reply-count');
-                    newReplyCountText.textContent = replyText;
-                    repliesContainer.parentElement.appendChild(newReplyCountText);
-
-                    // Add an event listener to the reply count to open the modal
-                    newReplyCountText.addEventListener('click', () => {
-                        openReplyModal(chatId, messageId, repliesContainer.parentElement.querySelector('.message-text').textContent);
-                    });
-                }
-            } else if (replyCountText) {
-                replyCountText.remove();
+                messageDiv.insertAdjacentElement('afterend', repliesContainer);
             }
         })
         .catch((error) => {
