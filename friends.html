@@ -3723,7 +3723,8 @@ function addReplyToMessage(chatId, messageId, replyText) {
                     messageDiv.appendChild(replyCountText);
 
                     // Add an event listener to the reply count to open the modal
-                    replyCountText.addEventListener('click', () => {
+                    replyCountText.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Prevent other click events from firing
                         openReplyModal(chatId, messageId, replyText);
                     });
                 }
