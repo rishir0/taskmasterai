@@ -452,13 +452,18 @@ body.night-mode {
     text-align: left;
 }
 
+.reply-container {
+    margin-top: 5px; /* Space between the message and reply count */
+    padding-left: 5px; /* Align with message bubble padding */
+}
+
 .reply-count {
     display: block;
-    margin-top: 5px;
     font-size: 12px;
     color: #555;
     text-align: left;
 }
+
 
 
 #chatMessages .message-reaction {
@@ -3754,13 +3759,21 @@ function createMessageDiv(message, messageId) {
         messageDiv.classList.add('message', 'received');
     }
 
+    // Container for reply count (this will be outside of the message bubble)
+    const replyContainer = document.createElement('div');
+    replyContainer.classList.add('reply-container');
+
     // Reply count (initially hidden, will be updated by loadReplies)
     const replyCountText = document.createElement('span');
     replyCountText.classList.add('reply-count');
-    messageDiv.appendChild(replyCountText);
+    replyContainer.appendChild(replyCountText);
+
+    // Append replyContainer to messageDiv
+    messageDiv.appendChild(replyContainer);
 
     return messageDiv;
 }
+
 
 function loadReplies(chatId, messageId, messageDiv) {
     // Query Firestore to count the number of replies for the specific message
