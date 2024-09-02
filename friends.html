@@ -3785,28 +3785,6 @@ function loadReplies(chatId, messageId, messageDiv) {
                 // If no replies exist, remove the reply count element
                 replyCountText.remove();
             }
-
-            // Clear existing replies from the UI (if you want to list them out)
-            const existingRepliesContainer = messageDiv.querySelector('.replies-container');
-            if (existingRepliesContainer) {
-                existingRepliesContainer.remove();
-            }
-
-            // Create a container for replies
-            const repliesContainer = document.createElement('div');
-            repliesContainer.classList.add('replies-container');
-
-            // Add each reply to the replies container
-            querySnapshot.forEach((doc) => {
-                const reply = doc.data();
-                const replyElement = document.createElement('div');
-                replyElement.classList.add('reply');
-                replyElement.textContent = `${reply.sender}: ${reply.replyText}`;
-                repliesContainer.appendChild(replyElement);
-            });
-
-            // Append the replies container to the messageDiv
-            messageDiv.appendChild(repliesContainer);
         }, (error) => {
             console.error('Error loading replies from Firestore:', error);
         });
