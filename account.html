@@ -289,17 +289,17 @@ body.night-mode {
     padding: 20px;
     overflow-y: auto;
     background: transparent;
+    margin-left: 0; /* Align to the left */
 }
 
 .settings-header h1 {
     font-size: 2.5rem;
     margin-bottom: 30px;
-    color: var(--primary-color, #3F3D56);
+    color: #fff; /* White text */
 }
 
 .settings-form {
     max-width: 600px;
-    margin: 0 auto;
 }
 
 .form-group {
@@ -318,11 +318,11 @@ body.night-mode {
 .form-group input[type="password"] {
     width: 100%;
     padding: 10px;
-    border-radius: var(--border-radius, 8px);
     border: 1px solid var(--input-border-color, #ccc);
     background-color: transparent;
     color: var(--input-text-color, #fff);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0; /* No border-radius */
 }
 
 .form-group input[type="text"]:focus,
@@ -335,14 +335,14 @@ body.night-mode {
 .profile-picture-group {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Align left */
     margin-bottom: 20px;
 }
 
 .profile-preview {
     width: 120px;
     height: 120px;
-    border-radius: 50%;
+    border-radius: 50%; /* Keep border-radius for profile picture */
     background-color: var(--bg-color, #f0f0f0);
     display: flex;
     justify-content: center;
@@ -355,11 +355,11 @@ body.night-mode {
     background-color: var(--primary-color, #3F3D56);
     color: #fff;
     padding: 8px 16px;
-    border-radius: var(--border-radius, 8px);
     cursor: pointer;
     border: none;
     font-size: 1rem;
     transition: background-color 0.3s ease;
+    border-radius: 0; /* No border-radius */
 }
 
 .choose-file-btn:hover {
@@ -370,6 +370,7 @@ body.night-mode {
     background-color: transparent;
     color: #fff;
     border: 2px solid var(--primary-color, #3F3D56);
+    border-radius: 0; /* No border-radius */
 }
 
 .settings-form .btn-primary:hover {
@@ -380,6 +381,7 @@ body.night-mode {
 .sign-out-btn {
     background-color: var(--danger-color, #d9534f);
     color: #fff;
+    border-radius: 0; /* No border-radius */
 }
 
 .sign-out-btn:hover {
@@ -389,9 +391,9 @@ body.night-mode {
 /* Advanced Themes Card Styles */
 .card {
     margin-bottom: 20px;
-    border-radius: var(--border-radius, 8px);
     background: var(--card-bg, #fff);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0; /* No border-radius */
 }
 
 .card-body {
@@ -411,12 +413,12 @@ body.night-mode {
 .btn {
     width: 100%;
     padding: 12px;
-    border-radius: var(--border-radius, 8px);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     border: none;
+    border-radius: 0; /* No border-radius */
 }
 
 .btn-primary {
@@ -735,6 +737,7 @@ function signOut() {
         </div>
     </div>
 </div>
+
 
 
                                     
