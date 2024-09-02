@@ -3692,18 +3692,22 @@ function openReplyModal(chatId, messageId, originalMessage) {
 function addReplyToMessage(chatId, messageId, replyText) {
     const currentUser = firebase.auth().currentUser;
     
+    if (!currentUser) {
+        console.error('No current user logged in.');
+        return;
+    }
+
     // Add the reply to Firestore under the 'replies' collection
     db.collection('replies').add({
         chatId: chatId,
         messageId: messageId,
         sender: currentUser.email,
-        replyText: replyText,
+        replyText: replyText.trim(),
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
     .then(() => {
         console.log('Reply successfully added to Firestore.');
         
-        // Update the UI to reflect the number of replies
         const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageDiv) {
             // Load and display replies for the updated message
@@ -3715,19 +3719,22 @@ function addReplyToMessage(chatId, messageId, replyText) {
                 let replyCountText = messageDiv.querySelector('.reply-count');
 
                 if (replyCountText) {
-                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                    replyCountText.textContent = formatReplyCount(replyCount);
                 } else {
                     replyCountText = document.createElement('span');
                     replyCountText.classList.add('reply-count');
-                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
+                    replyCountText.textContent = formatReplyCount(replyCount);
                     messageDiv.appendChild(replyCountText);
 
                     // Add an event listener to the reply count to open the modal
                     replyCountText.addEventListener('click', (event) => {
-                        event.stopPropagation(); // Prevent other click events from firing
+                        event.preventDefault();
+                        event.stopPropagation();
                         openReplyModal(chatId, messageId, replyText);
                     });
                 }
+            }).catch((error) => {
+                console.error('Error fetching reply count from Firestore:', error);
             });
         } else {
             console.error('Message div not found for messageId:', messageId);
@@ -3737,6 +3744,11 @@ function addReplyToMessage(chatId, messageId, replyText) {
         console.error('Error adding reply to Firestore:', error);
     });
 }
+
+function formatReplyCount(count) {
+    return `${count} repl${count > 1 ? 'ies' : 'y'}`;
+}
+
 
 
 function createMessageDiv(message, messageId) {
