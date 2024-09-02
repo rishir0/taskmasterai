@@ -291,15 +291,31 @@ body.night-mode {
     background: transparent;
 }
 
+.settings-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 .settings-header h1 {
     font-size: 2.5rem;
-    margin-bottom: 30px;
     color: #ffffff;
 }
 
-.settings-form {
-    max-width: 600px;
+.card {
     margin: 0 auto;
+    max-width: 600px;
+    padding: 20px;
+    border-radius: var(--border-radius, 8px);
+    background: var(--card-bg, #fff);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.settings-form {
+    margin: 0;
 }
 
 .form-group {
@@ -319,16 +335,15 @@ body.night-mode {
     width: 100%;
     padding: 10px;
     border-radius: var(--border-radius, 8px);
-    border: 1px solid var(--input-border-color, #1E1E1E);
-    background-color: #1E1E1E
+    border: none;
+    background-color: #1E1E1E;
     color: var(--text-color, #fff);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="email"]:focus,
 .form-group input[type="password"]:focus {
-    border-color: var(--accent-color, #009bf5);
     box-shadow: 0 0 5px rgba(0, 155, 245, 0.5);
 }
 
@@ -348,7 +363,7 @@ body.night-mode {
     justify-content: center;
     align-items: center;
     margin-bottom: 10px;
-    border: 2px solid var(--primary-color, #3F3D56);
+    border: none;
 }
 
 .choose-file-btn {
@@ -369,7 +384,7 @@ body.night-mode {
 .settings-form .btn-primary {
     background-color: transparent;
     color: #fff;
-    border: 2px solid var(--primary-color, #1E1E1E);
+    border: none;
 }
 
 .settings-form .btn-primary:hover {
@@ -380,6 +395,7 @@ body.night-mode {
 .sign-out-btn {
     background-color: var(--danger-color, #d9534f);
     color: #fff;
+    border: none;
 }
 
 .sign-out-btn:hover {
@@ -387,17 +403,6 @@ body.night-mode {
 }
 
 /* Advanced Themes Card Styles */
-.card {
-    margin-bottom: 20px;
-    border-radius: var(--border-radius, 8px);
-    background: var(--card-bg, #fff);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-body {
-    padding: 15px;
-}
-
 .theme-option {
     margin-bottom: 20px;
 }
@@ -436,6 +441,7 @@ body.night-mode {
 .btn-secondary:hover {
     background-color: var(--hover-bg, #e0e0e0);
 }
+
 
 
 
