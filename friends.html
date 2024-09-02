@@ -3656,11 +3656,27 @@ function openReplyModal(chatId, messageId, originalMessage) {
             querySnapshot.forEach((doc) => {
                 const replyData = doc.data();
                 const replyText = replyData.replyText;
-                const sender = replyData.sender;
+                const senderEmail = replyData.sender;
 
-                const replyElement = document.createElement('p');
-                replyElement.textContent = `${sender}: ${replyText}`;
-                modalMessage.appendChild(replyElement);
+                // Fetch display name from Firestore
+                db.collection('users').where('email', '==', senderEmail).get()
+                    .then((userQuerySnapshot) => {
+                        let senderDisplayName = senderEmail; // Default to email
+                        if (!userQuerySnapshot.empty) {
+                            const userDoc = userQuerySnapshot.docs[0];
+                            const displayName = userDoc.data().displayName;
+                            if (displayName && displayName !== 'Anonymous') {
+                                senderDisplayName = displayName;
+                            }
+                        }
+
+                        const replyElement = document.createElement('p');
+                        replyElement.textContent = `${senderDisplayName}: ${replyText}`;
+                        modalMessage.appendChild(replyElement);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user display name:', error);
+                    });
             });
 
             modal.style.display = "block";
@@ -3668,6 +3684,8 @@ function openReplyModal(chatId, messageId, originalMessage) {
         .catch((error) => {
             console.error('Error fetching replies from Firestore:', error);
         });
+}
+
 
     const sendReplyButton = document.getElementById('sendReplyButton');
     sendReplyButton.onclick = () => {
