@@ -354,7 +354,11 @@ body.night-mode {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px; /* Move profile picture up */
-    border: 5px solid var(--accent-color, #3F3D56); /* Medium-sized border color */
+    border: none; /* Remove border color */
+}
+
+.profile-preview svg {
+    fill: var(--accent-color, #009bf5); /* Set SVG color to accent color */
 }
 
 .choose-file-btn {
@@ -399,6 +403,7 @@ body.night-mode {
 .sign-out-btn:hover {
     background-color: var(--danger-hover-color, #c9302c);
 }
+
 
 
 /* Advanced Themes Card Styles */
