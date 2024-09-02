@@ -3612,8 +3612,9 @@ function openChat(friendEmail) {
                             const replyOption = document.createElement('button');
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
-                            replyOption.addEventListener('click', () => {
-                                openReplyModal(chatId, messageId, message.message);
+                            replyOption.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Prevent the click from affecting the parent elements
+                            openReplyModal(chatId, messageId, message.message);
                             });
                             optionsContainer.appendChild(replyOption);
 
