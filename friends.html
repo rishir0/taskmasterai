@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1285,12 +1284,12 @@ body.night-mode {
     width: 100%;
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
-    background-color: var(--card-bg); /* Black with opacity */
+    background-color: var(--glass-bg); /* Black with opacity */
 }
 
 /* Modal Content */
 .modal4-content {
-    background-color: var(--accent-color);
+    background-color: var(--card-bg);
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: none;
@@ -1331,6 +1330,18 @@ body.night-mode {
 
 #sendReplyButton:hover {
     background-color: var(--accent-color);
+}
+
+
+.replies-container {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.reply {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
 }
 
       
@@ -3724,43 +3735,51 @@ function createMessageDiv(message, messageId) {
 }
 
 function loadReplies(chatId, messageId, messageDiv) {
-    // Query Firestore to get the replies for the specific message
+    // Remove any existing replies container to avoid duplicates
+    let existingRepliesContainer = messageDiv.querySelector('.replies-container');
+    if (existingRepliesContainer) {
+        existingRepliesContainer.remove();
+    }
+
+    // Create a container for the replies
+    const repliesContainer = document.createElement('div');
+    repliesContainer.classList.add('replies-container');
+
+    // Fetch replies from Firestore
     db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
         .then((querySnapshot) => {
-            const repliesContainer = document.createElement('div');
-            repliesContainer.classList.add('replies-container');
-            
-            // Clear any existing replies container
-            const existingRepliesContainer = messageDiv.nextElementSibling;
-            if (existingRepliesContainer && existingRepliesContainer.classList.contains('replies-container')) {
-                existingRepliesContainer.remove();
-            }
-
             const replyCount = querySnapshot.size;
-            querySnapshot.forEach((doc, index) => {
-                const replyData = doc.data();
-                const replyElement = document.createElement('p');
 
-                // If there's only one reply, just show the reply message
-                if (replyCount === 1) {
-                    replyElement.textContent = replyData.replyText;
-                } else {
-                    // For multiple replies, show the sender's name followed by the reply
-                    replyElement.textContent = `${replyData.sender}: ${replyData.replyText}`;
-                }
-
-                repliesContainer.appendChild(replyElement);
-            });
-
-            // Only append the repliesContainer if there are replies
             if (replyCount > 0) {
-                messageDiv.insertAdjacentElement('afterend', repliesContainer);
+                querySnapshot.forEach((doc) => {
+                    const replyData = doc.data();
+                    const replyText = replyData.replyText;
+
+                    // Create a reply element
+                    const replyElement = document.createElement('div');
+                    replyElement.classList.add('reply');
+
+                    // If it's only one reply, show just the message
+                    if (replyCount === 1) {
+                        replyElement.textContent = replyText;
+                    } else {
+                        // If more than one reply, include the sender's name
+                        const sender = replyData.sender;
+                        replyElement.textContent = `${sender}: ${replyText}`;
+                    }
+
+                    repliesContainer.appendChild(replyElement);
+                });
+
+                // Append the replies container after the messageDiv
+                messageDiv.parentNode.insertBefore(repliesContainer, messageDiv.nextSibling);
             }
         })
         .catch((error) => {
             console.error('Error loading replies from Firestore:', error);
         });
 }
+
 
 
 
