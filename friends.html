@@ -3649,56 +3649,25 @@ function openReplyModal(chatId, messageId, originalMessage) {
     
     // Clear previous replies
     modalMessage.innerHTML = `<p>Replies to: "${originalMessage}"</p>`;
-
+    
     // Fetch replies from Firestore
     db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
         .then((querySnapshot) => {
-            const replies = [];
-            const emailSet = new Set();
-            
-            // Collect all replies and email addresses
             querySnapshot.forEach((doc) => {
                 const replyData = doc.data();
-                replies.push(replyData);
-                emailSet.add(replyData.sender);
+                const replyText = replyData.replyText;
+                const sender = replyData.sender;
+
+                const replyElement = document.createElement('p');
+                replyElement.textContent = `${sender}: ${replyText}`;
+                modalMessage.appendChild(replyElement);
             });
 
-            // Fetch all display names in one query
-            return db.collection('users').where('email', 'in', Array.from(emailSet)).get()
-                .then((userQuerySnapshot) => {
-                    const emailToDisplayName = {};
-
-                    userQuerySnapshot.forEach((userDoc) => {
-                        const userData = userDoc.data();
-                        const displayName = userData.displayName;
-                        const email = userData.email;
-
-                        if (displayName && displayName !== 'Anonymous') {
-                            emailToDisplayName[email] = displayName;
-                        } else {
-                            emailToDisplayName[email] = email; // Fall back to email if no display name
-                        }
-                    });
-
-                    // Render replies with the correct display names
-                    replies.forEach((replyData) => {
-                        const senderEmail = replyData.sender;
-                        const replyText = replyData.replyText;
-                        const senderDisplayName = emailToDisplayName[senderEmail] || senderEmail;
-
-                        const replyElement = document.createElement('p');
-                        replyElement.textContent = `${senderDisplayName}: ${replyText}`;
-                        modalMessage.appendChild(replyElement);
-                    });
-
-                    modal.style.display = "block";
-                });
+            modal.style.display = "block";
         })
         .catch((error) => {
-            console.error('Error fetching replies or display names from Firestore:', error);
+            console.error('Error fetching replies from Firestore:', error);
         });
-}
-
 
     const sendReplyButton = document.getElementById('sendReplyButton');
     sendReplyButton.onclick = () => {
@@ -3717,7 +3686,6 @@ function openReplyModal(chatId, messageId, originalMessage) {
         }
     };
 }
-
 
 
 function addReplyToMessage(chatId, messageId, replyText) {
