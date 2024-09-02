@@ -437,7 +437,7 @@ body.night-mode {
     /* Styles for messages received from others, including background color and text alignment */
 }
 
-/* Container for the message and reply count */
+/* Container for the reply count and text */
 .message-container-2 {
     position: relative; /* Allows positioning of child elements */
     padding: 5px;
@@ -446,30 +446,19 @@ body.night-mode {
 
 /* Reply count styling */
 .reply-count {
+    display: inline; /* Ensure text is displayed inline */
     font-size: 12px;
-    color: #fff; /* White text color */
-    text-align: center; /* Center the text within the width */
+    color: #fff; /* Make the text color white */
+    text-align: center; /* Center text within the container */
+    margin-top: 5px; /* Space from the message bubble */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -25px; /* Adjusted to move it below the message bubble */
+    bottom: -20px; /* Position it below the message bubble */
     width: 100%; /* Full width of the container */
-    padding: 2px 0; /* Padding for better spacing */
-    box-sizing: border-box; /* Ensure padding is included in the width */
-    display: flex; /* Use flexbox for alignment */
-    justify-content: center; /* Center text horizontally */
-    align-items: center; /* Center text vertically */
+    text-align: center; /* Center the text within the width */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
-
-/* Ensure the message container gets the new class */
-#chatMessages .message {
-    position: relative; /* Allows absolute positioning of the reply count */
-}
-
-/* Apply new class to each message container */
-#chatMessages .message-container {
-    position: relative; /* Allows for absolutely positioning reply counts */
-}
 
 
 #chatMessages .message-reaction {
@@ -3757,12 +3746,10 @@ function createMessageDiv(message, messageId) {
     textElement.textContent = message.message;
     messageDiv.appendChild(textElement);
 
-    // Add options container, reactions, etc. here as needed
+    // Add other elements such as options container, reactions, etc.
 
     return messageDiv;
 }
-
-
 
 
 function loadReplies(chatId, messageId, messageDiv) {
