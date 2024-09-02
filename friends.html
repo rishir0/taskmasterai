@@ -398,44 +398,54 @@ body.night-mode {
     position: relative; /* Allows absolute positioning of child elements */
 }
 
-#chatMessages {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-    margin-bottom: 15px;
-    /* Provides the main container for chat messages with scrolling enabled */
+#chatMessages .message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px; /* Space between message containers */
 }
 
-#chatMessages .message {
+#chatMessages .message-bubble {
     max-width: 70%;
     padding: 10px;
     border-radius: 10px;
-    margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    clear: both;
     position: relative; /* Allows positioning of the reaction relative to the message */
-    /* Styles for individual message bubbles, including padding, border radius, and shadows */
+    /* Inherits styles from the previous .message class */
 }
 
-#chatMessages .message.sent {
+#chatMessages .message-bubble.sent {
     background: var(--primary-color);
     color: #fff;
     align-self: flex-end;
     float: right;
     text-align: right;
     border-top-right-radius: 0;
-    /* Styles for messages sent by the user, including background color and text alignment */
 }
 
-#chatMessages .message.received {
+#chatMessages .message-bubble.received {
     background: var(--accent-color);
     color: var(--text-color);
     align-self: flex-start;
     float: left;
     text-align: left;
     border-top-left-radius: 0;
-    /* Styles for messages received from others, including background color and text alignment */
 }
+
+#chatMessages .reply-count-container {
+    align-self: flex-start;
+    margin-top: 5px; /* Space between message bubble and reply count */
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    cursor: pointer;
+    /* Reply count styling */
+}
+
+#chatMessages .reply-count-container:hover {
+    text-decoration: underline;
+    /* Adds underline on hover for better UX */
+}
+
 
 #chatMessages .message-reaction {
     position: absolute;
@@ -3729,10 +3739,36 @@ function createMessageDiv(message, messageId) {
     messageDiv.classList.add('message-container');
     messageDiv.setAttribute('data-message-id', messageId);
 
-    // Add text, options, etc. to messageDiv
+    const messageBubble = document.createElement('div');
+    messageBubble.classList.add('message-bubble');
+    
+    const textElement = document.createElement('span');
+    textElement.classList.add('message-text');
+    textElement.textContent = message.message;
+    messageBubble.appendChild(textElement);
+
+    messageDiv.appendChild(messageBubble);
+    
+    const replyCountDiv = document.createElement('div');
+    replyCountDiv.classList.add('reply-count-container');
+    messageDiv.appendChild(replyCountDiv);
+
+    // Add options, reactions, and other elements to messageBubble
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('message-options');
+    optionsContainer.style.display = 'none'; // Initially hidden
+
+    // Add options to optionsContainer...
+
+    messageBubble.appendChild(optionsContainer);
+
+    messageBubble.addEventListener('click', () => {
+        optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
+    });
 
     return messageDiv;
 }
+
 
 function loadReplies(chatId, messageId, messageDiv) {
     // Query Firestore to count the number of replies for the specific message
