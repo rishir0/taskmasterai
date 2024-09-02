@@ -3549,20 +3549,25 @@ function openChat(friendEmail) {
                             const senderEmail = message.sender;
                             const messageDiv = document.createElement('div');
                             messageDiv.classList.add('message-container');
-                            messageDiv.setAttribute('data-message-id', messageId);
 
-                            const messageBubble = document.createElement('div');
-                            messageBubble.classList.add('message-bubble');
+                            // Sender display name
+                            if (senderEmail !== currentUser.email) {
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                    });
+                            }
 
                             const textElement = document.createElement('span');
                             textElement.classList.add('message-text');
                             textElement.textContent = message.message;
-                            messageBubble.appendChild(textElement);
+                            messageDiv.appendChild(textElement);
 
                             if (senderEmail === currentUser.email) {
-                                messageBubble.classList.add('message', 'sent');
+                                messageDiv.classList.add('message', 'sent');
                             } else {
-                                messageBubble.classList.add('message', 'received');
+                                messageDiv.classList.add('message', 'received');
                             }
 
                             // Add options for reply and reactions
@@ -3570,6 +3575,7 @@ function openChat(friendEmail) {
                             optionsContainer.classList.add('message-options');
                             optionsContainer.style.display = 'none'; // Initially hidden
 
+                            // Reaction options in the specified order
                             const reactions = ['❤️', '👍', '👎', '😆', '‼️', '?'];
                             reactions.forEach(reaction => {
                                 const reactionButton = document.createElement('button');
@@ -3581,14 +3587,16 @@ function openChat(friendEmail) {
                                 optionsContainer.appendChild(reactionButton);
                             });
 
+                            // Remove Reaction option
                             const removeReactionButton = document.createElement('button');
-                            removeReactionButton.textContent = 'Remove';
+                            removeReactionButton.textContent = 'Remove'; // Changed from '❌' to 'Remove'
                             removeReactionButton.classList.add('remove-reaction-button');
                             removeReactionButton.addEventListener('click', () => {
                                 removeReactionFromMessageV2(chatId, messageId);
                             });
                             optionsContainer.appendChild(removeReactionButton);
 
+                            // Reply option (moved after the remove button)
                             const replyOption = document.createElement('button');
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
@@ -3597,13 +3605,12 @@ function openChat(friendEmail) {
                             });
                             optionsContainer.appendChild(replyOption);
 
-                            messageBubble.appendChild(optionsContainer);
+                            messageDiv.appendChild(optionsContainer);
 
-                            messageBubble.addEventListener('click', () => {
+                            messageDiv.addEventListener('click', () => {
                                 optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                             });
 
-                            messageDiv.appendChild(messageBubble);
                             chatWindow.appendChild(messageDiv);
 
                             // Load reactions for this message
@@ -3612,6 +3619,7 @@ function openChat(friendEmail) {
                             // Load replies for this message
                             loadReplies(chatId, messageId, messageDiv);
 
+                            // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
                     });
@@ -3727,52 +3735,39 @@ function createMessageDiv(message, messageId) {
 }
 
 function loadReplies(chatId, messageId, messageDiv) {
+    // Query Firestore to count the number of replies for the specific message
     db.collection('replies').where('messageId', '==', messageId).get()
         .then((querySnapshot) => {
             const replyCount = querySnapshot.size;
-            let replyContainer = messageDiv.querySelector('.reply-container');
+            let replyCountText = messageDiv.querySelector('.reply-count');
 
             if (replyCount > 0) {
-                if (!replyContainer) {
-                    replyContainer = document.createElement('div');
-                    replyContainer.classList.add('reply-container');
-                    messageDiv.appendChild(replyContainer);
-                }
+                const replyText = `${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`;
                 
-                replyContainer.innerHTML = ''; // Clear any previous replies
-
-                querySnapshot.forEach((doc) => {
-                    const replyData = doc.data();
-                    const replyText = replyData.replyText;
-                    const sender = replyData.sender;
-
-                    const replyElement = document.createElement('div');
-                    replyElement.classList.add('reply');
-                    replyElement.textContent = `${sender}: ${replyText}`;
-                    replyContainer.appendChild(replyElement);
-                });
-
-                let replyCountText = messageDiv.querySelector('.reply-count');
-                if (!replyCountText) {
+                // If the reply count element exists, update it
+                if (replyCountText) {
+                    replyCountText.textContent = replyText;
+                } else {
+                    // If it doesn't exist, create it and append it to the messageDiv
                     replyCountText = document.createElement('span');
                     replyCountText.classList.add('reply-count');
+                    replyCountText.textContent = replyText;
                     messageDiv.appendChild(replyCountText);
-                }
-                replyCountText.textContent = `${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`;
-                replyCountText.addEventListener('click', () => {
-                    openReplyModal(chatId, messageId, messageDiv.querySelector('.message-text').textContent);
-                });
 
-            } else if (replyContainer) {
-                replyContainer.remove();
+                    // Add an event listener to the reply count to open the modal
+                    replyCountText.addEventListener('click', () => {
+                        openReplyModal(chatId, messageId, messageDiv.querySelector('.message-text').textContent);
+                    });
+                }
+            } else if (replyCountText) {
+                // If no replies exist, remove the reply count element
+                replyCountText.remove();
             }
         })
         .catch((error) => {
             console.error('Error loading replies from Firestore:', error);
         });
 }
-
-
 
 
 // Function to remove reaction
