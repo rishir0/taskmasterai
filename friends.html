@@ -453,7 +453,7 @@ body.night-mode {
     margin-top: 5px; /* Space from the message bubble */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -20px; /* Position it below the message bubble */
+    bottom: -30px; /* Position it below the message bubble */
     width: 100%; /* Full width of the container */
     text-align: center; /* Center the text within the width */
     white-space: nowrap; /* Prevent text from wrapping */
@@ -3727,6 +3727,9 @@ function addReplyToMessage(chatId, messageId, replyText) {
 
                 // Load and display replies for the updated message
                 loadReplies(chatId, messageId); // Ensure this function exists and is implemented to refresh replies
+
+                // Update the open chat to reflect changes
+                openChat(chatId); // Ensure this function refreshes the chat view
             });
         } else {
             console.error('Message div not found for messageId:', messageId);
