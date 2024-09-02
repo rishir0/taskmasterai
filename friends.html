@@ -440,22 +440,21 @@ body.night-mode {
 /* Container for the message and reply count */
 .message-container-2 {
     position: relative; /* Allows positioning of child elements */
-    padding: 5px;
-    margin-bottom: 10px; /* Adjust as needed */
+    margin-top: 10px; /* Increase margin to move it further down */
+    padding-left: 0; /* Ensure no extra padding */
 }
 
 /* Reply count styling */
 .reply-count {
-    display: block;
+    display: inline-block; /* Ensures text and reply count appear on the same line */
     font-size: 12px;
-    color: #555;
-    text-align: left; /* Align to the left for received messages */
-    margin-top: 5px; /* Space from the message bubble */
+    color: #fff; /* White text color */
+    text-align: center; /* Center the text within the width */
+    margin-top: 5px; /* Adds space between the message bubble and the reply count */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -20px; /* Position it below the message bubble */
+    bottom: -30px; /* Position it further below the message bubble */
     width: 100%; /* Full width of the container */
-    text-align: center; /* Center the text within the width */
 }
 
 /* Ensure the message container gets the new class */
@@ -467,6 +466,7 @@ body.night-mode {
 #chatMessages .message-container {
     position: relative; /* Allows for absolutely positioning reply counts */
 }
+
 
 
 #chatMessages .message-reaction {
