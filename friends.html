@@ -451,11 +451,15 @@ body.night-mode {
     text-align: center; /* Center the text within the width */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -60px; /* Adjusted to move it below the message bubble */
+    bottom: -25px; /* Adjusted to move it below the message bubble */
     width: 100%; /* Full width of the container */
     padding: 2px 0; /* Padding for better spacing */
     box-sizing: border-box; /* Ensure padding is included in the width */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center text horizontally */
+    align-items: center; /* Center text vertically */
 }
+
 
 /* Ensure the message container gets the new class */
 #chatMessages .message {
@@ -3753,10 +3757,12 @@ function createMessageDiv(message, messageId) {
     textElement.textContent = message.message;
     messageDiv.appendChild(textElement);
 
-    // Add other elements such as options container, reactions, etc.
+    // Add options container, reactions, etc. here as needed
 
     return messageDiv;
 }
+
+
 
 
 function loadReplies(chatId, messageId, messageDiv) {
