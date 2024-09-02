@@ -442,6 +442,8 @@ body.night-mode {
     position: relative; /* Allows positioning of child elements */
     padding: 5px;
     margin-bottom: 10px; /* Adjust as needed */
+    /* Make sure the width doesn't overflow the message bubble */
+    max-width: 100%; /* Ensure it doesn’t exceed the width of the parent */
 }
 
 /* Reply count styling */
@@ -453,12 +455,13 @@ body.night-mode {
     margin-top: 5px; /* Space from the message bubble */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -20px; /* Position it below the message bubble */
-    width: 100%; /* Full width of the container */
+    bottom: -30px; /* Position it below the message bubble */
+    width: calc(100% - 20px); /* Full width of the container minus padding */
     text-align: center; /* Center the text within the width */
     white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Show ellipsis if the text overflows */
 }
-
 
 
 #chatMessages .message-reaction {
