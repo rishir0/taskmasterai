@@ -451,11 +451,10 @@ body.night-mode {
     text-align: center; /* Center the text within the width */
     position: absolute; /* Position it absolutely relative to the container */
     left: 0; /* Align to the left */
-    bottom: -25px; /* Adjusted to move it below the message bubble */
+    bottom: -60px; /* Adjusted to move it below the message bubble */
     width: 100%; /* Full width of the container */
-    background: rgba(0, 0, 0, 0.5); /* Optional: background to ensure text visibility */
     padding: 2px 0; /* Padding for better spacing */
-    border-radius: 5px; /* Rounded corners for a better look */
+    box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
 /* Ensure the message container gets the new class */
