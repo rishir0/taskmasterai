@@ -3562,12 +3562,20 @@ function openChat(friendEmail) {
                             const messageDiv = document.createElement('div');
                             messageDiv.classList.add('message-container');
 
+                            // Sender display name
+                            if (senderEmail !== currentUser.email) {
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                    });
+                            }
+
                             const textElement = document.createElement('span');
                             textElement.classList.add('message-text');
                             textElement.textContent = message.message;
                             messageDiv.appendChild(textElement);
 
-                            // Apply appropriate styles for sent and received messages
                             if (senderEmail === currentUser.email) {
                                 messageDiv.classList.add('message', 'sent');
                             } else {
@@ -3605,8 +3613,8 @@ function openChat(friendEmail) {
                             replyOption.textContent = 'Reply';
                             replyOption.classList.add('reply-option');
                             replyOption.addEventListener('click', (event) => {
-                                event.stopPropagation(); // Prevent the click from affecting the parent elements
-                                openReplyModal(chatId, messageId, message.message);
+                            event.stopPropagation(); // Prevent the click from affecting the parent elements
+                            openReplyModal(chatId, messageId, message.message);
                             });
                             optionsContainer.appendChild(replyOption);
 
@@ -3616,28 +3624,17 @@ function openChat(friendEmail) {
                                 optionsContainer.style.display = optionsContainer.style.display === 'none' ? 'flex' : 'none';
                             });
 
+                            chatWindow.appendChild(messageDiv);
+
                             // Load reactions for this message
                             loadReactionsV2(chatId, messageId, messageDiv);
 
                             // Load replies for this message
-                            loadReplies(chatId, messageId, messageDiv).then((replyCount) => {
-                                if (replyCount > 0) {
-                                    const replyCountText = document.createElement('span');
-                                    replyCountText.classList.add('reply-count');
-                                    replyCountText.textContent = `${replyCount} reply${replyCount > 1 ? 'ies' : ''}`;
-                                    replyCountText.addEventListener('click', (event) => {
-                                        event.stopPropagation(); // Prevent the click from affecting the parent elements
-                                        openReplyModal(chatId, messageId, message.message);
-                                    });
-                                    messageDiv.appendChild(replyCountText);
-                                }
-                            });
+                            loadReplies(chatId, messageId, messageDiv);
 
-                            chatWindow.appendChild(messageDiv);
+                            // Scroll to the bottom of the chat window after a new message is added
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
                         });
-
-                        // Scroll to the bottom of the chat window after all messages are loaded
-                        chatWindow.scrollTop = chatWindow.scrollHeight;
                     });
             }
         })
