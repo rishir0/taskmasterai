@@ -342,7 +342,7 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px; /* Reduced margin to move profile picture up */
+    margin-top: -20px; /* Move profile picture up */
 }
 
 .profile-preview {
@@ -357,51 +357,48 @@ body.night-mode {
     border: 4px solid var(--primary-color, #3F3D56); /* Medium-sized border color */
 }
 
-.choose-file-btn,
-.settings-form .btn-primary,
-.sign-out-btn {
-    background: rgba(255, 255, 255, 0.2); /* Glass effect background color */
+.choose-file-btn {
+    background-color: var(--primary-color, #3F3D56);
     color: #fff;
     padding: 8px 16px;
     border-radius: var(--border-radius, 8px);
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for glass effect */
-    backdrop-filter: blur(10px); /* Blurs the background behind the button */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for better separation */
-    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.choose-file-btn {
-    background-color: rgba(63, 61, 86, 0.2); /* Glass effect specific color */
-    border-color: rgba(63, 61, 86, 0.3); /* Adjusted border color to match the glass effect */
+    border: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
 
 .choose-file-btn:hover {
-    background-color: rgba(0, 155, 245, 0.3); /* Slightly different hover effect */
-    border-color: rgba(0, 155, 245, 0.5);
+    background-color: var(--accent-color, #009bf5);
 }
 
 .settings-form .btn-primary {
-    background-color: rgba(63, 61, 86, 0.2); /* Glass effect color */
-    border-color: rgba(63, 61, 86, 0.3); /* Light border for glass effect */
+    background-color: var(--primary-color, #3F3D56);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: var(--border-radius, 8px);
 }
 
 .settings-form .btn-primary:hover {
-    background-color: rgba(0, 155, 245, 0.3); /* Hover effect for glass style */
-    border-color: rgba(0, 155, 245, 0.5);
+    background-color: var(--accent-color, #009bf5);
 }
 
 .sign-out-btn {
-    background-color: rgba(217, 83, 79, 0.2); /* Glass effect color */
-    border-color: rgba(217, 83, 79, 0.3); /* Light border for glass effect */
+    background-color: var(--danger-color, #d9534f);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: var(--border-radius, 8px);
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .sign-out-btn:hover {
-    background-color: rgba(201, 48, 27, 0.3); /* Hover effect for glass style */
-    border-color: rgba(201, 48, 27, 0.5);
+    background-color: var(--danger-hover-color, #c9302c);
 }
-
 
 
 /* Advanced Themes Card Styles */
