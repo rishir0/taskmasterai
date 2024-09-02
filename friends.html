@@ -437,21 +437,37 @@ body.night-mode {
     /* Styles for messages received from others, including background color and text alignment */
 }
 
-/* Styles for the reply container */
-#chatMessages .reply-container {
-    margin-top: 5px; /* Space between the message and reply count */
-    padding-left: 0; /* Ensure no extra padding */
-    position: relative; /* Keeps it positioned below the message bubble */
+/* Container for the message and reply count */
+.message-container-2 {
+    position: relative; /* Allows positioning of child elements */
+    padding: 5px;
+    margin-bottom: 10px; /* Adjust as needed */
 }
 
-/* Styles for the reply count */
-#chatMessages .reply-count {
+/* Reply count styling */
+.reply-count {
     display: block;
     font-size: 12px;
     color: #555;
-    margin-top: 5px; /* Space between message and reply count */
     text-align: left; /* Align to the left for received messages */
+    margin-top: 5px; /* Space from the message bubble */
+    position: absolute; /* Position it absolutely relative to the container */
+    left: 0; /* Align to the left */
+    bottom: -20px; /* Position it below the message bubble */
+    width: 100%; /* Full width of the container */
+    text-align: center; /* Center the text within the width */
 }
+
+/* Ensure the message container gets the new class */
+#chatMessages .message {
+    position: relative; /* Allows absolute positioning of the reply count */
+}
+
+/* Apply new class to each message container */
+#chatMessages .message-container {
+    position: relative; /* Allows for absolutely positioning reply counts */
+}
+
 
 #chatMessages .message-reaction {
     position: absolute;
@@ -3729,34 +3745,16 @@ function addReplyToMessage(chatId, messageId, replyText) {
 
 function createMessageDiv(message, messageId) {
     const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message-container');
+    messageDiv.classList.add('message-container-2'); // Use the new class name
     messageDiv.setAttribute('data-message-id', messageId);
 
-    // Message text
+    // Create and append other elements like message text and options
     const textElement = document.createElement('span');
     textElement.classList.add('message-text');
     textElement.textContent = message.message;
     messageDiv.appendChild(textElement);
 
-    // Message-specific classes based on sender
-    const currentUser = firebase.auth().currentUser;
-    if (message.sender === currentUser.email) {
-        messageDiv.classList.add('message', 'sent');
-    } else {
-        messageDiv.classList.add('message', 'received');
-    }
-
-    // Container for reply count (this will be outside of the message bubble)
-    const replyContainer = document.createElement('div');
-    replyContainer.classList.add('reply-container');
-
-    // Reply count (initially hidden, will be updated by loadReplies)
-    const replyCountText = document.createElement('span');
-    replyCountText.classList.add('reply-count');
-    replyContainer.appendChild(replyCountText);
-
-    // Append replyContainer to messageDiv
-    messageDiv.appendChild(replyContainer);
+    // Add other elements such as options container, reactions, etc.
 
     return messageDiv;
 }
