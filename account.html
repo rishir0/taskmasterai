@@ -362,11 +362,6 @@ body.night-mode {
     fill: white; /* SVG color set to white */
 }
 
-/* Optional hover effect */
-.profile-preview:hover {
-    background-color: var(--hover-bg-color, #e0e0e0); /* Change background color on hover */
-}
-
 
 .profile-preview img {
     width: 100%;
@@ -666,25 +661,6 @@ function signOut() {
     });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('profilePicture');
-    const editButton = document.querySelector('.edit-profile-picture-btn');
-
-    // Add event listener to file input
-    fileInput.addEventListener('change', updateProfilePicture);
-
-    // Add event listener to edit button
-    editButton.addEventListener('click', triggerFileInput);
-
-    console.log("Event listeners added successfully.");
-});
-
-function triggerFileInput() {
-    const fileInput = document.getElementById('profilePicture');
-    fileInput.click();
-    console.log("File input triggered.");
-}
-
 function updateProfilePicture() {
     const user = firebase.auth().currentUser;
     const fileInput = document.getElementById('profilePicture');
@@ -692,32 +668,28 @@ function updateProfilePicture() {
     const profilePreview = document.getElementById('profilePreview');
     const loadingIndicator = document.getElementById('loadingIndicator');
 
-    console.log('User authenticated:', user);
-    console.log('File selected:', file);
-
     if (file && user) {
+        // Show loading indicator
         loadingIndicator.style.display = 'flex';
 
         const storageRef = firebase.storage().ref();
         const profilePicRef = storageRef.child(`profile_pictures/${user.uid}.jpg`);
 
         profilePicRef.put(file)
-            .then(snapshot => {
-                console.log('Upload successful:', snapshot);
-                return snapshot.ref.getDownloadURL();
-            })
+            .then(snapshot => snapshot.ref.getDownloadURL())
             .then(url => {
-                console.log('File available at:', url);
                 return user.updateProfile({ photoURL: url }).then(() => url);
             })
             .then(url => {
-                console.log('Profile updated with new photo URL:', url);
                 return firebase.firestore().collection('users').doc(user.uid).update({
                     profilePicture: url
                 }).then(() => url);
             })
             .then(url => {
+                // Hide loading indicator
                 loadingIndicator.style.display = 'none';
+
+                // Update the profile preview
                 profilePreview.innerHTML = '';
 
                 const img = document.createElement('img');
@@ -728,16 +700,21 @@ function updateProfilePicture() {
                 alert("Profile picture updated successfully!");
             })
             .catch(error => {
-                console.error("Error during upload or update:", error);
+                console.error("Error updating profile picture:", error);
+
+                // Hide loading indicator
                 loadingIndicator.style.display = 'none';
+
                 alert("Failed to update profile picture. Please try again.");
             });
     } else {
         alert("No file selected or user not authenticated.");
-        console.warn("No file or user. File:", file, "User:", user);
     }
 }
 
+
+// Event listener to handle file input change
+document.getElementById('profilePicture').addEventListener('change', updateProfilePicture);
 </script>
 <body>
     <button class="sidebar-toggle">
@@ -823,7 +800,7 @@ function updateProfilePicture() {
             </svg>
         </div>
         <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-        <button type="button" class="edit-profile-picture-btn">Edit Profile Picture</button>
+        <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
     </div>
         <div class="form-group">
