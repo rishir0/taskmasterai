@@ -378,6 +378,7 @@ body.night-mode {
     border: none;
     font-size: 1rem;
     transition: background-color 0.3s ease;
+    display: inline-block; /* Ensures it does not take up the full width */
 }
 
 .edit-profile-picture-btn:hover {
@@ -387,13 +388,14 @@ body.night-mode {
 .unavailable-tag {
     background-color: var(--danger-hover-color, #c9302c);
     color: var(--text-color, #fff); /* Matches the button's text color */
-    padding: 4px 8px; /* Adjust padding to fit the tag */
+    padding: 2px 6px; /* Smaller padding to fit a smaller tag */
     border-radius: var(--border-radius, 8px); /* Matches the button's border radius */
-    font-size: 0.9rem; /* Slightly smaller font size to differentiate from the button */
-    display: inline-block; /* Allows for padding and background color to show */
-    margin-left: 10px; /* Space between the button and the tag */
+    font-size: 0.8rem; /* Smaller font size */
+    display: inline-block; /* Ensures it stays next to the button */
+    margin-left: 8px; /* Space between the button and the tag */
     vertical-align: middle; /* Aligns the tag vertically with the button */
 }
+
 
 
 .loading-indicator {
