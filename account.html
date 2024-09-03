@@ -190,36 +190,6 @@ body.night-mode {
 }
 
 
-.sign-out-btn {
-    background-color: #1E1E1E;
-    color: var(--text-color, #fff);
-    padding: 10px 20px;
-    border-radius: var(--border-radius, 8px);
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-right: 8px; /* Space between buttons */
-}
-
-.sign-out-btn:hover {
-    background-color: var(--danger-hover-color, #c9302c);
-}
-
-.forgot-password-btn {
-    background-color: #1E1E1E;
-    color: var(--text-color, #fff);
-    padding: 10px 20px;
-    border-radius: var(--border-radius, 8px);
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.forgot-password-btn:hover {
-    background-color: var(--accent-color, #009bf5);
-}
         
 .main-content {
     flex-grow: 1;
@@ -688,6 +658,37 @@ body.night-mode {
 .theme-icon.active svg {
     animation: rotateIcon 0.5s;
 }
+
+/* Revert Sign Out and Forgot Password Button Styles */
+.sign-out-btn, .forgot-password-btn {
+    background-color: #1E1E1E !important; /* Original background color */
+    color: var(--text-color, #fff) !important; /* Original text color */
+    padding: 10px 20px !important; /* Original padding */
+    border-radius: var(--border-radius, 8px) !important; /* Original border radius */
+    border: none !important; /* No border */
+    font-size: 1rem !important; /* Original font size */
+    cursor: pointer !important; /* Pointer cursor */
+    transition: background-color 0.3s ease !important; /* Smooth background color transition */
+    display: flex !important; /* Use flexbox for layout */
+    align-items: center !important; /* Vertically center content */
+}
+
+.sign-out-btn {
+    margin-right: 10px !important; /* Space between the Sign Out and Forgot Password buttons */
+}
+
+.sign-out-btn:hover {
+    background-color: var(--danger-hover-color, #c9302c) !important; /* Hover color */
+}
+
+.forgot-password-btn {
+    margin-right: 0 !important; /* No extra margin for the last button */
+}
+
+.forgot-password-btn:hover {
+    background-color: var(--accent-color, #009bf5) !important; /* Hover color */
+}
+
 
 
     </style>
