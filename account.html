@@ -309,10 +309,13 @@ body.night-mode {
 
 .form-group {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
 }
 
 .form-group label {
-    display: block;
+    display: flex;
+    align-items: center;
     font-size: 1.1rem;
     margin-bottom: 10px;
     color: var(--text-color, #333);
@@ -336,6 +339,13 @@ body.night-mode {
 .form-group input[type="password"]:focus {
     border-color: var(--accent-color, #009bf5);
     box-shadow: 0 0 5px rgba(0, 155, 245, 0.5);
+}
+
+.form-icon {
+    width: 24px; /* Adjusted size to match form input height */
+    height: 24px;
+    margin-right: 10px; /* Space between icon and text */
+    fill: #ffffff;
 }
 
 .profile-picture-group {
@@ -1009,6 +1019,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     </label>
     <input type="password" id="password" placeholder="Enter new password">
 </div>
+
 
         <div class="form-group">
             <button type="button" class="btn btn-primary" onclick="updateAccount()">Save Changes</button>
