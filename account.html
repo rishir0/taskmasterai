@@ -354,8 +354,11 @@ body.night-mode {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px; /* Move profile picture up */
+    background-size: cover; /* Ensures the image covers the entire preview area */
+    background-position: center; /* Centers the image */
     border: none; /* Remove border color */
 }
+
 
 .profile-preview svg {
     fill: var(--accent-color, #009bf5); /* Set SVG color to accent color */
@@ -625,6 +628,64 @@ function signOut() {
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
     });
+
+    document.getElementById('profilePicture').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.querySelector('.profile-preview svg').style.display = 'none';
+            document.querySelector('.profile-preview').style.backgroundImage = `url(${e.target.result})`;
+            document.querySelector('.profile-preview').style.backgroundSize = 'cover';
+            document.querySelector('.profile-preview').style.backgroundPosition = 'center';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function updateAccount() {
+    const user = firebase.auth().currentUser;
+    const newName = document.getElementById('name').value;
+    const newPassword = document.getElementById('password').value;
+    const profilePic = document.getElementById('profilePicture').files[0];
+
+    let updatePromises = [];
+
+    if (newName) {
+        updatePromises.push(
+            user.updateProfile({ displayName: newName })
+                .then(() => db.collection('users').doc(user.uid).update({ displayName: newName }))
+        );
+    }
+
+    if (newPassword) {
+        updatePromises.push(user.updatePassword(newPassword));
+    }
+
+    if (profilePic) {
+        const storageRef = storage.ref(`profilePictures/${user.uid}/${profilePic.name}`);
+        
+        updatePromises.push(
+            storageRef.put(profilePic)
+                .then(() => storageRef.getDownloadURL())
+                .then((downloadURL) => {
+                    return db.collection('users').doc(user.uid).update({ profilePicture: downloadURL });
+                })
+                .then(() => {
+                    return user.updateProfile({ photoURL: downloadURL });
+                })
+        );
+    }
+
+    Promise.all(updatePromises)
+        .then(() => {
+            alert("Account updated successfully!");
+        })
+        .catch((error) => {
+            console.error("Error updating account:", error);
+        });
+}
+
 </script>
 <body>
     <button class="sidebar-toggle">
