@@ -384,6 +384,18 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
+.unavailable-tag {
+    background-color: var(--danger-hover-color, #c9302c);
+    color: var(--text-color, #fff); /* Matches the button's text color */
+    padding: 4px 8px; /* Adjust padding to fit the tag */
+    border-radius: var(--border-radius, 8px); /* Matches the button's border radius */
+    font-size: 0.9rem; /* Slightly smaller font size to differentiate from the button */
+    display: inline-block; /* Allows for padding and background color to show */
+    margin-left: 10px; /* Space between the button and the tag */
+    vertical-align: middle; /* Aligns the tag vertically with the button */
+}
+
+
 .loading-indicator {
     font-size: 16px;
     color: var(--accent-color, #009bf5);
@@ -801,6 +813,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </div>
         <input type="file" id="profilePicture" accept="image/*" style="display: none;">
         <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
+        <span class="unavailable-tag">UNAVAILABLE</span>
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
     </div>
         <div class="form-group">
