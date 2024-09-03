@@ -349,23 +349,22 @@ body.night-mode {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: white; /* Background remains white */
+    background-color: var(--accent-color, #009bf5); /* Background set to accent color */
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     overflow: hidden;
     border: none;
-    transition: background-color 0.3s ease; /* Smooth transition for any future changes */
 }
 
 .profile-preview svg {
-    fill: var(--accent-color, #009bf5); /* SVG color set to accent color */
+    fill: white; /* SVG color set to white */
 }
 
-/* Optional hover effect for changing background color */
+/* Optional hover effect */
 .profile-preview:hover {
-    background-color: var(--hover-bg-color, #e0e0e0); /* Optional background change on hover */
+    background-color: var(--hover-bg-color, #e0e0e0); /* Change background color on hover */
 }
 
 
