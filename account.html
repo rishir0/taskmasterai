@@ -310,7 +310,7 @@ body.night-mode {
 .form-group {
     margin-bottom: 20px;
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Ensures label and input are stacked vertically */
 }
 
 .form-group label {
@@ -347,6 +347,7 @@ body.night-mode {
     margin-right: 10px; /* Space between icon and text */
     fill: #ffffff;
 }
+
 
 .profile-picture-group {
     display: flex;
@@ -986,6 +987,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     </label>
     <input type="password" id="password" placeholder="Enter new password">
 </div>
+
 
 
         <div class="form-group">
