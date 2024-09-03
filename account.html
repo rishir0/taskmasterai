@@ -355,7 +355,14 @@ body.night-mode {
     align-items: center;
     margin-bottom: 20px;
     overflow: hidden;
+    border: none;
+    transition: background-color 0.3s ease; /* Smooth transition when image loads */
 }
+
+.profile-preview:hover {
+    background-color: var(--hover-bg-color, #e0e0e0); /* Optional hover effect */
+}
+
 
 
 .profile-preview svg {
@@ -382,6 +389,32 @@ body.night-mode {
 .edit-profile-picture-btn:hover {
     background-color: var(--accent-color, #009bf5);
 }
+
+.loading-indicator {
+    font-size: 16px;
+    color: var(--accent-color, #009bf5);
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-indicator::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--accent-color, #009bf5);
+    border-top-color: transparent;
+    border-radius: 50%;
+    margin-right: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 
 .settings-form .btn-primary {
     background-color: #1E1E1E;
@@ -637,32 +670,56 @@ function updateProfilePicture() {
     const user = firebase.auth().currentUser;
     const fileInput = document.getElementById('profilePicture');
     const file = fileInput.files[0];
+    const profilePreview = document.getElementById('profilePreview');
+    const loadingIndicator = document.getElementById('loadingIndicator');
 
-    if (file) {
+    if (file && user) {
+        // Show loading indicator
+        loadingIndicator.style.display = 'flex';
+
         const storageRef = firebase.storage().ref();
         const profilePicRef = storageRef.child(`profile_pictures/${user.uid}.jpg`);
 
-        profilePicRef.put(file).then(() => {
-            return profilePicRef.getDownloadURL();
-        }).then((url) => {
-            // Update user's profile with the new profile picture URL
-            return user.updateProfile({
-                photoURL: url
-            }).then(() => {
-                // Update the Firestore document
+        profilePicRef.put(file)
+            .then(snapshot => snapshot.ref.getDownloadURL())
+            .then(url => {
+                return user.updateProfile({ photoURL: url }).then(() => url);
+            })
+            .then(url => {
                 return firebase.firestore().collection('users').doc(user.uid).update({
                     profilePicture: url
-                });
+                }).then(() => url);
+            })
+            .then(url => {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                // Update the profile preview
+                profilePreview.innerHTML = '';
+
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Profile Picture';
+                profilePreview.appendChild(img);
+
+                alert("Profile picture updated successfully!");
+            })
+            .catch(error => {
+                console.error("Error updating profile picture:", error);
+
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                alert("Failed to update profile picture. Please try again.");
             });
-        }).then(() => {
-            // Dynamically update the preview
-            document.querySelector('.profile-preview').style.backgroundImage = `url(${url})`;
-            alert("Profile picture updated successfully!");
-        }).catch((error) => {
-            console.error("Error updating profile picture:", error);
-        });
+    } else {
+        alert("No file selected or user not authenticated.");
     }
 }
+
+
+// Event listener to handle file input change
+document.getElementById('profilePicture').addEventListener('change', updateProfilePicture);
 
 
 </script>
@@ -739,19 +796,20 @@ function updateProfilePicture() {
             </div>
         </div>
 <div class="main-content">
-    <div class="settings-header">
-        <h1>Account Settings</h1>
-    </div>
-    <div class="settings-form">
-        <div class="form-group profile-picture-group">
-            <div class="profile-preview" id="profilePreview">
-                <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z"/>
-                </svg>
-            </div>
-            <input type="file" id="profilePicture" accept="image/*" class="choose-file-btn" style="display: none;">
-            <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
+<div class="settings-header">
+    <h1>Account Settings</h1>
+</div>
+<div class="settings-form">
+    <div class="form-group profile-picture-group">
+        <div class="profile-preview" id="profilePreview">
+            <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z"/>
+            </svg>
         </div>
+        <input type="file" id="profilePicture" accept="image/*" style="display: none;">
+        <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
+    </div>
         <div class="form-group">
             <label for="name">Full Name</label>
             <input type="text" id="name" placeholder="Enter your full name">
