@@ -1356,30 +1356,26 @@ body.night-mode {
     background-color: #3b7bce;
 }
 
-/* WebKit Browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-    width: 12px;
+.scrollable-content {
+    overflow: auto; /* Ensure content is still scrollable */
 }
 
-::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #1E1E1E;
+/* WebKit Browsers */
+.scrollable-content::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
 }
 
 /* Firefox */
-scrollbar {
-    width: 12px;
-    background-color: #1E1E1E;
+.scrollable-content {
+    scrollbar-width: none; /* Hide scrollbar in Firefox 64+ */
+    -ms-overflow-style: none; /* Hide scrollbar in IE 10+ and Edge */
 }
 
-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 6px;
+/* Internet Explorer and Edge */
+.scrollable-content {
+    -ms-overflow-style: none; /* Hide scrollbar in IE 10+ and Edge */
 }
+
 
       
     </style>
@@ -1579,6 +1575,7 @@ scrollbar-thumb {
         </div>
     </div>
 </div>
+<div class="scrollable-content">
 <div class="chat-window">
     <h2>Chat with <span id="chatWith"></span></h2>
     <div id="chatMessages">
