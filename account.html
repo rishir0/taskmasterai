@@ -467,6 +467,39 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-icon {
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+    margin-right: 8px; /* Space between icon and text */
+    fill: #ffffff;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #4B5563;
+    border-radius: 5px;
+    background-color: #374151;
+    color: var(--text-color);
+}
+
+input:disabled {
+    background-color: #4B5563;
+    cursor: not-allowed;
+}
 
 /* Advanced Themes Card Styles */
 .theme-option {
@@ -927,18 +960,56 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     </span>
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
     </div>
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" placeholder="Enter your full name">
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Enter your email" disabled>
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter new password">
-        </div>
+<div class="form-group">
+    <label for="name">
+        <svg class="form-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path d="M11.75 2C11.3358 2 11 2.33579 11 2.75C11 3.16421 11.3358 3.5 11.75 3.5H13.25V24.5H11.75C11.3358 24.5 11 24.8358 11 25.25C11 25.6642 11.3358 26 11.75 26H16.25C16.6642 26 17 25.6642 17 25.25C17 24.8358 16.6642 24.5 16.25 24.5H14.75V3.5H16.25C16.6642 3.5 17 3.16421 17 2.75C17 2.33579 16.6642 2 16.25 2H11.75Z" fill="#ffffff"></path>
+                <path d="M6.25 6.01959H12.25V22.0196H6.25C4.45507 22.0196 3 20.5645 3 18.7696V9.26959C3 7.47467 4.45507 6.01959 6.25 6.01959Z" fill="#ffffff"></path>
+                <path d="M21.75 22.0196H15.75V6.01959H21.75C23.5449 6.01959 25 7.47467 25 9.26959V18.7696C25 20.5645 23.5449 22.0196 21.75 22.0196Z" fill="#ffffff"></path>
+            </g>
+        </svg>
+        Full Name
+    </label>
+    <input type="text" id="name" placeholder="Enter your full name">
+</div>
+
+<div class="form-group">
+    <label for="email">
+        <svg class="form-icon" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#ffffff">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <title>ic_fluent_mail_48_filled</title>
+                <desc>Created with Sketch.</desc>
+                <g id="🔍-Product-Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="ic_fluent_mail_48_filled" fill="#ffffff" fill-rule="nonzero">
+                        <path d="M43,16.976 L43,33.75 C43,36.6494949 40.6494949,39 37.75,39 L10.25,39 C7.35050506,39 4.99976748,36.6494949 4.99976748,33.75 L4.99976748,16.976 L23.3976016,27.0952699 C23.7727049,27.3015767 24.2272951,27.3015767 24.6023984,27.0952699 L43,16.976 Z M37.75,9 C40.6074055,9 42.9316438,11.2827599 42.9985196,14.1240842 L24,24.573411 L5.00176748,14.124 L5.00437905,14.0335954 C5.11786837,11.2344489 7.42299244,9 10.25,9 L37.75,9 Z"></path>
+                    </g>
+                </g>
+            </g>
+        </svg>
+        Email
+    </label>
+    <input type="email" id="email" placeholder="Enter your email" disabled>
+</div>
+
+<div class="form-group">
+    <label for="password">
+        <svg class="form-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path d="M8.94995 8.59999C8.94995 4.98577 11.8857 2.04999 15.5 2.04999C19.097 2.04999 22.0499 4.86884 22.0499 8.49999C22.0499 12.1142 19.1142 15.05 15.5 15.05C14.9696 15.05 14.4458 14.974 13.9491 14.8462C13.9248 15.5151 13.3748 16.05 12.7 16.05H10.95V17.8C10.95 18.4903 10.3903 19.05 9.69995 19.05H7.94995V20.3C7.94995 21.2665 7.16645 22.05 6.19995 22.05H3.69995C2.73345 22.05 1.94995 21.2665 1.94995 20.3V18.1284C1.94995 17.3991 2.23968 16.6996 2.75541 16.1839L8.99119 9.94809C9.04566 9.89362 9.07822 9.80547 9.06042 9.704C9.00013 9.36035 8.94995 8.9872 8.94995 8.59999ZM18.25 7C18.25 6.30964 17.6904 5.75 17 5.75C16.3096 5.75 15.75 6.30964 15.75 7C15.75 7.69036 16.3096 8.25 17 8.25C17.6904 8.25 18.25 7.69036 18.25 7Z" fill="#ffffff"></path>
+            </g>
+        </svg>
+        Password
+    </label>
+    <input type="password" id="password" placeholder="Enter new password">
+</div>
+
         <div class="form-group">
             <button type="button" class="btn btn-primary" onclick="updateAccount()">Save Changes</button>
         </div>
@@ -966,7 +1037,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
             <path d="M20.75 3C21.0557 3 21.3421 3.13962 21.5303 3.3746L21.6048 3.48102L25.8548 10.481C26.0556 10.8118 26.0459 11.2249 25.8395 11.5435L25.7634 11.6459L14.7634 24.6459C14.3906 25.0865 13.7317 25.1159 13.3207 24.7341L13.2366 24.6459L2.23662 11.6459C1.98663 11.3505 1.93182 10.941 2.08605 10.5941L2.14522 10.481L6.39522 3.48102C6.55388 3.21969 6.82182 3.04741 7.1204 3.00842L7.25001 3H20.75ZM17.515 12H10.484L13.999 20.672L17.515 12ZM22.844 12H19.673L16.756 19.195L22.844 12ZM8.326 12H5.155L11.242 19.193L8.326 12ZM9.674 5H7.81101L4.775 10H8.245L9.674 5ZM16.246 5H11.753L10.324 10H17.675L16.246 5ZM20.188 5H18.325L19.754 10H23.224L20.188 5Z" fill="#ffffff"></path>
         </g>
     </svg>
-    Upgrade
+    Upgrade to Premium
 </button>
     </div>
 </div>
