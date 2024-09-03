@@ -349,25 +349,25 @@ body.night-mode {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: var(--hover-bg-color, --accent-color);
+    background-color: white; /* Background remains white */
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     overflow: hidden;
     border: none;
-    transition: background-color 0.3s ease; /* Smooth transition when image loads */
+    transition: background-color 0.3s ease; /* Smooth transition for any future changes */
 }
-
-.profile-preview:hover {
-    background-color: var(--hover-bg-color, #e0e0e0); /* Optional hover effect */
-}
-
-
 
 .profile-preview svg {
-    fill: var(--accent-color, #009bf5); /* Set SVG color to accent color */
+    fill: var(--accent-color, #009bf5); /* SVG color set to accent color */
 }
+
+/* Optional hover effect for changing background color */
+.profile-preview:hover {
+    background-color: var(--hover-bg-color, #e0e0e0); /* Optional background change on hover */
+}
+
 
 .profile-preview img {
     width: 100%;
@@ -669,13 +669,23 @@ function signOut() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('profilePicture');
+    const editButton = document.querySelector('.edit-profile-picture-btn');
 
+    // Add event listener to file input
     fileInput.addEventListener('change', updateProfilePicture);
 
-    console.log("Event listener for file input added successfully.");
+    // Add event listener to edit button
+    editButton.addEventListener('click', triggerFileInput);
+
+    console.log("Event listeners added successfully.");
 });
 
-    
+function triggerFileInput() {
+    const fileInput = document.getElementById('profilePicture');
+    fileInput.click();
+    console.log("File input triggered.");
+}
+
 function updateProfilePicture() {
     const user = firebase.auth().currentUser;
     const fileInput = document.getElementById('profilePicture');
@@ -683,12 +693,10 @@ function updateProfilePicture() {
     const profilePreview = document.getElementById('profilePreview');
     const loadingIndicator = document.getElementById('loadingIndicator');
 
-    // Debugging: Check if file and user exist
-    console.log('User:', user);
-    console.log('File:', file);
+    console.log('User authenticated:', user);
+    console.log('File selected:', file);
 
     if (file && user) {
-        // Show loading indicator
         loadingIndicator.style.display = 'flex';
 
         const storageRef = firebase.storage().ref();
@@ -710,10 +718,7 @@ function updateProfilePicture() {
                 }).then(() => url);
             })
             .then(url => {
-                // Hide loading indicator
                 loadingIndicator.style.display = 'none';
-
-                // Update the profile preview
                 profilePreview.innerHTML = '';
 
                 const img = document.createElement('img');
@@ -725,10 +730,7 @@ function updateProfilePicture() {
             })
             .catch(error => {
                 console.error("Error during upload or update:", error);
-
-                // Hide loading indicator
                 loadingIndicator.style.display = 'none';
-
                 alert("Failed to update profile picture. Please try again.");
             });
     } else {
@@ -736,19 +738,6 @@ function updateProfilePicture() {
         console.warn("No file or user. File:", file, "User:", user);
     }
 }
-
-// Event listener to handle file input change
-document.getElementById('profilePicture').addEventListener('change', updateProfilePicture);
-
-function triggerFileInput() {
-    const fileInput = document.getElementById('profilePicture');
-    fileInput.click();
-
-    console.log("File input triggered.");
-}
-
-document.querySelector('.edit-profile-picture-btn').addEventListener('click', triggerFileInput);
-
 
 </script>
 <body>
