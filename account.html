@@ -378,7 +378,7 @@ body.night-mode {
     border: none;
     font-size: 1rem;
     transition: background-color 0.3s ease;
-    display: inline-block; /* Ensures it does not take up the full width */
+    display: inline-block; /* Ensures the button is inline */
 }
 
 .edit-profile-picture-btn:hover {
@@ -388,14 +388,20 @@ body.night-mode {
 .unavailable-tag {
     background-color: var(--danger-hover-color, #c9302c);
     color: var(--text-color, #fff); /* Matches the button's text color */
-    padding: 2px 6px; /* Smaller padding to fit a smaller tag */
+    padding: 2px 6px; /* Smaller padding for the tag */
     border-radius: var(--border-radius, 8px); /* Matches the button's border radius */
     font-size: 0.8rem; /* Smaller font size */
-    display: inline-block; /* Ensures it stays next to the button */
+    display: inline-flex; /* Ensures it stays next to the button */
+    align-items: center; /* Aligns items vertically */
     margin-left: 8px; /* Space between the button and the tag */
     vertical-align: middle; /* Aligns the tag vertically with the button */
 }
 
+.unavailable-icon {
+    width: 16px; /* Smaller icon size */
+    height: 16px; /* Maintain aspect ratio */
+    margin-left: 4px; /* Space between text and icon */
+}
 
 
 .loading-indicator {
@@ -815,7 +821,19 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </div>
         <input type="file" id="profilePicture" accept="image/*" style="display: none;">
         <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
-        <span class="unavailable-tag">UNAVAILABLE</span>
+        <span class="unavailable-tag">
+        UNAVAILABLE
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="unavailable-icon">
+            <g clip-path="url(#clip0_429_11057)">
+                <path d="M5.63604 5.63598C4.00736 7.26466 3 9.51466 3 11.9999C3 16.9705 7.02944 20.9999 12 20.9999C14.4853 20.9999 16.7353 19.9926 18.364 18.3639M5.63604 5.63598C7.26472 4.0073 9.51472 2.99994 12 2.99994C16.9706 2.99994 21 7.02938 21 11.9999C21 14.4852 19.9926 16.7352 18.364 18.3639M5.63604 5.63598L18.364 18.3639" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+            <defs>
+                <clipPath id="clip0_429_11057">
+                    <rect width="24" height="24" fill="white"></rect>
+                </clipPath>
+            </defs>
+        </svg>
+    </span>
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
     </div>
         <div class="form-group">
