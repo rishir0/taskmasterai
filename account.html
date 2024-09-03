@@ -514,7 +514,10 @@ body.night-mode {
     background-color: var(--card-bg);
     border-radius: var(--border-radius, 8px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 300px; /* Smaller width */
+    max-width: 300px; /* Width of the card */
+    height: auto; /* Adjust height to be flexible */
+    min-height: 300px; /* Longer card height - adjust as needed */
+    /* To adjust the length of the card, change the value of min-height */
 }
 
 .subscription-status h2 {
@@ -574,6 +577,8 @@ body.night-mode {
 .upgrade-btn2:hover {
     background-color: #5A52D5;
 }
+
+/* To adjust the bottom position of the card, you can use padding or margin as needed */
 
 
 
