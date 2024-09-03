@@ -443,7 +443,7 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
-.sign-out-btn {
+.sign-out-btn, .forgot-password-btn {
     background-color: #1E1E1E;
     color: var(--text-color, #fff);
     padding: 10px 20px;
@@ -452,12 +452,20 @@ body.night-mode {
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-right: 8px; /* Space between buttons */
 }
 
 .sign-out-btn:hover {
     background-color: var(--danger-hover-color, #c9302c);
 }
 
+.forgot-password-btn {
+    background-color: #1E1E1E; /* Matches the button's background color */
+}
+
+.forgot-password-btn:hover {
+    background-color: var(--accent-color, #009bf5);
+}
 
 
 /* Advanced Themes Card Styles */
@@ -853,6 +861,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </div>
         <div class="form-group">
             <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+            <button type="button" class="forgot-password-btn" onclick="window.location.href='forgot-password.html'">Forgot Password?</button>
         </div>
         <div class="card">
             <div class="card-body">
