@@ -547,8 +547,17 @@ body.night-mode {
 }
 
 .subscription-features li {
-    margin-bottom: 0.25rem; /* Smaller margin */
+    margin-bottom: 0.5rem; /* Adjust margin */
     font-size: 0.875rem; /* Smaller font size */
+    display: flex;
+    align-items: center;
+}
+
+.feature-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    fill: var(--primary-color, #6C63FF);
 }
 
 .upgrade-btn2 {
@@ -565,8 +574,6 @@ body.night-mode {
 .upgrade-btn2:hover {
     background-color: #5A52D5;
 }
-
-
 
 
 
@@ -927,15 +934,18 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     <h2>Subscription Status <span class="subscription-tag">Basic</span></h2>
     <div class="subscription-info">
         <ul class="subscription-features">
-            <li>Personalized Learning Paths</li>
-            <li>Task and Project Management</li>
-            <li>Interactive Tutorials and Courses</li>
-            <li>AI-Powered Assistance</li>
-            <li>Resource Library</li>
-            <li>Community and Networking</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> Personalized Learning Paths</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> Task and Project Management</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> Interactive Tutorials and Courses</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> AI-Powered Assistance</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> Resource Library</li>
+            <li><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" class="feature-icon"><path fill="#6C63FF" d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"></path></svg> Community and Networking</li>
         </ul>
         <button type="button" class="upgrade-btn2" onclick="window.location.href='upgrade.html'">Upgrade</button>
     </div>
+</div>
+
+
         <div class="card">
             <div class="card-body">
                 <div class="theme-option">
