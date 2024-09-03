@@ -378,7 +378,7 @@ body.night-mode {
     border: none;
     font-size: 1rem;
     transition: background-color 0.3s ease;
-    margin-right: 8px; /* Space between button and tag */
+    display: inline-block; /* Ensures the button is inline */
 }
 
 .edit-profile-picture-btn:hover {
@@ -386,20 +386,21 @@ body.night-mode {
 }
 
 .unavailable-tag {
-    background-color: #1E1E1E; /* Matches the button's background color */
+    background-color: var(--danger-hover-color, #c9302c);
     color: var(--text-color, #fff); /* Matches the button's text color */
     padding: 2px 6px; /* Smaller padding for the tag */
     border-radius: var(--border-radius, 8px); /* Matches the button's border radius */
     font-size: 0.8rem; /* Smaller font size */
-    display: inline-flex; /* Ensures the tag and SVG are aligned horizontally */
-    align-items: center; /* Centers the text and icon vertically */
+    display: inline-flex; /* Ensures it stays next to the button */
+    align-items: center; /* Aligns items vertically */
+    margin-left: 8px; /* Space between the button and the tag */
+    vertical-align: middle; /* Aligns the tag vertically with the button */
 }
 
 .unavailable-icon {
     width: 16px; /* Smaller icon size */
     height: 16px; /* Maintain aspect ratio */
     margin-left: 4px; /* Space between text and icon */
-    fill: #fff; /* Icon color white */
 }
 
 
