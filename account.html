@@ -418,6 +418,26 @@ body.night-mode {
     margin-left: 4px; /* Space between text and icon */
 }
 
+/* Styles for mobile devices */
+@media (max-width: 767px) {
+    .unavailable-tag {
+        background-color: var(--danger-hover-color, #c9302c);
+        color: transparent; /* Hide the text */
+        padding: 2px; /* Adjust padding as needed */
+        border-radius: var(--border-radius, 8px);
+        font-size: 0; /* Hide the text */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; /* Center the icon */
+        margin-left: 0; /* Remove margin */
+        margin-top: 0; /* Remove margin */
+    }
+
+    .unavailable-icon {
+        width: 24px; /* Adjust size as needed */
+        height: 24px; /* Adjust size as needed */
+    }
+}
 
 .loading-indicator {
     font-size: 16px;
