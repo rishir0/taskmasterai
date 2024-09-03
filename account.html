@@ -360,7 +360,7 @@ body.night-mode {
 }
 
 .profile-preview:hover {
-    background-color: var(--hover-bg-color, #e0e0e0); /* Optional hover effect */
+    background-color: var(--accent-color, #009bf5); /* Optional hover effect */
 }
 
 
@@ -673,6 +673,10 @@ function updateProfilePicture() {
     const profilePreview = document.getElementById('profilePreview');
     const loadingIndicator = document.getElementById('loadingIndicator');
 
+    // Debugging: Check if file and user exist
+    console.log('User:', user);
+    console.log('File:', file);
+
     if (file && user) {
         // Show loading indicator
         loadingIndicator.style.display = 'flex';
@@ -681,11 +685,16 @@ function updateProfilePicture() {
         const profilePicRef = storageRef.child(`profile_pictures/${user.uid}.jpg`);
 
         profilePicRef.put(file)
-            .then(snapshot => snapshot.ref.getDownloadURL())
+            .then(snapshot => {
+                console.log('Upload successful:', snapshot);
+                return snapshot.ref.getDownloadURL();
+            })
             .then(url => {
+                console.log('File available at:', url);
                 return user.updateProfile({ photoURL: url }).then(() => url);
             })
             .then(url => {
+                console.log('Profile updated with new photo URL:', url);
                 return firebase.firestore().collection('users').doc(user.uid).update({
                     profilePicture: url
                 }).then(() => url);
@@ -705,7 +714,7 @@ function updateProfilePicture() {
                 alert("Profile picture updated successfully!");
             })
             .catch(error => {
-                console.error("Error updating profile picture:", error);
+                console.error("Error during upload or update:", error);
 
                 // Hide loading indicator
                 loadingIndicator.style.display = 'none';
@@ -714,12 +723,13 @@ function updateProfilePicture() {
             });
     } else {
         alert("No file selected or user not authenticated.");
+        console.warn("No file or user. File:", file, "User:", user);
     }
 }
 
-
 // Event listener to handle file input change
 document.getElementById('profilePicture').addEventListener('change', updateProfilePicture);
+
 
 
 </script>
