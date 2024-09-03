@@ -509,60 +509,63 @@ body.night-mode {
 }
 
 .subscription-status {
-    margin-top: 2rem;
+    margin-top: 1rem;
     padding: 1rem;
     background-color: var(--card-bg);
     border-radius: var(--border-radius, 8px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px; /* Smaller width */
 }
 
 .subscription-status h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.subscription-info {
+    font-size: 1.25rem; /* Smaller font size */
+    margin-bottom: 0.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
 }
 
 .subscription-tag {
     background-color: var(--primary-color, #6C63FF);
     color: var(--text-color, #fff);
-    padding: 5px 10px;
+    padding: 3px 8px;
     border-radius: 5px;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
+    font-size: 0.75rem; /* Smaller font size */
+    margin-left: 10px;
+}
+
+.subscription-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left */
 }
 
 .subscription-features {
     list-style: none;
     padding: 0;
     margin: 0;
-    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .subscription-features li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem; /* Smaller margin */
+    font-size: 0.875rem; /* Smaller font size */
 }
 
-.upgrade-btn {
+.upgrade-btn2 {
     background-color: #F50057;
     color: var(--text-color);
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem; /* Smaller padding */
     border: none;
     border-radius: 5px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-top: 1rem;
 }
 
-.upgrade-btn:hover {
+.upgrade-btn2:hover {
     background-color: #5A52D5;
 }
+
 
 
 
@@ -921,9 +924,8 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
 </div>
 
 <div class="subscription-status">
-    <h2>Subscription Status</h2>
+    <h2>Subscription Status <span class="subscription-tag">Basic</span></h2>
     <div class="subscription-info">
-        <span class="subscription-tag">Basic</span>
         <ul class="subscription-features">
             <li>Personalized Learning Paths</li>
             <li>Task and Project Management</li>
@@ -932,10 +934,8 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
             <li>Resource Library</li>
             <li>Community and Networking</li>
         </ul>
-        <button type="button" class="upgrade-btn" onclick="window.location.href='upgrade.html'">Upgrade</button>
+        <button type="button" class="upgrade-btn2" onclick="window.location.href='upgrade.html'">Upgrade</button>
     </div>
-</div>
-
         <div class="card">
             <div class="card-body">
                 <div class="theme-option">
