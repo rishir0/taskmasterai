@@ -508,6 +508,62 @@ body.night-mode {
     background-color: var(--hover-bg, #e0e0e0);
 }
 
+.subscription-status {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius, 8px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.subscription-status h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.subscription-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subscription-tag {
+    background-color: var(--primary-color, #6C63FF);
+    color: var(--text-color, #fff);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.subscription-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.subscription-features li {
+    margin-bottom: 0.5rem;
+}
+
+.upgrade-btn {
+    background-color: #F50057;
+    color: var(--text-color);
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.upgrade-btn:hover {
+    background-color: #5A52D5;
+}
+
 
 
 
@@ -859,10 +915,27 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         <div class="form-group">
             <button type="button" class="btn btn-primary" onclick="updateAccount()">Save Changes</button>
         </div>
-        <div class="form-group">
-            <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
-            <button type="button" class="forgot-password-btn" onclick="window.location.href='forgot-password.html'">Forgot Password?</button>
-        </div>
+<div class="form-group">
+    <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+    <button type="button" class="forgot-password-btn" onclick="window.location.href='forgot-password.html'">Forgot Password?</button>
+</div>
+
+<div class="subscription-status">
+    <h2>Subscription Status</h2>
+    <div class="subscription-info">
+        <span class="subscription-tag">Basic</span>
+        <ul class="subscription-features">
+            <li>Personalized Learning Paths</li>
+            <li>Task and Project Management</li>
+            <li>Interactive Tutorials and Courses</li>
+            <li>AI-Powered Assistance</li>
+            <li>Resource Library</li>
+            <li>Community and Networking</li>
+        </ul>
+        <button type="button" class="upgrade-btn" onclick="window.location.href='upgrade.html'">Upgrade</button>
+    </div>
+</div>
+
         <div class="card">
             <div class="card-body">
                 <div class="theme-option">
