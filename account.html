@@ -342,7 +342,7 @@ body.night-mode {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: -60px; /* Move profile picture up */
+    margin-top: -60px;
 }
 
 .profile-preview {
@@ -353,10 +353,8 @@ body.night-mode {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px; /* Move profile picture up */
-    background-size: cover; /* Ensures the image covers the entire preview area */
-    background-position: center; /* Centers the image */
-    border: none; /* Remove border color */
+    margin-bottom: 20px;
+    overflow: hidden;
 }
 
 
@@ -364,7 +362,13 @@ body.night-mode {
     fill: var(--accent-color, #009bf5); /* Set SVG color to accent color */
 }
 
-.choose-file-btn {
+.profile-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.edit-profile-picture-btn {
     background-color: #1E1E1E;
     color: var(--text-color, #fff);
     padding: 8px 16px;
@@ -375,7 +379,7 @@ body.night-mode {
     transition: background-color 0.3s ease;
 }
 
-.choose-file-btn:hover {
+.edit-profile-picture-btn:hover {
     background-color: var(--accent-color, #009bf5);
 }
 
@@ -629,62 +633,37 @@ function signOut() {
         document.querySelector('.sidebar').classList.toggle('active');
     });
 
-    document.getElementById('profilePicture').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.querySelector('.profile-preview svg').style.display = 'none';
-            document.querySelector('.profile-preview').style.backgroundImage = `url(${e.target.result})`;
-            document.querySelector('.profile-preview').style.backgroundSize = 'cover';
-            document.querySelector('.profile-preview').style.backgroundPosition = 'center';
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-function updateAccount() {
+function updateProfilePicture() {
     const user = firebase.auth().currentUser;
-    const newName = document.getElementById('name').value;
-    const newPassword = document.getElementById('password').value;
-    const profilePic = document.getElementById('profilePicture').files[0];
+    const fileInput = document.getElementById('profilePicture');
+    const file = fileInput.files[0];
 
-    let updatePromises = [];
+    if (file) {
+        const storageRef = firebase.storage().ref();
+        const profilePicRef = storageRef.child(`profile_pictures/${user.uid}.jpg`);
 
-    if (newName) {
-        updatePromises.push(
-            user.updateProfile({ displayName: newName })
-                .then(() => db.collection('users').doc(user.uid).update({ displayName: newName }))
-        );
-    }
-
-    if (newPassword) {
-        updatePromises.push(user.updatePassword(newPassword));
-    }
-
-    if (profilePic) {
-        const storageRef = storage.ref(`profilePictures/${user.uid}/${profilePic.name}`);
-        
-        updatePromises.push(
-            storageRef.put(profilePic)
-                .then(() => storageRef.getDownloadURL())
-                .then((downloadURL) => {
-                    return db.collection('users').doc(user.uid).update({ profilePicture: downloadURL });
-                })
-                .then(() => {
-                    return user.updateProfile({ photoURL: downloadURL });
-                })
-        );
-    }
-
-    Promise.all(updatePromises)
-        .then(() => {
-            alert("Account updated successfully!");
-        })
-        .catch((error) => {
-            console.error("Error updating account:", error);
+        profilePicRef.put(file).then(() => {
+            return profilePicRef.getDownloadURL();
+        }).then((url) => {
+            // Update user's profile with the new profile picture URL
+            return user.updateProfile({
+                photoURL: url
+            }).then(() => {
+                // Update the Firestore document
+                return firebase.firestore().collection('users').doc(user.uid).update({
+                    profilePicture: url
+                });
+            });
+        }).then(() => {
+            // Dynamically update the preview
+            document.querySelector('.profile-preview').style.backgroundImage = `url(${url})`;
+            alert("Profile picture updated successfully!");
+        }).catch((error) => {
+            console.error("Error updating profile picture:", error);
         });
+    }
 }
+
 
 </script>
 <body>
@@ -765,12 +744,13 @@ function updateAccount() {
     </div>
     <div class="settings-form">
         <div class="form-group profile-picture-group">
-            <div class="profile-preview">
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <div class="profile-preview" id="profilePreview">
+                <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z"/>
                 </svg>
             </div>
-            <input type="file" id="profilePicture" accept="image/*" class="choose-file-btn">
+            <input type="file" id="profilePicture" accept="image/*" class="choose-file-btn" style="display: none;">
+            <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
         </div>
         <div class="form-group">
             <label for="name">Full Name</label>
