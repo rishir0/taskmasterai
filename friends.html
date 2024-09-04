@@ -1399,60 +1399,6 @@ body.night-mode {
     font-size: 16px;
 }
 
-
-.splash-screen {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .splash-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 80%;
-        max-width: 600px;
-        text-align: center;
-    }
-
-    .splash-page {
-        display: none;
-    }
-
-    .splash-page.active {
-        display: block;
-    }
-
-    .continue-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .continue-btn:hover {
-        background-color: #0056b3;
-    }
-
-    .main-content {
-        flex-grow: 1;
-        padding: 20px;
-        overflow-y: auto;
-        background: transparent;
-        position: relative; /* Ensures splash screen aligns correctly */
-    }
-
       
     </style>
 </head>
@@ -2439,28 +2385,8 @@ body.night-mode {
             <!-- Add more emojis here -->
         </div>
     </div>
-<div class="main-content">
-    <div id="splashScreen" class="splash-screen">
-        <div id="splashContent" class="splash-content">
-            <div id="page1" class="splash-page active">
-                <h1>Welcome to Friends, where productivity meets community.</h1>
-                <button class="continue-btn" onclick="nextPage(1)">Continue</button>
-            </div>
-            <div id="page2" class="splash-page">
-                <h1>Coming Soon</h1>
-                <button class="continue-btn" onclick="nextPage(2)">Continue</button>
-            </div>
-            <div id="page3" class="splash-page">
-                <h1>Coming Soon</h1>
-                <button class="continue-btn" onclick="nextPage(3)">Continue</button>
-            </div>
-            <div id="page4" class="splash-page">
-                <h1>Coming Soon</h1>
-                <button class="continue-btn" onclick="finalContinue()">Continue</button>
-            </div>
-        </div>
-    </div>
 </div>
+
 
 
 
@@ -4712,33 +4638,6 @@ firebase.auth().onAuthStateChanged(user => {
 });
 
 document.getElementById('refreshButton').addEventListener('click', loadOnlineFriends);
-
-async function checkSplashStatus(uid) {
-    const splashDocRef = doc(db, "users", uid);
-    const splashDoc = await getDoc(splashDocRef);
-
-    if (splashDoc.exists() && splashDoc.data().splashScreenCompleted) {
-        document.getElementById("splash-screen").style.display = "none";
-    } else {
-        document.getElementById("splash-screen").style.display = "block";
-    }
-}
-
-function nextPage(pageNumber) {
-    document.getElementById(`splash-page-${pageNumber}`).classList.remove('active');
-    document.getElementById(`splash-page-${pageNumber + 1}`).classList.add('active');
-}
-
-async function finishSplash() {
-    const uid = "USER_UID"; // Replace this with the actual user's UID
-    const splashDocRef = doc(db, "users", uid);
-    await setDoc(splashDocRef, { splashScreenCompleted: true }, { merge: true });
-    document.getElementById("splash-screen").style.display = "none";
-}
-
-// Call this function with the user's UID to check if the splash screen should be shown
-checkSplashStatus("USER_UID");
-
 
 </script>
 
