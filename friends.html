@@ -1399,6 +1399,40 @@ body.night-mode {
     font-size: 16px;
 }
 
+
+#main-content {
+    position: relative;
+    /* Add other styles as necessary */
+}
+
+.splash-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.splash-page {
+    display: none;
+    text-align: center;
+}
+
+.splash-page.active {
+    display: block;
+}
+
+.splash-page button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
       
     </style>
 </head>
@@ -2385,8 +2419,25 @@ body.night-mode {
             <!-- Add more emojis here -->
         </div>
     </div>
+<div id="splash-screen" class="splash-screen">
+        <div id="splash-page-1" class="splash-page active">
+            <h1>Welcome to Friends, where productivity meets community.</h1>
+            <button onclick="nextPage(1)">Continue</button>
+        </div>
+        <div id="splash-page-2" class="splash-page">
+            <h1>Coming Soon</h1>
+            <button onclick="nextPage(2)">Continue</button>
+        </div>
+        <div id="splash-page-3" class="splash-page">
+            <h1>Coming Soon</h1>
+            <button onclick="nextPage(3)">Continue</button>
+        </div>
+        <div id="splash-page-4" class="splash-page">
+            <h1>Coming Soon</h1>
+            <button onclick="finishSplash()">Continue</button>
+        </div>
+    </div>
 </div>
-
 
 
 
@@ -4638,6 +4689,33 @@ firebase.auth().onAuthStateChanged(user => {
 });
 
 document.getElementById('refreshButton').addEventListener('click', loadOnlineFriends);
+
+async function checkSplashStatus(uid) {
+    const splashDocRef = doc(db, "users", uid);
+    const splashDoc = await getDoc(splashDocRef);
+
+    if (splashDoc.exists() && splashDoc.data().splashScreenCompleted) {
+        document.getElementById("splash-screen").style.display = "none";
+    } else {
+        document.getElementById("splash-screen").style.display = "block";
+    }
+}
+
+function nextPage(pageNumber) {
+    document.getElementById(`splash-page-${pageNumber}`).classList.remove('active');
+    document.getElementById(`splash-page-${pageNumber + 1}`).classList.add('active');
+}
+
+async function finishSplash() {
+    const uid = "USER_UID"; // Replace this with the actual user's UID
+    const splashDocRef = doc(db, "users", uid);
+    await setDoc(splashDocRef, { splashScreenCompleted: true }, { merge: true });
+    document.getElementById("splash-screen").style.display = "none";
+}
+
+// Call this function with the user's UID to check if the splash screen should be shown
+checkSplashStatus("USER_UID");
+
 
 </script>
 
