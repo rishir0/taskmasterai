@@ -2591,6 +2591,7 @@ function loadRecentEmojis() {
 auth.onAuthStateChanged(function(user) {
     if (user) {
         loadRecentEmojis();
+        resetInactivityTimer(); // Initialize the inactivity timer for the logged-in user
     }
 });
 
@@ -2623,50 +2624,6 @@ function clearRecentEmojis() {
         console.error('No user is signed in.');
     }
 }
-
-    
-        function updateOnlineStatus(isOnline) {
-            if (auth.currentUser) {
-                db.collection('users').doc(auth.currentUser.uid).set({
-                    online: isOnline,
-                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true }).then(() => {
-                    console.log(`User online status updated to ${isOnline}`);
-                }).catch((error) => {
-                    console.error('Error updating online status:', error);
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            auth.onAuthStateChanged(function(user) {
-                if (user) {
-                    // Update the UI with the user's display name
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-
-                    // Set Firestore online status to true when the user is authenticated
-                    updateOnlineStatus(true);
-
-                    // Handle the user going offline only when the tab is closed or navigated away
-                    window.addEventListener('beforeunload', function() {
-                        updateOnlineStatus(false);
-                    });
-
-                    // Handle tab visibility change
-                    document.addEventListener('visibilitychange', function() {
-                        if (document.visibilityState === 'visible') {
-                            updateOnlineStatus(true);
-                        }
-                    });
-
-                } else {
-                    // No user is signed in, redirect to login page
-                    window.location.href = "login.html";
-                }
-            });
-        });
 
             document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
@@ -2705,6 +2662,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+        resetInactivityTimer(); // Initialize the inactivity timer for the logged-in user
+    } else {
+        console.log('No user is signed in');
+    }
+});
 
 
 function addFriend() {
@@ -4782,21 +4747,27 @@ const currentUser = firebase.auth().currentUser; // Assuming currentUser is alre
 function setUserOnlineStatus(status) {
     if (currentUser) {
         const currentUserUID = currentUser.uid;
+        console.log(`Updating user's online status to: ${status}`); // Log status update
         db.collection('users').doc(currentUserUID).update({
             online: status
         }).then(() => {
-            console.log(`User's online status updated to: ${status}`);
+            console.log(`User's online status successfully updated to: ${status}`);
             isUserOffline = !status; // Update isUserOffline based on the new status
         }).catch((error) => {
             console.error('Error updating online status: ', error);
         });
+    } else {
+        console.error('No current user is logged in.'); // Log if currentUser is null
     }
 }
 
 // Function to reset the inactivity timer and update online status if necessary
 function resetInactivityTimer() {
+    console.log('User interaction detected'); // Log when interaction is detected
+
     // If the user is currently offline, set them to online upon any interaction
     if (isUserOffline) {
+        console.log('User is offline, setting status to online');
         setUserOnlineStatus(true);
     }
 
@@ -4807,6 +4778,7 @@ function resetInactivityTimer() {
 
     // Start the inactivity timer again for 30 seconds (30,000 milliseconds)
     inactivityTimeout = setTimeout(() => {
+        console.log('User has been inactive for 30 seconds, setting status to offline');
         setUserOnlineStatus(false); // Set user to offline after 30 seconds of inactivity
     }, 30000);
 }
@@ -4818,6 +4790,7 @@ function resetInactivityTimer() {
 
 // Initialize the inactivity timer when the script loads
 resetInactivityTimer();
+
 </script>
 
 
