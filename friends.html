@@ -2565,7 +2565,6 @@ window.addEventListener('scroll', updateUserStatusOnInteraction);
 // Initialize user's online status to true when they first interact
 updateUserStatusOnInteraction();
 
-        
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
     emojiPicker.classList.toggle("hidden");
@@ -2665,6 +2664,50 @@ function clearRecentEmojis() {
     }
 }
 
+    
+        function updateOnlineStatus(isOnline) {
+            if (auth.currentUser) {
+                db.collection('users').doc(auth.currentUser.uid).set({
+                    online: isOnline,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).then(() => {
+                    console.log(`User online status updated to ${isOnline}`);
+                }).catch((error) => {
+                    console.error('Error updating online status:', error);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    // Update the UI with the user's display name
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+
+                    // Set Firestore online status to true when the user is authenticated
+                    updateOnlineStatus(true);
+
+                    // Handle the user going offline only when the tab is closed or navigated away
+                    window.addEventListener('beforeunload', function() {
+                        updateOnlineStatus(false);
+                    });
+
+                    // Handle tab visibility change
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'visible') {
+                            updateOnlineStatus(true);
+                        }
+                    });
+
+                } else {
+                    // No user is signed in, redirect to login page
+                    window.location.href = "login.html";
+                }
+            });
+        });
+
             document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -2701,6 +2744,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 
 
 function addFriend() {
@@ -4768,6 +4812,7 @@ document.getElementById('refreshButton').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
     });
 </script>
+
 
 </body>
 </html>
