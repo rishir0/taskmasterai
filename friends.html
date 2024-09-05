@@ -2565,6 +2565,13 @@ window.addEventListener('scroll', updateUserStatusOnInteraction);
 // Initialize user's online status to true when they first interact
 updateUserStatusOnInteraction();
 
+// Update status to offline when the page is unloaded
+window.addEventListener('beforeunload', () => {
+    if (firebase.auth().currentUser) {
+        setUserOnlineStatus(false); // Set status to false when the user leaves
+    }
+});
+
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
     emojiPicker.classList.toggle("hidden");
