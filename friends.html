@@ -3100,45 +3100,52 @@ function loadPinnedFriends() {
     if (currentUser) {
         const currentUserUID = currentUser.uid;
         const acceptedFriends = new Set();
-        const displayNameMap = new Map(); // To store the display names of friends
+        const displayNameMap = new Map(); // To store display names of friends
 
-        // Fetch the current user's accepted friends and pinned friends
+        // Fetch the current user's accepted friends
         db.collection('users').doc(currentUserUID).get()
             .then((userDoc) => {
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
+                if (!userDoc.exists) throw new Error('User document does not exist');
 
-                    // Add accepted friends to the set
-                    if (userData.acceptedFriends) {
-                        userData.acceptedFriends.forEach((email) => {
-                            acceptedFriends.add(email);
-                            displayNameMap.set(email, null); // Initialize display name to null
-                        });
-                    }
+                const userData = userDoc.data();
 
-                    // Fetch the current user's pinned friends
-                    db.collection('pinnedFriends').doc(currentUserUID).get()
-                        .then((pinnedDoc) => {
-                            if (pinnedDoc.exists) {
-                                const pinnedFriends = pinnedDoc.data().pinnedFriends || [];
-                                const pinnedFriendsList = document.getElementById('pinnedFriends');
-                                pinnedFriendsList.innerHTML = ''; // Clear the list before appending new items
+                // Add accepted friends to the set
+                if (userData.acceptedFriends) {
+                    userData.acceptedFriends.forEach((email) => {
+                        acceptedFriends.add(email);
+                        displayNameMap.set(email, null); // Initialize display name to null
+                    });
+                }
 
-                                // Fetch all user data and determine online status
-                                db.collection('users').get().then((querySnapshot) => {
-                                    querySnapshot.forEach((doc) => {
-                                        const friend = doc.data();
-                                        const friendEmail = friend.email;
-                                        const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
-                                        const isPinned = pinnedFriends.includes(friendEmail);
-                                        const isAcceptedFriend = acceptedFriends.has(friendEmail);
-                                        const isOnline = friend.online;
+                // Fetch pinned friends
+                return db.collection('pinnedFriends').doc(currentUserUID).get();
+            })
+            .then((pinnedDoc) => {
+                if (!pinnedDoc.exists) throw new Error('Pinned friends document does not exist');
 
-                                        // Only proceed if the user is pinned and an accepted friend
-                                        if (isPinned && isAcceptedFriend && friendEmail !== currentUser.email) {
-                                            // Update display name if necessary
-                                            if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                                displayNameMap.set(friendEmail, friendDisplayName);
+                const pinnedFriends = pinnedDoc.data().pinnedFriends || [];
+                const pinnedFriendsList = document.getElementById('pinnedFriends');
+                pinnedFriendsList.innerHTML = ''; // Clear the list before appending new items
+
+                // Fetch all user data and online status
+                return db.collection('users').get();
+            })
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const friend = doc.data();
+                    const friendEmail = friend.email;
+                    const friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+                    const isPinned = pinnedFriends.includes(friendEmail);
+                    const isAcceptedFriend = acceptedFriends.has(friendEmail);
+                    const isOnline = friend.online;
+
+                    // Only proceed if the user is pinned and an accepted friend
+                    if (isPinned && isAcceptedFriend && friendEmail !== currentUser.email) {
+                        // Update display name if necessary
+                        if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                            displayNameMap.set(friendEmail, friendDisplayName);
+                        }
+
 
 
                                     const listItem = document.createElement('li');
