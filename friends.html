@@ -2525,6 +2525,47 @@ var auth = firebase.auth();
 var emojiPicker = document.getElementById("emojiPicker");
 var recentEmojisContainer = document.getElementById("recentEmojis");
 
+let inactivityTimeout;
+let isUserOffline = false;
+
+function setUserOnlineStatus(status) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+        console.log(`Updating user's online status to: ${status}`); // Log status update
+        db.collection('users').doc(currentUserUID).update({
+            online: status
+        }).then(() => {
+            console.log(`User's online status successfully updated to: ${status}`);
+            isUserOffline = !status; // Update isUserOffline based on the new status
+        }).catch((error) => {
+            console.error('Error updating online status: ', error);
+        });
+    } else {
+        console.error('No current user is logged in.'); // Log if currentUser is null
+    }
+}
+
+function updateUserStatusOnInteraction() {
+    if (isUserOffline) {
+        setUserOnlineStatus(true); // Set status to true if user is offline
+    }
+    clearTimeout(inactivityTimeout); // Clear previous timeout
+    inactivityTimeout = setTimeout(() => {
+        setUserOnlineStatus(false); // Set status to false after 30 seconds of inactivity
+    }, 30000); // 30 seconds for testing
+}
+
+// Bind the interaction function to all necessary events
+window.addEventListener('click', updateUserStatusOnInteraction);
+window.addEventListener('mousemove', updateUserStatusOnInteraction);
+window.addEventListener('keydown', updateUserStatusOnInteraction);
+window.addEventListener('scroll', updateUserStatusOnInteraction);
+
+// Initialize user's online status to true when they first interact
+updateUserStatusOnInteraction();
+
+        
 // Toggle the emoji picker dropdown
 function toggleEmojiPicker() {
     emojiPicker.classList.toggle("hidden");
@@ -2591,7 +2632,6 @@ function loadRecentEmojis() {
 auth.onAuthStateChanged(function(user) {
     if (user) {
         loadRecentEmojis();
-        resetInactivityTimer(); // Initialize the inactivity timer for the logged-in user
     }
 });
 
@@ -2659,15 +2699,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Notification permission denied.');
             }
         });
-    }
-});
-
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        currentUser = user;
-        resetInactivityTimer(); // Initialize the inactivity timer for the logged-in user
-    } else {
-        console.log('No user is signed in');
     }
 });
 
@@ -4737,62 +4768,6 @@ document.getElementById('refreshButton').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
     });
 </script>
-
-<script>
-let inactivityTimeout; // Holds the timeout for detecting inactivity
-let isUserOffline = false; // Track if the user is currently offline
-const currentUser = firebase.auth().currentUser; // Assuming currentUser is already available
-
-// Function to set the user's online status in Firestore
-function setUserOnlineStatus(status) {
-    if (currentUser) {
-        const currentUserUID = currentUser.uid;
-        console.log(`Updating user's online status to: ${status}`); // Log status update
-        db.collection('users').doc(currentUserUID).update({
-            online: status
-        }).then(() => {
-            console.log(`User's online status successfully updated to: ${status}`);
-            isUserOffline = !status; // Update isUserOffline based on the new status
-        }).catch((error) => {
-            console.error('Error updating online status: ', error);
-        });
-    } else {
-        console.error('No current user is logged in.'); // Log if currentUser is null
-    }
-}
-
-// Function to reset the inactivity timer and update online status if necessary
-function resetInactivityTimer() {
-    console.log('User interaction detected'); // Log when interaction is detected
-
-    // If the user is currently offline, set them to online upon any interaction
-    if (isUserOffline) {
-        console.log('User is offline, setting status to online');
-        setUserOnlineStatus(true);
-    }
-
-    // Clear any existing inactivity timeout
-    if (inactivityTimeout) {
-        clearTimeout(inactivityTimeout);
-    }
-
-    // Start the inactivity timer again for 30 seconds (30,000 milliseconds)
-    inactivityTimeout = setTimeout(() => {
-        console.log('User has been inactive for 30 seconds, setting status to offline');
-        setUserOnlineStatus(false); // Set user to offline after 30 seconds of inactivity
-    }, 30000);
-}
-
-// Add event listeners for user interaction (to reset the timer and check online status)
-['mousemove', 'keydown', 'click', 'touchstart'].forEach((event) => {
-    window.addEventListener(event, resetInactivityTimer);
-});
-
-// Initialize the inactivity timer when the script loads
-resetInactivityTimer();
-
-</script>
-
 
 </body>
 </html>
