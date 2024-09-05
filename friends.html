@@ -4773,6 +4773,49 @@ document.getElementById('refreshButton').addEventListener('click', () => {
     });
 </script>
 
+<script>
+let inactivityTimeout; // Will hold the timeout for detecting inactivity
+const currentUser = firebase.auth().currentUser; // Assuming currentUser is already available
+
+// Function to set the user's online status in Firestore
+function setUserOnlineStatus(status) {
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+        db.collection('users').doc(currentUserUID).update({
+            online: status
+        }).then(() => {
+            console.log(`User's online status updated to: ${status}`);
+        }).catch((error) => {
+            console.error('Error updating online status: ', error);
+        });
+    }
+}
+
+// Function to reset the inactivity timer
+function resetInactivityTimer() {
+    // Clear any existing timeout
+    if (inactivityTimeout) {
+        clearTimeout(inactivityTimeout);
+    }
+
+    // Set the user's online status to true if interacting
+    setUserOnlineStatus(true);
+
+    // Start the timer again for 15 minutes (900,000 milliseconds)
+    inactivityTimeout = setTimeout(() => {
+        setUserOnlineStatus(false); // Set user to offline after 15 minutes of inactivity
+    }, 900000);
+}
+
+// Add event listeners for user interaction
+['mousemove', 'keydown', 'click', 'touchstart'].forEach((event) => {
+    window.addEventListener(event, resetInactivityTimer);
+});
+
+// Initialize the inactivity timer when the script loads
+resetInactivityTimer();
+</script>
+
 
 </body>
 </html>
