@@ -1151,74 +1151,39 @@ body.night-mode {
     background-color: #3b7bce; /* Change to hover color */
 }
 
-/* General Modal Styles */
-.modal3 {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
 
-/* Specific Modal Content Styles */
-.modal3 .modal-content {
-    background-color: #333; /* Set modal background to gray */
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    width: 80%; /* Could be more or less, depending on screen size */
-    border-radius: var(--border-radius);
-    position: relative; /* Position relative to align buttons */
-}
-
-/* Close Button */
-.modal3 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
 
-.modal3 .close:hover,
-.modal3 .close:focus {
-    color: white;
-    text-decoration: none;
+// Updated styles for modal5
+.modal5 {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
 }
 
-/* Input and Button Styling */
-.modal3 #editFriendName {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
+.modal5 .modal-content5 {
+    background-color: #333;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
     border-radius: var(--border-radius);
-    border: 1px solid #ccc;
-    background-color: #444;
-    color: #fff;
+    position: relative;
 }
 
-.modal3 #saveFriendName {
-    background-color: var(--accent-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
+.modal5 .close-button5 {
+    float: right;
     cursor: pointer;
-    color: #fff;
-    transition: background-color 0.3s;
-}
-
-.modal3 #saveFriendName:hover {
-    background-color: #2980b9;
-}
-
-/* Ensure SVG icons are appropriately sized */
-.modal3 .close svg {
     width: 24px;
     height: 24px;
 }
+
 
 .friends-list h2 {
     display: flex;
@@ -2460,10 +2425,10 @@ body.night-mode {
     </div>
 </div>
 
-<!-- Modal structure -->
-<div id="viewFriendModal" class="modal3">
-    <div class="modal-content3">
-        <span class="close-button3">&times;</span>
+// Updated modal structure
+<div id="viewFriendModal" class="modal5">
+    <div class="modal-content5">
+        <span class="close-button5">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -2482,9 +2447,6 @@ body.night-mode {
         <h3>Friend Information</h3>
         <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
         <p><strong>Email:</strong> <span id="friendEmail"></span></p>
-        <label for="editFriendName">Edit Friend Name:</label>
-        <input type="text" id="editFriendName" class="input-style">
-        <button id="saveFriendName" class="save-button">Save</button>
     </div>
 </div>
 
@@ -3440,14 +3402,10 @@ function createUnfriendButton(friendEmail) {
     return button;
 }
 
-function createViewFriendInfoButton(friendEmail, friendDisplayName) {
+// Updated viewFriendInfo function
+function viewFriendInfo(friendEmail, friendDisplayName) {
     const button = document.createElement('button');
     button.classList.add('view-friend-info-button');
-
-    // Add SVG directly into the button
-    button.innerHTML = `
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}.a{stroke-linejoin:round;}.b{stroke-linejoin:bevel;}</style></defs><path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path><circle class="b" cx="12" cy="5.98404" r="5"></circle><circle class="a" cx="17" cy="18" r="5"></circle><line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line><line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line></g></svg>
-    `;
 
     button.onclick = () => {
         // Open the modal and display the friend's information
@@ -3455,22 +3413,17 @@ function createViewFriendInfoButton(friendEmail, friendDisplayName) {
         modal.style.display = 'block';
         document.getElementById('friendDisplayName').textContent = friendDisplayName;
         document.getElementById('friendEmail').textContent = friendEmail;
-        document.getElementById('editFriendName').value = friendDisplayName;
 
-        // Save the new friend display name
-        document.getElementById('saveFriendName').onclick = () => {
-            const newFriendName = document.getElementById('editFriendName').value;
-            if (newFriendName !== friendDisplayName && newFriendName.trim() !== "") {
-                // Logic to save the new friendDisplayName for the current user only
-                saveFriendDisplayName(friendEmail, newFriendName)
-                    .then(() => {
-                        document.getElementById('friendDisplayName').textContent = newFriendName;
-                    })
-                    .catch((error) => {
-                        console.error("Error saving new friend name: ", error);
-                    });
-            }
+        // Close the modal when the close button is clicked
+        document.querySelector('.close-button5').onclick = () => {
             modal.style.display = 'none';
+        };
+
+        // Close the modal if clicked outside the content area
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
         };
     };
 
