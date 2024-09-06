@@ -1126,6 +1126,45 @@ body.night-mode {
 }
 
 
+/* General Modal Styles */
+.modal5 {
+    display: none !important; /* Ensure modal is hidden by default */
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Modal Content */
+.modal5 .modal-content5 {
+    background-color: #333 !important;
+    margin: 15% auto !important;
+    padding: 20px !important;
+    width: 80% !important;
+    border-radius: var(--border-radius) !important;
+    position: relative !important;
+}
+
+/* Close Button */
+.modal5 .close-button5 {
+    color: #aaa !important;
+    float: right !important;
+    font-size: 28px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.modal5 .close-button5:hover,
+.modal5 .close-button5:focus {
+    color: white !important;
+    text-decoration: none !important;
+}
 
 
 .view-friend-info-button {
@@ -1156,33 +1195,6 @@ body.night-mode {
     cursor: pointer;
 }
 
-// Updated styles for modal5
-.modal5 {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
-}
-
-.modal5 .modal-content5 {
-    background-color: #333;
-    margin: 15% auto;
-    padding: 20px;
-    width: 80%;
-    border-radius: var(--border-radius);
-    position: relative;
-}
-
-.modal5 .close-button5 {
-    float: right;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-}
 
 
 .friends-list h2 {
@@ -2977,26 +2989,35 @@ if (friend.online) {
                                             viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
                                         });
 
+// Handle opening the modal and setting friend info
 viewFriendInfoButton.onclick = () => {
     const modal = document.getElementById('viewFriendModal');
-    modal.style.display = 'block';
+    modal.style.display = 'block'; // Show the modal when button is clicked
 
     // Set friend information inside the modal
     document.getElementById('friendDisplayName').textContent = friendDisplayName;
     document.getElementById('friendEmail').textContent = friendEmail;
 
-    // Close the modal when the close button is clicked
+    // Handle closing the modal when close button is clicked
     document.querySelector('.close-button5').onclick = () => {
-        modal.style.display = 'none';
+        modal.style.display = 'none'; // Hide the modal when the close button is clicked
     };
 
-    // Close the modal if clicked outside the content area
+    // Handle closing the modal when clicking outside of the modal content
     window.onclick = (event) => {
         if (event.target === modal) {
-            modal.style.display = 'none';
+            modal.style.display = 'none'; // Hide the modal when clicking outside the modal content
         }
     };
 };
+
+// Optional: Handle closing modal via ESC key to avoid interference
+document.addEventListener('keydown', (event) => {
+    const modal = document.getElementById('viewFriendModal');
+    if (event.key === 'Escape' && modal.style.display === 'block') {
+        modal.style.display = 'none'; // Hide the modal when the ESC key is pressed
+    }
+});
 
                                         
                                         // Create the 'Pinned Friends' button
