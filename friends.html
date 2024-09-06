@@ -1162,12 +1162,14 @@ body.night-mode {
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 /* Specific Modal Content Styles */
 .modal3 .modal-content {
     background-color: #333; /* Set modal background to gray */
-    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     width: 80%; /* Could be more or less, depending on screen size */
     border-radius: var(--border-radius);
@@ -1177,10 +1179,12 @@ body.night-mode {
 /* Close Button */
 .modal3 .close {
     color: #aaa;
-    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 .modal3 .close:hover,
@@ -1189,36 +1193,12 @@ body.night-mode {
     text-decoration: none;
 }
 
-/* Input and Button Styling */
-.modal3 #editFriendName {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: var(--border-radius);
-    border: 1px solid #ccc;
-    background-color: #444;
-    color: #fff;
-}
-
-.modal3 #saveFriendName {
-    background-color: var(--accent-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    color: #fff;
-    transition: background-color 0.3s;
-}
-
-.modal3 #saveFriendName:hover {
-    background-color: #2980b9;
-}
-
 /* Ensure SVG icons are appropriately sized */
 .modal3 .close svg {
     width: 24px;
     height: 24px;
 }
+
 
 .friends-list h2 {
     display: flex;
@@ -2973,14 +2953,9 @@ if (friend.online) {
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
 
-
-// Button container
-const buttonContainer = document.createElement('div');
-buttonContainer.classList.add('buttons');
-
-// View Members button with SVG in a smaller circle
-const viewMembersButton = document.createElement('button');
-viewMembersButton.innerHTML = `
+                                        // Create the 'View Friend Info' button
+                                        const viewFriendInfoButton = document.createElement('button');
+                                        viewFriendInfoButton.innerHTML = `
                                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -3001,30 +2976,40 @@ viewMembersButton.innerHTML = `
                                             </svg>
                                         `;
 
-// Apply circular style and smaller size
-viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Replace with your accent color variable or hex code
-viewMembersButton.style.border = 'none';
-viewMembersButton.style.borderRadius = '50%';
-viewMembersButton.style.padding = '6px'; // Reduced padding for a smaller circle
-viewMembersButton.style.cursor = 'pointer';
-viewMembersButton.style.display = 'flex';
-viewMembersButton.style.alignItems = 'center';
-viewMembersButton.style.justifyContent = 'center';
+                                        viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
+                                        viewFriendInfoButton.style.border = 'none';
+                                        viewFriendInfoButton.style.borderRadius = '50%';
+                                        viewFriendInfoButton.style.marginLeft = '8px';
+                                        viewFriendInfoButton.style.marginRight = '0';
+                                        viewFriendInfoButton.style.padding = '6px';
+                                        viewFriendInfoButton.style.cursor = 'pointer';
+                                        viewFriendInfoButton.style.display = 'flex';
+                                        viewFriendInfoButton.style.alignItems = 'center';
+                                        viewFriendInfoButton.style.justifyContent = 'center';
 
-// Hover effect to change color
-viewMembersButton.addEventListener('mouseover', () => {
-    viewMembersButton.style.backgroundColor = '#3b7bce';
-});
+                                        viewFriendInfoButton.addEventListener('mouseover', () => {
+                                            viewFriendInfoButton.style.backgroundColor = '#3b7bce';
+                                        });
 
-viewMembersButton.addEventListener('mouseout', () => {
-    viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Reset to the original color
-});
+                                        viewFriendInfoButton.addEventListener('mouseout', () => {
+                                            viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
+                                        });
 
-viewMembersButton.onclick = () => {
-    openViewMembersModal(doc.id);
-};
-buttonContainer.appendChild(viewMembersButton);
+                                        viewFriendInfoButton.onclick = () => {
+                                            const modal = document.getElementById('viewFriendModal');
+                                            modal.style.display = 'block';
+                                            document.getElementById('friendDisplayName').textContent = friendDisplayName;
+                                            document.getElementById('friendEmail').textContent = friendEmail;
+                                            document.getElementById('editFriendName').value = friendDisplayName;
 
+                                            document.getElementById('saveFriendName').onclick = () => {
+                                                const newFriendName = document.getElementById('editFriendName').value;
+                                                if (newFriendName !== friendDisplayName) {
+                                                    saveFriendDisplayName(friendEmail, newFriendName);
+                                                }
+                                                modal.style.display = 'none';
+                                            };
+                                        };
                                         
                                         // Create the 'Pinned Friends' button
 const pinnedFriendsButton = document.createElement('button');
@@ -3109,7 +3094,6 @@ pinnedFriendsButton.onclick = () => {
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
-                                        groupItem.appendChild(buttonContainer);
                                         listItem.appendChild(statusIcon);
                                         listItem.appendChild(friendName);
                                         listItem.appendChild(pinnedFriendsButton);
