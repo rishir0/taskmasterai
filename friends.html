@@ -1126,46 +1126,6 @@ body.night-mode {
 }
 
 
-/* General Modal Styles */
-.modal5 {
-    display: none !important; /* Ensure modal is hidden by default */
-    position: fixed !important;
-    z-index: 1000 !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: auto !important;
-    background-color: rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Modal Content */
-.modal5 .modal-content5 {
-    background-color: #333 !important;
-    margin: 15% auto !important;
-    padding: 20px !important;
-    width: 80% !important;
-    border-radius: var(--border-radius) !important;
-    position: relative !important;
-}
-
-/* Close Button */
-.modal5 .close-button5 {
-    color: #aaa !important;
-    float: right !important;
-    font-size: 28px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
-    width: 24px !important;
-    height: 24px !important;
-}
-
-.modal5 .close-button5:hover,
-.modal5 .close-button5:focus {
-    color: white !important;
-    text-decoration: none !important;
-}
-
 
 .view-friend-info-button {
     width: 40px;
@@ -2437,30 +2397,6 @@ body.night-mode {
     </div>
 </div>
 
-// Updated modal structure
-<div id="viewFriendModal" class="modal5">
-    <div class="modal-content5">
-        <span class="close-button5">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                    <g id="Edit / Close_Circle">
-                        <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
-                            stroke="#ffffff"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                        </path>
-                    </g>
-                </g>
-            </svg>
-        </span>
-        <h3>Friend Information</h3>
-        <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
-        <p><strong>Email:</strong> <span id="friendEmail"></span></p>
-    </div>
-</div>
 
 <!-- Modal for Replies -->
 <div id="modal4" class="modal4">
@@ -3425,34 +3361,6 @@ function createUnfriendButton(friendEmail) {
 
     // Append SVG to the button
     button.appendChild(svg);
-
-    return button;
-}
-
-// Updated viewFriendInfo function
-function viewFriendInfo(friendEmail, friendDisplayName) {
-    const button = document.createElement('button');
-    button.classList.add('view-friend-info-button');
-
-    button.onclick = () => {
-        // Open the modal and display the friend's information
-        const modal = document.getElementById('viewFriendModal');
-        modal.style.display = 'block';
-        document.getElementById('friendDisplayName').textContent = friendDisplayName;
-        document.getElementById('friendEmail').textContent = friendEmail;
-
-        // Close the modal when the close button is clicked
-        document.querySelector('.close-button5').onclick = () => {
-            modal.style.display = 'none';
-        };
-
-        // Close the modal if clicked outside the content area
-        window.onclick = (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-    };
 
     return button;
 }
