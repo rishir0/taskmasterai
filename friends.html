@@ -2977,21 +2977,27 @@ if (friend.online) {
                                             viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
                                         });
 
-                                        viewFriendInfoButton.onclick = () => {
-                                            const modal = document.getElementById('viewFriendModal');
-                                            modal.style.display = 'block';
-                                            document.getElementById('friendDisplayName').textContent = friendDisplayName;
-                                            document.getElementById('friendEmail').textContent = friendEmail;
-                                            document.getElementById('editFriendName').value = friendDisplayName;
+viewFriendInfoButton.onclick = () => {
+    const modal = document.getElementById('viewFriendModal');
+    modal.style.display = 'block';
 
-                                            document.getElementById('saveFriendName').onclick = () => {
-                                                const newFriendName = document.getElementById('editFriendName').value;
-                                                if (newFriendName !== friendDisplayName) {
-                                                    saveFriendDisplayName(friendEmail, newFriendName);
-                                                }
-                                                modal.style.display = 'none';
-                                            };
-                                        };
+    // Set friend information inside the modal
+    document.getElementById('friendDisplayName').textContent = friendDisplayName;
+    document.getElementById('friendEmail').textContent = friendEmail;
+
+    // Close the modal when the close button is clicked
+    document.querySelector('.close-button5').onclick = () => {
+        modal.style.display = 'none';
+    };
+
+    // Close the modal if clicked outside the content area
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+};
+
                                         
                                         // Create the 'Pinned Friends' button
 const pinnedFriendsButton = document.createElement('button');
