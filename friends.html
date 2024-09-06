@@ -2973,9 +2973,14 @@ if (friend.online) {
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
 
-                                        // Create the 'View Friend Info' button
-                                        const viewFriendInfoButton = document.createElement('button');
-                                        viewFriendInfoButton.innerHTML = `
+
+// Button container
+const buttonContainer = document.createElement('div');
+buttonContainer.classList.add('buttons');
+
+// View Members button with SVG in a smaller circle
+const viewMembersButton = document.createElement('button');
+viewMembersButton.innerHTML = `
                                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -2996,29 +3001,30 @@ if (friend.online) {
                                             </svg>
                                         `;
 
-                                        viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
-                                        viewFriendInfoButton.style.border = 'none';
-                                        viewFriendInfoButton.style.borderRadius = '50%';
-                                        viewFriendInfoButton.style.marginLeft = '8px';
-                                        viewFriendInfoButton.style.marginRight = '0';
-                                        viewFriendInfoButton.style.padding = '6px';
-                                        viewFriendInfoButton.style.cursor = 'pointer';
-                                        viewFriendInfoButton.style.display = 'flex';
-                                        viewFriendInfoButton.style.alignItems = 'center';
-                                        viewFriendInfoButton.style.justifyContent = 'center';
+// Apply circular style and smaller size
+viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Replace with your accent color variable or hex code
+viewMembersButton.style.border = 'none';
+viewMembersButton.style.borderRadius = '50%';
+viewMembersButton.style.padding = '6px'; // Reduced padding for a smaller circle
+viewMembersButton.style.cursor = 'pointer';
+viewMembersButton.style.display = 'flex';
+viewMembersButton.style.alignItems = 'center';
+viewMembersButton.style.justifyContent = 'center';
 
-                                        viewFriendInfoButton.addEventListener('mouseover', () => {
-                                            viewFriendInfoButton.style.backgroundColor = '#3b7bce';
-                                        });
+// Hover effect to change color
+viewMembersButton.addEventListener('mouseover', () => {
+    viewMembersButton.style.backgroundColor = '#3b7bce';
+});
 
-                                        viewFriendInfoButton.addEventListener('mouseout', () => {
-                                            viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
-                                        });
+viewMembersButton.addEventListener('mouseout', () => {
+    viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Reset to the original color
+});
 
-                                        viewFriendInfoButton.onclick = () => {
-                                                openViewMembersModal(doc.id);
-                                            };
-                                        };
+viewMembersButton.onclick = () => {
+    openViewMembersModal(doc.id);
+};
+buttonContainer.appendChild(viewMembersButton);
+
                                         
                                         // Create the 'Pinned Friends' button
 const pinnedFriendsButton = document.createElement('button');
@@ -3103,6 +3109,7 @@ pinnedFriendsButton.onclick = () => {
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
+                                        groupItem.appendChild(buttonContainer);
                                         listItem.appendChild(statusIcon);
                                         listItem.appendChild(friendName);
                                         listItem.appendChild(pinnedFriendsButton);
