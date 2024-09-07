@@ -1608,17 +1608,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function loadProfilePicture() {
+function loadSmallProfilePicture() {
     const currentUser = firebase.auth().currentUser;
-    const profilePreview = document.querySelector('.user-avatar');
-    const loadingIndicator = document.getElementById('loadingIndicator');
+    const userAvatar = document.querySelector('.user-avatar');
 
     if (currentUser) {
         const uid = currentUser.uid;
         const userDocRef = firestore.collection('users').doc(uid);
-
-        // Optionally show the loading indicator if needed
-        loadingIndicator.style.display = 'block';
 
         userDocRef.get().then(doc => {
             if (doc.exists) {
@@ -1626,27 +1622,19 @@ function loadProfilePicture() {
                 const profilePictureUrl = data.profilePicture;
 
                 if (profilePictureUrl) {
-                    // Remove the default SVG and load the profile picture
-                    profilePreview.innerHTML = '';  // Clear the current content
-
-                    const img = document.createElement('img');
-                    img.src = profilePictureUrl;
-                    img.classList.add('profile-picture');
-                    img.alt = 'Profile Picture';
-
-                    profilePreview.appendChild(img);
+                    // Set the profile picture URL for the small avatar
+                    userAvatar.style.backgroundImage = `url(${profilePictureUrl})`;
+                    userAvatar.style.backgroundColor = 'transparent'; // Remove the initial color
                 } else {
-                    // If no profile picture exists, you can show a default icon or message
-                    console.log("No profile picture set for user.");
+                    // Set the initial background color if no profile picture exists
+                    userAvatar.style.backgroundImage = 'none';
+                    userAvatar.style.backgroundColor = 'var(--accent-color)';
                 }
             } else {
                 console.error("No user document found.");
             }
         }).catch(error => {
-            console.error("Error loading profile picture: ", error);
-        }).finally(() => {
-            // Hide the loading indicator
-            loadingIndicator.style.display = 'none';
+            console.error("Error loading small profile picture: ", error);
         });
     } else {
         console.error("User is not authenticated.");
@@ -1657,10 +1645,11 @@ function loadProfilePicture() {
 document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            loadProfilePicture();
+            loadSmallProfilePicture();
         }
     });
 });
+
 
 </script>
 
