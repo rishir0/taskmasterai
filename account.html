@@ -787,23 +787,23 @@ scrollbar-thumb {
     padding: 10px 20px;
     border: none;
     border-radius: 20px; /* More circular shape */
-    background-color: var(--accent-color); /* Replace with your desired button color */
+    background-color: var(--accent-color); /* Initial color for buttons */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.done-button:hover,
-.cancel-button:hover {
-    background-color: var(--primary-color); /* Hover color as primary color */
+.done-button:hover {
+    background-color: var(--primary-color); /* Hover color for Done button */
 }
 
 .cancel-button {
-    background-color: #ccc; /* Different color for Cancel button, can adjust */
+    background-color: var(--accent-color); /* Initial color for Cancel button */
 }
 
-
-
+.cancel-button:hover {
+    background-color: var(--danger-hover-color, #c9302c); /* Custom hover color for Cancel button */
+}
 
     </style>
 </head>
