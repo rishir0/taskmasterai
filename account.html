@@ -455,6 +455,11 @@ body.night-mode {
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
     text-transform: uppercase; /* Optional: makes the text uppercase */
+    margin-top: 20px; /* Adjust this value to control vertical positioning */
+}
+
+.loading-indicator svg {
+    fill: #fff; /* White color for the SVG */
 }
 
 
@@ -1049,7 +1054,18 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
       <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
-      <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
+      <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+    <!-- SVG for loading indicator -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" style="width: 20px; height: 20px; margin-right: 10px;">
+        <g>
+            <path d="M28,17.076V2.989C28,1.338,26.661,0,25.011,0H2.989C1.338,0,0,1.338,0,2.989v22.021C0,26.662,1.338,28,2.989,28h14.087c1.385,2.389,3.963,4,6.923,4C28.417,32,32,28.417,32,23.997C32,21.038,30.389,18.46,28,17.076z M4.686,18.783C4.764,18.984,4.959,19,5.175,19h12.58c-0.482,0.602-0.879,1.274-1.173,2H3.962C3.431,21,3,20.569,3,20.038V3.962C3,3.431,3.431,3,3.962,3h20.076C24.569,3,25,3.431,25,3.962v12.104c-0.328-0.041-0.661-0.069-1.001-0.069c-0.673,0-1.323,0.092-1.947,0.249l-4.435-6.618c-0.308-0.49-0.809-0.461-1.115,0.029l-2.859,4.575c-0.308,0.489-0.894,0.556-1.303,0.147l-0.853-0.853c-0.409-0.41-1.079-0.41-1.488,0l-5.181,4.797C4.659,18.471,4.606,18.582,4.686,18.783z M23.999,29c-2.759,0-5.003-2.244-5.003-5.003c0-2.758,2.244-5.001,5.003-5.001c2.758,0,5.001,2.243,5.001,5.001C29,26.756,26.757,29,23.999,29z"/>
+            <circle cx="8" cy="8" r="3"/>
+            <path d="M24.468,21.279c-0.251-0.386-0.657-0.385-0.902,0.004l-2.414,4.01C20.905,25.679,21.08,26,21.539,26H23v1.406C23,27.734,23.266,28,23.594,28h0.813C24.734,28,25,27.734,25,27.406V26h1.54c0.46,0,0.63-0.324,0.377-0.711L24.468,21.279z"/>
+        </g>
+    </svg>
+    <!-- Text for loading indicator -->
+    Uploading...
+</div>
     </div>
 <div class="form-group">
     <label for="name">
