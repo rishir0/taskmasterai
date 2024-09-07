@@ -445,31 +445,18 @@ body.night-mode {
 /* Loading Indicator Styles */
 .loading-indicator {
     font-size: 16px;
-    color: var(--accent-color, #009bf5);
-    margin-top: 10px;
+    color: #fff;
+    background-color: var(--accent-color, #009bf5);
+    padding: 10px 20px;
+    border-radius: 50px; /* Makes the button circular */
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: bold;
+    text-transform: uppercase; /* Optional: makes the text uppercase */
 }
 
-.loading-indicator::before {
-    content: "";
-    width: 24px;
-    height: 24px;
-    border: 4px solid var(--accent-color, #009bf5);
-    border-top-color: transparent;
-    border-radius: 50%;
-    margin-right: 12px;
-    animation: spin 1s linear infinite;
-}
-
-/* Spin Animation */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 
 
 
