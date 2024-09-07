@@ -1218,9 +1218,11 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     </div>
     <div class="modal-footer">
       <button id="cropImageBtn" class="done-button">Done</button>
+      <button id="cancelCropBtn" class="done-button">Cancel</button>
     </div>
   </div>
 </div>
+
 
                                     
     </script>
@@ -1545,6 +1547,12 @@ cropImageBtn.addEventListener('click', function() {
         width: 300,
         height: 300
     });
+
+// Close the modal when the Cancel button is clicked
+document.getElementById('cancelCropBtn').addEventListener('click', function() {
+    document.getElementById('cropModal').style.display = 'none';
+});
+
 
     // Show loading indicator
     loadingIndicator.style.display = 'block';
