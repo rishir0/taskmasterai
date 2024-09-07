@@ -745,8 +745,9 @@ scrollbar-thumb {
     height: 100%;
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
+    z-index: 1000; /* Ensure the modal is above other content */
 }
 
 /* Modal content */
@@ -757,6 +758,8 @@ scrollbar-thumb {
     width: 400px;
     max-width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
 }
 
 /* Modal body image */
@@ -770,6 +773,13 @@ scrollbar-thumb {
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+/* Modal footer styling */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
+    margin-top: 20px; /* Space above the button */
 }
 
 /* Done button styling */
@@ -1206,7 +1216,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
       <img id="imageToCrop" src="" alt="Image to Crop" />
     </div>
     <div class="modal-footer">
-    <button id="cropImageBtn" class="done-button">Done</button>
+      <button id="cropImageBtn">Done</button>
     </div>
   </div>
 </div>
@@ -1633,6 +1643,54 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+function loadSmallProfilePicture() {
+    const currentUser = firebase.auth().currentUser;
+    const avatarContainer = document.getElementById('smallProfilePictureContainer');
+    const defaultAvatar = document.getElementById('defaultAvatar');
+
+    if (currentUser) {
+        const uid = currentUser.uid;
+        const userDocRef = firestore.collection('users').doc(uid);
+
+        userDocRef.get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                const profilePictureUrl = data.profilePicture;
+
+                if (profilePictureUrl) {
+                    // Create and append the new profile picture
+                    const img = document.createElement('img');
+                    img.src = profilePictureUrl;
+                    img.alt = 'Profile Picture';
+                    img.style.width = '40px'; // Ensure the image has the same size as the SVG
+                    img.style.height = '40px';
+                    img.style.borderRadius = '50%';
+
+                    // Replace the SVG with the new image
+                    avatarContainer.innerHTML = '';  // Clear the current content
+                    avatarContainer.appendChild(img);
+                } else {
+                    console.log("No profile picture set for user.");
+                }
+            } else {
+                console.error("No user document found.");
+            }
+        }).catch(error => {
+            console.error("Error loading profile picture: ", error);
+        });
+    } else {
+        console.error("User is not authenticated.");
+    }
+}
+
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            loadSmallProfilePicture();
+        }
+    });
+});
 
 
 
