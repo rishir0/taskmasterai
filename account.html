@@ -766,7 +766,9 @@ scrollbar-thumb {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    object-fit: cover;
 }
+
 
     </style>
 </head>
@@ -1041,32 +1043,32 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
             </div>
         </div>
 <div class="main-content">
-<div class="settings-header">
+  <div class="settings-header">
     <h1>Account Settings</h1>
-</div>
-<div class="settings-form">
+  </div>
+  <div class="settings-form">
     <div class="form-group profile-picture-group">
-        <div class="profile-preview" id="profilePreview">
-            <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z"/>
-            </svg>
-        </div>
-        <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-        <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
-        <span class="unavailable-tag">
+      <div class="profile-preview" id="profilePreview">
+        <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" />
+        </svg>
+      </div>
+      <input type="file" id="profilePicture" accept="image/*" style="display: none;">
+      <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
+      <span class="unavailable-tag">
         UNAVAILABLE
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="unavailable-icon">
-            <g clip-path="url(#clip0_429_11057)">
-                <path d="M5.63604 5.63598C4.00736 7.26466 3 9.51466 3 11.9999C3 16.9705 7.02944 20.9999 12 20.9999C14.4853 20.9999 16.7353 19.9926 18.364 18.3639M5.63604 5.63598C7.26472 4.0073 9.51472 2.99994 12 2.99994C16.9706 2.99994 21 7.02938 21 11.9999C21 14.4852 19.9926 16.7352 18.364 18.3639M5.63604 5.63598L18.364 18.3639" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </g>
-            <defs>
-                <clipPath id="clip0_429_11057">
-                    <rect width="24" height="24" fill="white"></rect>
-                </clipPath>
-            </defs>
+          <g clip-path="url(#clip0_429_11057)">
+            <path d="M5.63604 5.63598C4.00736 7.26466 3 9.51466 3 11.9999C3 16.9705 7.02944 20.9999 12 20.9999C14.4853 20.9999 16.7353 19.9926 18.364 18.3639M5.63604 5.63598C7.26472 4.0073 9.51472 2.99994 12 2.99994C16.9706 2.99994 21 7.02938 21 11.9999C21 14.4852 19.9926 16.7352 18.364 18.3639M5.63604 5.63598L18.364 18.3639" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </g>
+          <defs>
+            <clipPath id="clip0_429_11057">
+              <rect width="24" height="24" fill="white"></rect>
+            </clipPath>
+          </defs>
         </svg>
-    </span>
-        <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
+      </span>
+      <div id="loadingIndicator" class="loading-indicator" style="display: none;">Uploading...</div>
     </div>
 <div class="form-group">
     <label for="name">
@@ -1170,7 +1172,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
 
 
 
-<!-- Modal for Cropping -->
+<!-- Modal for cropping -->
 <div id="cropModal" class="modal" style="display: none;">
   <div class="modal-content">
     <div class="modal-header">
@@ -1482,18 +1484,18 @@ const profilePreview = document.getElementById('profilePreview');
 const defaultProfileIcon = document.getElementById('defaultProfileIcon');
 const cropImageBtn = document.getElementById('cropImageBtn');
 
-// Open file input when "Edit Profile Picture" button is clicked
+// Trigger file input when Edit button is clicked
 profileInput.addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            imageToCrop.src = e.target.result;
+            imageToCrop.src = e.target.result; // Load image into cropping modal
             cropModal.style.display = 'block';  // Show cropping modal
-            
-            // Initialize cropper after image is loaded
+
+            // Initialize cropper once image is loaded
             cropper = new Cropper(imageToCrop, {
-                aspectRatio: 1,  // Make sure it's a square
+                aspectRatio: 1,  // Square aspect ratio
                 viewMode: 1
             });
         };
@@ -1511,15 +1513,19 @@ cropImageBtn.addEventListener('click', function() {
     // Convert canvas to data URL and set it as the new profile picture
     canvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
-        profilePreview.innerHTML = ''; // Clear the current content
+        profilePreview.innerHTML = '';  // Clear the current content
+
         const img = document.createElement('img');
         img.src = url;
         img.classList.add('profile-picture');
-        profilePreview.appendChild(img);
+        img.alt = 'Profile Picture';
+
+        profilePreview.appendChild(img);  // Add the new image to the profile preview
     });
 
     cropModal.style.display = 'none';  // Hide cropping modal
 });
+
 
 </script>
 
