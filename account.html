@@ -745,9 +745,8 @@ scrollbar-thumb {
     height: 100%;
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center;    /* Center vertically */
-    z-index: 1000; /* Ensure the modal is above other content */
+    justify-content: center;
+    align-items: center;
 }
 
 /* Modal content */
@@ -759,7 +758,8 @@ scrollbar-thumb {
     max-width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
     display: flex;
-    flex-direction: column; /* Stack content vertically */
+    flex-direction: column; /* Ensure the content is aligned in a column */
+    align-items: center; /* Center items horizontally */
 }
 
 /* Modal body image */
@@ -775,28 +775,21 @@ scrollbar-thumb {
     object-fit: cover;
 }
 
-/* Modal footer styling */
-.modal-footer {
-    display: flex;
-    justify-content: flex-end; /* Align button to the right */
-    margin-top: 20px; /* Space above the button */
-}
-
 /* Done button styling */
-.done-button {
-    background-color: var(--accent-color); /* Accent color */
-    color: white; /* Text color */
+.modal-footer button {
+    background: var(--accent-color); /* Accent color for the button background */
+    color: white; /* White text color */
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 50%; /* Make the button circular */
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    font-family: Poppins, sans-serif; /* Ensure font is consistent */
+    font-size: 16px; /* Adjust font size as needed */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
-/* Done button hover effect */
-.done-button:hover {
-    background-color: darken(var(--accent-color), 10%); /* Slightly darker color on hover */
+.modal-footer button:hover {
+    background: var(--primary-color); /* Primary color on hover */
 }
 
 
@@ -1216,7 +1209,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
       <img id="imageToCrop" src="" alt="Image to Crop" />
     </div>
     <div class="modal-footer">
-      <button id="cropImageBtn" class="done-button">Done</button>
+      <button id="cropImageBtn" class="modal-footer">Done</button>
     </div>
   </div>
 </div>
