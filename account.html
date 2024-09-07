@@ -394,6 +394,7 @@ body.night-mode {
     font-size: 1rem;
     transition: background-color 0.3s ease;
     display: inline-block; /* Ensures the button is inline */
+    gap: 8px; /* Space between the icon and text */
 }
 
 .edit-profile-picture-btn:hover {
@@ -805,16 +806,10 @@ scrollbar-thumb {
     background-color: var(--danger-hover-color, #c9302c); /* Custom hover color for Cancel button */
 }
 
-.edit-profile-container {
-    display: flex;
-    align-items: center;
-}
-
 .edit-icon {
-    width: 16px; /* Match text size */
+    width: 16px; /* Adjust to match text size */
     height: 16px;
-    margin-right: 8px;
-    fill: white; /* Set color to white */
+    fill: white; /* SVG icon color */
 }
 
 .edit-icon svg {
@@ -1112,7 +1107,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </svg>
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-<div class="edit-profile-container">
+<button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">
     <span class="edit-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
             <g>
@@ -1122,8 +1117,8 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
             </g>
         </svg>
     </span>
-    <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
-</div>
+    Edit Profile Picture
+</button>
       <div id="loadingIndicator" class="loading-indicator" style="display: none;">
     <!-- SVG for loading indicator -->
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" style="width: 20px; height: 20px; margin-right: 10px;">
