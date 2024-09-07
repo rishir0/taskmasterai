@@ -572,13 +572,14 @@ body.night-mode {
 }
 
 .subscription-tag {
-    background-color: #6C63FF);
-    color: var(--text-color, #fff);
+    background-color: #6C63FF; /* Fixed the background color */
+    color: var(--text-color, #fff); /* Ensure text color is white if --text-color is not defined */
     padding: 3px 8px;
     border-radius: 5px;
     font-size: 0.75rem; /* Smaller font size */
     margin-left: 10px;
 }
+
 
 .subscription-info {
     display: flex;
