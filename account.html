@@ -794,7 +794,7 @@ scrollbar-thumb {
 }
 
 .done-button:hover {
-    background-color: var(--primary-color); /* Hover color for Done button */
+    background-color: #2980b9; /* Add a hover effect */
 }
 
 .cancel-button {
@@ -803,6 +803,33 @@ scrollbar-thumb {
 
 .cancel-button:hover {
     background-color: var(--danger-hover-color, #c9302c); /* Custom hover color for Cancel button */
+}
+
+.edit-profile-container {
+    display: flex;
+    align-items: center;
+}
+
+.edit-icon {
+    width: 16px; /* Match text size */
+    height: 16px;
+    margin-right: 8px;
+    fill: white; /* Set color to white */
+}
+
+.edit-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor; /* Use current text color */
+}
+
+.edit-profile-picture-btn {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 16px;
 }
 
     </style>
@@ -1094,7 +1121,17 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </svg>
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-      <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
+      <div class="edit-profile-container">
+    <span class="edit-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <g>
+                <path d="M28,87h13.24c1.66,0,3-1.34,3-3s-1.34-3-3-3H28c-4.96,0-9-4.04-9-9V59.85l7.48-9.38c1.16-1.45,2.89-2.31,4.74-2.37c1.85-0.06,3.63,0.71,4.87,2.1l11.67,13.04c0.59,0.66,1.41,1,2.24,1c0.71,0,1.43-0.25,2-0.76c1.23-1.1,1.34-3,0.24-4.24L40.57,46.2c-2.42-2.7-5.89-4.18-9.51-4.09c-3.63,0.1-7,1.79-9.26,4.62l-2.8,3.5V28c0-4.96,4.04-9,9-9h44c4.96,0,9,4.04,9,9v5.25c0,1.66,1.34,3,3,3s3-1.34,3-3V28c0-8.27-6.73-15-15-15H28c-8.27,0-15,6.73-15,15v44C13,80.27,19.73,87,28,87z"/>
+                <path d="M46,36c0,6.07,4.93,11,11,11s11-4.93,11-11s-4.93-11-11-11S46,29.93,46,36z M62,36c0,2.76-2.24,5-5,5s-5-2.24-5-5s2.24-5,5-5S62,33.24,62,36z"/>
+                <path d="M84.2,39.98c-1.17-1.17-3.07-1.17-4.24,0L49.32,70.62c-0.49,0.49-0.8,1.14-0.87,1.84l-1.18,12.49c-0.08,0.89,0.23,1.77,0.87,2.4c0.56,0.57,1.33,0.88,2.12,0.88c0.09,0,0.19,0,0.28-0.01l12.49-1.18c0.7-0.07,1.35-0.37,1.84-0.87l30.64-30.64c1.17-1.17,1.17-3.07,0-4.24L84.2,39.98z M61.4,81.17l-7.81,0.74l0.74-7.81l27.76-27.76l7.07,7.07L61.4,81.17z"/>
+            </g>
+        </svg>
+    </span>
+    <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">Edit Profile Picture</button>
       <div id="loadingIndicator" class="loading-indicator" style="display: none;">
     <!-- SVG for loading indicator -->
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" style="width: 20px; height: 20px; margin-right: 10px;">
