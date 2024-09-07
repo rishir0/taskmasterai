@@ -577,13 +577,14 @@ button:hover {
                   </svg>
                 Upgrade to Premium
             </button>
-            <div class="user-profile" onclick="window.location.href='account.html'">
-                <button class="account-button">
-                <div class="user-avatar">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
-                    </svg>
-                </div>
+<div class="user-profile" onclick="window.location.href='account.html'">
+    <button class="account-button">
+        <div class="user-avatar" id="smallProfilePictureContainer">
+            <!-- SVG will be replaced with the profile picture -->
+            <svg id="defaultAvatar" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
+            </svg>
+        </div>
                 <div id="username">User Name</div>
                 <div class="menu-dots">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -639,6 +640,7 @@ button:hover {
 
         // Initialize Firestore
         const db = firebase.firestore();
+        const firestore = firebase.firestore();
 
         document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
@@ -928,6 +930,58 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('toggleNightMode').addEventListener('click', toggleNightMode);
 </script>
 
+<script>
+function loadSmallProfilePicture() {
+    const currentUser = firebase.auth().currentUser;
+    const avatarContainer = document.getElementById('smallProfilePictureContainer');
+    const defaultAvatar = document.getElementById('defaultAvatar');
+
+    if (currentUser) {
+        const uid = currentUser.uid;
+        const userDocRef = firestore.collection('users').doc(uid);
+
+        userDocRef.get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                const profilePictureUrl = data.profilePicture;
+
+                if (profilePictureUrl) {
+                    // Create and append the new profile picture
+                    const img = document.createElement('img');
+                    img.src = profilePictureUrl;
+                    img.alt = 'Profile Picture';
+                    img.style.width = '40px'; // Ensure the image has the same size as the SVG
+                    img.style.height = '40px';
+                    img.style.borderRadius = '50%';
+
+                    // Replace the SVG with the new image
+                    avatarContainer.innerHTML = '';  // Clear the current content
+                    avatarContainer.appendChild(img);
+                } else {
+                    console.log("No profile picture set for user.");
+                }
+            } else {
+                console.error("No user document found.");
+            }
+        }).catch(error => {
+            console.error("Error loading profile picture: ", error);
+        });
+    } else {
+        console.error("User is not authenticated.");
+    }
+}
+
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            loadSmallProfilePicture();
+        }
+    });
+});
+
+</script>
+    
 <script>
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
