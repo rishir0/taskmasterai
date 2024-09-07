@@ -799,6 +799,86 @@ scrollbar-thumb {
 
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const auth = firebase.auth();
+
+// Cropper and Image Upload Logic
+let cropper;
+const profileInput = document.getElementById('profilePicture');
+const cropModal = document.getElementById('cropModal');
+const imageToCrop = document.getElementById('imageToCrop');
+const profilePreview = document.getElementById('profilePreview');
+const cropImageBtn = document.getElementById('cropImageBtn');
+const loadingIndicator = document.getElementById('loadingIndicator');
+
+// Trigger file input when Edit button is clicked
+profileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imageToCrop.src = e.target.result;  // Load image into cropping modal
+            cropModal.style.display = 'block';  // Show cropping modal
+
+            // Initialize cropper once image is loaded
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: 1,  // Square aspect ratio
+                viewMode: 1
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// When the user clicks "Done", replace the default SVG with the cropped image and save to Firestore
+cropImageBtn.addEventListener('click', function() {
+    const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300
+    });
+
+    // Show loading indicator
+    loadingIndicator.style.display = 'block';
+
+    // Convert canvas to blob and upload it to Firebase Storage
+    canvas.toBlob(function(blob) {
+        const currentUser = firebase.auth().currentUser;
+        if (currentUser) {
+            const uid = currentUser.uid;
+            const storageRef = storage.ref(`profile_pictures/${uid}.png`);
+
+            // Upload the cropped image to Firebase Storage
+            storageRef.put(blob).then(snapshot => {
+                return snapshot.ref.getDownloadURL();  // Get the file's download URL
+            }).then(downloadURL => {
+                // Update the user's Firestore document with the new profile picture URL
+                return firestore.collection('users').doc(uid).set({
+                    profilePicture: downloadURL
+                }, { merge: true });
+            }).then(() => {
+                // Replace the default SVG with the uploaded image
+                profilePreview.innerHTML = '';  // Clear the current content
+
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                img.classList.add('profile-picture');
+                img.alt = 'Profile Picture';
+
+                profilePreview.appendChild(img);
+
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                // Hide the cropping modal
+                cropModal.style.display = 'none';
+            }).catch(error => {
+                console.error("Error uploading profile picture: ", error);
+                loadingIndicator.style.display = 'none';
+            });
+        } else {
+            console.error("User is not authenticated.");
+        }
+    });
+});
 
 function updateAccount() {
     const user = firebase.auth().currentUser;
@@ -1475,59 +1555,6 @@ body {
     });
 </script>
 
-<script>
-let cropper;
-const profileInput = document.getElementById('profilePicture');
-const cropModal = document.getElementById('cropModal');
-const imageToCrop = document.getElementById('imageToCrop');
-const profilePreview = document.getElementById('profilePreview');
-const defaultProfileIcon = document.getElementById('defaultProfileIcon');
-const cropImageBtn = document.getElementById('cropImageBtn');
-
-// Trigger file input when Edit button is clicked
-profileInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            imageToCrop.src = e.target.result; // Load image into cropping modal
-            cropModal.style.display = 'block';  // Show cropping modal
-
-            // Initialize cropper once image is loaded
-            cropper = new Cropper(imageToCrop, {
-                aspectRatio: 1,  // Square aspect ratio
-                viewMode: 1
-            });
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// When the user clicks "Done", replace the default SVG with the cropped image
-cropImageBtn.addEventListener('click', function() {
-    const canvas = cropper.getCroppedCanvas({
-        width: 300,
-        height: 300
-    });
-
-    // Convert canvas to data URL and set it as the new profile picture
-    canvas.toBlob(function(blob) {
-        const url = URL.createObjectURL(blob);
-        profilePreview.innerHTML = '';  // Clear the current content
-
-        const img = document.createElement('img');
-        img.src = url;
-        img.classList.add('profile-picture');
-        img.alt = 'Profile Picture';
-
-        profilePreview.appendChild(img);  // Add the new image to the profile preview
-    });
-
-    cropModal.style.display = 'none';  // Hide cropping modal
-});
-
-
-</script>
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
