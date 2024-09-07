@@ -393,9 +393,23 @@ body.night-mode {
     border: none;
     font-size: 1rem;
     transition: background-color 0.3s ease;
-    display: inline-block; /* Ensures the button is inline */
+    display: inline-flex; /* Align icon and text inline */
+    align-items: center; /* Vertically centers the icon and text */
     gap: 8px; /* Space between the icon and text */
 }
+
+.edit-icon {
+    width: 1rem; /* Adjust to match the font size */
+    height: 1rem;
+    fill: currentColor; /* Inherits the button's text color */
+}
+
+.edit-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor; /* Use current text color */
+}
+
 
 .edit-profile-picture-btn:hover {
     background-color: var(--accent-color, #009bf5);
@@ -806,17 +820,6 @@ scrollbar-thumb {
     background-color: var(--danger-hover-color, #c9302c); /* Custom hover color for Cancel button */
 }
 
-.edit-icon {
-    width: 16px; /* Adjust to match text size */
-    height: 16px;
-    fill: white; /* SVG icon color */
-}
-
-.edit-icon svg {
-    width: 100%;
-    height: 100%;
-    fill: currentColor; /* Use current text color */
-}
 
     </style>
 </head>
