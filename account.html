@@ -1555,6 +1555,60 @@ cropImageBtn.addEventListener('click', function() {
     });
 });
 
+function loadProfilePicture() {
+    const currentUser = firebase.auth().currentUser;
+    const profilePreview = document.getElementById('profilePreview');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+
+    if (currentUser) {
+        const uid = currentUser.uid;
+        const userDocRef = firestore.collection('users').doc(uid);
+
+        // Show loading indicator while fetching the profile picture
+        loadingIndicator.style.display = 'block';
+
+        userDocRef.get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                const profilePictureUrl = data.profilePicture;
+
+                if (profilePictureUrl) {
+                    // Remove the default SVG and load the profile picture
+                    profilePreview.innerHTML = '';  // Clear the current content
+
+                    const img = document.createElement('img');
+                    img.src = profilePictureUrl;
+                    img.classList.add('profile-picture');
+                    img.alt = 'Profile Picture';
+
+                    profilePreview.appendChild(img);
+                } else {
+                    // If no profile picture exists, you can show a default icon or message
+                    console.log("No profile picture set for user.");
+                }
+            } else {
+                console.error("No user document found.");
+            }
+        }).catch(error => {
+            console.error("Error loading profile picture: ", error);
+        }).finally(() => {
+            // Hide loading indicator once the image is loaded or failed
+            loadingIndicator.style.display = 'none';
+        });
+    } else {
+        console.error("User is not authenticated.");
+    }
+}
+
+// Call the function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            loadProfilePicture();
+        }
+    });
+});
+
 </script>
 
     <script>
