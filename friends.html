@@ -3188,6 +3188,11 @@ function loadPinnedFriends() {
                                     const listItem = document.createElement('li');
                                     listItem.classList.add('friend-item');
 
+                                    // Create user avatar container
+                                    const avatarContainer = document.createElement('div');
+                                    avatarContainer.classList.add('user-avatar');
+                                    loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
+
                                     // Create a span for the friend's name
                                     const friendName = document.createElement('span');
                                     friendName.textContent = friendDisplayName;
