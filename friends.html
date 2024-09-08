@@ -266,20 +266,19 @@ body.night-mode {
 
 #onlineFriends li {
     background: var(--glass-bg);
-    padding: 15px;
+    padding: 10px;
     margin-bottom: 10px;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: background 0.3s;
     display: flex;
-    flex-direction: column; /* Arrange elements vertically */
-    align-items: center; /* Align items to center */
+    justify-content: space-between; /* Ensure the friend name and unfriend button are spaced out */
+    align-items: center; /* Align items in the center vertically */
 }
 
 #onlineFriends li:hover {
     background: var(--hover-bg);
 }
-
 
 #pinnedFriends {
     list-style: none;
@@ -2953,6 +2952,11 @@ function loadOnlineFriends() {
                 const listItem = document.createElement('li');
                 listItem.classList.add('friend-item');
 
+                // Create user avatar container
+                const avatarContainer = document.createElement('div');
+                avatarContainer.classList.add('user-avatar');
+                loadSmallProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
+
                 // Create or update a span for the friend's name
                 const friendName = document.createElement('span');
                 friendName.textContent = friendDisplayName;
@@ -3117,6 +3121,7 @@ pinnedFriendsButton.onclick = () => {
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
+                                        listItem.appendChild(avatarContainer);
                                         listItem.appendChild(statusIcon);
                                         listItem.appendChild(friendName);
                                         listItem.appendChild(pinnedFriendsButton);
