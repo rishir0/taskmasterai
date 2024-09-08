@@ -2717,7 +2717,7 @@ function clearRecentEmojis() {
             emojis: [] // Assuming 'emojis' is the field storing recent emojis
         })
         .then(() => {
-            console.log('Recent emojis cleared successfully.');
+            
             
             // Clear the emojis from the UI
             var recentEmojisContainer = document.getElementById('recentEmojis');
@@ -2743,7 +2743,7 @@ function clearRecentEmojis() {
                     online: isOnline,
                     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true }).then(() => {
-                    console.log(`User online status updated to ${isOnline}`);
+                    
                 }).catch((error) => {
                     console.error('Error updating online status:', error);
                 });
@@ -2809,7 +2809,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                console.log('Notification permission granted.');
+                
             } else {
                 console.log('Notification permission denied.');
             }
