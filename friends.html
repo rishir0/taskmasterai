@@ -2657,7 +2657,7 @@ initializeUserStatus();
 // Update status to offline when the page is unloaded
 window.addEventListener('beforeunload', () => {
     if (firebase.auth().currentUser) {
-        setUserOnlineStatus(true); // Set status to false when the user leaves
+        setUserOnlineStatus(false); // Set status to false when the user leaves
     }
 });
         
