@@ -1264,6 +1264,8 @@ body.night-mode {
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease-in-out;
+    /* Specific styles for hide button */
+    color: #ff0000; /* Example: Red color for hide button */
 }
 
 #hideButton svg {
@@ -1276,13 +1278,13 @@ body.night-mode {
 }
 
 #hideButton:active svg path {
-    stroke: #ffffff;
+    stroke: #ff0000; /* Example: Red color on active state */
 }
 
 #hideButton:hover {
     background-color: transparent;
 }
-
+        
 .message-options {
     display: flex;
     justify-content: space-around;
