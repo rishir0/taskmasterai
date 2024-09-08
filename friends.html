@@ -2574,6 +2574,41 @@ var recentEmojisContainer = document.getElementById("recentEmojis");
 let inactivityTimeout;
 let isUserOffline = false;
 
+
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // Update the UI with the user's display name
+            const username = user.displayName || user.email;
+            document.getElementById('username').textContent = username;
+            document.getElementById('displayName').textContent = username;
+
+            // Set Firestore online status to true and update last seen
+            db.collection('users').doc(user.uid).set({
+                online: true,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => {
+                console.log('User online status updated to true');
+            }).catch((error) => {
+                console.error('Error updating online status:', error);
+            });
+
+            // Keep the user online even when switching tabs
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    db.collection('users').doc(user.uid).set({
+                        online: true,
+                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).then(() => {
+                        console.log('User came back online');
+                    });
+                }
+            });
+
+        }
+    });
+});
+
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
@@ -2725,32 +2760,49 @@ function clearRecentEmojis() {
     }
 }
 
-            // Keep the user online even when switching tabs except for specific pages
-            document.addEventListener('visibilitychange', function() {
-                const excludedPages = [
-                    'https://www.taskmaster.one/account', 
-                    'https://www.taskmaster.one/notes', 
-                    'https://www.taskmaster.one/calendar', 
-                    'https://www.taskmaster.one/friends', 
-                    'https://www.taskmaster.one/dashboard', 
-                    'https://www.taskmaster.one/features', 
-                    'https://www.taskmaster.one/workschedule', 
-                    'https://www.taskmaster.one/metrics'
-                ];
+    
+        function updateOnlineStatus(isOnline) {
+            if (auth.currentUser) {
+                db.collection('users').doc(auth.currentUser.uid).set({
+                    online: isOnline,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).then(() => {
+                    console.log(`User online status updated to ${isOnline}`);
+                }).catch((error) => {
+                    console.error('Error updating online status:', error);
+                });
+            }
+        }
 
-                // Check if the current page URL is in the list of excluded pages
-                const currentPage = window.location.pathname.split('/').pop();
-                
-                if (document.visibilityState === 'visible' && !excludedPages.includes(currentPage)) {
-                    db.collection('users').doc(user.uid).set({
-                        online: true,
-                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true }).then(() => {
-                        console.log('User came back online');
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    // Update the UI with the user's display name
+                    const username = user.displayName || user.email;
+                    document.getElementById('username').textContent = username;
+                    document.getElementById('displayName').textContent = username;
+
+                    // Set Firestore online status to true when the user is authenticated
+                    updateOnlineStatus(true);
+
+                    // Handle the user going offline only when the tab is closed or navigated away
+                    window.addEventListener('beforeunload', function() {
+                        updateOnlineStatus(false);
                     });
+
+                    // Handle tab visibility change
+                    document.addEventListener('visibilitychange', function() {
+                        if (document.visibilityState === 'visible') {
+                            updateOnlineStatus(true);
+                        }
+                    });
+
+                } else {
+                    // No user is signed in, redirect to login page
+                    window.location.href = "login.html";
                 }
             });
-
+        });
 
             document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
@@ -4974,6 +5026,22 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
     });
+</script>
+
+<script>
+let isOnlineFriendsVisible = true;  // Keep track of the state (visible or hidden)
+
+document.getElementById('hideButton').addEventListener('click', function() {
+    if (isOnlineFriendsVisible) {
+        console.log("Hiding online friends...");
+        // Stop the function or prevent it from executing
+        isOnlineFriendsVisible = false;  // Set to hidden
+    } else {
+        console.log("Showing online friends...");
+        loadOnlineFriends();  // Call the function to show online friends again
+        isOnlineFriendsVisible = true;  // Set to visible
+    }
+});
 </script>
 
 </body>
