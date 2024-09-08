@@ -1264,13 +1264,12 @@ body.night-mode {
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease-in-out;
-    /* Specific styles for hide button */
-    color: #ff0000; /* Example: Red color for hide button */
+    color: #ff0000; /* Red color for hide button */
 }
 
 #hideButton svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;  /* Increase size */
+    height: 32px; /* Increase size */
 }
 
 #hideButton:active {
@@ -1278,12 +1277,13 @@ body.night-mode {
 }
 
 #hideButton:active svg path {
-    stroke: #ff0000; /* Example: Red color on active state */
+    stroke: #ff0000;
 }
 
 #hideButton:hover {
     background-color: transparent;
 }
+
         
 .message-options {
     display: flex;
@@ -1608,7 +1608,7 @@ body.night-mode {
         </svg>
     </button>
 <button id="hideButton">
-    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" preserveAspectRatio="xMidYMid meet">
         <g id="SVGRepo_iconCarrier">
             <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
         </g>
