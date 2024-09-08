@@ -2645,10 +2645,16 @@ function addEmoji(emoji) {
             if (doc.exists) {
                 userDocRef.update({
                     emojis: firebase.firestore.FieldValue.arrayUnion(emoji)
+                }).then(() => {
+                    // Update recent emojis in the UI
+                    loadRecentEmojis();
                 });
             } else {
                 userDocRef.set({
                     emojis: [emoji]
+                }).then(() => {
+                    // Update recent emojis in the UI
+                    loadRecentEmojis();
                 });
             }
         }).catch(function(error) {
@@ -2656,6 +2662,7 @@ function addEmoji(emoji) {
         });
     }
 }
+
 
 // Load recent emojis from Firestore
 function loadRecentEmojis() {
