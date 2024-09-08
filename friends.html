@@ -2633,8 +2633,8 @@ function updateUserStatusOnInteraction() {
     }
     clearTimeout(inactivityTimeout); // Clear previous timeout
     inactivityTimeout = setTimeout(() => {
-        setUserOnlineStatus(false); // Set status to false after 5 minutes of inactivity
-    }, 300000); // 5 minutes 
+        setUserOnlineStatus(false); // Set status to false after 2 minutes of inactivity
+    }, 120000); // 2 minutes 
 }
 
 // Bind the interaction function to all necessary events
@@ -2746,11 +2746,15 @@ function clearRecentEmojis() {
         })
         .then(() => {
             console.log('Recent emojis cleared successfully.');
-            // Also clear the emojis from the UI
+            
+            // Clear the emojis from the UI
             var recentEmojisContainer = document.getElementById('recentEmojis');
             if (recentEmojisContainer) {
                 recentEmojisContainer.innerHTML = ''; // Clears the recent emojis
             }
+            
+            // Call loadRecentEmojis to refresh the UI
+            loadRecentEmojis();
         })
         .catch((error) => {
             console.error('Error clearing recent emojis: ', error);
@@ -2919,9 +2923,15 @@ function acceptFriendRequest(requestId, senderEmail) {
             status: 'accepted'
         }).then(() => {
             console.log('Friend request accepted!');
+            
             // Add both users to accepted friends
             addToAcceptedFriends(userId, senderEmail);
+            
+            // Open a chat with the sender
             openChat(senderEmail);
+            
+            // Update the online friends list
+            loadOnlineFriends();
         }).catch((error) => {
             console.error('Error accepting friend request:', error);
         });
