@@ -415,6 +415,34 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
+.revert-profile-picture-btn {
+    background-color: #1E1E1E;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.revert-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: white; /* Ensure the SVG color is white */
+}
+
+.revert-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+}
+
+.revert-profile-picture-btn:hover {
+    background-color: #009bf5;
+}
+
+
 .unavailable-tag {
     background-color: var(--danger-hover-color, #c9302c);
     color: var(--text-color, #fff); /* Matches the button's text color */
@@ -1121,6 +1149,19 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
         </svg>
     </span>
     Edit Profile Picture
+</button>
+<button type="button" class="revert-profile-picture-btn">
+    <span class="revert-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <g>
+                <path d="M29,18c0,3.472-1.353,6.737-3.808,9.193C22.736,29.648,19.472,31,16,31c-3.473,0-6.737-1.353-9.192-3.808S3,21.472,3,18
+                c0-1.104,0.896-2,2-2s2,0.896,2,2c0,2.403,0.937,4.664,2.636,6.364C11.336,26.064,13.596,27,16,27c2.403,0,4.664-0.936,6.364-2.636
+                C24.063,22.664,25,20.404,25,18s-0.937-4.664-2.636-6.364C20.664,9.936,18.404,9,16,9h-2.172l1.586,1.586
+                c0.781,0.781,0.781,2.047,0,2.828s-2.047,0.781-2.828,0l-5-5c-0.781-0.781-0.781-2.047,0-2.828l5-5c0.781-0.781,2.047-0.781,2.828,0
+                s0.781,2.047,0,2.828L13.828,5H16c3.473,0,6.737,1.353,9.192,3.808C27.647,11.263,29,14.528,29,18z"/>
+            </g>
+        </svg>
+    </span>
 </button>
       <div id="loadingIndicator" class="loading-indicator" style="display: none;">
     <!-- SVG for loading indicator -->
