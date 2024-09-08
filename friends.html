@@ -4989,16 +4989,17 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
 </script>
 
 <script>
+let isOnlineFriendsVisible = true;  // Keep track of the state (visible or hidden)
+
 document.getElementById('hideButton').addEventListener('click', function() {
-    const onlineFriends = document.getElementById('loadOnlineFriends');
-    
-    if (onlineFriends) {
-        // Toggle the visibility of the loadOnlineFriends element
-        if (onlineFriends.style.display === 'none') {
-            onlineFriends.style.display = 'block';  // Show element
-        } else {
-            onlineFriends.style.display = 'none';  // Hide element
-        }
+    if (isOnlineFriendsVisible) {
+        console.log("Hiding online friends...");
+        // Stop the function or prevent it from executing
+        isOnlineFriendsVisible = false;  // Set to hidden
+    } else {
+        console.log("Showing online friends...");
+        loadOnlineFriends();  // Call the function to show online friends again
+        isOnlineFriendsVisible = true;  // Set to visible
     }
 });
 </script>
