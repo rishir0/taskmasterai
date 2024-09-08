@@ -1258,7 +1258,7 @@ body.night-mode {
     background-color: transparent;
     border: none;
     padding: 0;
-    margin-left: 2px; /* Reduced to make it closer */
+    margin-left: 1px; /* Reduced to make it closer */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -4988,6 +4988,20 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
     });
 </script>
 
+<script>
+document.getElementById('hideButton').addEventListener('click', function() {
+    const onlineFriends = document.getElementById('loadOnlineFriends');
+    
+    if (onlineFriends) {
+        // Toggle the visibility of the loadOnlineFriends element
+        if (onlineFriends.style.display === 'none') {
+            onlineFriends.style.display = 'block';  // Show element
+        } else {
+            onlineFriends.style.display = 'none';  // Hide element
+        }
+    }
+});
+</script>
 
 </body>
 </html>
