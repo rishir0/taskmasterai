@@ -1031,15 +1031,11 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
 function revertProfilePicture() {
     const user = firebase.auth().currentUser;
     const defaultProfileIcon = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <g>
-                <path d="M28,87h13.24c1.66,0,3-1.34,3-3s-1.34-3-3-3H28c-4.96,0-9-4.04-9-9V59.85l7.48-9.38c1.16-1.45,2.89-2.31,4.74-2.37c1.85-0.06,3.63,0.71,4.87,2.1l11.67,13.04c0.59,0.66,1.41,1,2.24,1c0.71,0,1.43-0.25,2-0.76c1.23-1.1,1.34-3,0.24-4.24L40.57,46.2c-2.42-2.7-5.89-4.18-9.51-4.09c-3.63,0.1-7,1.79-9.26,4.62l-2.8,3.5V28c0-4.96,4.04-9,9-9h44c4.96,0,9,4.04,9,9v5.25c0,1.66,1.34,3,3,3s3-1.34,3-3V28c0-8.27-6.73-15-15-15H28c-8.27,0-15,6.73-15,15v44C13,80.27,19.73,87,28,87z"/>
-                <path d="M46,36c0,6.07,4.93,11,11,11s11-4.93,11-11s-4.93-11-11-11S46,29.93,46,36z M62,36c0,2.76-2.24,5-5,5s-5-2.24-5-5s2.24-5,5-5S62,33.24,62,36z"/>
-                <path d="M84.2,39.98c-1.17-1.17-3.07-1.17-4.24,0L49.32,70.62c-0.49,0.49-0.8,1.14-0.87,1.84l-1.18,12.49c-0.08,0.89,0.23,1.77,0.87,2.4c0.56,0.57,1.33,0.88,2.12,0.88c0.09,0,0.19,0,0.28-0.01l12.49-1.18c0.7-0.07,1.35-0.37,1.84-0.87l30.64-30.64c1.17-1.17,1.17-3.07,0-4.24L84.2,39.98z M61.4,81.17l-7.81,0.74l0.74-7.81l27.76-27.76l7.07,7.07L61.4,81.17z"/>
-            </g>
+        <svg id="defaultProfileIcon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" />
         </svg>
     `;
-    
+
     if (user) {
         // Show loading indicator
         const loadingIndicator = document.getElementById('loadingIndicator');
@@ -1058,7 +1054,7 @@ function revertProfilePicture() {
 
                 // Update profile preview with default SVG
                 const profilePreview = document.getElementById('profilePreview');
-                profilePreview.innerHTML = defaultAvatarSVG;
+                profilePreview.innerHTML = defaultProfileIcon;
 
             })
             .catch(error => {
@@ -1076,6 +1072,7 @@ function revertProfilePicture() {
 
 // Event listener for the revert profile picture button
 document.querySelector('.revert-profile-picture-btn').addEventListener('click', revertProfilePicture);
+
 
     
 </script>
