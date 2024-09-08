@@ -2574,41 +2574,6 @@ var recentEmojisContainer = document.getElementById("recentEmojis");
 let inactivityTimeout;
 let isUserOffline = false;
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            // Update the UI with the user's display name
-            const username = user.displayName || user.email;
-            document.getElementById('username').textContent = username;
-            document.getElementById('displayName').textContent = username;
-
-            // Set Firestore online status to true and update last seen
-            db.collection('users').doc(user.uid).set({
-                online: true,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }).then(() => {
-                console.log('User online status updated to true');
-            }).catch((error) => {
-                console.error('Error updating online status:', error);
-            });
-
-            // Keep the user online even when switching tabs
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'visible') {
-                    db.collection('users').doc(user.uid).set({
-                        online: true,
-                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true }).then(() => {
-                        console.log('User came back online');
-                    });
-                }
-            });
-
-        }
-    });
-});
-
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
