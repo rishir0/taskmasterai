@@ -415,36 +415,36 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
-.revert-to-default-btn {
+.revert-profile-picture-btn {
     background-color: #1E1E1E;
-    color: var(--text-color, #fff);
-    padding: 8px;
-    border-radius: 50%; /* Makes the button circular */
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
     border: none;
-    font-size: 1rem;
     transition: background-color 0.3s ease;
     display: inline-flex;
-    justify-content: center;
     align-items: center;
-    margin-left: 10px; /* Space between the buttons */
+    margin-left: 8px; /* Space between the button and the tag */
+    vertical-align: middle; /* Aligns the tag vertically with the button */
+    margin-right: -280px;
+    margin-top: -29px;
 }
 
-.revert-to-default-btn .revert-icon {
+.revert-icon {
     width: 1.2rem;
     height: 1.2rem;
-    fill: currentColor; /* Ensures the SVG uses the button's text color */
+    margin-left: 4px; /* Space between text and icon */
+    fill: white; /* Ensure the SVG color is white */
 }
 
-.revert-to-default-btn svg {
+.revert-icon svg {
     width: 100%;
     height: 100%;
-    stroke: white; /* Sets the stroke color to white */
-    fill: none; /* Remove fill if needed */
+    fill: currentColor;
 }
 
-.revert-to-default-btn:hover {
-    background-color: var(--accent-color, #009bf5);
+.revert-profile-picture-btn:hover {
+    background-color: #009bf5;
 }
 
 
@@ -1157,7 +1157,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
 </button>
 <button type="button" class="revert-profile-picture-btn">
     <span class="revert-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#FFFFFF" stroke-width="2">
             <g>
                 <path d="M29,18c0,3.472-1.353,6.737-3.808,9.193C22.736,29.648,19.472,31,16,31c-3.473,0-6.737-1.353-9.192-3.808S3,21.472,3,18
                 c0-1.104,0.896-2,2-2s2,0.896,2,2c0,2.403,0.937,4.664,2.636,6.364C11.336,26.064,13.596,27,16,27c2.403,0,4.664-0.936,6.364-2.636
