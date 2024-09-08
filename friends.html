@@ -641,14 +641,37 @@ body.night-mode {
     height: 24px;
 }
 
+#deleteButton {
+    background-color: var(--primary-color); /* Matches the emoji dropdown and clear button */
+    border: none !important; /* Remove any border */
+    padding: 0 !important; /* No padding */
+    cursor: pointer !important; /* Pointer cursor */
+    border-radius: 50% !important; /* Round shape */
+    width: 40px !important; /* Fixed width */
+    height: 40px !important; /* Fixed height */
+    display: flex !important; /* Flexbox layout */
+    align-items: center !important; /* Center vertically */
+    justify-content: center !important; /* Center horizontally */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Optional shadow */
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s !important; /* Smooth transitions including transform */
+    margin-left: 10px; /* Adjust margin if necessary */
+}
+
+#deleteButton:hover {
+    background-color: #3b7bce; /* Change color on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow on hover */
+}
+
 #deleteButton svg {
-  fill: red; /* Change the color of the SVG */
-  transition: transform 0.2s; /* Add a hover effect */
+    width: 24px; /* SVG size to match the clear button */
+    height: 24px;
+    transition: transform 0.2s; /* Add a hover effect */
 }
 
 #deleteButton:hover svg {
-  transform: scale(1.1); /* Slightly enlarge the SVG on hover */
+    transform: scale(1.1); /* Slightly enlarge the SVG on hover */
 }
+
 
 
 #groupList {
