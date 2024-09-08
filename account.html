@@ -418,23 +418,25 @@ body.night-mode {
 .revert-profile-picture-btn {
     background-color: #1E1E1E;
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: var(--border-radius, 8px);
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease;
     display: inline-flex;
     align-items: center;
-    margin-left: 8px; /* Space between the button and the tag */
+    margin-left: -30px; /* Space between the button and the tag */
     vertical-align: middle; /* Aligns the tag vertically with the button */
     margin-right: -280px;
-    margin-top: -29px;
+    margin-top: -35px;
 }
 
 .revert-icon {
     width: 1.2rem;
     height: 1.2rem;
-    margin-left: 4px; /* Space between text and icon */
+    margin-left: -5px; /* Space between text and icon */
+    margin-right: -5px;
     fill: white; /* Ensure the SVG color is white */
+    transition: transform 0.4s ease-in-out; /* Smooth transition */
 }
 
 .revert-icon svg {
@@ -447,6 +449,18 @@ body.night-mode {
     background-color: #009bf5;
 }
 
+.spin {
+    animation: spin 0.4s ease-in-out; /* Adjusted duration for a smooth full spin */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 .unavailable-tag {
     background-color: var(--danger-hover-color, #c9302c);
@@ -1779,6 +1793,21 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('cancelCropBtn').addEventListener('click', function() {
     document.getElementById('cropModal').style.display = 'none';
 });
+
+</script>
+
+<script>
+document.querySelector('.revert-profile-picture-btn').addEventListener('click', function() {
+    const icon = this.querySelector('.revert-icon');
+    // Add the spin class to trigger the animation
+    icon.classList.add('spin');
+    
+    // Remove the class after animation ends to allow retriggering
+    icon.addEventListener('animationend', () => {
+        icon.classList.remove('spin');
+    }, { once: true });
+});
+
 
 </script>
 
