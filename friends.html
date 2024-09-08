@@ -2952,12 +2952,11 @@ function loadOnlineFriends() {
                 const listItem = document.createElement('li');
                 listItem.classList.add('friend-item');
 
+
                                     // Create user avatar container
                                     const avatarContainer = document.createElement('div');
                                     avatarContainer.classList.add('user-avatar');
-
-                                    // Load friend profile picture using their UID
-                                    loadFriendProfilePicture(friendUid, avatarContainer); 
+                                    loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
                 // Create or update a span for the friend's name
                 const friendName = document.createElement('span');
@@ -4884,68 +4883,49 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
-
+    
 <script>
-function loadFriendProfilePicture(friendUid, avatarContainer) {
+function loadFriendProfilePicture(friendEmail, avatarContainer) {
     const defaultAvatar = document.getElementById('defaultAvatar');
 
-    if (friendUid) {
-        const userDocRef = firestore.collection('users').doc(friendUid);
-
-        userDocRef.get().then((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
+    // Fetch the friend's document based on their email
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                const friendDoc = querySnapshot.docs[0];
+                const data = friendDoc.data();
                 const profilePictureUrl = data.profilePicture;
 
                 if (profilePictureUrl) {
-                    // Create and append the friend's profile picture
+                    // Create and append the new profile picture
                     const img = document.createElement('img');
                     img.src = profilePictureUrl;
-                    img.alt = 'Profile Picture';
-                    img.style.width = '40px'; // Ensuring the image matches avatar container size
+                    img.alt = 'Friend Profile Picture';
+                    img.style.width = '40px'; // Ensure the image has the same size as the SVG
                     img.style.height = '40px';
                     img.style.borderRadius = '50%';
 
-                    // Replace the content in the avatar container with the friend's profile picture
-                    avatarContainer.innerHTML = ''; // Clear the current content
+                    // Replace the SVG with the new image
+                    avatarContainer.innerHTML = '';  // Clear the current content
                     avatarContainer.appendChild(img);
                 } else {
-                    // Use the default avatar if no profile picture exists
-                    avatarContainer.innerHTML = ''; // Clear the current content
-                    avatarContainer.appendChild(defaultAvatar.cloneNode(true)); // Append a copy of the default SVG
+                    // Use default avatar if no profile picture is set
+                    avatarContainer.innerHTML = defaultAvatar.outerHTML;
                 }
             } else {
-                console.error("No user document found for friend.");
-                avatarContainer.innerHTML = ''; 
-                avatarContainer.appendChild(defaultAvatar.cloneNode(true)); // Default avatar on error
+                console.error("No document found for friend with email: ", friendEmail);
+                // Use default avatar if no document is found
+                avatarContainer.innerHTML = defaultAvatar.outerHTML;
             }
-        }).catch((error) => {
+        }).catch(error => {
             console.error("Error loading friend's profile picture: ", error);
-            avatarContainer.innerHTML = ''; 
-            avatarContainer.appendChild(defaultAvatar.cloneNode(true)); // Default avatar on error
+            // Use default avatar on error
+            avatarContainer.innerHTML = defaultAvatar.outerHTML;
         });
-    } else {
-        console.error("Friend UID is not provided.");
-        avatarContainer.innerHTML = ''; 
-        avatarContainer.appendChild(defaultAvatar.cloneNode(true)); // Default avatar for missing UID
-    }
 }
 
-// Example usage in your dynamic creation logic
-document.addEventListener('DOMContentLoaded', function() {
-    // For each friend, create avatar container and load their profile picture
-    const avatarContainer = document.createElement('div');
-    avatarContainer.classList.add('user-avatar');
-
-    const friendUid = 'friendUidHere'; // The UID of the friend whose picture you want to load
-    loadFriendProfilePicture(friendUid, avatarContainer);
-
-    // Append the avatarContainer to the desired parent element
-    document.getElementById('parentElementId').appendChild(avatarContainer); // Change 'parentElementId' to your desired parent
-});
-    
 </script>
-    
+
 <script>
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
