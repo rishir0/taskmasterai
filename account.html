@@ -446,7 +446,7 @@ body.night-mode {
 }
 
 .revert-profile-picture-btn:hover {
-    background-color: #009bf5;
+    background-color: var(--danger-hover-color, #c9302c);
 }
 
 .spin {
@@ -1027,6 +1027,54 @@ function updateProfilePicture() {
 
 // Event listener to handle file input change
 document.getElementById('profilePicture').addEventListener('change', updateProfilePicture);
+
+function revertProfilePicture() {
+    const user = firebase.auth().currentUser;
+    const defaultAvatarSVG = `
+        <svg id="defaultAvatar" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
+        </svg>
+    `;
+    
+    if (user) {
+        // Show loading indicator
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        loadingIndicator.style.display = 'flex';
+        
+        // Update profile picture to default SVG
+        user.updateProfile({ photoURL: '' }) // Clearing the photoURL to remove the existing picture
+            .then(() => {
+                return firebase.firestore().collection('users').doc(user.uid).update({
+                    profilePicture: defaultAvatarSVG
+                });
+            })
+            .then(() => {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                // Update profile preview with default SVG
+                const profilePreview = document.getElementById('profilePreview');
+                profilePreview.innerHTML = defaultAvatarSVG;
+
+                alert("Profile picture reverted to default successfully!");
+            })
+            .catch(error => {
+                console.error("Error reverting profile picture:", error);
+
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+
+                alert("Failed to revert profile picture. Please try again.");
+            });
+    } else {
+        alert("User not authenticated.");
+    }
+}
+
+// Event listener for the revert profile picture button
+document.querySelector('.revert-profile-picture-btn').addEventListener('click', revertProfilePicture);
+
+    
 </script>
 <body>
     <button class="sidebar-toggle">
@@ -1169,7 +1217,7 @@ document.getElementById('profilePicture').addEventListener('change', updateProfi
     </span>
     Edit Profile Picture
 </button>
-<button type="button" class="revert-profile-picture-btn">
+<button type="button" class="revert-profile-picture-btn" onclick="revertProfilePicture()">>
     <span class="revert-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" >
             <g>
