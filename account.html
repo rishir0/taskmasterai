@@ -1051,6 +1051,10 @@ function revertProfilePicture() {
                 const profilePreview = document.getElementById('profilePreview');
                 profilePreview.innerHTML = ''; // Clear the profile preview
 
+                // Reload the page
+                window.location.reload();
+
+                alert("Profile picture removed successfully!");
             })
             .catch(error => {
                 console.error("Error removing profile picture:", error);
@@ -1067,11 +1071,7 @@ function revertProfilePicture() {
 
 // Event listener for the revert profile picture button
 document.querySelector('.revert-profile-picture-btn').addEventListener('click', revertProfilePicture);
-
-
-
-
-    
+   
 </script>
 <body>
     <button class="sidebar-toggle">
