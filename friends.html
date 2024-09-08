@@ -3161,6 +3161,11 @@ pinnedFriendsButton.onclick = () => {
     }
 };
 
+const onlineFriendsList = document.getElementById('onlineFriends');
+if (!onlineFriendsList) {
+    console.error("onlineFriends element not found.");
+    return;
+}
 
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
