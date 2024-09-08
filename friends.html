@@ -272,12 +272,37 @@ body.night-mode {
     cursor: pointer;
     transition: background 0.3s;
     display: flex;
-    justify-content: space-between; /* Ensure the friend name and unfriend button are spaced out */
-    align-items: center; /* Align items in the center vertically */
+    justify-content: space-between;
+    align-items: center;
 }
 
 #onlineFriends li:hover {
     background: var(--hover-bg);
+}
+
+/* Profile picture styles */
+.friend-profile {
+    width: 40px;  /* Adjust size if needed */
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--profile-placeholder-bg); /* Placeholder color or image if no profile pic */
+    margin-right: 10px; /* Space between profile pic and name */
+    overflow: hidden;
+    object-fit: cover; /* Ensures the image fits nicely inside the circle */
+}
+
+/* Name and action button container */
+.friend-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Allow the name section to grow, leaving space for buttons */
+}
+
+.friend-name {
+    font-family: Poppins, sans-serif;  /* Using your preferred font */
+    color: var(--primary-text); /* Adjust to match your theme */
+    font-size: 1rem;
+    margin-right: auto; /* Push the unfriend button to the far right */
 }
 
 #pinnedFriends {
