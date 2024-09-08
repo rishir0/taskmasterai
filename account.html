@@ -415,31 +415,36 @@ body.night-mode {
     background-color: var(--accent-color, #009bf5);
 }
 
-.revert-profile-picture-btn {
+.revert-to-default-btn {
     background-color: #1E1E1E;
-    padding: 8px 16px;
-    border-radius: 8px;
+    color: var(--text-color, #fff);
+    padding: 8px;
+    border-radius: 50%; /* Makes the button circular */
     cursor: pointer;
     border: none;
+    font-size: 1rem;
     transition: background-color 0.3s ease;
     display: inline-flex;
+    justify-content: center;
     align-items: center;
+    margin-left: 10px; /* Space between the buttons */
 }
 
-.revert-icon {
+.revert-to-default-btn .revert-icon {
     width: 1.2rem;
     height: 1.2rem;
-    fill: white; /* Ensure the SVG color is white */
+    fill: currentColor; /* Ensures the SVG uses the button's text color */
 }
 
-.revert-icon svg {
+.revert-to-default-btn svg {
     width: 100%;
     height: 100%;
-    fill: currentColor;
+    stroke: white; /* Sets the stroke color to white */
+    fill: none; /* Remove fill if needed */
 }
 
-.revert-profile-picture-btn:hover {
-    background-color: #009bf5;
+.revert-to-default-btn:hover {
+    background-color: var(--accent-color, #009bf5);
 }
 
 
