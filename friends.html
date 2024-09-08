@@ -2578,11 +2578,11 @@ function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
         const currentUserUID = currentUser.uid;
-        console.log(`Updating user's online status to: ${status}`); // Log status update
+        
         db.collection('users').doc(currentUserUID).update({
             online: status
         }).then(() => {
-            console.log(`User's online status successfully updated to: ${status}`);
+            
             isUserOffline = !status; // Update isUserOffline based on the new status
         }).catch((error) => {
             console.error('Error updating online status: ', error);
@@ -5010,21 +5010,6 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
     });
 </script>
 
-<script>
-let isOnlineFriendsVisible = true;  // Keep track of the state (visible or hidden)
-
-document.getElementById('hideButton').addEventListener('click', function() {
-    if (isOnlineFriendsVisible) {
-        console.log("Hiding online friends...");
-        // Stop the function or prevent it from executing
-        isOnlineFriendsVisible = false;  // Set to hidden
-    } else {
-        console.log("Showing online friends...");
-        loadOnlineFriends();  // Call the function to show online friends again
-        isOnlineFriendsVisible = true;  // Set to visible
-    }
-});
-</script>
 
 </body>
 </html>
