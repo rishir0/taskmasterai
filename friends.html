@@ -1254,6 +1254,37 @@ body.night-mode {
     background-color: transparent;
 }
 
+#hideButton {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+    /* Specific styles for hide button */
+    color: #ff0000; /* Example: Red color for hide button */
+}
+
+#hideButton svg {
+    width: 24px;
+    height: 24px;
+}
+
+#hideButton:active {
+    transform: scale(1.2);
+}
+
+#hideButton:active svg path {
+    stroke: #ff0000; /* Example: Red color on active state */
+}
+
+#hideButton:hover {
+    background-color: transparent;
+}
+
 .message-options {
     display: flex;
     justify-content: space-around;
@@ -1569,17 +1600,23 @@ body.night-mode {
         <!-- Pinned friends will be dynamically added here -->
     </div>
 
-    <h2>
-        Online Friends
-        <button id="refreshButton">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-        </button>
-    </h2>
-    <div id="onlineFriends">
-        <!-- Online friends will be dynamically added here -->
-    </div>
+<h2>
+    Online Friends
+    <button id="refreshButton">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+    </button>
+    <button id="hideButton">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM12 18C9.79086 18 8 16.2091 8 14H10C10 15.1046 10.8954 16 12 16C13.1046 16 14 15.1046 14 14H16C16 16.2091 14.2091 18 12 18ZM12 6C14.2091 6 16 7.79086 16 10H14C14 8.89543 13.1046 8 12 8C10.8954 8 10 8.89543 10 10H8C8 7.79086 9.79086 6 12 6ZM4 12C4 8.68629 8.68629 4 12 4C13.9532 4 15.8075 4.61674 17.4029 5.61262L14.5608 8.45476C14.4032 8.60858 14.2026 8.71168 13.9936 8.74767L11.2541 9.74767C11.2112 9.74767 11.1683 9.74767 11.1253 9.74767C10.4162 9.74767 10 10.1485 10 10.6667V12C10 13.1046 10.8954 14 12 14C13.1046 14 14 13.1046 14 12V10C14 9.44772 13.5523 9 13 9C12.4477 9 12 8.55228 12 8V6.79304C8.87267 6.05541 6.05541 8.87267 6.79304 12H4C4 12 4 12 4 12Z" fill="white"></path>
+        </svg>
+    </button>
+</h2>
+<div id="onlineFriends">
+    <!-- Online friends will be dynamically added here -->
+</div>
+
 </div>
 <div class="group-chats">
     <h2>Manage Group Chats</h2>
