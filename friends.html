@@ -2952,10 +2952,11 @@ function loadOnlineFriends() {
                 const listItem = document.createElement('li');
                 listItem.classList.add('friend-item');
 
-                // Create user avatar container
-                const avatarContainer = document.createElement('div');
-                avatarContainer.classList.add('user-avatar');
-                loadSmallProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
+// Create user avatar container dynamically
+const avatarContainer = document.createElement('div');
+avatarContainer.classList.add('user-avatar');
+loadFriendProfilePicture(friendUid, avatarContainer); // Load friend profile picture
+
 
                 // Create or update a span for the friend's name
                 const friendName = document.createElement('span');
@@ -4883,6 +4884,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
     
+<script>
+function loadFriendProfilePicture(friendUid, avatarContainer) {
+    const defaultAvatarUrl = 'path/to/default/avatar.svg'; // Update this to the correct path for your default avatar image
+
+    const userDocRef = firestore.collection('users').doc(friendUid);
+
+    userDocRef.get().then(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            const profilePictureUrl = data.profilePicture;
+
+            if (profilePictureUrl) {
+                // Create and append the new profile picture
+                const img = document.createElement('img');
+                img.src = profilePictureUrl;
+                img.alt = 'Profile Picture';
+                img.style.width = '40px'; // Adjust the size as needed
+                img.style.height = '40px';
+                img.style.borderRadius = '50%';
+
+                // Replace the current content with the new profile picture
+                avatarContainer.innerHTML = '';  // Clear current content
+                avatarContainer.appendChild(img);
+            } else {
+                // No profile picture found, use the default avatar
+                const img = document.createElement('img');
+                img.src = defaultAvatarUrl;
+                img.alt = 'Default Profile Picture';
+                img.style.width = '40px'; // Adjust size as needed
+                img.style.height = '40px';
+                img.style.borderRadius = '50%';
+
+                avatarContainer.innerHTML = '';  // Clear current content
+                avatarContainer.appendChild(img);
+            }
+        } else {
+            console.error("No document found for this friend.");
+        }
+    }).catch(error => {
+        console.error("Error loading friend's profile picture: ", error);
+    });
+}
+
+// Example usage in your dynamic creation logic
+document.addEventListener('DOMContentLoaded', function() {
+    // For each friend, create avatar container and load their profile picture
+    const avatarContainer = document.createElement('div');
+    avatarContainer.classList.add('user-avatar');
+
+    const friendUid = 'friendUidHere'; // The UID of the friend whose picture you want to load
+    loadFriendProfilePicture(friendUid, avatarContainer);
+
+    // Append the avatarContainer to the desired parent element
+    document.getElementById('parentElementId').appendChild(avatarContainer); // Change 'parentElementId' to your desired parent
+});
+</script>
+
+
 <script>
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
         document.querySelector('.sidebar').classList.toggle('active');
