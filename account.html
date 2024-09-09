@@ -471,7 +471,7 @@ body.night-mode {
 }
 
 .spin {
-    animation: spin 0.4s ease-in-out; /* Adjusted duration for a smooth full spin */
+    animation: spin 0.4s ease-in-out; /* Duration for a smooth full spin */
 }
 
 @keyframes spin {
@@ -479,9 +479,10 @@ body.night-mode {
         transform: rotate(0deg);
     }
     100% {
-        transform: rotate(360deg);
+        transform: rotate(-360deg); /* Spin in the opposite direction */
     }
 }
+
 
 .unavailable-tag {
     background-color: var(--danger-hover-color, #c9302c);
