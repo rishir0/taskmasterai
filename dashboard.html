@@ -1078,7 +1078,7 @@ scrollbar-thumb {
                 <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
             </svg>
         </div>
-                <div id="username2">User Name</div>
+                <div id="username">User Name</div>
                 <div class="menu-dots">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1319,8 +1319,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
                         const displayName = user.displayName || user.email;
-                        const firstName = userData.firstName;
-                        const lastName = userData.lastName;
 
                         // Create the updated display name with "DEV" tag if necessary
                         let updatedDisplayName = displayName;
@@ -1328,18 +1326,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             updatedDisplayName += ' <span class="dev-tag">DEV</span>';
                         }
 
-                        // Update the UI with the user's display name
+                        // Update the specific UI element with the user's display name
                         document.getElementById('username').innerHTML = updatedDisplayName;
-                        document.getElementById('displayName').innerHTML = updatedDisplayName;
-
-                        // Optionally update the Firestore document if displayName is changed
-                        if (updatedDisplayName !== displayName) {
-                            return db.collection('users').doc(user.uid).update({
-                                displayName: updatedDisplayName
-                            }).then(() => {
-                                console.log("Display name updated to include 'DEV' tag successfully!");
-                            });
-                        }
                     }
                 })
                 .catch((error) => {
@@ -1348,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
  
 let timer;
