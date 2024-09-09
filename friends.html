@@ -1462,6 +1462,14 @@ body.night-mode {
     font-size: 16px;
 }
 
+.dev-tag {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+}
       
     </style>
 </head>
@@ -2867,6 +2875,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
                         const displayName = user.displayName || user.email;
+                        const firstName = userData.firstName;
+                        const lastName = userData.lastName;
 
                         // Create the updated display name with "DEV" tag if necessary
                         let updatedDisplayName = displayName;
@@ -2874,8 +2884,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             updatedDisplayName += ' <span class="dev-tag">DEV</span>';
                         }
 
-                        // Update the specific UI element with the user's display name
+                        // Update the UI with the user's display name
                         document.getElementById('username').innerHTML = updatedDisplayName;
+                        document.getElementById('displayName').innerHTML = updatedDisplayName;
+
+                        // Optionally update the Firestore document if displayName is changed
+                        if (updatedDisplayName !== displayName) {
+                            return db.collection('users').doc(user.uid).update({
+                                displayName: updatedDisplayName
+                            }).then(() => {
+                                console.log("Display name updated to include 'DEV' tag successfully!");
+                            });
+                        }
                     }
                 })
                 .catch((error) => {
@@ -2884,7 +2904,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 
 function addFriend() {
     const friendEmail = document.getElementById('friendEmail').value;
@@ -3088,7 +3107,7 @@ function loadOnlineFriends() {
 
                 // Create or update a span for the friend's name
                 const friendName = document.createElement('span');
-                friendName.innerHTML =  updatedDisplayName;
+                friendName.textContent = friendDisplayName;
                 friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
