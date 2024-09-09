@@ -1798,6 +1798,10 @@ function loadProfilePicture() {
                     // Remove the default SVG and load the profile picture
                     profilePreview.innerHTML = '';  // Clear the current content
 
+
+                // Change the background to transparent after new image is uploaded
+                profilePreview.style.backgroundColor = 'transparent';
+
                     const img = document.createElement('img');
                     img.src = profilePictureUrl;
                     img.classList.add('profile-picture');
