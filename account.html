@@ -364,7 +364,7 @@ body.night-mode {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: var(--accent-color, #009bf5); /* Background set to accent color */
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -373,16 +373,37 @@ body.night-mode {
     border: none;
 }
 
-.profile-preview svg {
-    fill: white; /* SVG color set to white */
+.profile-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--accent-color, #009bf5); /* Background for default profile */
+    z-index: 1;
 }
 
+.profile-preview svg {
+    fill: white;
+    position: relative;
+    z-index: 2; /* Ensure SVG is above background */
+}
 
 .profile-preview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2; /* Ensure image is above background */
 }
+
+.profile-preview img.new-profile-picture {
+    background-color: transparent; /* Ensure background is transparent for new pictures */
+}
+
 
 .edit-profile-picture-btn {
     background-color: #1E1E1E;
