@@ -3098,18 +3098,13 @@ if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                                    // Create or update a span for the friend's name
-                                    const friendName = document.createElement('span');
-
-                                    // Append the "DEV" tag if the friend's email matches one in the devEmails list
-                                    if (isDev) {
-                                        friendDisplayName += ' <span class="dev-tag">DEV</span>';
-                                    }
-
-                                    friendName.innerHTML = friendDisplayName; // Use innerHTML to include the DEV tag
-                                    friendName.classList.add('friend-name');
+                // Create or update a span for the friend's name
+                const friendName = document.createElement('span');
+                friendName.textContent = friendDisplayName;
+                friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
+                
 statusIcon.classList.add('status-icon');
 
 if (friend.online) {
