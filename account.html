@@ -1004,9 +1004,13 @@ function updateProfilePicture() {
                 // Update the profile preview
                 profilePreview.innerHTML = '';
 
+                // Change background to transparent when new picture is set
+                profilePreview.style.backgroundColor = 'transparent';
+
                 const img = document.createElement('img');
                 img.src = url;
                 img.alt = 'Profile Picture';
+                img.classList.add('new-profile-picture'); // Add a class for custom styling
                 profilePreview.appendChild(img);
 
                 alert("Profile picture updated successfully!");
