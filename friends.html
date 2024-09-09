@@ -2854,6 +2854,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
+
+            // Fetch the current user's data from Firestore
+            db.collection('users').doc(user.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const userEmail = user.email;
+                        const isDev = devEmails.includes(userEmail);
+                        const displayName = user.displayName || user.email;
+
+                        // Create the updated display name with "DEV" tag if necessary
+                        let updatedDisplayName = displayName;
+                        if (isDev && !updatedDisplayName.includes("DEV")) {
+                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
+                        }
+
+                        // Update the specific UI element with the user's display name
+                        document.getElementById('username').innerHTML = updatedDisplayName;
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching user data:", error);
+                });
+        }
+    });
+});
 
 
 function addFriend() {
@@ -3058,7 +3088,7 @@ function loadOnlineFriends() {
 
                 // Create or update a span for the friend's name
                 const friendName = document.createElement('span');
-                friendName.textContent = friendDisplayName;
+                friendName.innerHTML =  updatedDisplayName;
                 friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
