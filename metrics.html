@@ -453,6 +453,8 @@ body.night-mode {
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var auth = firebase.auth();
         const firestore = firebase.firestore();
 
         document.addEventListener('DOMContentLoaded', function() {
