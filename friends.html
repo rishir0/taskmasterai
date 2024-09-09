@@ -3023,6 +3023,25 @@ function loadOnlineFriends() {
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
 
+// Check if the friend is a DEV user
+const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
+if (devEmails.includes(friendEmail)) {
+    const devTag = document.createElement('span');
+    devTag.textContent = 'DEV';
+    devTag.style.marginLeft = '8px';
+    devTag.style.padding = '2px 6px';
+    devTag.style.fontSize = '12px';
+    devTag.style.fontWeight = 'bold';
+    devTag.style.color = '#ffffff';
+    devTag.style.borderRadius = '4px';
+    devTag.style.display = 'inline-block';
+    devTag.style.verticalAlign = 'middle'; // Align with the friendName text
+    devTag.style.background = 'linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8))';
+    
+    friendName.appendChild(devTag);
+}
+
+
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -3288,6 +3307,24 @@ function loadPinnedFriends() {
     if (currentUser) {
         const currentUserUID = currentUser.uid;
 
+        // Check if the friend is a DEV user
+const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
+if (devEmails.includes(friendEmail)) {
+    const devTag = document.createElement('span');
+    devTag.textContent = 'DEV';
+    devTag.style.marginLeft = '8px';
+    devTag.style.padding = '2px 6px';
+    devTag.style.fontSize = '12px';
+    devTag.style.fontWeight = 'bold';
+    devTag.style.color = '#ffffff';
+    devTag.style.borderRadius = '4px';
+    devTag.style.display = 'inline-block';
+    devTag.style.verticalAlign = 'middle'; // Align with the friendName text
+    devTag.style.background = 'linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8))';
+    
+    friendName.appendChild(devTag);
+}
+
         // Fetch the current user's pinned friends
         db.collection('pinnedFriends').doc(currentUserUID).get()
             .then((doc) => {
@@ -3312,9 +3349,15 @@ function loadPinnedFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                                    // Create a span for the friend's name
+                                    // Create or update a span for the friend's name
                                     const friendName = document.createElement('span');
-                                    friendName.textContent = friendDisplayName;
+
+                                    // Append the "DEV" tag if the friend's email matches one in the devEmails list
+                                    if (devEmails.includes(friendEmail)) {
+                                        friendDisplayName += ' <span class="dev-tag">DEV</span>';
+                                    }
+
+                                    friendName.innerHTML = friendDisplayName; // Use innerHTML to include the DEV tag
                                     friendName.classList.add('friend-name');
                                     
                                     // Append the friend's name to the list item
