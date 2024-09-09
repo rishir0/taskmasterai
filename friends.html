@@ -1462,6 +1462,15 @@ body.night-mode {
     font-size: 16px;
 }
 
+.dev-tag {
+    background-color: #ff0000;
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
       
     </style>
 </head>
@@ -3010,6 +3019,15 @@ function loadOnlineFriends() {
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
 
+        // List of DEV emails
+        const devEmails = [
+            'srinibaj10@gmail.com',
+            'fugegate@gmail.com',
+            'draco77654@gmail.com',
+            'bajinsrinivasr@lexington1.net'
+        ];
+
+
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
@@ -3056,10 +3074,16 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                // Create or update a span for the friend's name
-                const friendName = document.createElement('span');
-                friendName.textContent = friendDisplayName;
-                friendName.classList.add('friend-name');
+                                    // Create or update a span for the friend's name
+                                    const friendName = document.createElement('span');
+
+                                    // Append the "DEV" tag if the friend's email matches one in the devEmails list
+                                    if (devEmails.includes(friendEmail)) {
+                                        friendDisplayName += ' <span class="dev-tag">DEV</span>';
+                                    }
+
+                                    friendName.innerHTML = friendDisplayName; // Use innerHTML to include the DEV tag
+                                    friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
 statusIcon.classList.add('status-icon');
