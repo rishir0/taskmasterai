@@ -3047,6 +3047,8 @@ function loadOnlineFriends() {
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
+// List of DEV emails
+        const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -3080,7 +3082,9 @@ function loadOnlineFriends() {
         const friendEmail = friend.email;
         let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-        if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                // Check if the friend is a DEV
+                                const isDev = devEmails.includes(friendEmail);
             // Update display name if changed
             if (displayNameMap.get(friendEmail) !== friendDisplayName) {
                 displayNameMap.set(friendEmail, friendDisplayName);
@@ -3094,10 +3098,16 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                // Create or update a span for the friend's name
-                const friendName = document.createElement('span');
-                friendName.textContent = friendDisplayName;
-                friendName.classList.add('friend-name');
+                                    // Create or update a span for the friend's name
+                                    const friendName = document.createElement('span');
+
+                                    // Append the "DEV" tag if the friend's email matches one in the devEmails list
+                                    if (isDev) {
+                                        friendDisplayName += ' <span class="dev-tag">DEV</span>';
+                                    }
+
+                                    friendName.innerHTML = friendDisplayName; // Use innerHTML to include the DEV tag
+                                    friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
 statusIcon.classList.add('status-icon');
