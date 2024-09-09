@@ -1462,15 +1462,6 @@ body.night-mode {
     font-size: 16px;
 }
 
-.dev-tag {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: #ffffff;
-    padding: 2px 4px;
-    font-size: 0.75em;
-    border-radius: 3px;
-    margin-left: 5px;
-}
-
       
     </style>
 </head>
@@ -2863,36 +2854,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
 
-            // Fetch the current user's data from Firestore
-            db.collection('users').doc(user.uid).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        const userEmail = user.email;
-                        const isDev = devEmails.includes(userEmail);
-                        const displayName = user.displayName || user.email;
-
-                        // Create the updated display name with "DEV" tag if necessary
-                        let updatedDisplayName = displayName;
-                        if (isDev && !updatedDisplayName.includes("DEV")) {
-                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
-                        }
-
-                        // Update the specific UI element with the user's display name
-                        document.getElementById('username').innerHTML = updatedDisplayName;
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching user data:", error);
-                });
-        }
-    });
-});
 
 function addFriend() {
     const friendEmail = document.getElementById('friendEmail').value;
@@ -3047,6 +3009,7 @@ function loadOnlineFriends() {
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
+
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
@@ -3079,9 +3042,7 @@ function loadOnlineFriends() {
         const friendEmail = friend.email;
         let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                // Check if the friend is a DEV
-                                const isDev = devEmails.includes(friendEmail);
+        if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
             // Update display name if changed
             if (displayNameMap.get(friendEmail) !== friendDisplayName) {
                 displayNameMap.set(friendEmail, friendDisplayName);
@@ -3101,7 +3062,6 @@ if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
                 friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
-                
 statusIcon.classList.add('status-icon');
 
 if (friend.online) {
