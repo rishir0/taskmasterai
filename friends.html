@@ -2885,10 +2885,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
 
                         // Update the UI with the user's display name
+
+                        // Update the specific UI element with the user's display name
                         document.getElementById('friendName').innerHTML = updatedDisplayName;
-                        document.getElementById('').innerHTML = updatedDisplayName;
+                        document.getElementById('username').innerHTML = updatedDisplayName;
                         document.getElementById('displayName').innerHTML = updatedDisplayName;
-                        friend.displayName;
 
                         // Optionally update the Firestore document if displayName is changed
                         if (updatedDisplayName !== displayName) {
