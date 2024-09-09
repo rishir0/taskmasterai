@@ -3047,6 +3047,9 @@ function loadOnlineFriends() {
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
+// List of DEV emails
+        const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
+
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
