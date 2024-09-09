@@ -3345,7 +3345,7 @@ function loadPinnedFriends() {
 
                                     // Create a span for the friend's name
                                     const friendName = document.createElement('span');
-                                    friendName.textContent = friendDisplayName;
+                                    friendName.innerHTML = friendDisplayName;
                                     friendName.classList.add('friend-name');
                                     
                                     // Append the friend's name to the list item
