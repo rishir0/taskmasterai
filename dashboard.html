@@ -1306,31 +1306,36 @@ function updateDisplayNameIfAnonymous() {
 }
 
 
-function updateDisplayNameForDev() {
-    const user = firebase.auth().currentUser;
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
 
-    if (user) {
-        const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
-
-        // Check if the current user's email is in the list of developer emails
-        if (devEmails.includes(user.email)) {
-            // Fetch user data from Firestore
+            // Fetch the current user's data from Firestore
             db.collection('users').doc(user.uid).get()
                 .then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
-                        const displayName = user.displayName;
+                        const userEmail = user.email;
+                        const isDev = devEmails.includes(userEmail);
+                        const displayName = user.displayName || user.email;
                         const firstName = userData.firstName;
                         const lastName = userData.lastName;
 
-                        // Update the displayName to include "DEV" tag
-                        let newDisplayName = displayName;
-                        if (!displayName.includes("DEV")) {
-                            newDisplayName += ' <span class="dev-tag">DEV</span>';
-                            
-                            // Update the Firestore document with the new displayName
+                        // Create the updated display name with "DEV" tag if necessary
+                        let updatedDisplayName = displayName;
+                        if (isDev && !updatedDisplayName.includes("DEV")) {
+                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
+                        }
+
+                        // Update the UI with the user's display name
+                        document.getElementById('username').innerHTML = updatedDisplayName;
+                        document.getElementById('displayName').innerHTML = updatedDisplayName;
+
+                        // Optionally update the Firestore document if displayName is changed
+                        if (updatedDisplayName !== displayName) {
                             return db.collection('users').doc(user.uid).update({
-                                displayName: newDisplayName
+                                displayName: updatedDisplayName
                             }).then(() => {
                                 console.log("Display name updated to include 'DEV' tag successfully!");
                             });
@@ -1341,11 +1346,8 @@ function updateDisplayNameForDev() {
                     console.error("Error fetching user data:", error);
                 });
         }
-    }
-}
-
-
-    
+    });
+});
 
  
 let timer;
