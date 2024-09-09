@@ -1462,19 +1462,6 @@ body.night-mode {
     font-size: 16px;
 }
 
-.dev-tag {
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: #ffffff;
-    padding: 2px 4px;
-    font-size: 0.75em;
-    font-weight: bold; /* Ensure the text is bold */
-    border-radius: 3px;
-    margin-left: 5px;
-    display: inline-block;
-    vertical-align: middle; /* Align with the friendName text */
-}
-
-
       
     </style>
 </head>
@@ -3022,6 +3009,7 @@ function loadOnlineFriends() {
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
+
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
@@ -3068,16 +3056,10 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                                    // Create or update a span for the friend's name
-                                    const friendName = document.createElement('span');
-
-                                    // Append the "DEV" tag if the friend's email matches one in the devEmails list
-                                    if (devEmails.includes(friendEmail)) {
-                                        friendDisplayName += ' <span class="dev-tag">DEV</span>';
-                                    }
-
-                                    friendName.innerHTML = friendDisplayName; // Use innerHTML to include the DEV tag
-                                    friendName.classList.add('friend-name');
+                // Create or update a span for the friend's name
+                const friendName = document.createElement('span');
+                friendName.textContent = friendDisplayName;
+                friendName.classList.add('friend-name');
 
                const statusIcon = document.createElement('span');
 statusIcon.classList.add('status-icon');
