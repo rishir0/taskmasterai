@@ -1470,6 +1470,15 @@ body.night-mode {
     border-radius: 3px;
     margin-left: 5px;
 }
+
+.basic-tag {
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+}
       
     </style>
 </head>
@@ -2875,10 +2884,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
                         let displayName = user.displayName || user.email;
-                        
-                        // Create the updated display name with "DEV" tag if necessary
+
+                        // Create the updated display name with "DEV" or "BASIC" tag if necessary
                         if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
                             displayName += ' <span class="dev-tag">DEV</span>';
+                        } else if (!isDev && !displayName.includes('<span class="basic-tag">BASIC</span>')) {
+                            displayName += ' <span class="basic-tag">BASIC</span>';
                         }
 
                         // Update the UI with the user's display name (safely with innerHTML)
@@ -2890,7 +2901,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return db.collection('users').doc(user.uid).update({
                                 displayName: displayName
                             }).then(() => {
-                                console.log("Display name updated to include 'DEV' tag successfully!");
+                                console.log("Display name updated to include tag successfully!");
                             });
                         }
                     }
@@ -2901,6 +2912,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 
 
