@@ -425,6 +425,16 @@ body.night-mode {
     border-radius: 3px;
     margin-left: 5px;
 }
+
+.basic-tag {
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+    font-weight: 600; /* Semi-bold */
+}
         
     </style>
 </head>
@@ -497,16 +507,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userData = doc.data();
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
-                        const displayName = user.displayName || user.email;
+                        let displayName = user.displayName || user.email;
 
-                        // Create the updated display name with "DEV" tag if necessary
-                        let updatedDisplayName = displayName;
-                        if (isDev && !updatedDisplayName.includes("DEV")) {
-                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
+                        // Create the updated display name with "DEV" or "BASIC" tag if necessary
+                        let newDisplayName = displayName;
+                        let shouldUpdateFirestore = false;
+
+                        if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
+                            newDisplayName += ' <span class="dev-tag">DEV</span>';
+                            shouldUpdateFirestore = true;  // Mark to update Firestore
+                        } else if (!isDev && !displayName.includes('<span class="basic-tag">Basic</span>')) {
+                            newDisplayName += ' <span class="basic-tag">Basic</span>';
                         }
 
-                        // Update the specific UI element with the user's display name
-                        document.getElementById('username').innerHTML = updatedDisplayName;
+                        // Update the UI with the user's display name (safely with innerHTML)
+                        document.getElementById('username').innerHTML = newDisplayName;
+
+                        // Optionally update the Firestore document if the "DEV" tag was added or updated
+                        if (shouldUpdateFirestore) {
+                            return db.collection('users').doc(user.uid).update({
+                                displayName: newDisplayName
+                            }).then(() => {
+                                console.log("Display name updated to include 'DEV' tag successfully!");
+                            });
+                        }
                     }
                 })
                 .catch((error) => {
@@ -515,6 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+        
     </script>
 </head>
 <body>
