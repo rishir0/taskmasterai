@@ -602,6 +602,25 @@ body.night-mode {
     }
 }
 
+.dev-tag {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+.basic-tag {
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+    font-weight: 600; /* Semi-bold */
+}
+
 </style>
 
 </head>
@@ -824,6 +843,7 @@ body.night-mode {
 
     // Initialize Firestore
     const db = firebase.firestore();
+    var auth = firebase.auth();
     const firestore = firebase.firestore();
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -838,6 +858,51 @@ body.night-mode {
             }
         });
     });
+
+document.addEventListener('DOMContentLoaded', function() {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
+
+            // Fetch the current user's data from Firestore
+            db.collection('users').doc(user.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const userEmail = user.email;
+                        const isDev = devEmails.includes(userEmail);
+                        let displayName = user.displayName || user.email;
+
+                        // Create the updated display name with "DEV" or "BASIC" tag if necessary
+                        let newDisplayName = displayName;
+                        let shouldUpdateFirestore = false;
+
+                        if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
+                            newDisplayName += ' <span class="dev-tag">DEV</span>';
+                            shouldUpdateFirestore = true;  // Mark to update Firestore
+                        } else if (!isDev && !displayName.includes('<span class="basic-tag">Basic</span>')) {
+                            newDisplayName += ' <span class="basic-tag">Basic</span>';
+                        }
+
+                        // Update the UI with the user's display name (safely with innerHTML)
+                        document.getElementById('username').innerHTML = newDisplayName;
+
+                        // Optionally update the Firestore document if the "DEV" tag was added or updated
+                        if (shouldUpdateFirestore) {
+                            return db.collection('users').doc(user.uid).update({
+                                displayName: newDisplayName
+                            }).then(() => {
+                                console.log("Display name updated to include 'DEV' tag successfully!");
+                            });
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching user data:", error);
+                });
+        }
+    });
+});
 
     function toggleNightMode() {
         document.body.classList.toggle('night-mode');
