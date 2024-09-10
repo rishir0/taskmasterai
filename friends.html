@@ -2893,9 +2893,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             displayName += ' <span class="basic-tag">Basic</span>';
                         }
 
-                        // Update the UI with the user's display name (safely with innerHTML)
+                        // Update the UI for the username (always)
                         document.getElementById('username').innerHTML = displayName;
-                        document.getElementById('friendDisplayName').innerHTML = displayName;
+
+                        // Update the friendDisplayName only if the user has the "DEV" tag
+                        if (isDev) {
+                            document.getElementById('friendDisplayName').innerHTML = displayName;
+                        }
 
                         // Optionally update the Firestore document if displayName is changed
                         if (displayName !== user.displayName) {
