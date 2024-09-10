@@ -1470,16 +1470,6 @@ body.night-mode {
     border-radius: 3px;
     margin-left: 5px;
 }
-
-.basic-tag {
-    background: var(--primary-color);
-    color: #ffffff;
-    padding: 2px 4px;
-    font-size: 0.75em;
-    border-radius: 3px;
-    margin-left: 5px;
-    font-weight: 600; /* Semi-bold */
-}
       
     </style>
 </head>
@@ -2885,16 +2875,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
                         let displayName = user.displayName || user.email;
-
-                        // Check if user is a DEV and update display name accordingly
+                        
+                        // Create the updated display name with "DEV" tag if necessary
                         if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
                             displayName += ' <span class="dev-tag">DEV</span>';
                         }
 
-                        // Update the UI for the username
+                        // Update the UI with the user's display name (safely with innerHTML)
                         document.getElementById('username').innerHTML = displayName;
-
-                        // Update friendDisplayName as well if the user is a DEV
                         document.getElementById('friendDisplayName').innerHTML = displayName;
 
                         // Optionally update the Firestore document if displayName is changed
@@ -2914,54 +2902,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            const devEmails = ['srinibaj10@gmail.com', 'fugegate@gmail.com', 'draco77654@gmail.com', 'bajinsrinivasr@lexington1.net'];
-
-            // Fetch the current user's data from Firestore
-            db.collection('users').doc(user.uid).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        const userEmail = user.email;
-                        const isDev = devEmails.includes(userEmail);
-                        let displayName = user.displayName || user.email;
-
-                        // Check if user is not a DEV and update display name accordingly
-                        if (!isDev && !displayName.includes('<span class="basic-tag">Basic</span>')) {
-                            displayName += ' <span class="basic-tag">Basic</span>';
-                        }
-
-                        // Update the UI for the username
-                        document.getElementById('username').innerHTML = displayName;
-
-                        // Prepare the friendDisplayName (strip out the "Basic" tag if present)
-                        let friendDisplayName = displayName;
-                        if (!isDev) {
-                            friendDisplayName = friendDisplayName.replace(/<span class="basic-tag">Basic<\/span>/, '');
-                        }
-
-                        // Update the friendDisplayName UI
-                        document.getElementById('friendDisplayName').innerHTML = friendDisplayName;
-
-                        // Optionally update the Firestore document if displayName is changed
-                        if (displayName !== user.displayName) {
-                            return db.collection('users').doc(user.uid).update({
-                                displayName: displayName
-                            }).then(() => {
-                                console.log("Display name updated to include 'Basic' tag successfully!");
-                            });
-                        }
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching user data:", error);
-                });
-        }
-    });
-});
 
 
 function addFriend() {
