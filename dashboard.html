@@ -1006,6 +1006,15 @@ scrollbar-thumb {
     margin-left: 5px;
 }
 
+.basic-tag {
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 2px 4px;
+    font-size: 0.75em;
+    border-radius: 3px;
+    margin-left: 5px;
+    font-weight: 600; /* Semi-bold */
+}
         
     </style>
 </head>
@@ -1323,8 +1332,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Create the updated display name with "DEV" or "BASIC" tag if necessary
                         if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
                             displayName += ' <span class="dev-tag">DEV</span>';
-                        } else if (!isDev && !displayName.includes('<span class="basic-tag">BASIC</span>')) {
-                            displayName += ' <span class="basic-tag">BASIC</span>';
+                        } else if (!isDev && !displayName.includes('<span class="basic-tag">Basic</span>')) {
+                            displayName += ' <span class="basic-tag">Basic</span>';
                         }
 
                         // Update the UI with the user's display name (safely with innerHTML)
