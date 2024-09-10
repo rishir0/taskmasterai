@@ -4722,11 +4722,14 @@ function loadGroupMessages(groupId) {
                         .where('email', '==', message.sender)
                         .get();
 
-                    const senderDisplayName = !userSnapshot.empty 
-                        ? userSnapshot.docs[0].data().displayName || message.sender 
-                        : message.sender;
-
-                    return { ...message, senderDisplayName };
+                    if (!userSnapshot.empty) {
+                        const userData = userSnapshot.docs[0].data();
+                        const senderDisplayName = userData.displayName || message.sender;
+                        const isDev = userData.isDev || false; // Assuming there's an `isDev` field in the user's profile
+                        return { ...message, senderDisplayName, isDev };
+                    } else {
+                        return { ...message, senderDisplayName: message.sender, isDev: false };
+                    }
                 }
             });
 
@@ -4740,6 +4743,14 @@ function loadGroupMessages(groupId) {
                         senderElement.classList.add('message-sender');
                         senderElement.textContent = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
+
+                         // Check if the user is a DEV and append the DEV tag
+                        if (message.isDev) {
+                            const devTag = document.createElement('span');
+                            devTag.classList.add('dev-tag');
+                            devTag.textContent = 'DEV'; // This is where you display the DEV tag
+                            senderElement.appendChild(devTag); // Append the DEV tag to the senderElement
+                        }
 
                                                 // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
