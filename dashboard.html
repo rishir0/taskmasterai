@@ -1330,21 +1330,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         let displayName = user.displayName || user.email;
 
                         // Create the updated display name with "DEV" or "BASIC" tag if necessary
+                        let newDisplayName = displayName;
+                        let shouldUpdateFirestore = false;
+
                         if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
-                            displayName += ' <span class="dev-tag">DEV</span>';
+                            newDisplayName += ' <span class="dev-tag">DEV</span>';
+                            shouldUpdateFirestore = true;  // Mark to update Firestore
                         } else if (!isDev && !displayName.includes('<span class="basic-tag">Basic</span>')) {
-                            displayName += ' <span class="basic-tag">Basic</span>';
+                            newDisplayName += ' <span class="basic-tag">Basic</span>';
                         }
 
                         // Update the UI with the user's display name (safely with innerHTML)
-                        document.getElementById('username').innerHTML = displayName;
+                        document.getElementById('username').innerHTML = newDisplayName;
 
-                        // Optionally update the Firestore document if displayName is changed
-                        if (displayName !== user.displayName) {
+                        // Optionally update the Firestore document if the "DEV" tag was added or updated
+                        if (shouldUpdateFirestore) {
                             return db.collection('users').doc(user.uid).update({
-                                displayName: displayName
+                                displayName: newDisplayName
                             }).then(() => {
-                                console.log("Display name updated to include tag successfully!");
+                                console.log("Display name updated to include 'DEV' tag successfully!");
                             });
                         }
                     }
