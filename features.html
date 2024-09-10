@@ -869,20 +869,23 @@ iframe {
             appId: "1:367439182644:web:304216430df97eff68c361"
         };
         firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
+        const db = firebase.firestore();
         const firestore = firebase.firestore();
         var auth = firebase.auth();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const username = user.displayName || user.email;
-                    document.getElementById('username').textContent = username;
-                    document.getElementById('displayName').textContent = username;
-                } else {
-                    window.location.href = "login.html"; // Redirect to login page
-                }
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const username = user.displayName || user.email;
+                document.getElementById('username').textContent = username;
+                document.getElementById('displayName').textContent = username;
+            } else {
+                // No user is signed in.
+                window.location.href = "login.html"; // Redirect to login page
+            }
+        });
+    });
+
 
 
 
