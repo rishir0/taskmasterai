@@ -3852,7 +3852,7 @@ function openChat(friendEmail) {
             if (!querySnapshot.empty) {
                 const friendDoc = querySnapshot.docs[0];
                 const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
-                chatWithSpan.textContent = friendDisplayName;
+                chatWithSpan.innerHTML = friendDisplayName;
 
                 db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
