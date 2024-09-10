@@ -560,11 +560,9 @@ body.night-mode {
         firebase.app(); // if already initialized, use that one
     }
 
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
-    var auth = firebase.auth();
+    const db = firebase.firestore();
     const firestore = firebase.firestore();
-
+    var auth = firebase.auth();
 
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
@@ -592,24 +590,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userData = doc.data();
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
-                        let displayName = user.displayName || user.email;
-                        
+                        const displayName = user.displayName || user.email;
+
                         // Create the updated display name with "DEV" tag if necessary
-                        if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
-                            displayName += ' <span class="dev-tag">DEV</span>';
+                        let updatedDisplayName = displayName;
+                        if (isDev && !updatedDisplayName.includes("DEV")) {
+                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
                         }
 
-                        // Update the UI with the user's display name (safely with innerHTML)
-                        document.getElementById('username').innerHTML = displayName;
-
-                        // Optionally update the Firestore document if displayName is changed
-                        if (displayName !== user.displayName) {
-                            return db.collection('users').doc(user.uid).update({
-                                displayName: displayName
-                            }).then(() => {
-                                console.log("Display name updated to include 'DEV' tag successfully!");
-                            });
-                        }
+                        // Update the specific UI element with the user's display name
+                        document.getElementById('username').innerHTML = updatedDisplayName;
                     }
                 })
                 .catch((error) => {
@@ -618,7 +608,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
     
     function toggleNightMode() {
         document.body.classList.toggle('night-mode');
