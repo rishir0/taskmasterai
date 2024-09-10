@@ -2874,24 +2874,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         const userData = doc.data();
                         const userEmail = user.email;
                         const isDev = devEmails.includes(userEmail);
-                        const displayName = user.displayName || user.email;
-                        const firstName = userData.firstName;
-                        const lastName = userData.lastName;
-
+                        let displayName = user.displayName || user.email;
+                        
                         // Create the updated display name with "DEV" tag if necessary
-                        let updatedDisplayName = displayName;
-                        if (isDev && !updatedDisplayName.includes("DEV")) {
-                            updatedDisplayName += ' <span class="dev-tag">DEV</span>';
+                        if (isDev && !displayName.includes('<span class="dev-tag">DEV</span>')) {
+                            displayName += ' <span class="dev-tag">DEV</span>';
                         }
 
-                        // Update the UI with the user's display name
-                        document.getElementById('username').innerHTML = updatedDisplayName;
-                        document.getElementById('friendDisplayName').innerHTML = updatedDisplayName;
+                        // Update the UI with the user's display name (safely with innerHTML)
+                        document.getElementById('username').innerHTML = displayName;
+                        document.getElementById('friendDisplayName').innerHTML = displayName;
 
                         // Optionally update the Firestore document if displayName is changed
-                        if (updatedDisplayName !== displayName) {
+                        if (displayName !== user.displayName) {
                             return db.collection('users').doc(user.uid).update({
-                                displayName: updatedDisplayName
+                                displayName: displayName
                             }).then(() => {
                                 console.log("Display name updated to include 'DEV' tag successfully!");
                             });
@@ -2904,6 +2901,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 
 function addFriend() {
@@ -4722,14 +4720,11 @@ function loadGroupMessages(groupId) {
                         .where('email', '==', message.sender)
                         .get();
 
-                    if (!userSnapshot.empty) {
-                        const userData = userSnapshot.docs[0].data();
-                        const senderDisplayName = userData.displayName || message.sender;
-                        const isDev = userData.isDev || false; // Assuming there's an `isDev` field in the user's profile
-                        return { ...message, senderDisplayName, isDev };
-                    } else {
-                        return { ...message, senderDisplayName: message.sender, isDev: false };
-                    }
+                    const senderDisplayName = !userSnapshot.empty 
+                        ? userSnapshot.docs[0].data().displayName || message.sender 
+                        : message.sender;
+
+                    return { ...message, senderDisplayName };
                 }
             });
 
@@ -4741,16 +4736,9 @@ function loadGroupMessages(groupId) {
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
-                        senderElement.textContent = `${message.senderDisplayName}: `;
+                        // Use innerHTML to insert the displayName (with potential <span class="dev-tag">DEV</span>)
+                        senderElement.innerHTML = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
-
-                         // Check if the user is a DEV and append the DEV tag
-                        if (message.isDev) {
-                            const devTag = document.createElement('span');
-                            devTag.classList.add('dev-tag');
-                            devTag.textContent = 'DEV'; // This is where you display the DEV tag
-                            senderElement.appendChild(devTag); // Append the DEV tag to the senderElement
-                        }
 
                                                 // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
