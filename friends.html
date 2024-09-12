@@ -4112,15 +4112,15 @@ function handleDeleteMessagesButtonClick() {
 
     if (currentGroupId) {
         // If in a group chat, use the group ID
-        deleteGroupMessages(currentGroupId).then(() => {
-            // Refresh the page after deletion
+        deleteGroupMessages(currentGroupId).finally(() => {
+            // Refresh the page after deletion attempt
             location.reload();
         });
     } else if (currentChatFriend) {
         // If in an individual chat, use the chat ID
         const chatId = getChatId(currentUser.email, currentChatFriend);
-        deleteMessages(chatId).then(() => {
-            // Refresh the page after deletion
+        deleteMessages(chatId).finally(() => {
+            // Refresh the page after deletion attempt
             location.reload();
         });
     } else {
