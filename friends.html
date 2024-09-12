@@ -4074,7 +4074,7 @@ function deleteMessages(chatId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Are you sure you want to delete messages older than 30 days from this chat?')) {
+    if (!confirm('Confirm deletion of messages older than 30 days?')) {
         console.log('Message deletion canceled by user.');
         return;
     }
@@ -4987,7 +4987,7 @@ function deleteGroupMessages(groupId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Confirm deletion of messages older than 30 days from this group?')) {
+    if (!confirm('Confirm deletion of messages older than 30 days?')) {
         console.log('Message deletion canceled by user.');
         return;
     }
