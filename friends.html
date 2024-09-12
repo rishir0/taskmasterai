@@ -4917,17 +4917,22 @@ function getGroupId() {
 }
 
 
-// Function to delete messages from the last 30 days for a specific group
+// Function to delete messages older than 30 days for a specific group
 function deleteGroupMessages(groupId) {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30); // Calculate the date 30 days ago
+    const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
 
     // Query messages in the group that are older than 30 days
     db.collection('groupchats').doc(groupId).collection('messages')
-        .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' for messages older than 30 days
+        .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' to get messages older than 30 days
         .get()
         .then((querySnapshot) => {
-            // Batch deletion to avoid hitting Firestore limits
+            // Check if there are any messages to delete
+            if (querySnapshot.empty) {
+                console.log('No messages older than 30 days found.');
+                return;
+            }
+
+            // Create a batch to delete the messages
             const batch = db.batch();
 
             querySnapshot.forEach((doc) => {
@@ -4935,17 +4940,16 @@ function deleteGroupMessages(groupId) {
             });
 
             // Commit the batch delete
-            return batch.commit();
-        })
-        .then(() => {
-            console.log('Messages older than 30 days have been deleted successfully.');
+            return batch.commit().then(() => {
+                console.log('Messages older than 30 days have been deleted successfully.');
+            });
         })
         .catch((error) => {
             console.error('Error deleting messages: ', error);
         });
 }
 
-// Attach the delete function to the button click event using getGroupId dynamically
+// Attach the delete function to the button click event using the dynamically fetched groupId
 document.getElementById('deleteMessagesButton').addEventListener('click', () => {
     getGroupId().then(groupId => {
         if (groupId) {
@@ -4955,6 +4959,7 @@ document.getElementById('deleteMessagesButton').addEventListener('click', () => 
         }
     });
 });
+
 
 
 // Call this function after user logs in to load existing group chats
