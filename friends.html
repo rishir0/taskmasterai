@@ -4919,11 +4919,11 @@ function getGroupId() {
 
 // Function to delete messages older than 30 days for a specific group
 function deleteGroupMessages(groupId) {
-    const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
+    const fiveDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 5 days ago
 
     // Query messages in the group that are older than 30 days
     db.collection('groupchats').doc(groupId).collection('messages')
-        .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' to get messages older than 30 days
+        .where('timestamp', '<=', fiveDaysAgo) // Use '<=' to get messages older than 30 days
         .get()
         .then((querySnapshot) => {
             // Check if there are any messages to delete
