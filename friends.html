@@ -4892,6 +4892,31 @@ function addReactionToMessage(groupId, messageId, reaction) {
 }
 
 
+// Function to get the group ID where the current user is a participant
+function getGroupId() {
+    const currentUser = firebase.auth().currentUser;
+
+    return db.collection('groupchats')
+        .where('participants', 'array-contains', currentUser.email) // Check if the user is a participant
+        .get()
+        .then((querySnapshot) => {
+            if (!querySnapshot.empty) {
+                // Assuming the first group found is the one we're working with
+                const groupDoc = querySnapshot.docs[0];
+                const groupId = groupDoc.id; // Get the group ID (document ID)
+
+                return groupId;
+            } else {
+                console.error('No group found for the current user.');
+                return null;
+            }
+        })
+        .catch((error) => {
+            console.error('Error retrieving group ID: ', error);
+        });
+}
+
+
 // Function to delete messages from the last 30 days for a specific group
 function deleteGroupMessages(groupId) {
     const thirtyDaysAgo = new Date();
@@ -4899,7 +4924,7 @@ function deleteGroupMessages(groupId) {
 
     // Query messages in the group that are older than 30 days
     db.collection('groupchats').doc(groupId).collection('messages')
-        .where('timestamp', '>=', thirtyDaysAgo)
+        .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' for messages older than 30 days
         .get()
         .then((querySnapshot) => {
             // Batch deletion to avoid hitting Firestore limits
@@ -4913,16 +4938,22 @@ function deleteGroupMessages(groupId) {
             return batch.commit();
         })
         .then(() => {
-            console.log('Messages from the last 30 days have been deleted successfully.');
+            console.log('Messages older than 30 days have been deleted successfully.');
         })
         .catch((error) => {
             console.error('Error deleting messages: ', error);
         });
 }
 
-// Attach the delete function to the button click event
+// Attach the delete function to the button click event using getGroupId dynamically
 document.getElementById('deleteMessagesButton').addEventListener('click', () => {
-    deleteGroupMessages(groupId);
+    getGroupId().then(groupId => {
+        if (groupId) {
+            deleteGroupMessages(groupId); // Call the delete function with the retrieved groupId
+        } else {
+            console.error('No group found for the current user.');
+        }
+    });
 });
 
 
