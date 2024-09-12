@@ -4110,6 +4110,9 @@ function deleteMessages(chatId) {
 // Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
     // Determine if we are in a group chat or individual chat
+
+currentChatFriend = friendEmail;
+    
     const currentUser = firebase.auth().currentUser;
     const chatIdPromise = getChatId(currentUser.email, currentChatFriend);
     const groupIdPromise = getGroupId();
