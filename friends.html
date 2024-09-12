@@ -4069,7 +4069,6 @@ function formatReplyCount(count) {
 }
 
 
-
 function createMessageDiv(message, messageId) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message-container-2'); // Use the new class name
@@ -4918,17 +4917,24 @@ function getGroupId() {
 
 
 // Function to delete messages older than 30 days for a specific chat
-function deleteMessages(chatId) {
+function deleteMessages(chatId, isGroup) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
-
+    
     // Ask for user confirmation before proceeding
-    if (!confirm('Are you sure you want to delete messages older than 30 days?')) {
+    const confirmationMessage = isGroup 
+        ? 'Confirm deletion of messages older than 30 days from this group?' 
+        : 'Are you sure you want to delete messages older than 30 days?';
+
+    if (!confirm(confirmationMessage)) {
         console.log('Message deletion canceled by user.');
         return;
     }
 
-    // Query messages in the chat that are older than 30 days
-    db.collection('chats').doc(chatId).collection('messages')
+    // Determine the collection path based on whether it's a group or individual chat
+    const collectionPath = isGroup ? `groupchats/${chatId}/messages` : `chats/${chatId}/messages`;
+
+    // Query messages that are older than 30 days
+    db.collection(collectionPath)
         .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' to get messages older than 30 days
         .get()
         .then((querySnapshot) => {
@@ -4955,60 +4961,24 @@ function deleteMessages(chatId) {
         });
 }
 
-// Function to delete messages older than 30 days for a specific group
-function deleteGroupMessages(groupId) {
-    const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
-    
-    // Ask for user confirmation before proceeding
-    if (!confirm('Are you sure you want to delete messages older than 30 days in this group?')) {
-        console.log('Message deletion canceled by user.');
-        return;
-    }
-
-    // Query messages in the group that are older than 30 days
-    db.collection('groupchats').doc(groupId).collection('messages')
-        .where('timestamp', '<=', thirtyDaysAgo) // Use '<=' to get messages older than 30 days
-        .get()
-        .then((querySnapshot) => {
-            // Check if there are any messages to delete
-            if (querySnapshot.empty) {
-                console.log('No messages older than 30 days found.');
-                return;
-            }
-
-            // Create a batch to delete the messages
-            const batch = db.batch();
-
-            querySnapshot.forEach((doc) => {
-                batch.delete(doc.ref);
-            });
-
-            // Commit the batch delete
-            return batch.commit().then(() => {
-                console.log('Messages older than 30 days in the group have been deleted successfully.');
-            });
-        })
-        .catch((error) => {
-            console.error('Error deleting messages: ', error);
-        });
-}
-
 // Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, currentChatFriend);
-    const groupId = getGroupId(); // Assuming this function returns null if not in a group
+    const groupId = getGroupId(); // Fetch groupId if applicable
 
+    // Determine if it's a group or individual chat based on the presence of groupId
     if (groupId) {
-        deleteGroupMessages(groupId); // Call the delete function for group chats
+        deleteMessages(groupId, true); // Call the delete function for group chats
+    } else if (chatId) {
+        deleteMessages(chatId, false); // Call the delete function for individual chats
     } else {
-        deleteMessages(chatId); // Call the delete function for individual chats
+        console.error('No chat or group found for the current context.');
     }
 }
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
-
 
 
 
