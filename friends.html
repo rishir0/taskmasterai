@@ -4109,15 +4109,31 @@ function deleteMessages(chatId) {
 
 // Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
+    // Determine if we are in a group chat or individual chat
     const currentUser = firebase.auth().currentUser;
-    const chatId = getChatId(currentUser.email, currentChatFriend);
+    const chatIdPromise = getChatId(currentUser.email, currentChatFriend);
+    const groupIdPromise = getGroupId();
 
-    deleteMessages(chatId);
+    // Handle both promises in parallel
+    Promise.all([chatIdPromise, groupIdPromise])
+        .then(([chatId, groupId]) => {
+            if (groupId) {
+                // If groupId is available, it's a group chat
+                deleteGroupMessages(groupId);
+            } else if (chatId) {
+                // If chatId is available, it's an individual chat
+                deleteMessages(chatId);
+            } else {
+                console.error('No chat or group found for the current context.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error determining chat or group context: ', error);
+        });
 }
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
-
 
 function createMessageDiv(message, messageId) {
     const messageDiv = document.createElement('div');
