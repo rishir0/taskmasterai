@@ -4073,9 +4073,9 @@ function deleteMessages(chatId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Are you sure you want to delete messages older than 30 days?')) {
+    if (!confirm('Are you sure you want to delete messages older than 30 days from this chat?')) {
         console.log('Message deletion canceled by user.');
-        return;
+        return Promise.resolve();
     }
 
     // Query messages in the chat that are older than 30 days
@@ -4112,11 +4112,17 @@ function handleDeleteMessagesButtonClick() {
 
     if (currentGroupId) {
         // If in a group chat, use the group ID
-        deleteGroupMessages(currentGroupId);
+        deleteGroupMessages(currentGroupId).then(() => {
+            // Refresh the page after deletion
+            location.reload();
+        });
     } else if (currentChatFriend) {
         // If in an individual chat, use the chat ID
         const chatId = getChatId(currentUser.email, currentChatFriend);
-        deleteMessages(chatId);
+        deleteMessages(chatId).then(() => {
+            // Refresh the page after deletion
+            location.reload();
+        });
     } else {
         console.error('No chat context found for deletion.');
     }
@@ -4124,7 +4130,6 @@ function handleDeleteMessagesButtonClick() {
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
-
 
 
 function createMessageDiv(message, messageId) {
@@ -4979,9 +4984,9 @@ function deleteGroupMessages(groupId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Confirm deletion of messages older than 30 days?')) {
+    if (!confirm('Confirm deletion of messages older than 30 days from this group?')) {
         console.log('Message deletion canceled by user.');
-        return;
+        return Promise.resolve(); // Return a resolved promise to continue with the code
     }
 
     // Query messages in the group that are older than 30 days
