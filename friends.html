@@ -5020,16 +5020,7 @@ function deleteGroupMessages(groupId) {
         });
 }
 
-// Attach the delete function to the button click event using the dynamically fetched groupId
-document.getElementById('deleteMessagesButton').addEventListener('click', () => {
-    getGroupId().then(groupId => {
-        if (groupId) {
-            deleteGroupMessages(groupId); // Call the delete function with the retrieved groupId
-        } else {
-            console.error('No group found for the current user.');
-        }
-    });
-});
+document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
 
 
 
