@@ -4922,14 +4922,9 @@ function deleteGroupMessages(groupId) {
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', () => {
-    getCurrentGroupId()
-        .then(groupId => {
-            deleteGroupMessages(groupId);
-        })
-        .catch(error => {
-            console.error('Error fetching group ID:', error);
-        });
+    deleteGroupMessages(groupId);
 });
+
 
 // Call this function after user logs in to load existing group chats
 firebase.auth().onAuthStateChanged(user => {
