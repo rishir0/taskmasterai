@@ -4074,7 +4074,7 @@ function deleteMessages(chatId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Are you sure you want to delete messages older than 30 days from this chat?')) {
+    if (!confirm('Are you sure you want to delete messages older than 30 days?')) {
         console.log('Message deletion canceled by user.');
         return;
     }
@@ -4109,34 +4109,15 @@ function deleteMessages(chatId) {
 
 // Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
-    // Determine if we are in a group chat or individual chat
-
-currentChatFriend = friendEmail;
-    
     const currentUser = firebase.auth().currentUser;
-    const chatIdPromise = getChatId(currentUser.email, currentChatFriend);
-    const groupIdPromise = getGroupId();
+    const chatId = getChatId(currentUser.email, currentChatFriend);
 
-    // Handle both promises in parallel
-    Promise.all([chatIdPromise, groupIdPromise])
-        .then(([chatId, groupId]) => {
-            if (groupId) {
-                // If groupId is available, it's a group chat
-                deleteGroupMessages(groupId);
-            } else if (chatId) {
-                // If chatId is available, it's an individual chat
-                deleteMessages(chatId);
-            } else {
-                console.error('No chat or group found for the current context.');
-            }
-        })
-        .catch((error) => {
-            console.error('Error determining chat or group context: ', error);
-        });
+    deleteMessages(chatId);
 }
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
+
 
 function createMessageDiv(message, messageId) {
     const messageDiv = document.createElement('div');
@@ -4990,7 +4971,7 @@ function deleteGroupMessages(groupId) {
     const thirtyDaysAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)); // Calculate the timestamp 30 days ago
     
     // Ask for user confirmation before proceeding
-    if (!confirm('Confirm deletion of messages older than 30 days from this group?')) {
+    if (!confirm('Confirm deletion of messages older than 30 days?')) {
         console.log('Message deletion canceled by user.');
         return;
     }
@@ -5023,7 +5004,16 @@ function deleteGroupMessages(groupId) {
         });
 }
 
-document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
+// Attach the delete function to the button click event using the dynamically fetched groupId
+document.getElementById('deleteMessagesButton').addEventListener('click', () => {
+    getGroupId().then(groupId => {
+        if (groupId) {
+            deleteGroupMessages(groupId); // Call the delete function with the retrieved groupId
+        } else {
+            console.error('No group found for the current user.');
+        }
+    });
+});
 
 
 
