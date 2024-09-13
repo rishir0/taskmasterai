@@ -1884,10 +1884,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Close the modal when the Cancel button is clicked
+// Close the modal and refresh the page when the Cancel button is clicked
 document.getElementById('cancelCropBtn').addEventListener('click', function() {
     document.getElementById('cropModal').style.display = 'none';
+    location.reload(); // Refresh the page
 });
+
 
 </script>
 
