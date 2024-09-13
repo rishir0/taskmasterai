@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3973,16 +3972,45 @@ function openReplyModal(chatId, messageId, originalMessage) {
     // Fetch replies from Firestore
     db.collection('replies').where('messageId', '==', messageId).orderBy('timestamp', 'asc').get()
         .then((querySnapshot) => {
+            // Array to store promises for fetching display names
+            const replyPromises = [];
+
             querySnapshot.forEach((doc) => {
                 const replyData = doc.data();
                 const replyText = replyData.replyText;
-                const sender = replyData.sender;
+                const senderEmail = replyData.sender;
 
-                const replyElement = document.createElement('p');
-                replyElement.textContent = `${sender}: ${replyText}`;
-                modalMessage.appendChild(replyElement);
+                // Create a promise to fetch the display name from the users collection
+                const userPromise = db.collection('users').where('email', '==', senderEmail).limit(1).get()
+                    .then((userSnapshot) => {
+                        if (!userSnapshot.empty) {
+                            const userDoc = userSnapshot.docs[0];
+                            const displayName = userDoc.data().displayName || senderEmail; // Use email if no display name
+                            
+                            // Create and append the reply element
+                            const replyElement = document.createElement('p');
+                            replyElement.textContent = `${displayName}: ${replyText}`;
+                            modalMessage.appendChild(replyElement);
+                        } else {
+                            // If no user found, fallback to email
+                            const replyElement = document.createElement('p');
+                            replyElement.textContent = `${senderEmail}: ${replyText}`;
+                            modalMessage.appendChild(replyElement);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user data:', error);
+                    });
+
+                // Add the promise to the array
+                replyPromises.push(userPromise);
             });
 
+            // Wait for all user lookups to complete
+            return Promise.all(replyPromises);
+        })
+        .then(() => {
+            // Once all replies are processed, show the modal
             modal.style.display = "block";
         })
         .catch((error) => {
