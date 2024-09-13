@@ -1251,12 +1251,19 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         </svg>
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-<div class="default-profile-pictures">
+      <!-- New default profile pictures section -->
+      <div class="default-profile-pictures">
+        <h3>Select a Default Profile Picture</h3>
         <div class="default-pictures-list">
           <img src="default1.png" alt="Default 1" class="default-profile" onclick="selectProfilePicture('default1.png')">
           <img src="default2.png" alt="Default 2" class="default-profile" onclick="selectProfilePicture('default2.png')">
           <img src="default3.png" alt="Default 3" class="default-profile" onclick="selectProfilePicture('default3.png')">
           <img src="default4.png" alt="Default 4" class="default-profile" onclick="selectProfilePicture('default4.png')">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">
     <span class="edit-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
