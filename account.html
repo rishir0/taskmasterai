@@ -1928,6 +1928,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+function selectProfilePicture(imageUrl) {
+    // Replace the profile preview with the selected default picture
+    const profilePreview = document.getElementById('profilePreview');
+    profilePreview.innerHTML = `<img src="${imageUrl}" alt="Selected Profile Picture" class="selected-profile-picture">`;
+
+    // Get the current user's UID (Assuming you have a method to get the current user's UID)
+    const uid = firebase.auth().currentUser.uid;
+
+    // Update the user's Firestore document with the new profile picture URL
+    firebase.firestore().collection('users').doc(uid).set({
+        profilePicture: imageUrl
+    }, { merge: true })
+    .then(() => {
+        console.log('Profile picture updated successfully in Firestore.');
+    })
+    .catch(error => {
+        console.error('Error updating profile picture in Firestore: ', error);
+    });
+}
+
 
 // Close the modal and refresh the page when the Cancel button is clicked
 document.getElementById('cancelCropBtn').addEventListener('click', function() {
@@ -1950,6 +1970,7 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
     }, { once: true });
 });
 
+    
 
 </script>
 
