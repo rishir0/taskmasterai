@@ -1257,14 +1257,18 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
       <!-- New default profile pictures section -->
-      <div class="default-profile-pictures">
-        <div class="default-pictures-list">
-          <img src="default1.png" alt="Default 1" class="default-profile" onclick="selectProfilePicture('default1.png')">
-          <img src="default2.png" alt="Default 2" class="default-profile" onclick="selectProfilePicture('default2.png')">
-          <img src="default3.png" alt="Default 3" class="default-profile" onclick="selectProfilePicture('default3.png')">
-          <img src="default4.png" alt="Default 4" class="default-profile" onclick="selectProfilePicture('default4.png')">
-        </div>
-      </div>
+<div class="default-profile-pictures">
+  <div class="default-pictures-list">
+    <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/lightbulb.png?alt=media&token=ea0a7492-2880-4d58-8dad-447ee49f850b" 
+         alt="Light Bulb" class="default-profile" onclick="selectProfilePicture('lightbulb.png')">
+    <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/leaf.png?alt=media&token=d357347b-d62c-4880-a946-bc42805f8237" 
+         alt="Leaf" class="default-profile" onclick="selectProfilePicture('leaf.png')">
+    <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/phoenix.png?alt=media&token=2fccaf78-7aca-4d28-8fe3-0372e88a7fd2" 
+         alt="Phoenix" class="default-profile" onclick="selectProfilePicture('phoenix.png')">
+    <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/water.png?alt=media&token=1d5c125e-aee6-405c-b575-b86c762770e4" 
+         alt="Water" class="default-profile" onclick="selectProfilePicture('water.png')">
+  </div>
+</div>
 <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">
     <span class="edit-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
