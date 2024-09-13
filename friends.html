@@ -5017,8 +5017,31 @@ function deleteGroupMessages(groupId) {
         });
 }
 
+// Function to handle the delete button click event
+function handleDeleteMessagesButtonClick() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentGroupId) {
+        // If in a group chat, use the group ID
+        deleteGroupMessages(currentGroupId).finally(() => {
+            // Refresh the page after deletion attempt
+            location.reload();
+        });
+    } else if (currentChatFriend) {
+        // If in an individual chat, use the chat ID
+        const chatId = getChatId(currentUser.email, currentChatFriend);
+        deleteMessages(chatId).finally(() => {
+            // Refresh the page after deletion attempt
+            location.reload();
+        });
+    } else {
+        console.error('No chat context found for deletion.');
+    }
+}
+
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
+
 
 
 
