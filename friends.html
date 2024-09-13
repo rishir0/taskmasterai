@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4106,16 +4107,17 @@ function deleteMessages(chatId) {
         });
 }
 
+// Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
     const currentUser = firebase.auth().currentUser;
 
-    if (currentGroupId && !currentChatFriend) {
+    if (currentGroupId) {
         // If in a group chat, use the group ID
         deleteGroupMessages(currentGroupId).finally(() => {
             // Refresh the page after deletion attempt
             location.reload();
         });
-    } else if (!currentGroupId && currentChatFriend) {
+    } else if (currentChatFriend) {
         // If in an individual chat, use the chat ID
         const chatId = getChatId(currentUser.email, currentChatFriend);
         deleteMessages(chatId).finally(() => {
@@ -4123,21 +4125,9 @@ function handleDeleteMessagesButtonClick() {
             location.reload();
         });
     } else {
-        console.error('No valid chat context found for deletion.');
+        console.error('No chat context found for deletion.');
     }
 }
-
-// Function to handle chat switching between individual and group chats
-function switchToIndividualChat(friendEmail) {
-    currentChatFriend = friendEmail;
-    currentGroupId = null;  // Reset group chat context
-}
-
-function switchToGroupChat(groupId) {
-    currentGroupId = groupId;
-    currentChatFriend = null;  // Reset individual chat context
-}
-
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
@@ -5028,16 +5018,17 @@ function deleteGroupMessages(groupId) {
         });
 }
 
+// Function to handle the delete button click event
 function handleDeleteMessagesButtonClick() {
     const currentUser = firebase.auth().currentUser;
 
-    if (currentGroupId && !currentChatFriend) {
+    if (currentGroupId) {
         // If in a group chat, use the group ID
         deleteGroupMessages(currentGroupId).finally(() => {
             // Refresh the page after deletion attempt
             location.reload();
         });
-    } else if (!currentGroupId && currentChatFriend) {
+    } else if (currentChatFriend) {
         // If in an individual chat, use the chat ID
         const chatId = getChatId(currentUser.email, currentChatFriend);
         deleteMessages(chatId).finally(() => {
@@ -5045,21 +5036,9 @@ function handleDeleteMessagesButtonClick() {
             location.reload();
         });
     } else {
-        console.error('No valid chat context found for deletion.');
+        console.error('No chat context found for deletion.');
     }
 }
-
-// Function to handle chat switching between individual and group chats
-function switchToIndividualChat(friendEmail) {
-    currentChatFriend = friendEmail;
-    currentGroupId = null;  // Reset group chat context
-}
-
-function switchToGroupChat(groupId) {
-    currentGroupId = groupId;
-    currentChatFriend = null;  // Reset individual chat context
-}
-
 
 // Attach the delete function to the button click event
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
