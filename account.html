@@ -890,29 +890,34 @@ scrollbar-thumb {
 }
 
 
+/* Container for the default profile pictures section */
 .default-profile-pictures {
-  margin-top: 20px;
-  text-align: center;
+  margin-top: 10px; /* Adjusted margin to move the section upward */
+  text-align: center; /* Center aligns the section's content horizontally */
 }
 
+/* List of default profile pictures, arranged horizontally */
 .default-pictures-list {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 10px;
+  display: flex; /* Enables horizontal layout */
+  justify-content: center; /* Centers the pictures within the container */
+  gap: 15px; /* Adds space between each profile picture */
+  margin-top: 5px; /* Adjusted margin to move the pictures upward */
 }
 
+/* Individual profile picture styles */
 .default-profile {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  width: 50px; /* Sets a fixed width for each picture */
+  height: 50px; /* Sets a fixed height for each picture */
+  border-radius: 50%; /* Makes each picture circular */
+  cursor: pointer; /* Changes the cursor to indicate clickable elements */
+  transition: transform 0.3s ease; /* Smooth scaling effect when hovered */
 }
 
+/* Hover effect for profile pictures */
 .default-profile:hover {
-  transform: scale(1.1);
+  transform: scale(1.1); /* Slightly enlarges the picture when hovered */
 }
+
 
 
     </style>
@@ -1253,7 +1258,6 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
       <!-- New default profile pictures section -->
       <div class="default-profile-pictures">
-        <h3>Select a Default Profile Picture</h3>
         <div class="default-pictures-list">
           <img src="default1.png" alt="Default 1" class="default-profile" onclick="selectProfilePicture('default1.png')">
           <img src="default2.png" alt="Default 2" class="default-profile" onclick="selectProfilePicture('default2.png')">
