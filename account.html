@@ -1258,17 +1258,17 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         </svg>
       </div>
       <input type="file" id="profilePicture" accept="image/*" style="display: none;">
-      <!-- New default profile pictures section -->
+<!-- New default profile pictures section -->
 <div class="default-profile-pictures">
   <div class="default-pictures-list">
     <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/lightbulb.png?alt=media&token=ea0a7492-2880-4d58-8dad-447ee49f850b" 
-         alt="Light Bulb" class="default-profile" onclick="selectProfilePicture('lightbulb.png')">
+         alt="Light Bulb" class="default-profile" onclick="selectProfilePicture('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/lightbulb.png?alt=media&token=ea0a7492-2880-4d58-8dad-447ee49f850b')">
     <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/leaf.png?alt=media&token=d357347b-d62c-4880-a946-bc42805f8237" 
-         alt="Leaf" class="default-profile" onclick="selectProfilePicture('leaf.png')">
+         alt="Leaf" class="default-profile" onclick="selectProfilePicture('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/leaf.png?alt=media&token=d357347b-d62c-4880-a946-bc42805f8237')">
     <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/phoenix.png?alt=media&token=2fccaf78-7aca-4d28-8fe3-0372e88a7fd2" 
-         alt="Phoenix" class="default-profile" onclick="selectProfilePicture('phoenix.png')">
+         alt="Phoenix" class="default-profile" onclick="selectProfilePicture('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/phoenix.png?alt=media&token=2fccaf78-7aca-4d28-8fe3-0372e88a7fd2')">
     <img src="https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/water.png?alt=media&token=1d5c125e-aee6-405c-b575-b86c762770e4" 
-         alt="Water" class="default-profile" onclick="selectProfilePicture('water.png')">
+         alt="Water" class="default-profile" onclick="selectProfilePicture('https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/water.png?alt=media&token=1d5c125e-aee6-405c-b575-b86c762770e4')">
   </div>
 </div>
 <button type="button" class="edit-profile-picture-btn" onclick="document.getElementById('profilePicture').click()">
@@ -1947,7 +1947,6 @@ function selectProfilePicture(imageUrl) {
         console.error('Error updating profile picture in Firestore: ', error);
     });
 }
-
 
 // Close the modal and refresh the page when the Cancel button is clicked
 document.getElementById('cancelCropBtn').addEventListener('click', function() {
