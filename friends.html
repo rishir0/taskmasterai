@@ -2724,24 +2724,30 @@ body.night-mode {
 </div>
 
 
-<!-- Modal 7 for cropping group chat image -->
+<!-- Modal for editing group chat -->
 <div id="modal7" class="modal" style="display: none;">
   <div class="modal-content">
     <div class="modal-header">
-      <h2>Resize Group Chat Picture</h2>
+      <h2>Edit Group Chat</h2>
     </div>
     <div class="modal-body">
-      <img id="imageToCrop" src="" alt="Image to Crop" />
+      <label for="groupNameInput">Group Name:</label>
+      <input type="text" id="groupNameInput" value="" placeholder="Enter new group name">
+      
+      <button id="editGroupImageBtn" class="edit-image-button">Edit Group Image</button>
+      
+      <!-- Hidden file input to upload the group chat image -->
+      <input type="file" id="groupImageInput" style="display:none;">
+      
+      <img id="imageToCrop" src="" alt="Image to Crop" style="display:none; margin-top: 20px;">
     </div>
     <div class="modal-footer">
       <button id="cancelCropBtn" class="cancel-button">Cancel</button>
-      <button id="cropImageBtn" class="done-button">Done</button>
+      <button id="saveGroupChangesBtn" class="done-button">Save Changes</button>
     </div>
   </div>
 </div>
 
-<!-- Input for group chat image -->
-<input type="file" id="groupImageInput" style="display:none;">
 
 
 
@@ -4750,31 +4756,32 @@ function removeUserFromGroupChat(groupId, userEmail) {
 }
 
 function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
-    // Prompt the user for a new group name
-    const newGroupName = prompt('Enter the new group name:', currentGroupName);
-    
-    if (newGroupName && newGroupName.trim() !== '') {
-        db.collection('groupchats').doc(groupId).update({
-            groupName: newGroupName
-        }).then(() => {
-            console.log('Group name updated successfully!');
-        }).catch((error) => {
-            console.error('Error updating group name:', error);
-        });
-    }
-
-    // Open modal7 to edit the group chat image
+    // Open modal7 to edit the group chat
     document.getElementById('modal7').style.display = 'block';
 
-    // Reset the cropper and load the current group image
+    // Pre-fill the group name input with the current group name
+    const groupNameInput = document.getElementById('groupNameInput');
+    groupNameInput.value = currentGroupName;
+
+    // Set up the "Edit Group Image" button to open file input
+    const editGroupImageBtn = document.getElementById('editGroupImageBtn');
     const groupImageInput = document.getElementById('groupImageInput');
+    
+    editGroupImageBtn.addEventListener('click', function() {
+        groupImageInput.click(); // Open file dialog
+    });
+
+    // Reset the cropper and load the selected image
     groupImageInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const imageToCrop = document.getElementById('imageToCrop');
-                imageToCrop.src = e.target.result; // Load image into modal7
+                imageToCrop.style.display = 'block'; // Show the image preview
+                imageToCrop.src = e.target.result;   // Load image into modal7
+
+                // Initialize cropper for image cropping
                 cropper = new Cropper(imageToCrop, {
                     aspectRatio: 1, // Square aspect ratio
                     viewMode: 1
@@ -4783,58 +4790,77 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
             reader.readAsDataURL(file);
         }
     });
-    
-    // When the user clicks "Done", replace the group image and save it to Firestore
-    const cropImageBtn = document.getElementById('cropImageBtn');
-    cropImageBtn.addEventListener('click', function() {
-        const canvas = cropper.getCroppedCanvas({
-            width: 300,
-            height: 300
-        });
 
-        // Show loading indicator (if any)
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'block';
+    // Save changes (group name and image)
+    const saveGroupChangesBtn = document.getElementById('saveGroupChangesBtn');
+    saveGroupChangesBtn.addEventListener('click', function() {
+        const newGroupName = groupNameInput.value.trim();
+
+        if (newGroupName !== '' && newGroupName !== currentGroupName) {
+            // Update the group name in Firestore
+            db.collection('groupchats').doc(groupId).update({
+                groupName: newGroupName
+            }).then(() => {
+                console.log('Group name updated successfully!');
+            }).catch((error) => {
+                console.error('Error updating group name:', error);
+            });
         }
 
-        // Convert canvas to blob and upload to Firebase Storage
-        canvas.toBlob(function(blob) {
-            const storageRef = firebase.storage().ref(`group_pictures/${groupId}.png`);
-
-            // Upload the cropped image to Firebase Storage
-            storageRef.put(blob).then(snapshot => {
-                return snapshot.ref.getDownloadURL();  // Get the file's download URL
-            }).then(downloadURL => {
-                // Update the group chat document with the new image URL
-                return db.collection('groupchats').doc(groupId).update({
-                    groupImageURL: downloadURL
-                });
-            }).then(() => {
-                // Hide the cropping modal7
-                document.getElementById('modal7').style.display = 'none';
-
-                // Hide the loading indicator
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
-
-                console.log('Group chat image updated successfully!');
-            }).catch(error => {
-                console.error("Error uploading group chat image: ", error);
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300
             });
-        });
+
+            // Show loading indicator (if any)
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
+            }
+
+            // Convert canvas to blob and upload to Firebase Storage
+            canvas.toBlob(function(blob) {
+                const storageRef = firebase.storage().ref(`group_pictures/${groupId}.png`);
+
+                // Upload the cropped image to Firebase Storage
+                storageRef.put(blob).then(snapshot => {
+                    return snapshot.ref.getDownloadURL();  // Get the file's download URL
+                }).then(downloadURL => {
+                    // Update the group chat document with the new image URL
+                    return db.collection('groupchats').doc(groupId).update({
+                        groupImageURL: downloadURL
+                    });
+                }).then(() => {
+                    // Hide the cropping modal7
+                    document.getElementById('modal7').style.display = 'none';
+
+                    // Hide the loading indicator
+                    if (loadingIndicator) {
+                        loadingIndicator.style.display = 'none';
+                    }
+
+                    console.log('Group chat image updated successfully!');
+                }).catch(error => {
+                    console.error("Error uploading group chat image: ", error);
+                    if (loadingIndicator) {
+                        loadingIndicator.style.display = 'none';
+                    }
+                });
+            });
+        } else {
+            // If no new image is selected, just close the modal after updating the group name
+            document.getElementById('modal7').style.display = 'none';
+        }
     });
-    
-    // Cancel crop modal7
+
+    // Cancel the modal
     const cancelCropBtn = document.getElementById('cancelCropBtn');
     cancelCropBtn.addEventListener('click', function() {
         document.getElementById('modal7').style.display = 'none';
     });
 }
+
 
 
 
