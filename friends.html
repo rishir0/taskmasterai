@@ -4905,6 +4905,8 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
                     }
 
                     console.log('Group chat image updated successfully!');
+
+                    location.reload();
                 }).catch(error => {
                     console.error("Error uploading group chat image: ", error);
                     if (loadingIndicator) {
@@ -4922,6 +4924,8 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
     const cancelCropBtn = document.getElementById('cancelCropBtn');
     cancelCropBtn.addEventListener('click', function() {
         document.getElementById('modal7').style.display = 'none';
+
+        location.reload();
     });
 }
 
