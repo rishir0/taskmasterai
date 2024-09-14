@@ -5588,18 +5588,31 @@ function loadGCPicture(groupId, avatarContainer) {
                 const groupPictureUrl = groupData.groupPicture;
 
                 if (groupPictureUrl) {
-                    // Create and append the new group profile picture (if exists)
-                    const img = document.createElement('img');
+                    // Create a new Image object
+                    const img = new Image();
                     img.src = groupPictureUrl;
                     img.alt = 'Group Profile Picture';
                     img.style.width = '40px';  // Ensure the image has the same size as the SVG
                     img.style.height = '40px';
                     img.style.borderRadius = '50%';
 
-                    avatarContainer.innerHTML = '';  // Clear the current content
-                    avatarContainer.appendChild(img);
+                    // Handle the case where the image fails to load
+                    img.onerror = function() {
+                        console.error('Failed to load group profile picture, using default avatar');
+                        const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
+                        defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
+                        avatarContainer.innerHTML = '';  // Clear the current content
+                        avatarContainer.appendChild(defaultGroupAvatarClone);
+                    };
+
+                    // If the image loads successfully, display it
+                    img.onload = function() {
+                        avatarContainer.innerHTML = '';  // Clear the current content
+                        avatarContainer.appendChild(img);
+                    };
+
                 } else {
-                    // Use the default group avatar if no picture is set
+                    // No picture is set, use default group avatar
                     const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                     defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                     avatarContainer.innerHTML = ''; // Clear the current content
