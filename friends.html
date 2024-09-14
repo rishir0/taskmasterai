@@ -1493,13 +1493,14 @@ body.night-mode {
 }
 
 .avatar-container {
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center; /* Centers vertically */
-    background-color: #007BFF; /* Accent color (blue) */
-    width: 60px; /* Adjust container width */
-    height: 60px; /* Adjust container height */
-    border-radius: 50%; /* Make the container circular */
+        background-color: var(--accent-color); /* Accent color background */
+        border-radius: 50%; /* Circular style */
+        padding: 4px; /* Padding to create a circle around the SVG */
+        width: 60px; /* Adjust width for a larger circle */
+        height: 60px; /* Adjust height to match the width */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     overflow: hidden; /* Ensures SVG stays within the circle */
 }
 
