@@ -1503,11 +1503,21 @@ body.night-mode {
     overflow: hidden; /* Ensures SVG stays within the circle */
 }
 
-#defaultGroupAvatar {
-    width: 30px; /* SVG width to fit inside the circle */
-    height: 30px; /* SVG height to fit inside the circle */
-    fill: #fff; /* Ensure the SVG color is white */
-}
+    #defaultGroupAvatar {
+        background-color: var(--accent-color); /* Accent color background */
+        border-radius: 50%; /* Circular style */
+        padding: 4px; /* Padding to create a circle around the SVG */
+        width: 60px; /* Adjust width for a larger circle */
+        height: 60px; /* Adjust height to match the width */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #defaultGroupAvatar svg {
+        width: 40px; /* Size of the SVG inside the circle */
+        height: 40px;
+    }
 
 
         
