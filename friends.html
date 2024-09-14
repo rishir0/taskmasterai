@@ -2761,6 +2761,7 @@ body.night-mode {
     <!-- Add Firebase products that you want to use -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script> <!-- Added Firebase Storage -->
     <script>
 // Initialize Firebase
 var firebaseConfig = {
@@ -2775,7 +2776,7 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var auth = firebase.auth();
 const firestore = firebase.firestore();
-const storage = firebase.storage();  // Initialize Firebase Storage
+var storage = firebase.storage();  // Initialize Firebase Storage
 
 var emojiPicker = document.getElementById("emojiPicker");
 var recentEmojisContainer = document.getElementById("recentEmojis");
