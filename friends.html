@@ -1518,13 +1518,14 @@ body.night-mode {
     display: flex;
     flex-direction: column; /* Stack profile picture and button vertically */
     align-items: center; /* Center horizontally */
-    margin-top: 20px;
+    margin-top: 10px; /* Reduced space above the avatar container */
+    margin-bottom: 10px; /* Reduced space below the avatar container */
 }
 
 /* Profile picture styling */
 .avatar-container .profile-picture {
-    width: 100px;
-    height: 100px;
+    width: 80px; /* Smaller size for the profile picture */
+    height: 80px; /* Smaller size for the profile picture */
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px; /* Space between image and button */
@@ -1532,7 +1533,7 @@ body.night-mode {
 
 /* Edit image button styling */
 .avatar-container .edit-image-button {
-    padding: 10px 20px;
+    padding: 8px 16px; /* Adjust padding to match smaller profile picture */
     border: none;
     border-radius: 20px; /* More circular shape */
     background-color: var(--accent-color); /* Initial color for button */
@@ -1633,8 +1634,8 @@ body.night-mode {
 
 /* Edit group image button styling */
 #modal7 #editGroupImageBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
+    margin-top: 10px; /* Reduced space above the button */
+    padding: 8px 16px; /* Adjust padding to match smaller profile picture */
     border: none;
     border-radius: 20px; /* More circular shape */
     background-color: var(--accent-color); /* Initial color for button */
