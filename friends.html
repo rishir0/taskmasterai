@@ -4411,7 +4411,6 @@ function loadGroupChats() {
                 const avatarContainer = document.createElement('div');
                 avatarContainer.classList.add('group-avatar');
                 loadGCPicture(groupId, avatarContainer); // Load group profile picture
-                groupItem.appendChild(avatarContainer); // Add avatar container to the group item
 
                 const groupNameElement = document.createElement('span');
                 groupNameElement.textContent = groupName;
@@ -4511,7 +4510,7 @@ deleteButton.onclick = () => {
 buttonContainer.appendChild(deleteButton);
 
 
-
+groupItem.appendChild(avatarContainer); // Add avatar container to the group item
 groupItem.appendChild(buttonContainer);
 groupList.appendChild(groupItem);
 
