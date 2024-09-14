@@ -5642,6 +5642,7 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
 function loadGCPicture(groupId, avatarContainer) {
     // Fetch the default group avatar element
     const defaultGroupAvatar = document.querySelector('#defaultGroupAvatar');
+    const currentGroupImage = document.getElementById('currentGroupImage'); // Fetch the current group image element
 
     console.log('Loading group chat picture for group ID:', groupId);
 
@@ -5674,12 +5675,14 @@ function loadGCPicture(groupId, avatarContainer) {
                         const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                         defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                         avatarContainer.appendChild(defaultGroupAvatarClone);
+                        currentGroupImage.src = defaultGroupAvatarClone.src; // Update currentGroupImage
                     };
 
-                    // On successful image load, append it to the avatar container
+                    // On successful image load, append it to the avatar container and update currentGroupImage
                     img.onload = function() {
                         console.log('Group profile picture loaded successfully.');
                         avatarContainer.appendChild(img);
+                        currentGroupImage.src = groupImageURL; // Update currentGroupImage
                     };
                 } else {
                     // No picture is set, use default group avatar
@@ -5687,6 +5690,7 @@ function loadGCPicture(groupId, avatarContainer) {
                     const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                     defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                     avatarContainer.appendChild(defaultGroupAvatarClone);
+                    currentGroupImage.src = defaultGroupAvatarClone.src; // Update currentGroupImage
                 }
             } else {
                 console.error("No document found for group with ID:", groupId);
@@ -5696,6 +5700,7 @@ function loadGCPicture(groupId, avatarContainer) {
                 defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                 avatarContainer.innerHTML = ''; // Clear the current content
                 avatarContainer.appendChild(defaultGroupAvatarClone);
+                currentGroupImage.src = defaultGroupAvatarClone.src; // Update currentGroupImage
             }
         }).catch(error => {
             console.error("Error loading group profile picture:", error);
@@ -5705,9 +5710,9 @@ function loadGCPicture(groupId, avatarContainer) {
             defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
             avatarContainer.innerHTML = ''; // Clear the current content
             avatarContainer.appendChild(defaultGroupAvatarClone);
+            currentGroupImage.src = defaultGroupAvatarClone.src; // Update currentGroupImage
         });
 }
-
 
 </script>
 
