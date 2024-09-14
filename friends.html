@@ -5580,12 +5580,17 @@ function loadGCPicture(groupId, avatarContainer) {
     // Fetch the default group avatar element
     const defaultGroupAvatar = document.querySelector('#defaultGroupAvatar');
 
+    console.log('Loading group chat picture for group ID:', groupId);
+
     // Fetch the group chat document based on its ID
     db.collection('groupchats').doc(groupId).get()
         .then((doc) => {
             if (doc.exists) {
+                console.log('Document found for group ID:', groupId);
                 const groupData = doc.data();
                 const groupPictureUrl = groupData.groupPicture;
+
+                console.log('Group picture URL:', groupPictureUrl);
 
                 // Clear the current content inside avatarContainer
                 avatarContainer.innerHTML = '';
@@ -5601,7 +5606,8 @@ function loadGCPicture(groupId, avatarContainer) {
 
                     // Handle case where the image fails to load
                     img.onerror = function() {
-                        console.error('Failed to load group profile picture, using default avatar');
+                        console.error('Failed to load group profile picture from URL:', groupPictureUrl);
+                        console.log('Using default avatar instead.');
                         const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                         defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                         avatarContainer.appendChild(defaultGroupAvatarClone);
@@ -5609,25 +5615,29 @@ function loadGCPicture(groupId, avatarContainer) {
 
                     // On successful image load, append it to the avatar container
                     img.onload = function() {
+                        console.log('Group profile picture loaded successfully.');
                         avatarContainer.appendChild(img);
                     };
                 } else {
                     // No picture is set, use default group avatar
+                    console.log('No group picture URL found. Using default avatar.');
                     const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                     defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                     avatarContainer.appendChild(defaultGroupAvatarClone);
                 }
             } else {
-                console.error("No document found for group with ID: ", groupId);
+                console.error("No document found for group with ID:", groupId);
                 // If no document is found, use default group avatar
+                console.log('Using default avatar as no document is found.');
                 const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                 defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                 avatarContainer.innerHTML = ''; // Clear the current content
                 avatarContainer.appendChild(defaultGroupAvatarClone);
             }
         }).catch(error => {
-            console.error("Error loading group profile picture: ", error);
+            console.error("Error loading group profile picture:", error);
             // Use default group avatar on error
+            console.log('Using default avatar due to error.');
             const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
             defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
             avatarContainer.innerHTML = ''; // Clear the current content
