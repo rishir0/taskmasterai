@@ -1197,7 +1197,7 @@ body.night-mode {
 }
 
 /* General Modal Styles */
-.modal3 {
+#modal3 {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1000; /* Sit on top */
@@ -1207,57 +1207,69 @@ body.night-mode {
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    display: flex; /* Center modal content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 /* Specific Modal Content Styles */
-.modal3 .modal-content {
-    background-color: #333; /* Set modal background to gray */
-    margin: 15% auto; /* 15% from the top and centered */
+#modal3 .modal-content3 {
+    background-color: var(--card-bg); /* Set modal background to match #modal7 */
     padding: 20px;
-    width: 80%; /* Could be more or less, depending on screen size */
-    border-radius: var(--border-radius);
-    position: relative; /* Position relative to align buttons */
+    border-radius: 10px; /* Consistent border radius */
+    width: 400px; /* Width consistent with #modal7 */
+    max-width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for better visibility */
+    position: relative; /* Position relative to align close button */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
 }
 
 /* Close Button */
-.modal3 .close {
+#modal3 .close-button3 {
     color: #aaa;
-    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
-.modal3 .close:hover,
-.modal3 .close:focus {
-    color: white;
-    text-decoration: none;
+/* Hover effect for close button */
+#modal3 .close-button3:hover {
+    color: #fff;
 }
 
 /* Input and Button Styling */
-.modal3 #editFriendName {
-    width: calc(100% - 20px);
+#modal3 #editFriendName {
+    width: calc(100% - 22px); /* Full width minus padding */
     padding: 10px;
-    margin: 10px 0;
-    border-radius: var(--border-radius);
+    margin-top: 10px;
+    border-radius: 5px; /* Rounded corners */
     border: 1px solid #ccc;
     background-color: #444;
     color: #fff;
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
 
-.modal3 #saveFriendName {
+/* Save button styling */
+#modal3 #saveFriendName {
     background-color: var(--accent-color);
     border: none;
     padding: 10px 20px;
-    border-radius: var(--border-radius);
+    border-radius: 20px; /* Consistent with #modal7 */
     cursor: pointer;
     color: #fff;
     transition: background-color 0.3s;
+    margin-top: 20px;
 }
 
-.modal3 #saveFriendName:hover {
+/* Hover effect for save button */
+#modal3 #saveFriendName:hover {
     background-color: #2980b9;
 }
+
 
 /* Ensure SVG icons are appropriately sized */
 .modal3 .close svg {
@@ -1624,10 +1636,6 @@ body.night-mode {
 #modal7 #editGroupImageBtn:hover {
     background-color: #2980b9; /* Add a hover effect */
 }
-
-
-
-
         
     </style>
 </head>
@@ -2703,24 +2711,23 @@ body.night-mode {
 </div>
 
 <!-- Modal structure -->
-<div id="viewFriendModal" class="modal3">
+<div id="modal3" class="modal3">
     <div class="modal-content3">
         <span class="close-button3">&times;</span>
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                    <g id="Edit / Close_Circle">
-                        <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
-                            stroke="#ffffff"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round">
-                        </path>
-                    </g>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <g id="Edit / Close_Circle">
+                    <path id="Vector" d="M9 9L11.9999 11.9999M11.9999 11.9999L14.9999 14.9999M11.9999 11.9999L9 14.9999M11.9999 11.9999L14.9999 9M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
+                        stroke="#ffffff"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                    </path>
                 </g>
-            </svg>
-        </span>
+            </g>
+        </svg>
         <h3>Friend Information</h3>
         <p><strong>Name:</strong> <span id="friendDisplayName"></span></p>
         <p><strong>Email:</strong> <span id="friendEmail"></span></p>
@@ -2729,6 +2736,7 @@ body.night-mode {
         <button id="saveFriendName" class="save-button">Save</button>
     </div>
 </div>
+
 
 <!-- Modal for Replies -->
 <div id="modal4" class="modal4">
