@@ -1576,8 +1576,13 @@ body.night-mode {
 
 /* Modal body image for modal7 */
 #modal7 .modal-body img {
-    max-width: 100%;
+    max-width: 50%; /* Set a maximum width for the image */
+    max-height: 300px; /* Set a maximum height for the image */
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    display: block; /* Ensure the image is a block element for proper margin/padding */
+    margin: 0 auto; /* Center the image horizontally if it is smaller */
 }
+
 
 /* Profile picture styling for modal7 */
 #modal7 .profile-picture {
