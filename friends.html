@@ -1525,6 +1525,22 @@ body.night-mode {
 }
 
 
+    #defaultGroupAvatar {
+        background-color: var(--accent-color); /* Accent color background */
+        border-radius: 50%; /* Circular style */
+        padding: 4px; /* Padding to create a circle around the SVG */
+        width: 60px; /* Adjust width for a larger circle */
+        height: 60px; /* Adjust height to match the width */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #defaultGroupAvatar svg {
+        width: 40px; /* Size of the SVG inside the circle */
+        height: 40px;
+    }
+
 
 /* Modal background overlay */
 #modal7 {
@@ -2782,6 +2798,7 @@ body.night-mode {
     </div>
   </div>
 </div>
+
 
 
 
@@ -4800,10 +4817,6 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
     const groupNameInput = document.getElementById('groupNameInput');
     groupNameInput.value = currentGroupName;
 
-    // Set the current group image URL
-    const currentGroupImage = document.getElementById('currentGroupImage');
-    currentGroupImage.src = currentGroupImageURL;
-
     // Set up the "Edit Group Image" button to open file input
     const editGroupImageBtn = document.getElementById('editGroupImageBtn');
     const groupImageInput = document.getElementById('groupImageInput');
@@ -4882,9 +4895,6 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
                     }
 
                     console.log('Group chat image updated successfully!');
-
-                    // Reload the page
-                    location.reload();
                 }).catch(error => {
                     console.error("Error uploading group chat image: ", error);
                     if (loadingIndicator) {
@@ -4895,8 +4905,6 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
         } else {
             // If no new image is selected, just close the modal after updating the group name
             document.getElementById('modal7').style.display = 'none';
-            // Reload the page
-            location.reload();
         }
     });
 
@@ -4904,9 +4912,10 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
     const cancelCropBtn = document.getElementById('cancelCropBtn');
     cancelCropBtn.addEventListener('click', function() {
         document.getElementById('modal7').style.display = 'none';
-        // Reload the page
-        location.reload();
     });
+}
+
+
 
 
 function deleteGroupChat(groupId) {
