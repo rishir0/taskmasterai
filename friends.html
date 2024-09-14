@@ -1496,17 +1496,19 @@ body.night-mode {
     display: flex;
     justify-content: center; /* Centers horizontally */
     align-items: center; /* Centers vertically */
-    background-color: #007BFF; /* Example accent color (blue) */
+    background-color: #007BFF; /* Accent color (blue) */
     width: 60px; /* Adjust container width */
     height: 60px; /* Adjust container height */
     border-radius: 50%; /* Make the container circular */
+    overflow: hidden; /* Ensures SVG stays within the circle */
 }
 
 #defaultGroupAvatar {
-    width: 40px; /* Make the SVG larger */
-    height: 40px;
+    width: 30px; /* SVG width to fit inside the circle */
+    height: 30px; /* SVG height to fit inside the circle */
     fill: #fff; /* Ensure the SVG color is white */
 }
+
 
         
     </style>
