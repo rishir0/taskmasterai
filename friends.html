@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js"></script>
     <script src="theme.js"></script>
@@ -1521,6 +1523,80 @@ body.night-mode {
     }
 
 
+/* Modal styling for modal7 */
+#modal7 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure the modal is above other content */
+}
+
+/* Modal content for modal7 */
+#modal7 .modal-content {
+    background: var(--card-bg); /* Background color of the card */
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+}
+
+/* Modal body image for modal7 */
+#modal7 .modal-body img {
+    max-width: 100%;
+}
+
+/* Profile picture styling for modal7 */
+#modal7 .profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Modal footer for modal7 */
+#modal7 .modal-footer {
+    display: flex;
+    justify-content: space-between; /* Ensures buttons are placed at the two ends */
+    padding-top: 20px;
+}
+
+/* Done button styling for modal7 */
+#modal7 .done-button,
+#modal7 .cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px; /* More circular shape */
+    background-color: var(--accent-color); /* Initial color for buttons */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for done button */
+#modal7 .done-button:hover {
+    background-color: #2980b9; /* Add a hover effect */
+}
+
+/* Cancel button styling for modal7 */
+#modal7 .cancel-button {
+    background-color: var(--accent-color); /* Initial color for Cancel button */
+}
+
+/* Hover effect for cancel button */
+#modal7 .cancel-button:hover {
+    background-color: var(--danger-hover-color, #c9302c); /* Custom hover color for Cancel button */
+}
+
+
         
     </style>
 </head>
@@ -2647,7 +2723,27 @@ body.night-mode {
     </svg>
 </div>
 
-        
+
+<!-- Modal 7 for cropping group chat image -->
+<div id="modal7" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Resize Group Chat Picture</h2>
+    </div>
+    <div class="modal-body">
+      <img id="imageToCrop" src="" alt="Image to Crop" />
+    </div>
+    <div class="modal-footer">
+      <button id="cancelCropBtn" class="cancel-button">Cancel</button>
+      <button id="cropImageBtn" class="done-button">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Input for group chat image -->
+<input type="file" id="groupImageInput" style="display:none;">
+
+
 
 
 
@@ -4653,8 +4749,10 @@ function removeUserFromGroupChat(groupId, userEmail) {
     });
 }
 
-function editGroupChat(groupId, currentGroupName) {
+function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
+    // Prompt the user for a new group name
     const newGroupName = prompt('Enter the new group name:', currentGroupName);
+    
     if (newGroupName && newGroupName.trim() !== '') {
         db.collection('groupchats').doc(groupId).update({
             groupName: newGroupName
@@ -4664,7 +4762,81 @@ function editGroupChat(groupId, currentGroupName) {
             console.error('Error updating group name:', error);
         });
     }
+
+    // Open modal7 to edit the group chat image
+    document.getElementById('modal7').style.display = 'block';
+
+    // Reset the cropper and load the current group image
+    const groupImageInput = document.getElementById('groupImageInput');
+    groupImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageToCrop = document.getElementById('imageToCrop');
+                imageToCrop.src = e.target.result; // Load image into modal7
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1, // Square aspect ratio
+                    viewMode: 1
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // When the user clicks "Done", replace the group image and save it to Firestore
+    const cropImageBtn = document.getElementById('cropImageBtn');
+    cropImageBtn.addEventListener('click', function() {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+        });
+
+        // Show loading indicator (if any)
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'block';
+        }
+
+        // Convert canvas to blob and upload to Firebase Storage
+        canvas.toBlob(function(blob) {
+            const storageRef = firebase.storage().ref(`group_pictures/${groupId}.png`);
+
+            // Upload the cropped image to Firebase Storage
+            storageRef.put(blob).then(snapshot => {
+                return snapshot.ref.getDownloadURL();  // Get the file's download URL
+            }).then(downloadURL => {
+                // Update the group chat document with the new image URL
+                return db.collection('groupchats').doc(groupId).update({
+                    groupImageURL: downloadURL
+                });
+            }).then(() => {
+                // Hide the cropping modal7
+                document.getElementById('modal7').style.display = 'none';
+
+                // Hide the loading indicator
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+
+                console.log('Group chat image updated successfully!');
+            }).catch(error => {
+                console.error("Error uploading group chat image: ", error);
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Cancel crop modal7
+    const cancelCropBtn = document.getElementById('cancelCropBtn');
+    cancelCropBtn.addEventListener('click', function() {
+        document.getElementById('modal7').style.display = 'none';
+    });
 }
+
+
 
 function deleteGroupChat(groupId) {
     const confirmation = confirm('Are you sure you want to delete this group chat? This action cannot be undone.');
