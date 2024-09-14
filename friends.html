@@ -5588,17 +5588,17 @@ function loadGCPicture(groupId, avatarContainer) {
             if (doc.exists) {
                 console.log('Document found for group ID:', groupId);
                 const groupData = doc.data();
-                const groupPictureUrl = groupData.groupPicture;
+                const groupImageURL = groupData.groupImageURL;  // Updated to match your document structure
 
-                console.log('Group picture URL:', groupPictureUrl);
+                console.log('Group image URL:', groupImageURL);
 
                 // Clear the current content inside avatarContainer
                 avatarContainer.innerHTML = '';
 
-                if (groupPictureUrl) {
+                if (groupImageURL) {
                     // Create a new Image object
                     const img = new Image();
-                    img.src = groupPictureUrl;
+                    img.src = groupImageURL;
                     img.alt = 'Group Profile Picture';
                     img.style.width = '40px';  // Ensure the image has the same size as the SVG
                     img.style.height = '40px';
@@ -5606,7 +5606,7 @@ function loadGCPicture(groupId, avatarContainer) {
 
                     // Handle case where the image fails to load
                     img.onerror = function() {
-                        console.error('Failed to load group profile picture from URL:', groupPictureUrl);
+                        console.error('Failed to load group profile picture from URL:', groupImageURL);
                         console.log('Using default avatar instead.');
                         const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                         defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
@@ -5620,7 +5620,7 @@ function loadGCPicture(groupId, avatarContainer) {
                     };
                 } else {
                     // No picture is set, use default group avatar
-                    console.log('No group picture URL found. Using default avatar.');
+                    console.log('No group image URL found. Using default avatar.');
                     const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                     defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                     avatarContainer.appendChild(defaultGroupAvatarClone);
