@@ -1523,6 +1523,21 @@ body.night-mode {
     }
 
 
+/* Modal background overlay */
+#modal7 {
+    position: fixed; /* Fixed position to stay in place when scrolling */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it appears above other content */
+    overflow: auto; /* Ensure content doesn't overflow */
+}
+
 /* Modal content for modal7 */
 #modal7 .modal-content {
     background: var(--card-bg); /* Background color of the card */
@@ -1609,6 +1624,7 @@ body.night-mode {
 #modal7 #editGroupImageBtn:hover {
     background-color: #2980b9; /* Add a hover effect */
 }
+
 
 
 
