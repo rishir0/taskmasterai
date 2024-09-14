@@ -764,6 +764,16 @@ body.night-mode {
     display: flex;
     gap: 5px; /* Space between the buttons */
 }
+        
+.group-avatar {
+    flex-shrink: 0; /* Prevent the avatar from shrinking */
+}
+
+.group-name {
+    flex-grow: 1;
+    font-size: 16px;
+    font-weight: bold;
+}
 
 .group-item .edit-button,
 .group-item .delete-button {
@@ -2599,7 +2609,8 @@ body.night-mode {
         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
     </svg>
 </div>
-
+    
+<div style="display:none;">
     <svg id="defaultGroupAvatar" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
     </svg>
@@ -4408,7 +4419,8 @@ function loadGroupChats() {
                 const groupItem = document.createElement('div');
                 groupItem.classList.add('group-item');
                 groupItem.style.display = 'flex'; // Flexbox layout
-                groupItem.style.alignItems = 'center'; // Vertically align
+                groupItem.style.alignItems = 'center'; // Vertically align items
+                groupItem.style.justifyContent = 'flex-start'; // Left align items
 
                 // Create the group avatar container
                 const avatarContainer = document.createElement('div');
@@ -4424,9 +4436,9 @@ function loadGroupChats() {
                 groupNameElement.textContent = groupName;
                 groupNameElement.classList.add('group-name');
 
-                // Append the avatar container and group name to the group item
-                groupItem.appendChild(avatarContainer); // Avatar goes first
-                groupItem.appendChild(groupNameElement); // Then the name
+                // Append the avatar container BEFORE the group name
+                groupItem.appendChild(avatarContainer); // Avatar first
+                groupItem.appendChild(groupNameElement); // Then the group name
 
 
 // Button container
@@ -4521,7 +4533,6 @@ deleteButton.onclick = () => {
 buttonContainer.appendChild(deleteButton);
 
 
-groupItem.appendChild(avatarContainer); // Add avatar container to the group item
 groupItem.appendChild(buttonContainer);
 groupList.appendChild(groupItem);
 
