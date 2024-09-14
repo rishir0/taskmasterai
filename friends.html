@@ -1495,35 +1495,6 @@ body.night-mode {
     font-weight: 600; /* Semi-bold */
 }
 
-/* Avatar container styling */
-.avatar-container {
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.avatar-container .profile-picture {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 20px; /* Space between image and button */
-}
-
-.avatar-container .edit-image-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px; /* More circular shape */
-    background-color: var(--accent-color); /* Initial color for button */
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.avatar-container .edit-image-button:hover {
-    background-color: #2980b9; /* Hover effect */
-}
-
 
     #defaultGroupAvatar {
         background-color: var(--accent-color); /* Accent color background */
@@ -1541,6 +1512,39 @@ body.night-mode {
         height: 40px;
     }
 
+
+/* Avatar container styling */
+.avatar-container {
+    display: flex;
+    flex-direction: column; /* Stack profile picture and button vertically */
+    align-items: center; /* Center horizontally */
+    margin-top: 20px;
+}
+
+/* Profile picture styling */
+.avatar-container .profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px; /* Space between image and button */
+}
+
+/* Edit image button styling */
+.avatar-container .edit-image-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px; /* More circular shape */
+    background-color: var(--accent-color); /* Initial color for button */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for edit image button */
+.avatar-container .edit-image-button:hover {
+    background-color: #2980b9; /* Hover effect */
+}
 
 /* Modal background overlay */
 #modal7 {
@@ -1643,6 +1647,7 @@ body.night-mode {
 #modal7 #editGroupImageBtn:hover {
     background-color: #2980b9; /* Add a hover effect */
 }
+
         
     </style>
 </head>
