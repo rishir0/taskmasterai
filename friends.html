@@ -696,6 +696,7 @@ body.night-mode {
     background: var(--hover-bg);
 }
 
+
 .group-name {
     font-weight: bold;
     /* You can add more styles here if needed */
@@ -1686,7 +1687,7 @@ body.night-mode {
 
 </div>
     <div class="group-list">
-        <h3>Your Groups</h3>
+        <h2>Your Groups</h2>
         <div id="groupList">
             <!-- Groups will be dynamically added here -->
         </div>
@@ -4316,6 +4317,7 @@ function addToGroup() {
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then((docRef) => {
         console.log('Group chat created with ID:', docRef.id);
+        alert("Group created!"); // Show alert after group is created
         loadGroupChats(); // Reload the group chats after adding
     }).catch((error) => {
         console.error('Error creating group chat:', error);
