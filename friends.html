@@ -2600,6 +2600,9 @@ body.night-mode {
     </svg>
 </div>
 
+<svg id="defaultGroupAvatar" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM8 10C9.1 10 10 9.1 10 8C10 6.9 9.1 6 8 6C6.9 6 6 6.9 6 8C6 9.1 6.9 10 8 10ZM12 20C9.79 20 7.78 19.41 6.23 18.39C6.91 16.67 9.36 15.5 12 15.5C14.64 15.5 17.09 16.67 17.77 18.39C16.22 19.41 14.21 20 12 20ZM16 10C17.1 10 18 9.1 18 8C18 6.9 17.1 6 16 6C14.9 6 14 6.9 14 8C14 9.1 14.9 10 16 10ZM12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12Z" fill="currentColor"/>
+</svg>
 
 
         
@@ -4410,6 +4413,12 @@ function loadGroupChats() {
                 groupNameElement.textContent = groupName;
                 groupNameElement.classList.add('group-name');
                 groupItem.appendChild(groupNameElement);
+
+                groupList.appendChild(groupItem);
+            });
+        });
+}
+
 
 // Button container
 const buttonContainer = document.createElement('div');
