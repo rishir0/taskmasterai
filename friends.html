@@ -4394,10 +4394,17 @@ function loadGroupChats() {
 
             snapshot.forEach((doc) => {
                 const group = doc.data();
+                const groupId = doc.id;
                 const groupName = group.groupName || 'Unnamed Group';
 
                 const groupItem = document.createElement('div');
                 groupItem.classList.add('group-item');
+
+                // Create the group avatar container
+                const avatarContainer = document.createElement('div');
+                avatarContainer.classList.add('group-avatar');
+                loadGCPicture(groupId, avatarContainer); // Load group profile picture
+                groupItem.appendChild(avatarContainer); // Add avatar container to the group item
 
                 const groupNameElement = document.createElement('span');
                 groupNameElement.textContent = groupName;
@@ -5305,6 +5312,52 @@ function loadFriendProfilePicture(friendEmail, avatarContainer) {
             avatarContainer.appendChild(defaultAvatarClone);
         });
 }
+
+// Function to load group chat profile picture
+function loadGCPicture(groupId, avatarContainer) {
+    const defaultGroupAvatar = document.getElementById('defaultGroupAvatar');
+
+    // Fetch the group chat document based on its ID
+    db.collection('groupchats').doc(groupId).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const groupData = doc.data();
+                const groupPictureUrl = groupData.groupPicture;
+
+                if (groupPictureUrl) {
+                    // Create and append the new group profile picture
+                    const img = document.createElement('img');
+                    img.src = groupPictureUrl;
+                    img.alt = 'Group Profile Picture';
+                    img.style.width = '40px';  // Ensure the image has the same size as the SVG
+                    img.style.height = '40px';
+                    img.style.borderRadius = '50%';
+
+                    // Replace the SVG or default image with the new one
+                    avatarContainer.innerHTML = '';  // Clear the current content
+                    avatarContainer.appendChild(img);
+                } else {
+                    // Use default group avatar if no picture is set
+                    const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
+                    avatarContainer.innerHTML = ''; // Clear the current content
+                    avatarContainer.appendChild(defaultGroupAvatarClone);
+                }
+            } else {
+                console.error("No document found for group with ID: ", groupId);
+                // Use default group avatar if no document is found
+                const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
+                avatarContainer.innerHTML = ''; // Clear the current content
+                avatarContainer.appendChild(defaultGroupAvatarClone);
+            }
+        }).catch(error => {
+            console.error("Error loading group profile picture: ", error);
+            // Use default group avatar on error
+            const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
+            avatarContainer.innerHTML = ''; // Clear the current content
+            avatarContainer.appendChild(defaultGroupAvatarClone);
+        });
+}
+
 
 </script>
 
