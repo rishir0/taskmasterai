@@ -1225,6 +1225,60 @@ scrollbar-thumb {
     var auth = firebase.auth();
     const firestore = firebase.firestore();
 
+let inactivityTimeout;
+let isUserOffline = false;
+
+function setUserOnlineStatus(status) {
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+        const currentUserUID = currentUser.uid;
+        
+        db.collection('users').doc(currentUserUID).update({
+            online: status
+        }).then(() => {
+            
+            isUserOffline = !status; // Update isUserOffline based on the new status
+        }).catch((error) => {
+            console.error('Error updating online status: ', error);
+        });
+    } else {
+        console.error('No current user is logged in.'); // Log if currentUser is null
+    }
+}
+
+function updateUserStatusOnInteraction() {
+    if (isUserOffline) {
+        setUserOnlineStatus(true); // Set status to true if user is offline
+    }
+    clearTimeout(inactivityTimeout); // Clear previous timeout
+    inactivityTimeout = setTimeout(() => {
+        setUserOnlineStatus(false); // Set status to false after 2 minutes of inactivity
+    }, 120000); // 2 minutes 
+}
+
+// Bind the interaction function to all necessary events
+window.addEventListener('click', updateUserStatusOnInteraction);
+window.addEventListener('keydown', updateUserStatusOnInteraction);
+window.addEventListener('scroll', updateUserStatusOnInteraction);
+
+// Initialize user's online status to true when the page loads
+function initializeUserStatus() {
+    if (firebase.auth().currentUser) {
+        setUserOnlineStatus(true); // Set status to true when the page loads or reloads
+        updateUserStatusOnInteraction(); // Set up inactivity timeout
+    }
+}
+
+// Call initializeUserStatus on page load
+initializeUserStatus();
+
+// Update status to offline when the page is unloaded
+window.addEventListener('beforeunload', () => {
+    if (firebase.auth().currentUser) {
+        setUserOnlineStatus(true); // Set status to false when the user leaves
+    }
+});
+
 
     document.addEventListener('DOMContentLoaded', function() {
     auth.onAuthStateChanged(function(user) {
