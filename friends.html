@@ -5036,66 +5036,17 @@ function createAddFriendButton(friendEmail) {
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('viewBox', '0 -64 640 640');
     svg.setAttribute('xmlns', svgNS);
-    svg.setAttribute('fill', 'none'); // Set fill to none
-    svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG provided
+    svg.setAttribute('fill', '#ffffff'); // Set fill to white
 
-    // Define styles for the SVG
-    const style = document.createElementNS(svgNS, 'style');
-    style.textContent = `
-        .a, .b {
-            fill: none;
-            stroke: #ffffff;
-            stroke-linecap: round;
-            stroke-width: 1.5px;
-        }
-        .a {
-            stroke-linejoin: round;
-        }
-        .b {
-            stroke-linejoin: bevel;
-        }
-    `;
-    svg.appendChild(style);
-
-    // Define paths and shapes with correct stroke width and style
+    // Define path with the new SVG data
     const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('d', 'M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984');
-    path.setAttribute('class', 'a');
+    path.setAttribute('d', 'M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z');
+    path.setAttribute('fill', '#ffffff'); // Ensure the fill color is white
 
-    const circle1 = document.createElementNS(svgNS, 'circle');
-    circle1.setAttribute('cx', '12');
-    circle1.setAttribute('cy', '5.98404');
-    circle1.setAttribute('r', '5');
-    circle1.setAttribute('class', 'b');
-
-    const circle2 = document.createElementNS(svgNS, 'circle');
-    circle2.setAttribute('cx', '17');
-    circle2.setAttribute('cy', '18');
-    circle2.setAttribute('r', '5');
-    circle2.setAttribute('class', 'a');
-
-    const line1 = document.createElementNS(svgNS, 'line');
-    line1.setAttribute('x1', '15');
-    line1.setAttribute('x2', '19');
-    line1.setAttribute('y1', '18');
-    line1.setAttribute('y2', '18');
-    line1.setAttribute('class', 'a');
-
-    const line2 = document.createElementNS(svgNS, 'line');
-    line2.setAttribute('x1', '17');
-    line2.setAttribute('x2', '17');
-    line2.setAttribute('y1', '16');
-    line2.setAttribute('y2', '20');
-    line2.setAttribute('class', 'a');
-
-    // Append SVG elements to the SVG container
+    // Append path to the SVG container
     svg.appendChild(path);
-    svg.appendChild(circle1);
-    svg.appendChild(circle2);
-    svg.appendChild(line1);
-    svg.appendChild(line2);
 
     // Append SVG to the button
     button.appendChild(svg);
