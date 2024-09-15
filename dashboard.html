@@ -1902,6 +1902,7 @@ function loadTasks() {
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
                     dueDateText.style.color = 'var(--accent-color)';
+                    dueDateText.style.fontWeight = 'bold'; // Set the due date text to bold
                     taskDiv.appendChild(dueDateText);
                 }
 
