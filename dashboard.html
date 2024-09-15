@@ -1902,14 +1902,12 @@ if (task.dueDate) {
     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
     
     // Apply styles for the card effect and position
-    dueDateText.style.marginLeft = '60px'; // Pushes the due date more to the right
+    dueDateText.style.marginLeft = '100px'; // Pushes the due date more to the right
     dueDateText.style.color = '#c9302c';
     dueDateText.style.fontWeight = 'bold'; // Set the due date text to bold
     dueDateText.style.padding = '5px 10px'; // Adds padding inside the "card"
     dueDateText.style.borderRadius = '8px'; // Rounds the corners of the card
-    dueDateText.style.backgroundColor = 'var(--card-bg)'; // Light background for card effect
     dueDateText.style.display = 'inline-block'; // Ensures it behaves like a block element for padding
-    
     taskDiv.appendChild(dueDateText);
 }
 
