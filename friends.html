@@ -4818,14 +4818,20 @@ deleteButton.onclick = () => {
 };
 buttonContainer.appendChild(deleteButton);
 
+
 groupItem.appendChild(buttonContainer);
 groupList.appendChild(groupItem);
 
-groupItem.onclick = () => {
-    currentGroupId = doc.id; // Set the current group ID
-};
 
-groupList.appendChild(groupItem);
+                groupItem.onclick = () => {
+                    openGroupChat(doc.id);
+                    currentGroupId = doc.id; // Set the current group ID
+                };
+
+                groupList.appendChild(groupItem);
+            });
+        });
+}
 
 
 
