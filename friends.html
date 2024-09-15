@@ -4542,12 +4542,19 @@ function getUserEmail(userId) {
 let currentGroupId = null;
 
 // Function to add friends to a group
-function addToGroup() {
+async function addToGroup() {
     const groupEmails = document.getElementById("groupEmails").value.trim();
     const emailsArray = groupEmails.split(',').map(email => email.trim()).filter(email => email !== '');
 
     if (emailsArray.length === 0) {
         alert("Please enter at least one friend's email.");
+        return;
+    }
+
+    // Validate if all emails have '@' symbol
+    const invalidEmails = emailsArray.filter(email => !email.includes('@'));
+    if (invalidEmails.length > 0) {
+        alert("Some emails are invalid: " + invalidEmails.join(", "));
         return;
     }
 
@@ -4558,24 +4565,45 @@ function addToGroup() {
         return;
     }
 
-    const groupName = `Group ${Date.now()}`; // Example default group name
+    try {
+        // Validate if the emails exist in the 'users' collection
+        const emailPromises = emailsArray.map(async email => {
+            const userSnapshot = await db.collection('users').where('email', '==', email).get();
+            return userSnapshot.empty ? null : email;
+        });
 
-    // Create the group in Firestore
-    db.collection('groupchats').add({
-        groupName: groupName,
-        participants: emailsArray.concat(currentUser.email),
-        createdBy: currentUser.email,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then((docRef) => {
+        const validEmails = (await Promise.all(emailPromises)).filter(email => email !== null);
+
+        if (validEmails.length !== emailsArray.length) {
+            const invalidEmails = emailsArray.filter(email => !validEmails.includes(email));
+            alert("The following emails do not belong to registered users: " + invalidEmails.join(", "));
+            return;
+        }
+
+        // Add the current user's email to the list of participants
+        const participants = validEmails.concat(currentUser.email);
+
+        // Create the group in Firestore
+        const groupName = `Group ${Date.now()}`; // Example default group name
+        const docRef = await db.collection('groupchats').add({
+            groupName: groupName,
+            participants: participants,
+            createdBy: currentUser.email,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
         console.log('Group chat created with ID:', docRef.id);
         alert("Group created!"); // Show alert after group is created
         loadGroupChats(); // Reload the group chats after adding
-    }).catch((error) => {
+    } catch (error) {
         console.error('Error creating group chat:', error);
-    });
+        alert('Error creating group chat. Please try again later.');
+    }
 
-    document.getElementById("groupEmails").value = ""; // Clear the input field
+    // Clear the input field
+    document.getElementById("groupEmails").value = "";
 }
+
 
 function sendGroupMessage(groupId) {
     const messageText = document.getElementById("chatInput").value.trim();
