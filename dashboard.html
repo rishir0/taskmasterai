@@ -1901,7 +1901,7 @@ function loadTasks() {
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
-                    dueDateText.style.color = 'white';
+                    dueDateText.style.color = 'var(--accent-color)';
                     taskDiv.appendChild(dueDateText);
                 }
 
@@ -2003,9 +2003,35 @@ function createEditButton(id, type, currentValue) {
 function createDeleteButton(id, type) {
     const button = document.createElement('button');
     button.textContent = 'Delete';
-    button.onclick = () => deleteItem(id, type);
+    button.onclick = async () => {
+        if (type === 'task') {
+            try {
+                // Delete the task first
+                await deleteItem(id, type);
+
+                // Now find and delete the linked event
+                const eventsSnapshot = await db.collection('events')
+                    .where('linkedTaskId', '==', id)
+                    .get();
+
+                if (!eventsSnapshot.empty) {
+                    eventsSnapshot.forEach(async (eventDoc) => {
+                        await db.collection('events').doc(eventDoc.id).delete();
+                        console.log(`Deleted linked event with ID: ${eventDoc.id}`);
+                    });
+                } else {
+                    console.log('No linked event found for this task.');
+                }
+            } catch (error) {
+                console.error('Error deleting task or linked event:', error);
+            }
+        } else {
+            deleteItem(id, type); // For non-task items, just delete them normally
+        }
+    };
     return button;
 }
+
 
 // Function to open the edit modal and populate it with the current value
 function openEditModal(id, type, currentValue) {
