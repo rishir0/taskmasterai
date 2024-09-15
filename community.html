@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coming Soon...</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
     <style>
         :root {
             --primary-color: #6C63FF;
@@ -45,6 +46,16 @@
             backdrop-filter: blur(10px);
             max-width: 600px;
         }
+
+        .coming-soon-container svg {
+    width: 94px; /* Adjust as needed */
+    height: auto;
+    margin-right: -10px; /* Add spacing between the SVG and text */
+    margin-top: -30px; /* Adjust the top margin */
+    margin-bottom: -30px; /* Adjust the bottom margin */
+    color: var(--primary-color); /* Set your primary color here */
+}
+
 
         h1 {
             font-size: 3rem;
@@ -90,7 +101,7 @@
         .btn-instagram {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 13px;
         }
 
         .btn-instagram svg {
@@ -98,6 +109,8 @@
             height: 24px;
             fill: var(--text-color);
             transition: fill 0.3s ease;
+            gap: 8px;
+
         }
 
         /* Fixing hover issue - ensuring SVG remains visible */
@@ -108,7 +121,7 @@
 </head>
 <body>
     <div class="coming-soon-container">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 64 80" style="enable-background:new 0 0 64 64; fill: var(--primary-color);" xml:space="preserve" width="74" height="74">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 64 80" style="enable-background:new 0 0 64 64; fill: var(--primary-color);" xml:space="preserve" width="94" height="94">
             <g>
                 <path d="M23.6654549,35.0753593l8.0100098-2.9300537l0.1599731-0.1099854   c1.5800171-1.1199932,3.0900269-2.3499737,4.5200195-3.6900005c0.0499878-0.2999878,0.0800171-0.6099854,0.1099854-0.9199829   h-2.0700073c-0.5499878,0-1-0.4400024-1-1c0-0.5499878,0.4500122-1,1-1h2.0599976   c-0.4899902-5.960022-5.25-10.7299805-11.2099609-11.210022v2.0599976c0,0.5500488-0.4500122,1-1,1c-0.5599976,0-1-0.4499512-1-1   v-2.0599976c-5.9700317,0.4800415-10.7400522,5.25-11.2200327,11.210022h2.0599976c0.5499878,0,1,0.4500122,1,1   c0,0.5599976-0.4500122,1-1,1h-2.0599976c0.460022,5.6199932,4.7100229,10.1900005,10.1900034,11.0999737   c0.4400024-0.8800049,1.0900269-1.6399536,1.9000244-2.2099609L23.6654549,35.0753593z M23.245472,27.5953197v-5.0299683   c0-0.5500488,0.4400024-1,1-1c0.5499878,0,1,0.4499512,1,1v4.2999878l3.4899902,1.1199951   c0.5299683,0.1699829,0.8200073,0.7299805,0.6499634,1.25c-0.1300049,0.4299927-0.5299683,0.7000122-0.9499512,0.7000122   c-0.1000366,0-0.2000122-0.0200195-0.3000488-0.0499878l-4.1999512-1.3400269   C23.5254402,28.4153271,23.245472,28.0353222,23.245472,27.5953197z"/>
                 <path d="M21.5854378,41.1753349c0-0.2399902,0.0100098-0.4799805,0.0400391-0.7200317   c-6.6200571-1.2299805-11.6500254-7.0499878-11.6500254-14.0199566c0-7.8699951,6.4000254-14.2700195,14.2700205-14.2700195   c7.789978,0,14.1300049,6.2800293,14.25,14.0499878c0.8599854-0.8999634,1.6699829-1.8399658,2.4499512-2.8200073   l0.0100098-0.0099487C39.4054451,14.7353344,31.325428,8.375349,22.0054207,9.5653515   c-7.5699472,0.9599609-13.6699839,7.0799561-14.6299448,14.6499634   C6.1554441,33.79533,12.9354734,42.0853081,21.9654427,43.2653008c-0.0100098-0.0199585-0.0200195-0.0499878-0.0299683-0.0699463   C21.7054329,42.54533,21.5854378,41.8753471,21.5854378,41.1753349z"/>
@@ -129,7 +142,7 @@
             
             <!-- Instagram Button -->
             <button class="btn btn-instagram" onclick="window.open('https://www.instagram.com/taskmasteroneai/', '_blank')">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 32 32" fill="none" gap: 8px; xmlns="http://www.w3.org/2000/svg">
                     <rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint0_radial_87_7153)"></rect>
                     <rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint1_radial_87_7153)"></rect>
                     <rect x="2" y="2" width="28" height="28" rx="6" fill="url(#paint2_radial_87_7153)"></rect>
