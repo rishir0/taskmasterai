@@ -1864,16 +1864,32 @@ function createPlan() {
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
+        .orderBy('dueDate') // Order by dueDate, which will leave nulls at the top
+        .orderBy('createdAt') // Secondary order by creation date
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
+
+            const tasksWithDate = [];
+            const tasksWithoutDate = [];
+
             snapshot.forEach(doc => {
                 const task = doc.data();
+                if (task.dueDate) {
+                    tasksWithDate.push({ id: doc.id, task });
+                } else {
+                    tasksWithoutDate.push({ id: doc.id, task });
+                }
+            });
+
+            // Combine tasks without dates at the top, followed by those with dates
+            const sortedTasks = [...tasksWithoutDate, ...tasksWithDate];
+
+            sortedTasks.forEach(({ id, task }) => {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
-                // Check if due date exists and if it's passed
+                // If dueDate exists, check if it's passed
                 if (task.dueDate) {
                     const dueDate = task.dueDate.toDate();
                     const today = new Date();
@@ -1885,7 +1901,7 @@ function loadTasks() {
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '10px';
-                    dueDateText.style.color = 'gray';
+                    dueDateText.style.color = 'white';
                     taskDiv.appendChild(dueDateText);
                 }
 
@@ -1894,14 +1910,15 @@ function loadTasks() {
                 taskDiv.insertBefore(taskText, taskDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'task', task.task));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'task'));
-                
+                buttonContainer.appendChild(createEditButton(id, 'task', task.task));
+                buttonContainer.appendChild(createDeleteButton(id, 'task'));
+
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
         });
 }
+
 
 
 
