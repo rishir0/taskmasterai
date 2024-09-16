@@ -311,32 +311,7 @@ body.night-mode {
         }
 
 
-.chatbot-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 100%;
-    width: 100%;
-    margin: 0; /* Remove margin to take up full space */
-    border: none; /* Remove border if you want it seamless */
-    border-radius: 0; /* Remove border radius if you want it seamless */
-    box-shadow: none; /* Remove box-shadow for a cleaner look */
-    overflow: hidden;
-}
 
-.chatbot-header {
-    background-color: #333;
-    color: #fff;
-    padding: 16px;
-    text-align: center;
-}
-
-.chatbot-iframe {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
 
 /* Existing styles */
 .sidebar-toggle {
@@ -442,26 +417,21 @@ body.night-mode {
     margin-right: 300px; /* Space for sidebar */
 }
 
+
 .community-uploads {
     width: 99%;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
-    height: 970px;
+    height: 970px; /* Set a fixed height to make the card taller */
     overflow-y: auto; /* Enable vertical scrolling */
-    position: relative; /* Ensure proper positioning of sticky elements */
+
 }
 
 .community-uploads h2 {
     font-size: 1.8rem;
-    color: var(--primary-color);
+    color: white;
     margin-bottom: 20px;
-    position: sticky; /* Make the header sticky */
-    top: 0; /* Stick it to the top of the scrolling container */
-    background-color: var(--card-bg); /* Same background to avoid visual disruption */
-    z-index: 1; /* Ensure it's above the scrolling content */
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
 
 .search-bar input {
@@ -476,22 +446,22 @@ body.night-mode {
 
 .community-uploads .file-card {
     background-color: var(--hover-bg);
-    padding: 10px;
+    padding: 10px; /* Increased padding for a larger card */
     border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    width: 100%;
-    min-height: 80px;
+    width: 100%; /* Make the card take full width */
+    min-height: 80px; /* Optional: set a minimum height for a taller card */
 }
 
 .community-uploads .file-card p {
-    font-size: 1.2rem;
+    font-size: 1.2rem; /* Make the text slightly larger */
 }
 
 .community-uploads .file-card a {
-    padding: 10px 20px;
+    padding: 10px 20px; /* Adjust padding for the download button */
     background-color: var(--primary-color);
     color: var(--text-color);
     text-decoration: none;
@@ -502,58 +472,24 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
+
 .shared-files {
-    width: 300px;
+    width: 300px; /* Width of the sidebar */
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
-    position: fixed;
+    position: fixed; /* Fix to the right side */
     right: 0;
     top: 0;
-    height: 100%;
-    overflow-y: auto;
-    z-index: 1000;
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Scroll if content overflows */
+    
 }
 
 .shared-files h2 {
     font-size: 1.8rem;
     color: var(--primary-color);
     margin-bottom: 10px;
-    position: sticky; /* Make the "Your Shared Files" header sticky */
-    top: 0;
-    background-color: var(--card-bg);
-    z-index: 1;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.upload-section {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    text-align: center;
-    position: sticky; /* Stick the upload button */
-    top: 60px; /* Adjust the offset if needed */
-    background-color: var(--card-bg);
-    z-index: 1;
-}
-
-.upload-button {
-    padding: 10px 20px;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: inline-block;
-    transition: background-color 0.3s ease;
-}
-
-.upload-button:hover {
-    background-color: var(--accent-color);
-}
-
-#file-upload {
-    display: none;
 }
 
 .shared-files .file-card {
@@ -582,6 +518,32 @@ body.night-mode {
 .shared-files .file-card a:hover {
     background-color: var(--accent-color);
 }
+
+.upload-section {
+    margin-top: 10px; /* Space between last file and upload button */
+    margin-bottom: 20px; /* Space between last file and upload button */
+    text-align: center;
+}
+
+.upload-button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+    background-color: var(--accent-color);
+}
+
+#file-upload {
+    display: none;
+}
+
 
 
     </style>
