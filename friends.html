@@ -1600,7 +1600,16 @@ body.night-mode {
 }
 
 /* Done button styling for modal7 */
-#modal7 .done-button,
+#modal7 .done-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px; /* More circular shape */
+    background-color: var(--primary-color); /* Initial color for buttons */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+    
 #modal7 .cancel-button {
     padding: 10px 20px;
     border: none;
@@ -1643,7 +1652,7 @@ body.night-mode {
     padding: 8px 16px; /* Adjust padding to match smaller profile picture */
     border: none;
     border-radius: 20px; /* More circular shape */
-    background-color: var(--accent-color); /* Initial color for button */
+    background-color: var(--primary-color); /* Initial color for button */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
