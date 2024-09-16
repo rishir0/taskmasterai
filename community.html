@@ -442,21 +442,26 @@ body.night-mode {
     margin-right: 300px; /* Space for sidebar */
 }
 
-
 .community-uploads {
     width: 99%;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
-    height: 970px; /* Set a fixed height to make the card taller */
+    height: 970px;
     overflow-y: auto; /* Enable vertical scrolling */
-
+    position: relative; /* Ensure proper positioning of sticky elements */
 }
 
 .community-uploads h2 {
     font-size: 1.8rem;
     color: var(--primary-color);
     margin-bottom: 20px;
+    position: sticky; /* Make the header sticky */
+    top: 0; /* Stick it to the top of the scrolling container */
+    background-color: var(--card-bg); /* Same background to avoid visual disruption */
+    z-index: 1; /* Ensure it's above the scrolling content */
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .search-bar input {
@@ -471,22 +476,22 @@ body.night-mode {
 
 .community-uploads .file-card {
     background-color: var(--hover-bg);
-    padding: 10px; /* Increased padding for a larger card */
+    padding: 10px;
     border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    width: 100%; /* Make the card take full width */
-    min-height: 80px; /* Optional: set a minimum height for a taller card */
+    width: 100%;
+    min-height: 80px;
 }
 
 .community-uploads .file-card p {
-    font-size: 1.2rem; /* Make the text slightly larger */
+    font-size: 1.2rem;
 }
 
 .community-uploads .file-card a {
-    padding: 10px 20px; /* Adjust padding for the download button */
+    padding: 10px 20px;
     background-color: var(--primary-color);
     color: var(--text-color);
     text-decoration: none;
@@ -497,24 +502,58 @@ body.night-mode {
     background-color: var(--accent-color);
 }
 
-
 .shared-files {
-    width: 300px; /* Width of the sidebar */
+    width: 300px;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
-    position: fixed; /* Fix to the right side */
+    position: fixed;
     right: 0;
     top: 0;
-    height: 100%; /* Full height */
-    overflow-y: auto; /* Scroll if content overflows */
-    
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1000;
 }
 
 .shared-files h2 {
     font-size: 1.8rem;
     color: var(--primary-color);
     margin-bottom: 10px;
+    position: sticky; /* Make the "Your Shared Files" header sticky */
+    top: 0;
+    background-color: var(--card-bg);
+    z-index: 1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.upload-section {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: sticky; /* Stick the upload button */
+    top: 60px; /* Adjust the offset if needed */
+    background-color: var(--card-bg);
+    z-index: 1;
+}
+
+.upload-button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+    background-color: var(--accent-color);
+}
+
+#file-upload {
+    display: none;
 }
 
 .shared-files .file-card {
@@ -543,32 +582,6 @@ body.night-mode {
 .shared-files .file-card a:hover {
     background-color: var(--accent-color);
 }
-
-.upload-section {
-    margin-top: 10px; /* Space between last file and upload button */
-    margin-bottom: 20px; /* Space between last file and upload button */
-    text-align: center;
-}
-
-.upload-button {
-    padding: 10px 20px;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: inline-block;
-    transition: background-color 0.3s ease;
-}
-
-.upload-button:hover {
-    background-color: var(--accent-color);
-}
-
-#file-upload {
-    display: none;
-}
-
 
 
     </style>
@@ -698,50 +711,7 @@ body.night-mode {
                         <p>Physics Notes</p>
                         <a href="#">Download</a>
                     </div>
-                    <div class="file-card">
-                        <p>Biology Research Paper</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Economics Presentation</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Physics Notes</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Biology Research Paper</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Economics Presentation</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Physics Notes</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Biology Research Paper</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Economics Presentation</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Physics Notes</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Biology Research Paper</p>
-                        <a href="#">Download</a>
-                    </div>
-                    <div class="file-card">
-                        <p>Economics Presentation</p>
-                        <a href="#">Download</a>
-                    </div>
+
                 </div>
             </div>
         
@@ -767,102 +737,7 @@ body.night-mode {
                     <p>History Essay</p>
                     <a href="#">Download</a>
                 </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Math Assignment 1</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>Chemistry Lab Report</p>
-                    <a href="#">Download</a>
-                </div>
-                <div class="file-card">
-                    <p>History Essay</p>
-                    <a href="#">Download</a>
-                </div>
+                
 
                 <!-- Additional file cards here -->
             </div>
