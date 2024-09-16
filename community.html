@@ -712,35 +712,40 @@ body.night-mode {
     var auth = firebase.auth();
 
 // Function to handle file upload
-    document.getElementById('file-upload').addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+document.getElementById('file-upload').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        const user = auth.currentUser;
-        if (!user) return; // Ensure the user is authenticated
+    const user = auth.currentUser;
+    if (!user) return; // Ensure the user is authenticated
 
-        const storageRef = storage.ref(`uploads/${file.name}`);
-        const uploadTask = storageRef.put(file);
+    const userDoc = await db.collection('users').doc(user.uid).get(); // Assume user data is stored in 'users' collection
+    const displayName = userDoc.exists ? userDoc.data().displayName : 'Anonymous';
 
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                // Optional: Handle upload progress
-            }, 
-            (error) => {
-                console.error('Upload failed:', error);
-            }, 
-            async () => {
-                const fileUrl = await storageRef.getDownloadURL();
-                await db.collection('uploads').add({
-                    fileName: file.name,
-                    fileUrl,
-                    uploaderId: user.uid
-                });
-                loadSharedFiles(); // Refresh the current user's shared files
-                loadCommunityUploads(); // Refresh the community uploads
-            }
-        );
-    });
+    const storageRef = storage.ref(`uploads/${file.name}`);
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on('state_changed', 
+        (snapshot) => {
+            // Optional: Handle upload progress
+        }, 
+        (error) => {
+            console.error('Upload failed:', error);
+        }, 
+        async () => {
+            const fileUrl = await storageRef.getDownloadURL();
+            await db.collection('uploads').add({
+                fileName: file.name,
+                fileUrl,
+                uploaderId: user.uid,
+                uploaderName: displayName // Store the displayName
+            });
+            loadSharedFiles(); // Refresh the current user's shared files
+            loadCommunityUploads(); // Refresh the community uploads
+        }
+    );
+});
+
 
     // Function to load current user's shared files
     async function loadSharedFiles() {
@@ -761,24 +766,26 @@ body.night-mode {
         });
     }
 
-    // Function to load community uploads (excluding the current user's files)
-    async function loadCommunityUploads() {
-        const user = auth.currentUser;
-        const communityUploadsContainer = document.getElementById('community-uploads-container');
-        communityUploadsContainer.innerHTML = ''; // Clear previous entries
+// Function to load community uploads (excluding the current user's files)
+async function loadCommunityUploads() {
+    const user = auth.currentUser;
+    const communityUploadsContainer = document.getElementById('community-uploads-container');
+    communityUploadsContainer.innerHTML = ''; // Clear previous entries
 
-        const querySnapshot = await db.collection('uploads').where('uploaderId', '!=', user.uid).get();
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const fileCard = document.createElement('div');
-            fileCard.classList.add('file-card');
-            fileCard.innerHTML = `
-                <p>${data.fileName}</p>
-                <a href="${data.fileUrl}" target="_blank">Download</a>
-            `;
-            communityUploadsContainer.appendChild(fileCard);
-        });
-    }
+    const querySnapshot = await db.collection('uploads').where('uploaderId', '!=', user.uid).get();
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const fileCard = document.createElement('div');
+        fileCard.classList.add('file-card');
+        fileCard.innerHTML = `
+            <p>${data.fileName}</p>
+            <p>Uploaded by: ${data.uploaderName}</p> <!-- Display uploader's name -->
+            <a href="${data.fileUrl}" target="_blank">Download</a>
+        `;
+        communityUploadsContainer.appendChild(fileCard);
+    });
+}
+
 
     // Listen for auth changes and load the files accordingly
     auth.onAuthStateChanged((user) => {
