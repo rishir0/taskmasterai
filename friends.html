@@ -2923,8 +2923,8 @@ function updateUserStatusOnInteraction() {
     }
     clearTimeout(inactivityTimeout); // Clear previous timeout
     inactivityTimeout = setTimeout(() => {
-        setUserOnlineStatus(false); // Set status to false after 2 minutes of inactivity
-    }, 120000); // 2 minutes 
+        setUserOnlineStatus(false); // Set status to false after 30 seconds of inactivity
+    }, 30000); // 30 seconds 
 }
 
 // Bind the interaction function to all necessary events
