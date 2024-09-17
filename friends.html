@@ -3196,33 +3196,57 @@ function addFriend() {
     if (friendEmail && currentUser) {
         const userId = currentUser.uid;
 
+        // Check if the email belongs to a registered user
         db.collection('users').where('email', '==', friendEmail).get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    console.error('User with this email does not exist.');
+                    // If no user is found, show an alert
+                    alert('No registered user with this email exists.');
                     return;
                 }
 
+                // If the user is found, proceed with sending the friend request
                 const recipientDoc = querySnapshot.docs[0];
                 const recipientId = recipientDoc.id;
 
-                db.collection('friendRequests').add({
-                    senderId: userId,
-                    recipientId: recipientId,
-                    status: 'pending',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    console.log('Friend request sent!');
-                    alert('Friend request sent!');
-                }).catch((error) => {
-                    console.error('Error sending friend request:', error);
-                });
+                // Check if a friend request is already sent or pending
+                db.collection('friendRequests')
+                    .where('senderId', '==', userId)
+                    .where('recipientId', '==', recipientId)
+                    .where('status', '==', 'pending')
+                    .get()
+                    .then((snapshot) => {
+                        if (!snapshot.empty) {
+                            alert('Friend request already sent!');
+                        } else {
+                            // Send a new friend request
+                            db.collection('friendRequests').add({
+                                senderId: userId,
+                                recipientId: recipientId,
+                                status: 'pending',
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                            }).then(() => {
+                                console.log('Friend request sent!');
+                                alert('Friend request sent!');
+                            }).catch((error) => {
+                                console.error('Error sending friend request:', error);
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error checking existing friend requests:', error);
+                    });
+
             })
             .catch((error) => {
                 console.error('Error fetching user data:', error);
+                alert('Error fetching user data. Please try again.');
             });
+    } else {
+        alert('Please enter a valid email.');
     }
 }
+
 
 function listenForFriendRequests() {
     const currentUser = firebase.auth().currentUser;
