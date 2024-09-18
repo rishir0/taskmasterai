@@ -5872,9 +5872,19 @@ function checkCurrentFriendChat() {
     return currentChatFriend;
 }
 
-// Check if there's a current group chat
+// Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
     console.log("Current group chat:", currentGroupId);
+
+    if (currentGroupId) {
+        // Hide "no chat" message immediately if there's a group chat
+        const noChatMessage = document.getElementById('noChatSelected');
+        const chatMessages = document.getElementById('chatMessages');
+        
+        noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
+        chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
+    }
+
     return currentGroupId;
 }
 
@@ -5886,9 +5896,6 @@ function checkCurrentChat() {
     if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
         console.log("No current chat detected");
         showNoChatMessage();
-    } else {
-        console.log("Chat detected");
-        showChatMessages();
     }
 }
 
@@ -5896,6 +5903,7 @@ function checkCurrentChat() {
 window.onload = function() {
     checkCurrentChat(); // Initially check if there's any active chat
 };
+
 
 
 
