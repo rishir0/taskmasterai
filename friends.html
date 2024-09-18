@@ -3176,7 +3176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             return db.collection('users').doc(user.uid).update({
                                 displayName: newDisplayName
                             }).then(() => {
-                                console.log("Display name updated to include 'DEV' tag successfully!");
+                                
                             });
                         }
                     }
@@ -3226,7 +3226,7 @@ function addFriend() {
                                 status: 'pending',
                                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
                             }).then(() => {
-                                console.log('Friend request sent!');
+                                
                                 alert('Friend request sent!');
                             }).catch((error) => {
                                 console.error('Error sending friend request:', error);
@@ -3274,7 +3274,7 @@ function showAcceptPopup(senderEmail, requestId) {
     if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
         acceptFriendRequest(requestId, senderEmail);
     } else {
-        console.log('Friend request declined');
+        
     }
 }
 
@@ -3288,7 +3288,7 @@ function acceptFriendRequest(requestId, senderEmail) {
         db.collection('friendRequests').doc(requestId).update({
             status: 'accepted'
         }).then(() => {
-            console.log('Friend request accepted!');
+            
             
             // Add both users to accepted friends
             addToAcceptedFriends(userId, senderEmail);
@@ -3557,7 +3557,7 @@ pinnedFriendsButton.onclick = () => {
                         pinnedFriends: pinnedFriends
                     });
                 } else {
-                    console.log('This friend is already pinned.');
+                    
                 }
             })
             .then(() => {
@@ -3790,11 +3790,11 @@ unpinButton.onclick = () => {
                         pinnedFriends: pinnedFriends
                     });
                 } else {
-                    console.log('No pinned friends found');
+                    
                 }
             })
             .then(() => {
-                console.log('Friend unpinned successfully');
+                
                 // Optionally, you can refresh the list of pinned friends to reflect changes
                 loadPinnedFriends();
             })
@@ -3802,7 +3802,7 @@ unpinButton.onclick = () => {
                 console.error('Error unpinning friend:', error);
             });
     } else {
-        console.log('No current user found');
+        
     }
 };
 
@@ -3823,7 +3823,7 @@ unpinButton.onclick = () => {
                             });
                     });
                 } else {
-                    console.log('No pinned friends found');
+                    
                 }
             })
             .catch((error) => {
@@ -3868,7 +3868,7 @@ function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
                 }
             })
             .then(() => {
-                console.log(`${friendDisplayName} has been ${pinnedFriendsSet.has(friendEmail) ? 'pinned' : 'unpinned'}.`);
+                
                 refreshOnlineFriends(); // Refresh the friends list
             })
             .catch((error) => {
@@ -3983,7 +3983,7 @@ function saveFriendDisplayName(friendEmail, newFriendName) {
                     userDoc.ref.update({
                         [`friendDisplayNames.${friendEmail}`]: newFriendName
                     }).then(() => {
-                        console.log('Friend display name updated successfully.');
+                        
                     });
                 }
             });
@@ -4347,7 +4347,7 @@ function addReplyToMessage(chatId, messageId, replyText) {
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
     .then(() => {
-        console.log('Reply successfully added to Firestore.');
+        
         
         const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageDiv) {
@@ -4397,7 +4397,7 @@ function deleteMessages(chatId) {
     
     // Ask for user confirmation before proceeding
     if (!confirm('Are you sure you want to delete messages older than 30 days from this chat?')) {
-        console.log('Message deletion canceled by user.');
+        
         return Promise.resolve();
     }
 
@@ -4408,7 +4408,7 @@ function deleteMessages(chatId) {
         .then((querySnapshot) => {
             // Check if there are any messages to delete
             if (querySnapshot.empty) {
-                console.log('No messages older than 30 days found.');
+                
                 return;
             }
 
@@ -4421,7 +4421,7 @@ function deleteMessages(chatId) {
 
             // Commit the batch delete
             return batch.commit().then(() => {
-                console.log('Messages older than 30 days have been deleted successfully.');
+                
             });
         })
         .catch((error) => {
@@ -4635,7 +4635,7 @@ async function addToGroup() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log('Group chat created with ID:', docRef.id);
+        
         alert("Group created!"); // Show alert after group is created
         loadGroupChats(); // Reload the group chats after adding
     } catch (error) {
@@ -4986,7 +4986,7 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
             db.collection('groupchats').doc(groupId).update({
                 groupName: newGroupName
             }).then(() => {
-                console.log('Group name updated successfully!');
+                
             }).catch((error) => {
                 console.error('Error updating group name:', error);
             });
@@ -5025,7 +5025,7 @@ function editGroupChat(groupId, currentGroupName, currentGroupImageURL) {
                         loadingIndicator.style.display = 'none';
                     }
 
-                    console.log('Group chat image updated successfully!');
+                    
 
                     location.reload();
                 }).catch(error => {
@@ -5065,7 +5065,7 @@ function deleteGroupChat(groupId) {
         }).then(() => {
             return db.collection('groupchats').doc(groupId).delete();
         }).then(() => {
-            console.log('Group chat deleted successfully!');
+            
         }).catch((error) => {
             console.error('Error deleting group chat:', error);
         });
@@ -5202,7 +5202,7 @@ function sendFriendRequest(friendEmail) {
                     status: 'pending',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
-                    console.log('Friend request sent!');
+                    
                     alert('Friend request sent!');
                 }).catch((error) => {
                     console.error('Error sending friend request:', error);
@@ -5422,7 +5422,7 @@ function deleteGroupMessages(groupId) {
     
     // Ask for user confirmation before proceeding
     if (!confirm('Confirm deletion of messages older than 30 days from this group?')) {
-        console.log('Message deletion canceled by user.');
+        
         return Promise.resolve(); // Return a resolved promise to continue with the code
     }
 
@@ -5433,7 +5433,7 @@ function deleteGroupMessages(groupId) {
         .then((querySnapshot) => {
             // Check if there are any messages to delete
             if (querySnapshot.empty) {
-                console.log('No messages older than 30 days found.');
+                
                 return;
             }
 
@@ -5446,7 +5446,7 @@ function deleteGroupMessages(groupId) {
 
             // Commit the batch delete
             return batch.commit().then(() => {
-                console.log('Messages older than 30 days have been deleted successfully.');
+                
             });
         })
         .catch((error) => {
@@ -5643,7 +5643,7 @@ function loadSmallProfilePicture() {
                     avatarContainer.innerHTML = '';  // Clear the current content
                     avatarContainer.appendChild(img);
                 } else {
-                    console.log("No profile picture set for user.");
+                    
                 }
             } else {
                 console.error("No user document found.");
@@ -5719,17 +5719,17 @@ function loadGCPicture(groupId, avatarContainer) {
     const defaultGroupAvatar = document.querySelector('#defaultGroupAvatar');
     const currentGroupImage = document.getElementById('currentGroupImage'); // Fetch the current group image element
 
-    console.log('Loading group chat picture for group ID:', groupId);
+    ;
 
     // Fetch the group chat document based on its ID
     db.collection('groupchats').doc(groupId).get()
         .then((doc) => {
             if (doc.exists) {
-                console.log('Document found for group ID:', groupId);
+                
                 const groupData = doc.data();
                 const groupImageURL = groupData.groupImageURL;  // Updated to match your document structure
 
-                console.log('Group image URL:', groupImageURL);
+                
 
                 // Clear the current content inside avatarContainer
                 avatarContainer.innerHTML = '';
@@ -5746,7 +5746,7 @@ function loadGCPicture(groupId, avatarContainer) {
                     // Handle case where the image fails to load
                     img.onerror = function() {
                         console.error('Failed to load group profile picture from URL:', groupImageURL);
-                        console.log('Using default avatar instead.');
+                        
                         const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                         defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                         avatarContainer.appendChild(defaultGroupAvatarClone);
@@ -5757,7 +5757,7 @@ function loadGCPicture(groupId, avatarContainer) {
 
                     // On successful image load, append it to the avatar container and update currentGroupImage
                     img.onload = function() {
-                        console.log('Group profile picture loaded successfully.');
+                        
                         avatarContainer.appendChild(img);
                         if (currentGroupImage) {
                             currentGroupImage.src = groupImageURL; // Update currentGroupImage
@@ -5765,7 +5765,7 @@ function loadGCPicture(groupId, avatarContainer) {
                     };
                 } else {
                     // No picture is set, use default group avatar
-                    console.log('No group image URL found. Using default avatar.');
+                    
                     const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                     defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                     avatarContainer.appendChild(defaultGroupAvatarClone);
@@ -5776,7 +5776,7 @@ function loadGCPicture(groupId, avatarContainer) {
             } else {
                 console.error("No document found for group with ID:", groupId);
                 // If no document is found, use default group avatar
-                console.log('Using default avatar as no document is found.');
+                
                 const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
                 defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
                 avatarContainer.innerHTML = ''; // Clear the current content
@@ -5788,7 +5788,7 @@ function loadGCPicture(groupId, avatarContainer) {
         }).catch(error => {
             console.error("Error loading group profile picture:", error);
             // Use default group avatar on error
-            console.log('Using default avatar due to error.');
+            
             const defaultGroupAvatarClone = defaultGroupAvatar.cloneNode(true);
             defaultGroupAvatarClone.removeAttribute('id'); // Remove the ID to avoid duplication
             avatarContainer.innerHTML = ''; // Clear the current content
