@@ -5251,6 +5251,10 @@ function sendFriendRequest(friendEmail) {
     }
 }
 
+// Check if currentGroupId is already declared globally, if not, declare it
+if (typeof currentGroupId === 'undefined') {
+    var currentGroupId = null;
+}
 
 function loadGroupMessages(groupId) {
     currentGroupId = groupId; // Set the currentGroupId when a group is loaded
