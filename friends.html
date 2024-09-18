@@ -5254,9 +5254,8 @@ function sendFriendRequest(friendEmail) {
 let currentGroupId = null; // Ensure this variable is declared globally
 
 function loadGroupMessages(groupId) {
-
     currentGroupId = groupId; // Set the currentGroupId when a group is loaded
-    
+
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -5292,11 +5291,10 @@ function loadGroupMessages(groupId) {
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
-                        // Use innerHTML to insert the displayName (with potential <span class="dev-tag">DEV</span>)
                         senderElement.innerHTML = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
 
-                                                // Check if user is not friends with the sender
+                        // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
                         db.collection('users').where('email', '==', message.sender).get()
                             .then((snapshot) => {
@@ -5311,7 +5309,6 @@ function loadGroupMessages(groupId) {
                             .catch((error) => {
                                 console.error('Error checking friend status:', error);
                             });
-
                     }
 
                     const textElement = document.createElement('span');
