@@ -400,6 +400,19 @@ body.night-mode {
     position: relative; /* Allows absolute positioning of child elements */
 }
 
+/* Style for the no-chat-selected message */
+.no-chat-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+}
+
 #chatMessages {
     flex: 1;
     overflow-y: auto;
@@ -1911,10 +1924,14 @@ body.night-mode {
 </div>
 
 <div class="scrollable-content">
-<div class="chat-window">
-    <h2> <span id="chatWith"></span></h2>
-    <div id="chatMessages">
-        <!-- Chat messages will be displayed here -->
+    <div class="chat-window">
+        <h2><span id="chatWith"></span></h2>
+        <div id="chatMessages">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div id="noChatSelected" class="no-chat-message">
+            Click on a friend or group to start chatting
+        </div>
     </div>
     <div class="chat-input-container">
         <input 
@@ -4455,6 +4472,21 @@ function handleDeleteMessagesButtonClick() {
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
 
 
+function createMessageDiv(message, messageId) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message-container-2'); // Use the new class name
+    messageDiv.setAttribute('data-message-id', messageId);
+
+    // Create and append other elements like message text and options
+    const textElement = document.createElement('span');
+    textElement.classList.add('message-text');
+    textElement.textContent = message.message;
+    messageDiv.appendChild(textElement);
+
+    // Add other elements such as options container, reactions, etc.
+
+    return messageDiv;
+}
 
 
 function loadReplies(chatId, messageId, messageDiv) {
@@ -5783,6 +5815,26 @@ function loadGCPicture(groupId, avatarContainer) {
             }
         });
 }
+
+
+function updateChatWindow(currentChatFriend) {
+    const chatMessages = document.getElementById('chatMessages');
+    const noChatSelected = document.getElementById('noChatSelected');
+    
+    if (currentChatFriend) {
+        noChatSelected.style.display = 'none'; // Hide the message
+        chatMessages.style.display = 'block'; // Show chat messages
+        document.getElementById('chatWith').textContent = currentChatFriend; // Set the chat title
+    } else {
+        noChatSelected.style.display = 'flex'; // Show the message
+        chatMessages.style.display = 'none'; // Hide chat messages
+        document.getElementById('chatWith').textContent = ''; // Clear the chat title
+    }
+}
+
+// Example usage:
+// Assuming `currentChatFriend` is set elsewhere in your app
+updateChatWindow(currentChatFriend);
 
 </script>
 
