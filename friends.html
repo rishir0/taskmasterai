@@ -5254,6 +5254,9 @@ function sendFriendRequest(friendEmail) {
 
 
 function loadGroupMessages(groupId) {
+
+    currentGroupId = groupId;  // Set the current group ID
+
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -5844,8 +5847,8 @@ function checkCurrentChat() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    // Assuming currentChatFriend, groupId, and chatId are variables in your app
-    if (!currentChatFriend && !groupId && !chatId) {
+    // Check if there's a current friend chat or group chat
+    if (!currentChatFriend && !currentGroupId) {
         noChatMessage.style.display = 'flex'; // Show "no chat" message
         chatMessages.style.display = 'none'; // Hide chat messages
     } else {
@@ -5854,7 +5857,7 @@ function checkCurrentChat() {
     }
 }
 
-// Call this function when the app first loads to handle no chat friend
+// Call this function when the app first loads to handle no chat friend or group
 window.onload = function() {
     checkCurrentChat();
 };
