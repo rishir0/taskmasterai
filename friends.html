@@ -5867,19 +5867,31 @@ function showChatMessages() {
 }
 
 function checkCurrentFriendChat() {
-    // Check if there's a current friend chat or if group ID should be ignored
-
-    if (currentChatFriend || currentGroupId === null || currentGroupId === undefined) {
-        // Hide "no chat" message and show chat messages immediately
+    // Wait until a current friend chat is set
+    if (currentChatFriend) {
+        // Once currentChatFriend is set, hide "no chat" message, regardless of group ID
         const noChatMessage = document.getElementById('noChatSelected');
         const chatMessages = document.getElementById('chatMessages');
-        
+
+        // Log for debugging purposes
+        console.log("Friend chat detected. Hiding 'no chat' message");
+
+        // Hide "no chat" message and show chat messages
         noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
         chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
+    } else {
+        // Log for debugging purposes
+        console.log("No friend chat detected yet.");
     }
 
     return currentChatFriend;
 }
+
+// Example of how to use this function
+// Call this periodically to check if currentChatFriend has been set
+setInterval(() => {
+    checkCurrentFriendChat();
+}, 1000); // This will check every 1 second if a chat friend is set
 
 
 
