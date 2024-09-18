@@ -4455,21 +4455,6 @@ function handleDeleteMessagesButtonClick() {
 document.getElementById('deleteMessagesButton').addEventListener('click', handleDeleteMessagesButtonClick);
 
 
-function createMessageDiv(message, messageId) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message-container-2'); // Use the new class name
-    messageDiv.setAttribute('data-message-id', messageId);
-
-    // Create and append other elements like message text and options
-    const textElement = document.createElement('span');
-    textElement.classList.add('message-text');
-    textElement.textContent = message.message;
-    messageDiv.appendChild(textElement);
-
-    // Add other elements such as options container, reactions, etc.
-
-    return messageDiv;
-}
 
 
 function loadReplies(chatId, messageId, messageDiv) {
