@@ -5363,7 +5363,6 @@ function loadGroupMessages(groupId) {
 
                 checkCurrentGroupChat();
 
-                checkCurrentChat();
             });
         });
 }
@@ -5841,46 +5840,52 @@ function loadGCPicture(groupId, avatarContainer) {
 }
 
 
+// Show the "no chat" message
 function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
+    console.log("Showing 'no chat' message");
+
     noChatMessage.style.display = 'flex'; // Show "no chat" message
-    chatMessages.style.display = 'none'; // Hide chat messages
+    chatMessages.style.display = 'none';  // Hide chat messages
 }
 
+// Show chat messages
 function showChatMessages() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    noChatMessage.style.display = 'none'; // Hide "no chat" message
-    chatMessages.style.display = 'block'; // Show chat messages
+    console.log("Showing chat messages");
+
+    noChatMessage.style.display = 'none';  // Hide "no chat" message
+    chatMessages.style.display = 'block';  // Show chat messages
 }
 
+// Check if there's a current friend chat
 function checkCurrentFriendChat() {
-    // Check if there's a current friend chat
+    console.log("Current friend chat:", currentChatFriend);
     return currentChatFriend;
 }
 
+// Check if there's a current group chat
 function checkCurrentGroupChat() {
-    console.log("Current Group ID: ", currentGroupId); // Check the value of currentGroupId
+    console.log("Current group chat:", currentGroupId);
     return currentGroupId;
 }
 
-
+// Check both friend chat and group chat separately
 function checkCurrentChat() {
-    // Check both friend chat and group chat separately
+    console.log("Checking current chat - Friend:", checkCurrentFriendChat(), "Group:", checkCurrentGroupChat());
+
     if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
+        console.log("No current chat detected");
         showNoChatMessage();
     } else {
+        console.log("Chat detected");
         showChatMessages();
     }
 }
-
-// Call this function when the app first loads
-window.onload = function() {
-    checkCurrentChat();
-};
 
 
 
