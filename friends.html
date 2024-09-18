@@ -2934,6 +2934,8 @@ var recentEmojisContainer = document.getElementById("recentEmojis");
 let inactivityTimeout;
 let isUserOffline = false;
 
+let currentGroupId = null;
+
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
@@ -4619,7 +4621,7 @@ function getUserEmail(userId) {
     });
 }
 
-let currentGroupId = null;
+
 
 // Function to add friends to a group
 async function addToGroup() {
