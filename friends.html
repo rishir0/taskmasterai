@@ -2934,6 +2934,8 @@ var recentEmojisContainer = document.getElementById("recentEmojis");
 let inactivityTimeout;
 let isUserOffline = false;
 
+let currentGroupId = null;
+
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
@@ -4619,7 +4621,7 @@ function getUserEmail(userId) {
     });
 }
 
-let currentGroupId = null;
+
 
 // Function to add friends to a group
 async function addToGroup() {
@@ -5251,12 +5253,10 @@ function sendFriendRequest(friendEmail) {
     }
 }
 
-let currentGroupId = null; // Ensure this variable is declared globally
 
 function loadGroupMessages(groupId) {
-
     currentGroupId = groupId; // Set the currentGroupId when a group is loaded
-    
+
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -5292,11 +5292,10 @@ function loadGroupMessages(groupId) {
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
-                        // Use innerHTML to insert the displayName (with potential <span class="dev-tag">DEV</span>)
                         senderElement.innerHTML = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
 
-                                                // Check if user is not friends with the sender
+                        // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
                         db.collection('users').where('email', '==', message.sender).get()
                             .then((snapshot) => {
@@ -5311,7 +5310,6 @@ function loadGroupMessages(groupId) {
                             .catch((error) => {
                                 console.error('Error checking friend status:', error);
                             });
-
                     }
 
                     const textElement = document.createElement('span');
@@ -5366,6 +5364,7 @@ function loadGroupMessages(groupId) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
                 checkCurrentGroupChat();
+
             });
         });
 }
@@ -5843,20 +5842,28 @@ function loadGCPicture(groupId, avatarContainer) {
 }
 
 
+// Show the "no chat" message
 function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    noChatMessage.style.display = 'flex'; // Show "no chat" message
-    chatMessages.style.display = 'none'; // Hide chat messages
+    console.log("Showing 'no chat' message");
+
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
+    chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
 }
 
+// Show chat messages
 function showChatMessages() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    noChatMessage.style.display = 'none'; // Hide "no chat" message
-    chatMessages.style.display = 'block'; // Show chat messages
+    console.log("Showing chat messages");
+
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
+    chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
 }
 
 function checkCurrentFriendChat() {
@@ -5892,19 +5899,22 @@ function checkCurrentGroupChat() {
     return currentGroupId;
 }
 
+// Check both friend chat and group chat separately
 function checkCurrentChat() {
-    // Check both friend chat and group chat separately
+    console.log("Checking current chat - Friend:", checkCurrentFriendChat(), "Group:", checkCurrentGroupChat());
+
+    // If neither a friend chat nor a group chat is active, show "no chat" message
     if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
+        console.log("No current chat detected");
         showNoChatMessage();
-    } else {
-        showChatMessages();
     }
 }
 
 // Call this function when the app first loads
 window.onload = function() {
-    checkCurrentChat();
+    checkCurrentChat(); // Initially check if there's any active chat
 };
+
 
 
 
