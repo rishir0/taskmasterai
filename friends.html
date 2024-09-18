@@ -4263,6 +4263,8 @@ function openChat(friendEmail) {
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                            checkCurrentChat();
                         });
                     });
             }
@@ -5817,24 +5819,23 @@ function loadGCPicture(groupId, avatarContainer) {
 }
 
 
-function updateChatWindow(currentChatFriend) {
+function checkCurrentChat() {
+    const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
-    const noChatSelected = document.getElementById('noChatSelected');
-    
-    if (currentChatFriend) {
-        noChatSelected.style.display = 'none'; // Hide the message
-        chatMessages.style.display = 'block'; // Show chat messages
-        document.getElementById('chatWith').textContent = currentChatFriend; // Set the chat title
-    } else {
-        noChatSelected.style.display = 'flex'; // Show the message
+
+    if (!currentChatFriend) {
+        noChatMessage.style.display = 'flex'; // Show "no chat" message
         chatMessages.style.display = 'none'; // Hide chat messages
-        document.getElementById('chatWith').textContent = ''; // Clear the chat title
+    } else {
+        noChatMessage.style.display = 'none'; // Hide "no chat" message
+        chatMessages.style.display = 'block'; // Show chat messages
     }
 }
 
-// Example usage:
-// Assuming `currentChatFriend` is set elsewhere in your app
-updateChatWindow(currentChatFriend);
+// Call this function when the app first loads to handle no chat friend
+window.onload = function() {
+    checkCurrentChat();
+};
 
 </script>
 
