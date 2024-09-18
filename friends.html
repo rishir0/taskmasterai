@@ -405,13 +405,15 @@ body.night-mode {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    color: var(--secondary-color);
+    padding-top: 50px; /* Moves the message slightly upwards */
+    height: calc(100% - 50px); /* Adjust height to keep the padding in balance */
+    color: var(--primary-color); /* Change text color to primary */
     font-size: 1.5rem;
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1); /* Keeps the glass background */
     border-radius: var(--border-radius);
 }
+
 
 #chatMessages {
     flex: 1;
@@ -5341,6 +5343,8 @@ function loadGroupMessages(groupId) {
 
                 // Scroll to the bottom of the chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                checkCurrentChat();
             });
         });
 }
