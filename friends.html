@@ -400,31 +400,6 @@ body.night-mode {
     position: relative; /* Allows absolute positioning of child elements */
 }
 
-/* Style for the no-chat-selected message */
-.no-chat-message {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: -50px; /* Moves the message slightly upwards */
-    height: calc(100vh + 50px); /* Adjust height as needed */
-    color: white; /* Change text color to primary */
-    font-size: 2.5rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1); /* Keeps the glass background */
-    border-radius: var(--border-radius);
-    margin-bottom: 15px;
-    margin-top: -25px;
-}
-
-/* SVG size and color */
-.no-chat-message .chat-svg {
-    width: 2.5rem; /* Same size as the text */
-    height: 2.5rem;
-    margin-right: 10px;
-    fill: white;
-}
-
-
 #chatMessages {
     flex: 1;
     overflow-y: auto;
@@ -1936,22 +1911,11 @@ body.night-mode {
 </div>
 
 <div class="scrollable-content">
-    <div class="chat-window">
-        <h2><span id="chatWith"></span></h2>
-        <div id="chatMessages">
-            <!-- Chat messages will be displayed here -->
-        </div>
-        <div id="noChatSelected" class="no-chat-message">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="chat-svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier"> 
-                    <path d="M7 7L5.5 5.5M15 7L16.5 5.5M5.5 16.5L7 15M11 5L11 3M5 11L3 11M17.1603 16.9887L21.0519 15.4659C21.4758 15.3001 21.4756 14.7003 21.0517 14.5346L11.6992 10.8799C11.2933 10.7213 10.8929 11.1217 11.0515 11.5276L14.7062 20.8801C14.8719 21.304 15.4717 21.3042 15.6375 20.8803L17.1603 16.9887Z" 
-                          stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> 
-                </g>
-            </svg>
-            <span>Click on a friend or group to start chatting</span>
-        </div>
+<div class="chat-window">
+    <h2> <span id="chatWith"></span></h2>
+    <div id="chatMessages">
+        <!-- Chat messages will be displayed here -->
+    </div>
     <div class="chat-input-container">
         <input 
             type="text" 
@@ -1961,7 +1925,7 @@ body.night-mode {
             autocomplete="on" 
             aria-label="Chat message input"
         >
-        <button onclick="sendMessage">
+        <button onclick="sendMessage(currentGroupId)">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -4282,8 +4246,6 @@ function openChat(friendEmail) {
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
-
-                            checkCurrentChat();
                         });
                     });
             }
@@ -5254,8 +5216,6 @@ function sendFriendRequest(friendEmail) {
 
 
 function loadGroupMessages(groupId) {
-    currentGroupId = groupId;  // Set the current group ID
-
     db.collection('groupchats').doc(groupId).collection('messages')
         .orderBy('timestamp')
         .onSnapshot((snapshot) => {
@@ -5267,7 +5227,6 @@ function loadGroupMessages(groupId) {
                 ...doc.data()
             }));
 
-            // Fetch display names for group chat messages
             const fetchDisplayNamesPromises = messages.map(async (message) => {
                 if (message.sender === firebase.auth().currentUser.email) {
                     return { ...message, senderDisplayName: null };
@@ -5292,10 +5251,11 @@ function loadGroupMessages(groupId) {
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
+                        // Use innerHTML to insert the displayName (with potential <span class="dev-tag">DEV</span>)
                         senderElement.innerHTML = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
 
-                        // Check if the current user is friends with the sender
+                                                // Check if user is not friends with the sender
                         const currentUser = firebase.auth().currentUser;
                         db.collection('users').where('email', '==', message.sender).get()
                             .then((snapshot) => {
@@ -5310,6 +5270,7 @@ function loadGroupMessages(groupId) {
                             .catch((error) => {
                                 console.error('Error checking friend status:', error);
                             });
+
                     }
 
                     const textElement = document.createElement('span');
@@ -5362,8 +5323,6 @@ function loadGroupMessages(groupId) {
 
                 // Scroll to the bottom of the chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                checkCurrentChat();
             });
         });
 }
@@ -5839,27 +5798,6 @@ function loadGCPicture(groupId, avatarContainer) {
             }
         });
 }
-
-
-function checkCurrentChat() {
-    const noChatMessage = document.getElementById('noChatSelected');
-    const chatMessages = document.getElementById('chatMessages');
-
-    // Check if there's a current friend chat or group chat
-    if (!currentChatFriend && !currentGroupId) {
-        noChatMessage.style.display = 'flex'; // Show "no chat" message
-        chatMessages.style.display = 'none'; // Hide chat messages
-    } else {
-        noChatMessage.style.display = 'none'; // Hide "no chat" message
-        chatMessages.style.display = 'block'; // Show chat messages
-    }
-}
-
-// Call this function when the app first loads to handle no chat friend or group
-window.onload = function() {
-    checkCurrentChat();
-};
-
 
 </script>
 
