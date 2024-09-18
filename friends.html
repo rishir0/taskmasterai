@@ -5361,7 +5361,7 @@ function loadGroupMessages(groupId) {
                 // Scroll to the bottom of the chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                checkCurrentChat();
+                checkCurrentGroupChat();
             });
         });
 }
@@ -5839,24 +5839,46 @@ function loadGCPicture(groupId, avatarContainer) {
 }
 
 
-function checkCurrentChat() {
+function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    // Check if there's a current friend chat or group chat
-    if (!currentChatFriend && !currentGroupId) {
-        noChatMessage.style.display = 'flex'; // Show "no chat" message
-        chatMessages.style.display = 'none'; // Hide chat messages
+    noChatMessage.style.display = 'flex'; // Show "no chat" message
+    chatMessages.style.display = 'none'; // Hide chat messages
+}
+
+function showChatMessages() {
+    const noChatMessage = document.getElementById('noChatSelected');
+    const chatMessages = document.getElementById('chatMessages');
+
+    noChatMessage.style.display = 'none'; // Hide "no chat" message
+    chatMessages.style.display = 'block'; // Show chat messages
+}
+
+function checkCurrentFriendChat() {
+    // Check if there's a current friend chat
+    return currentChatFriend;
+}
+
+function checkCurrentGroupChat() {
+    // Check if there's a current group chat
+    return currentGroupId;
+}
+
+function checkCurrentChat() {
+    // Check both friend chat and group chat separately
+    if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
+        showNoChatMessage();
     } else {
-        noChatMessage.style.display = 'none'; // Hide "no chat" message
-        chatMessages.style.display = 'block'; // Show chat messages
+        showChatMessages();
     }
 }
 
-// Call this function when the app first loads to handle no chat friend or group
+// Call this function when the app first loads
 window.onload = function() {
     checkCurrentChat();
 };
+
 
 
 </script>
