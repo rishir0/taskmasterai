@@ -5254,7 +5254,6 @@ function sendFriendRequest(friendEmail) {
 
 
 function loadGroupMessages(groupId) {
-
     currentGroupId = groupId;  // Set the current group ID
 
     db.collection('groupchats').doc(groupId).collection('messages')
@@ -5268,6 +5267,7 @@ function loadGroupMessages(groupId) {
                 ...doc.data()
             }));
 
+            // Fetch display names for group chat messages
             const fetchDisplayNamesPromises = messages.map(async (message) => {
                 if (message.sender === firebase.auth().currentUser.email) {
                     return { ...message, senderDisplayName: null };
@@ -5292,11 +5292,10 @@ function loadGroupMessages(groupId) {
                     if (message.senderDisplayName) {
                         const senderElement = document.createElement('span');
                         senderElement.classList.add('message-sender');
-                        // Use innerHTML to insert the displayName (with potential <span class="dev-tag">DEV</span>)
                         senderElement.innerHTML = `${message.senderDisplayName}: `;
                         messageElement.appendChild(senderElement);
 
-                                                // Check if user is not friends with the sender
+                        // Check if the current user is friends with the sender
                         const currentUser = firebase.auth().currentUser;
                         db.collection('users').where('email', '==', message.sender).get()
                             .then((snapshot) => {
@@ -5311,7 +5310,6 @@ function loadGroupMessages(groupId) {
                             .catch((error) => {
                                 console.error('Error checking friend status:', error);
                             });
-
                     }
 
                     const textElement = document.createElement('span');
