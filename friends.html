@@ -4281,6 +4281,8 @@ function openChat(friendEmail) {
 
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                            checkCurrentChat();
                         });
                     });
             }
@@ -5358,6 +5360,8 @@ function loadGroupMessages(groupId) {
 
                 // Scroll to the bottom of the chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                checkCurrentChat();
             });
         });
 }
