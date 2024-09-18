@@ -2933,6 +2933,7 @@ var recentEmojisContainer = document.getElementById("recentEmojis");
 
 let inactivityTimeout;
 let isUserOffline = false;
+let currentGroupId = null; // Ensure this variable is declared globally
 
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
@@ -5251,7 +5252,6 @@ function sendFriendRequest(friendEmail) {
     }
 }
 
-let currentGroupId = null; // Ensure this variable is declared globally
 
 function loadGroupMessages(groupId) {
     currentGroupId = groupId; // Set the currentGroupId when a group is loaded
