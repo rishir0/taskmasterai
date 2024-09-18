@@ -5847,7 +5847,6 @@ function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    console.log("Showing 'no chat' message");
 
     // Use !important to ensure visibility is forced
     noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
@@ -5859,7 +5858,6 @@ function showChatMessages() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    console.log("Showing chat messages");
 
     // Use !important to ensure visibility is forced
     noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
@@ -5868,7 +5866,6 @@ function showChatMessages() {
 
 function checkCurrentFriendChat() {
     // Check if there's a current friend chat
-    console.log("Current friend chat:", currentChatFriend);
 
     if (currentChatFriend) {
         // Hide "no chat" message and show chat messages immediately if there's a friend chat
@@ -5885,7 +5882,6 @@ function checkCurrentFriendChat() {
 
 // Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
-    console.log("Current group chat:", currentGroupId);
 
     if (currentGroupId) {
         // Hide "no chat" message immediately if there's a group chat
@@ -5901,11 +5897,9 @@ function checkCurrentGroupChat() {
 
 // Check both friend chat and group chat separately
 function checkCurrentChat() {
-    console.log("Checking current chat - Friend:", checkCurrentFriendChat(), "Group:", checkCurrentGroupChat());
 
     // If neither a friend chat nor a group chat is active, show "no chat" message
     if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
-        console.log("No current chat detected");
         showNoChatMessage();
     }
 }
