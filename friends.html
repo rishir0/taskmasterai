@@ -2050,7 +2050,6 @@ body.night-mode {
         <span onclick="addEmoji('🙃')">🙃</span>
         <span onclick="addEmoji('🤑')">🤑</span>
         <span onclick="addEmoji('😲')">😲</span>
-        <span onclick="addEmoji('☹️')">☹️</span>
         <span onclick="addEmoji('🙁')">🙁</span>
         <span onclick="addEmoji('😖')">😖</span>
         <span onclick="addEmoji('😞')">😞</span>
@@ -4284,7 +4283,7 @@ function openChat(friendEmail) {
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
 
-                            checkCurrentChat();
+                            checkCurrentFriendChat();
                         });
                     });
             }
@@ -5895,18 +5894,10 @@ function checkCurrentGroupChat() {
     return currentGroupId;
 }
 
-// Check both friend chat and group chat separately
-function checkCurrentChat() {
-
-    // If neither a friend chat nor a group chat is active, show "no chat" message
-    if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
-        showNoChatMessage();
-    }
-}
 
 // Call this function when the app first loads
 window.onload = function() {
-    checkCurrentChat(); // Initially check if there's any active chat
+    checkCurrentFriendChat(); // Initially check if there's any active chat
 };
 
 
