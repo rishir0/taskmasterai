@@ -5847,8 +5847,9 @@ function showNoChatMessage() {
 
     console.log("Showing 'no chat' message");
 
-    noChatMessage.style.display = 'flex'; // Show "no chat" message
-    chatMessages.style.display = 'none';  // Hide chat messages
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
+    chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
 }
 
 // Show chat messages
@@ -5858,8 +5859,9 @@ function showChatMessages() {
 
     console.log("Showing chat messages");
 
-    noChatMessage.style.display = 'none';  // Hide "no chat" message
-    chatMessages.style.display = 'block';  // Show chat messages
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
+    chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
 }
 
 // Check if there's a current friend chat
@@ -5878,6 +5880,7 @@ function checkCurrentGroupChat() {
 function checkCurrentChat() {
     console.log("Checking current chat - Friend:", checkCurrentFriendChat(), "Group:", checkCurrentGroupChat());
 
+    // If neither a friend chat nor a group chat is active, show "no chat" message
     if (!checkCurrentFriendChat() && !checkCurrentGroupChat()) {
         console.log("No current chat detected");
         showNoChatMessage();
@@ -5886,6 +5889,11 @@ function checkCurrentChat() {
         showChatMessages();
     }
 }
+
+// Call this function when the app first loads
+window.onload = function() {
+    checkCurrentChat(); // Initially check if there's any active chat
+};
 
 
 
