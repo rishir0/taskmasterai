@@ -424,6 +424,63 @@ body.night-mode {
     fill: white;
 }
 
+/* Style for the no-chat-selected message */
+.no-chat-message {
+    display: flex;
+    flex-direction: column; /* Make the content stack vertically */
+    justify-content: center;
+    align-items: center;
+    padding-top: -50px;
+    height: calc(100vh + 50px); /* Adjust height as needed */
+    color: white; /* Change text color to primary */
+    font-size: 2.5rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1); /* Keeps the glass background */
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    margin-top: -25px;
+}
+
+/* SVG size and color */
+.no-chat-message .chat-svg {
+    width: 2.5rem; /* Same size as the text */
+    height: 2.5rem;
+    margin-right: 900px;
+    margin-bottom: -50px;
+    fill: white;
+}
+
+/* Need help section */
+.need-help {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer; /* Pointer for the whole section */
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for text and icon */
+}
+
+/* SVG for the help icon */
+.need-help .help-svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 5px;
+    stroke: var(--primary-color);
+    transition: stroke 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for the whole Need help section */
+.need-help:hover {
+    color: var(--primary-color); /* Change text color to the accent color */
+    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+
+.need-help:hover .help-svg {
+    stroke: var(--primary-color); /* Change SVG color to the accent color */
+    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+
 #chatMessages {
     flex: 1;
     overflow-y: auto;
