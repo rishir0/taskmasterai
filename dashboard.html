@@ -1014,6 +1014,37 @@ scrollbar-thumb {
     margin-left: 5px;
     font-weight: 600; /* Semi-bold */
 }
+
+/* Hide default calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    display: none;
+}
+
+/* Add custom calendar icon */
+input[type="date"] {
+    position: relative;
+    font-size: 16px;
+    color: #fff;
+    background-color: #333; /* Dark background for contrast */
+}
+
+input[type="date"]:before {
+    content: "\1F4C5"; /* Unicode for a calendar icon */
+    color: white; /* Change this to any color */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 18px;
+}
+
+/* Adjust padding to make space for the custom icon */
+input[type="date"] {
+    padding-right: 30px; 
+}
+
         
     </style>
 </head>
