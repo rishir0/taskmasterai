@@ -1015,38 +1015,37 @@ scrollbar-thumb {
     font-weight: 600; /* Semi-bold */
 }
 
-/* Container to position the custom icon */
+/* Container to position the input and the SVG */
 .date-input-container {
     position: relative;
     display: inline-block;
     width: 100%;
+    margin-top: 10px;
 }
 
 input[type="date"] {
     width: 100%;
     font-size: 16px;
-    color: #fff;
-    background-color: #333;
-    padding-right: 30px; /* Space for the custom icon */
+    padding-right: 40px; /* Space for the custom icon */
 }
 
-/* Custom calendar icon */
-.calendar-icon:before {
-    content: "\1F4C5"; /* Unicode for a calendar icon */
+/* Style the SVG icon */
+#calendar-icon {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 18px;
-    color: white;
     cursor: pointer;
+    fill: none; /* If you want to fill it with color, change to desired color */
+    stroke: #333; /* Icon color */
 }
 
-/* Hide default calendar icon */
+/* Hide the default calendar icon from the input */
 input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     display: none;
 }
+
 
 
         
@@ -1197,26 +1196,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <div class="goal-card">
             <input type="text" id="task-input" placeholder="Enter new task">
             
+            <!-- Wrap the date input in a div to apply custom icon -->
             <div class="date-input-container">
                 <input type="date" id="task-due-date" placeholder="Due date">
-                <span class="calendar-icon" id="trigger-task-icon"></span>
+                
+                <!-- SVG calendar icon -->
+                <svg id="calendar-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
             </div>
-            
+
             <button onclick="createTask()">Create Task</button>
         </div>
-        <div id="tasks-list"></div>
+        <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Attach event listener to the calendar icon
-    document.getElementById('trigger-task-icon').addEventListener('click', function() {
-        document.getElementById('task-due-date').click();
-    });
-});
-</script>
-
-
     <div class="goals-section">
         <h2>Goals</h2>
         <div class="goal-card">
@@ -2441,6 +2437,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Add event listener for the SVG calendar icon
+document.getElementById('calendar-icon').addEventListener('click', function() {
+    // Trigger the native date picker input
+    document.getElementById('task-due-date').click();
+});
 
 
 </script>
