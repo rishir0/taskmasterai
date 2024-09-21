@@ -1015,35 +1015,39 @@ scrollbar-thumb {
     font-weight: 600; /* Semi-bold */
 }
 
+/* Container to position the custom icon */
+.date-input-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+input[type="date"] {
+    width: 100%;
+    font-size: 16px;
+    color: #fff;
+    background-color: #333;
+    padding-right: 30px; /* Space for the custom icon */
+}
+
+/* Custom calendar icon */
+.calendar-icon:before {
+    content: "\1F4C5"; /* Unicode for a calendar icon */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+}
+
 /* Hide default calendar icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     display: none;
 }
 
-/* Add custom calendar icon */
-input[type="date"] {
-    position: relative;
-    font-size: 16px;
-    color: #fff;
-    background-color: #333; /* Dark background for contrast */
-}
-
-input[type="date"]:before {
-    content: "\1F4C5"; /* Unicode for a calendar icon */
-    color: white; /* Change this to any color */
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 18px;
-}
-
-/* Adjust padding to make space for the custom icon */
-input[type="date"] {
-    padding-right: 30px; 
-}
 
         
     </style>
@@ -1192,7 +1196,13 @@ input[type="date"] {
         <h2>Tasks</h2>
         <div class="goal-card">
             <input type="text" id="task-input" placeholder="Enter new task">
-            <input type="date" id="task-due-date" placeholder="Due date"> <!-- New date input -->
+            
+            <!-- Wrap the date input in a div to apply custom icon -->
+            <div class="date-input-container">
+                <input type="date" id="task-due-date" placeholder="Due date">
+                <span class="calendar-icon" onclick="triggerTaskDatePicker()"></span>
+            </div>
+            
             <button onclick="createTask()">Create Task</button>
         </div>
         <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
@@ -1232,11 +1242,17 @@ input[type="date"] {
         
         <!-- Date input for editing the due date -->
         <label for="edit-date">Edit Due Date:</label>
-        <input type="date" id="edit-date" placeholder="Select new date">
+        
+        <!-- Wrap the input in a div to apply custom icon -->
+        <div class="date-input-container">
+            <input type="date" id="edit-date" placeholder="Select new date">
+            <span class="calendar-icon" onclick="triggerDatePicker()"></span>
+        </div>
         
         <button onclick="saveEdit()">Save</button>
     </div>
 </div>
+
 
       
 </body>
@@ -2414,6 +2430,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function triggerDatePicker() {
+    // Trigger the native date picker by simulating a click on the input field
+    document.getElementById("edit-date").click();
+}
+
 
 </script>
 
