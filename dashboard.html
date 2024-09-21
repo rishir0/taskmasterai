@@ -1046,8 +1046,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     display: none;
 }
 
-
-
         
     </style>
 </head>
@@ -1248,17 +1246,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         
         <!-- Date input for editing the due date -->
         <label for="edit-date">Edit Due Date:</label>
-        
-        <!-- Wrap the input in a div to apply custom icon -->
-        <div class="date-input-container">
-            <input type="date" id="edit-date" placeholder="Select new date">
-            <span class="calendar-icon" onclick="triggerDatePicker()"></span>
-        </div>
+        <input type="date" id="edit-date" placeholder="Select new date">
         
         <button onclick="saveEdit()">Save</button>
     </div>
 </div>
-
 
       
 </body>
@@ -2437,19 +2429,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Add event listener for the SVG calendar icon
-document.getElementById('calendar-icon').addEventListener('click', function() {
-    // Trigger the native date picker input
-    document.getElementById('task-due-date').click();
-});
-
-
 </script>
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
             document.querySelector('.sidebar').classList.toggle('active');
         });
+
+        // Add event listener for the SVG calendar icon
+document.getElementById('calendar-icon').addEventListener('click', function() {
+    // Trigger the native date picker input
+    document.getElementById('task-due-date').click();
+});
+
     </script>
 </body>
 </html>
