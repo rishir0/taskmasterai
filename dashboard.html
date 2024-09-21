@@ -1199,22 +1199,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
             
             <div class="date-input-container">
                 <input type="date" id="task-due-date" placeholder="Due date">
-                <span class="calendar-icon" onclick="triggerTaskDatePicker()"></span>
+                <span class="calendar-icon" id="trigger-task-icon"></span>
             </div>
             
             <button onclick="createTask()">Create Task</button>
         </div>
         <div id="tasks-list"></div>
     </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function triggerTaskDatePicker() {
-        document.getElementById("task-due-date").click();
-    }
+    // Attach event listener to the calendar icon
+    document.getElementById('trigger-task-icon').addEventListener('click', function() {
+        document.getElementById('task-due-date').click();
+    });
 });
 </script>
+
 
     <div class="goals-section">
         <h2>Goals</h2>
