@@ -3866,10 +3866,8 @@ function loadPinnedFriends() {
             .then((doc) => {
                 if (doc.exists) {
                     const pinnedFriends = doc.data().pinnedFriends || [];
-                    const pinnedGroups = doc.data().pinnedGroups || []; // Assuming pinnedGroups is stored under this key
                     const pinnedFriendsList = document.getElementById('pinnedFriends');
                     pinnedFriendsList.innerHTML = ''; // Clear the list before appending new items
-                    pinnedGroupsList.innerHTML = '';
                     
                     pinnedFriends.forEach((friendEmail) => {
                         // Fetch friend's information
@@ -3892,36 +3890,7 @@ function loadPinnedFriends() {
                                     friendName.innerHTML = friendDisplayName;
                                     friendName.classList.add('friend-name');
 
-// Fetch and display pinned groups
-                    pinnedGroups.forEach((groupId) => {
-                        db.collection('groups').doc(groupId).get()
-                            .then((groupDoc) => {
-                                if (groupDoc.exists) {
-                                    const group = groupDoc.data();
-                                    const groupName = group.name;
 
-                                    const groupListItem = document.createElement('li');
-                                    groupListItem.classList.add('group-item');
-
-                                    const groupIconContainer = document.createElement('div');
-                                    groupIconContainer.classList.add('group-icon');
-                                    loadGroupIcon(groupId, groupIconContainer); // Function to load group icon
-
-                                    const groupNameElement = document.createElement('span');
-                                    groupNameElement.innerHTML = groupName;
-                                    groupNameElement.classList.add('group-name');
-
-                                    groupListItem.appendChild(groupIconContainer);
-                                    groupListItem.appendChild(groupNameElement);
-
-                                    const unpinButton = createUnpinButton(groupId, 'group'); // For groups
-                                    const viewGroupInfoButton = createViewGroupInfoButton(groupId, groupName); // To view group details
-
-                                    groupListItem.appendChild(unpinButton);
-                                    groupListItem.appendChild(viewGroupInfoButton);
-
-                                    pinnedGroupsList.appendChild(groupListItem);
-                                }
                                     
 
 
