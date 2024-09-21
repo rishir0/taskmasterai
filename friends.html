@@ -3673,38 +3673,28 @@ if (friend.online) {
                                         const unfriendButton = createUnfriendButton(friendEmail);
 
                                         // Create the 'View Friend Info' button
-                                        const viewFriendInfoButton = document.createElement('button');
-                                        viewFriendInfoButton.innerHTML = `
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
-                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                                <g id="SVGRepo_iconCarrier">
-                                                    <defs>
-                                                        <style>
-                                                            .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
-                                                            .a{stroke-linejoin:round;}
-                                                            .b{stroke-linejoin:bevel;}
-                                                        </style>
-                                                    </defs>
-                                                    <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
-                                                    <circle class="b" cx="12" cy="5.98404" r="5"></circle>
-                                                    <circle class="a" cx="17" cy="18" r="5"></circle>
-                                                    <line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line>
-                                                    <line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line>
-                                                </g>
-                                            </svg>
-                                        `;
+const viewFriendInfoButton = document.createElement('button');
+viewFriendInfoButton.innerHTML = `
+    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="20" height="20"> <!-- Fill set to white -->
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path fill="#ffffff" d="M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"></path>
+        </g>
+    </svg>
+`;
 
-                                        viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
-                                        viewFriendInfoButton.style.border = 'none';
-                                        viewFriendInfoButton.style.borderRadius = '50%';
-                                        viewFriendInfoButton.style.marginLeft = '8px';
-                                        viewFriendInfoButton.style.marginRight = '0';
-                                        viewFriendInfoButton.style.padding = '6px';
-                                        viewFriendInfoButton.style.cursor = 'pointer';
-                                        viewFriendInfoButton.style.display = 'flex';
-                                        viewFriendInfoButton.style.alignItems = 'center';
-                                        viewFriendInfoButton.style.justifyContent = 'center';
+viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
+viewFriendInfoButton.style.border = 'none';
+viewFriendInfoButton.style.borderRadius = '50%';
+viewFriendInfoButton.style.marginLeft = '8px';
+viewFriendInfoButton.style.marginRight = '0';
+viewFriendInfoButton.style.padding = '6px';
+viewFriendInfoButton.style.cursor = 'pointer';
+viewFriendInfoButton.style.display = 'flex';
+viewFriendInfoButton.style.alignItems = 'center';
+viewFriendInfoButton.style.justifyContent = 'center';
+
 
                                         viewFriendInfoButton.addEventListener('mouseover', () => {
                                             viewFriendInfoButton.style.backgroundColor = '#3b7bce';
@@ -3915,38 +3905,29 @@ if (friend.online) {
                                     listItem.appendChild(unfriendButton);
 
                                     // Create the 'View Friend Info' button
-                                    const viewFriendInfoButton = document.createElement('button');
-                                    viewFriendInfoButton.innerHTML = `
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="20" height="20">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                            <g id="SVGRepo_iconCarrier">
-                                                <defs>
-                                                    <style>
-                                                        .a,.b{fill:none;stroke:#ffffff;stroke-linecap:round;stroke-width:1.5px;}
-                                                        .a{stroke-linejoin:round;}
-                                                        .b{stroke-linejoin:bevel;}
-                                                    </style>
-                                                </defs>
-                                                <path class="a" d="M3,21.016l.78984-2.87249C5.0964,13.3918,8.5482,10.984,12,10.984"></path>
-                                                <circle class="b" cx="12" cy="5.98404" r="5"></circle>
-                                                <circle class="a" cx="17" cy="18" r="5"></circle>
-                                                <line class="a" x1="17" x2="17" y1="17.34043" y2="20.51064"></line>
-                                                <line class="a" x1="17" x2="17" y1="15.59574" y2="15.51064"></line>
-                                            </g>
-                                        </svg>
-                                    `;
+                                    // Create the 'View Friend Info' button
+const viewFriendInfoButton = document.createElement('button');
+viewFriendInfoButton.innerHTML = `
+    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="20" height="20"> <!-- Fill set to white -->
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path fill="#ffffff" d="M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"></path>
+        </g>
+    </svg>
+`;
 
-                                    viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
-                                    viewFriendInfoButton.style.border = 'none';
-                                    viewFriendInfoButton.style.borderRadius = '50%';
-                                    viewFriendInfoButton.style.marginLeft = '8px';
-                                    viewFriendInfoButton.style.marginRight = '0';
-                                    viewFriendInfoButton.style.padding = '6px';
-                                    viewFriendInfoButton.style.cursor = 'pointer';
-                                    viewFriendInfoButton.style.display = 'flex';
-                                    viewFriendInfoButton.style.alignItems = 'center';
-                                    viewFriendInfoButton.style.justifyContent = 'center';
+viewFriendInfoButton.style.backgroundColor = 'var(--primary-color)';
+viewFriendInfoButton.style.border = 'none';
+viewFriendInfoButton.style.borderRadius = '50%';
+viewFriendInfoButton.style.marginLeft = '8px';
+viewFriendInfoButton.style.marginRight = '0';
+viewFriendInfoButton.style.padding = '6px';
+viewFriendInfoButton.style.cursor = 'pointer';
+viewFriendInfoButton.style.display = 'flex';
+viewFriendInfoButton.style.alignItems = 'center';
+viewFriendInfoButton.style.justifyContent = 'center';
+
 
                                     viewFriendInfoButton.addEventListener('mouseover', () => {
                                         viewFriendInfoButton.style.backgroundColor = '#3b7bce';
