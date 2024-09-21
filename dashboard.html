@@ -1198,9 +1198,15 @@ scrollbar-thumb {
         <span class="close" onclick="closeEditModal()">&times;</span>
         <h2>Edit <span id="edit-item-type"></span></h2>
         <input type="text" id="edit-input" placeholder="Enter new value">
+        
+        <!-- Date input for editing the due date -->
+        <label for="edit-date">Edit Due Date:</label>
+        <input type="date" id="edit-date" placeholder="Select new date">
+        
         <button onclick="saveEdit()">Save</button>
     </div>
 </div>
+
       
 </body>
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -2071,24 +2077,38 @@ function closeEditModal() {
 // Function to save the edited value
 function saveEdit() {
     const editInput = document.getElementById('edit-input');
+    const editDateInput = document.getElementById('edit-date'); // New date input
     if (editInput && window.currentEdit) {
         const { id, type } = window.currentEdit;
         const newValue = editInput.value.trim();
-        
-        if (newValue) {
-            db.collection(type + 's').doc(id).update({
-                [type]: newValue
-            }).then(() => {
+        const newDueDate = editDateInput.value ? new Date(editDateInput.value) : null;
+
+        // Prepare the update object
+        const updateData = {
+            [type]: newValue || null // Update the main value
+        };
+
+        // If a new due date is provided, add it to the update object
+        if (newDueDate) {
+            newDueDate.setHours(0, 0, 0, 0); // Normalize time to midnight
+            newDueDate.setDate(newDueDate.getDate() + 1); // Increment due date by one day
+            updateData.dueDate = newDueDate; // Assuming the dueDate field exists in your Firestore
+        }
+
+        // Update the document in Firestore
+        db.collection(type + 's').doc(id).update(updateData)
+            .then(() => {
                 console.log(`${type} updated:`, newValue);
                 closeEditModal(); // Close the modal after saving
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.error(`Error updating ${type}:`, error);
             });
-        }
     } else {
         console.error('Edit input or current edit information not found.');
     }
 }
+
 
 
 // Function to delete an item
