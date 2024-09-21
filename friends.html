@@ -4124,14 +4124,14 @@ function createUnfriendButton(friendEmail) {
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('viewBox', '0 0 1024 1024'); // Updated viewBox from your SVG
     svg.setAttribute('xmlns', svgNS);
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', '#ffffff'); // Set stroke color as per the SVG you provided
+    svg.setAttribute('fill', '#ffffff'); // Set fill color to white as per the request
 
-    // Define paths and shapes with slightly thicker stroke width
+    // Create the path element with the updated data
     const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('d', 'M2.5,21.02394l.78984-2.87249C4.5964,13.39978,8.0482,10.992,11.5,10.992');
+    path.setAttribute('fill', '#ffffff'); // Set path color to white
+    path.setAttribute('d', 'M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336L512 457.664z');
     path.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
     path.setAttribute('class', 'a');
 
