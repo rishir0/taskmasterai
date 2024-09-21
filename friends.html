@@ -2033,9 +2033,6 @@ body.night-mode {
         <div id="pinnedGroups">
             <!-- Pinned groups will be dynamically added here -->
         </div>
-    </div>
-</div>
-
 
     <svg fill="#ffffff" viewBox="0 -64 640 640" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="margin-right: 8px;">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -5201,6 +5198,208 @@ function loadPinnedGroups() {
                                 // Append the avatar container BEFORE the group name
                                 groupItem.appendChild(avatarContainer); // Avatar first
                                 groupItem.appendChild(groupNameElement); // Then the group name
+
+                // Button container
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('buttons');
+                buttonContainer.style.display = 'flex';
+                buttonContainer.style.gap = '8px';
+
+                // Create the 'Pinned Group' button
+                const pinnedGroupButton = document.createElement('button');
+                pinnedGroupButton.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                        <path fill-rule="evenodd" clip-rule="evenodd" 
+                            d="M17.1218 1.87023C15.7573 0.505682 13.4779 0.76575 12.4558 2.40261L9.61062 6.95916C9.61033 6.95965 9.60913 6.96167 9.6038 6.96549C9.59728 6.97016 9.58336 6.97822 9.56001 6.9848C9.50899 6.99916 9.44234 6.99805 9.38281 6.97599C8.41173 6.61599 6.74483 6.22052 5.01389 6.87251C4.08132 7.22378 3.61596 8.03222 3.56525 8.85243C3.51687 9.63502 3.83293 10.4395 4.41425 11.0208L7.94975 14.5563L1.26973 21.2363C0.879206 21.6269 0.879206 22.26 1.26973 22.6506C1.66025 23.0411 2.29342 23.0411 2.68394 22.6506L9.36397 15.9705L12.8995 19.5061C13.4808 20.0874 14.2853 20.4035 15.0679 20.3551C15.8881 20.3044 16.6966 19.839 17.0478 18.9065C17.6998 17.1755 17.3043 15.5086 16.9444 14.5375C16.9223 14.478 16.9212 14.4114 16.9355 14.3603C16.9421 14.337 16.9502 14.3231 16.9549 14.3165C16.9587 14.3112 16.9606 14.31 16.9611 14.3098L21.5177 11.4645C23.1546 10.4424 23.4147 8.16307 22.0501 6.79853L17.1218 1.87023Z" 
+                            fill="#ffffff"></path> 
+                    </svg>
+                `;
+                pinnedGroupButton.style.backgroundColor = 'var(--primary-color)';
+                pinnedGroupButton.style.border = 'none';
+                pinnedGroupButton.style.borderRadius = '50%';
+                pinnedGroupButton.style.padding = '6px';
+                pinnedGroupButton.style.cursor = 'pointer';
+                pinnedGroupButton.style.display = 'flex';
+                pinnedGroupButton.style.alignItems = 'center';
+                pinnedGroupButton.style.justifyContent = 'center';
+
+                // Hover effect
+                pinnedGroupButton.addEventListener('mouseover', () => {
+                    pinnedGroupButton.style.backgroundColor = '#3b7bce';
+                });
+
+                pinnedGroupButton.addEventListener('mouseout', () => {
+                    pinnedGroupButton.style.backgroundColor = 'var(--primary-color)';
+                });
+
+// Add pinning functionality
+pinnedGroupButton.onclick = () => {
+    const currentUserUID = currentUser.uid;
+    const pinnedGroupId = groupId;
+
+    const userRef = db.collection('pinnedGroups').doc(currentUserUID);
+
+    // Get the user's pinned groups
+    userRef.get().then((doc) => {
+        let pinnedGroups = [];
+        if (doc.exists) {
+            pinnedGroups = doc.data().pinnedGroups || [];
+        } else {
+            userRef.set({ pinnedGroups: [] });
+        }
+
+        if (!pinnedGroups.includes(pinnedGroupId)) {
+            pinnedGroups.push(pinnedGroupId);
+
+            // Update Firestore with the new pinned group
+            return userRef.update({
+                pinnedGroups: pinnedGroups
+            }).then(() => {
+                // Disable the pin button and change its appearance
+                pinnedGroupButton.disabled = true;
+                pinnedGroupButton.style.opacity = '0.6'; // Indicate pinned state
+                pinnedGroupButton.style.cursor = 'not-allowed';
+
+                // Call loadPinnedGroups to refresh the pinned groups list
+                loadPinnedGroups();
+            });
+        }
+    }).catch((error) => {
+        console.error('Error pinning group: ', error);
+    });
+};
+
+
+
+
+
+// View Members button with SVG in a smaller circle
+const viewMembersButton = document.createElement('button');
+viewMembersButton.innerHTML = `
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="20" height="20">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M16 6C14.3432 6 13 7.34315 13 9C13 10.6569 14.3432 12 16 12C17.6569 12 19 10.6569 19 9C19 7.34315 17.6569 6 16 6ZM11 9C11 6.23858 13.2386 4 16 4C18.7614 4 21 6.23858 21 9C21 10.3193 20.489 11.5193 19.6542 12.4128C21.4951 13.0124 22.9176 14.1993 23.8264 15.5329C24.1374 15.9893 24.0195 16.6114 23.5631 16.9224C23.1068 17.2334 22.4846 17.1155 22.1736 16.6591C21.1979 15.2273 19.4178 14 17 14C13.166 14 11 17.0742 11 19C11 19.5523 10.5523 20 10 20C9.44773 20 9.00001 19.5523 9.00001 19C9.00001 18.308 9.15848 17.57 9.46082 16.8425C9.38379 16.7931 9.3123 16.7323 9.24889 16.6602C8.42804 15.7262 7.15417 15 5.50001 15C3.84585 15 2.57199 15.7262 1.75114 16.6602C1.38655 17.075 0.754692 17.1157 0.339855 16.7511C-0.0749807 16.3865 -0.115709 15.7547 0.248886 15.3398C0.809035 14.7025 1.51784 14.1364 2.35725 13.7207C1.51989 12.9035 1.00001 11.7625 1.00001 10.5C1.00001 8.01472 3.01473 6 5.50001 6C7.98529 6 10 8.01472 10 10.5C10 11.7625 9.48013 12.9035 8.64278 13.7207C9.36518 14.0785 9.99085 14.5476 10.5083 15.0777C11.152 14.2659 11.9886 13.5382 12.9922 12.9945C11.7822 12.0819 11 10.6323 11 9ZM3.00001 10.5C3.00001 9.11929 4.1193 8 5.50001 8C6.88072 8 8.00001 9.11929 8.00001 10.5C8.00001 11.8807 6.88072 13 5.50001 13C4.1193 13 3.00001 11.8807 3.00001 10.5Z" fill="#ffffff"></path>
+    </svg>
+`;
+
+
+// Apply circular style and smaller size
+viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Replace with your accent color variable or hex code
+viewMembersButton.style.border = 'none';
+viewMembersButton.style.borderRadius = '50%';
+viewMembersButton.style.padding = '6px'; // Reduced padding for a smaller circle
+viewMembersButton.style.cursor = 'pointer';
+viewMembersButton.style.display = 'flex';
+viewMembersButton.style.alignItems = 'center';
+viewMembersButton.style.justifyContent = 'center';
+
+// Hover effect to change color
+viewMembersButton.addEventListener('mouseover', () => {
+    viewMembersButton.style.backgroundColor = '#3b7bce';
+});
+
+viewMembersButton.addEventListener('mouseout', () => {
+    viewMembersButton.style.backgroundColor = 'var(--primary-color)'; // Reset to the original color
+});
+
+viewMembersButton.onclick = () => {
+    openViewMembersModal(doc.id);
+};
+buttonContainer.appendChild(viewMembersButton);
+
+
+
+// Edit button
+const editButton = document.createElement('button');
+editButton.classList.add('edit-button');
+editButton.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path d="M12 3.99997H6C4.89543 3.99997 4 4.8954 4 5.99997V18C4 19.1045 4.89543 20 6 20H18C19.1046 20 20 19.1045 20 18V12M18.4142 8.41417L19.5 7.32842C20.281 6.54737 20.281 5.28104 19.5 4.5C18.7189 3.71895 17.4526 3.71895 16.6715 4.50001L15.5858 5.58575M18.4142 8.41417L12.3779 14.4505C12.0987 14.7297 11.7431 14.9201 11.356 14.9975L8.41422 15.5858L9.00257 12.6441C9.08001 12.2569 9.27032 11.9013 9.54951 11.6221L15.5858 5.58575M18.4142 8.41417L15.5858 5.58575" 
+            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+    </svg>`;
+editButton.style.backgroundColor = 'var(--primary-color)';
+editButton.style.border = 'none';
+editButton.style.borderRadius = '50%';
+editButton.style.padding = '6px'; 
+editButton.style.cursor = 'pointer';
+editButton.style.display = 'flex';
+editButton.style.alignItems = 'center';
+editButton.style.justifyContent = 'center';
+editButton.addEventListener('mouseover', () => {
+    editButton.style.backgroundColor = '#2980b9';
+});
+editButton.addEventListener('mouseout', () => {
+    editButton.style.backgroundColor = 'var(--primary-color)';
+});
+editButton.onclick = () => {
+    editGroupChat(doc.id, groupName);
+};
+buttonContainer.appendChild(editButton);
+
+
+
+// Delete button
+const deleteButton = document.createElement('button');
+deleteButton.classList.add('delete-button');
+deleteButton.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+            <path d="M10 12V17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M14 12V17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 7H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+    </svg>`;
+deleteButton.style.backgroundColor = 'var(--accent-color)';
+deleteButton.style.border = 'none';
+deleteButton.style.borderRadius = '50%';
+deleteButton.style.padding = '6px';
+deleteButton.style.cursor = 'pointer';
+deleteButton.style.display = 'flex';
+deleteButton.style.alignItems = 'center';
+deleteButton.style.justifyContent = 'center';
+deleteButton.addEventListener('mouseover', () => {
+    deleteButton.style.backgroundColor = '#c0392b';
+});
+deleteButton.addEventListener('mouseout', () => {
+    deleteButton.style.backgroundColor = 'var(--accent-color)';
+});
+deleteButton.onclick = () => {
+    deleteGroupChat(doc.id);
+};
+buttonContainer.appendChild(deleteButton);
+
+
+
+
+
+
+                groupItem.onclick = () => {
+                    openGroupChat(doc.id);
+                    currentGroupId = doc.id; // Set the current group ID
+                };
+
+                // Append the button container to the group item
+                groupItem.appendChild(buttonContainer);
+
+                // Finally, append the group item to the group list
+                groupList.appendChild(groupItem);
+
+                // Append the 'Pinned Group' button before the View Members button
+                buttonContainer.appendChild(pinnedGroupButton);
+
+                // Add the View Members button
+                buttonContainer.appendChild(viewMembersButton);
+
+                buttonContainer.appendChild(editButton);
+
+                buttonContainer.appendChild(deleteButton);
 
                                 // Append group item to the list
                                 pinnedGroupsList.appendChild(groupItem);
