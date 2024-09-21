@@ -5151,6 +5151,68 @@ buttonContainer.appendChild(deleteButton);
 }
 
 
+function loadPinnedGroups() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) return;
+
+    const currentUserUID = currentUser.uid;
+
+    // Fetch the current user's pinned groups
+    db.collection('pinnedGroups').doc(currentUserUID).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const pinnedGroups = doc.data().pinnedGroups || [];
+                const pinnedGroupsList = document.getElementById('pinnedGroups');
+                pinnedGroupsList.innerHTML = ''; // Clear the list before appending new items
+
+                pinnedGroups.forEach((groupId) => {
+                    // Fetch the group information
+                    db.collection('groupchats').doc(groupId).get()
+                        .then((groupDoc) => {
+                            if (groupDoc.exists) {
+                                const group = groupDoc.data();
+                                const groupName = group.groupName || 'Unnamed Group';
+
+                                // Create a group item container
+                                const groupItem = document.createElement('div');
+                                groupItem.classList.add('group-item');
+                                groupItem.style.display = 'flex'; // Flexbox layout
+                                groupItem.style.alignItems = 'center'; // Vertically align items
+                                groupItem.style.justifyContent = 'flex-start'; // Left align items
+
+                                // Create the group avatar container
+                                const avatarContainer = document.createElement('div');
+                                avatarContainer.classList.add('group-avatar');
+                                avatarContainer.style.width = '40px'; // Set width for avatar
+                                avatarContainer.style.height = '40px';
+                                avatarContainer.style.marginRight = '10px'; // Space between avatar and name
+
+                                loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
+
+                                // Create group name element
+                                const groupNameElement = document.createElement('span');
+                                groupNameElement.textContent = groupName;
+                                groupNameElement.classList.add('group-name');
+
+                                // Append the avatar container BEFORE the group name
+                                groupItem.appendChild(avatarContainer); // Avatar first
+                                groupItem.appendChild(groupNameElement); // Then the group name
+
+                                // Append group item to the list
+                                pinnedGroupsList.appendChild(groupItem);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching group:", error);
+                        });
+                });
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching pinned groups:", error);
+        });
+}
 
 
 function openViewMembersModal(groupId) {
