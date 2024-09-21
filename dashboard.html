@@ -1109,7 +1109,29 @@ scrollbar-thumb {
         <div class="dashboard-header">
             <h1>Welcome, <span id="displayName">User</span>!</h1>
         </div>
+        <div class="timer-container">
+            <div class="pomodoro-timer custom-timer">
+                <div style="display: flex; align-items: center;">
+                    <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+                    <button id="add-timer">+</button> <!-- Add the + button here -->
+                </div>
+                <input type="text" id="timer" value="25:00" readonly>
+                <div class="button-container">
+                    <button id="start">Start</button>
+                    <button id="pause">Pause</button>
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+            <div id="custom-timers"></div>
+        </div>
 
+          <!-- Custom alert modal -->
+  <div id="custom-alert-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="alert-message"></p>
+    </div>
+  </div>
 
 <div id="tasks-projects" class="section">
     <div class="tasks-section">
@@ -1151,32 +1173,8 @@ scrollbar-thumb {
         </div>
         <div id="plans-list"></div> <!-- Plan items will be added here dynamically -->
     </div>
-
-            <div class="timer-container">
-            <div class="pomodoro-timer custom-timer">
-                <div style="display: flex; align-items: center;">
-                    <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                    <button id="add-timer">+</button> <!-- Add the + button here -->
-                </div>
-                <input type="text" id="timer" value="25:00" readonly>
-                <div class="button-container">
-                    <button id="start">Start</button>
-                    <button id="pause">Pause</button>
-                    <button id="reset">Reset</button>
-                </div>
-            </div>
-            <div id="custom-timers"></div>
-        </div>
 </div>
 
-
-<!-- Custom alert modal -->
-  <div id="custom-alert-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <p id="alert-message"></p>
-    </div>
-  </div>
 
 <!-- Edit Modal -->
 <div id="edit-modal" class="edit-modal">
