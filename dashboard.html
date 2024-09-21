@@ -1197,7 +1197,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <div class="goal-card">
             <input type="text" id="task-input" placeholder="Enter new task">
             
-            <!-- Wrap the date input in a div to apply custom icon -->
             <div class="date-input-container">
                 <input type="date" id="task-due-date" placeholder="Due date">
                 <span class="calendar-icon" onclick="triggerTaskDatePicker()"></span>
@@ -1205,8 +1204,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
             
             <button onclick="createTask()">Create Task</button>
         </div>
-        <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
+        <div id="tasks-list"></div>
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function triggerTaskDatePicker() {
+        document.getElementById("task-due-date").click();
+    }
+});
+</script>
+
     <div class="goals-section">
         <h2>Goals</h2>
         <div class="goal-card">
@@ -2431,10 +2440,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function triggerDatePicker() {
-    // Trigger the native date picker by simulating a click on the input field
-    document.getElementById("edit-date").click();
-}
 
 
 </script>
