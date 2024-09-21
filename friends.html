@@ -5109,17 +5109,19 @@ deleteButton.onclick = () => {
 buttonContainer.appendChild(deleteButton);
 
 
-                // Append the 'Pinned Group' button before the View Members button
-                buttonContainer.appendChild(pinnedGroupButton);
 
-                // Add the View Members button
-                buttonContainer.appendChild(viewMembersButton);
 
                 // Append the button container to the group item
                 groupItem.appendChild(buttonContainer);
 
                 // Finally, append the group item to the group list
                 groupList.appendChild(groupItem);
+
+                // Append the 'Pinned Group' button before the View Members button
+                buttonContainer.appendChild(pinnedGroupButton);
+
+                // Add the View Members button
+                buttonContainer.appendChild(viewMembersButton);
 
 
 
@@ -6102,14 +6104,14 @@ function checkCurrentFriendChat() {
         const chatMessages = document.getElementById('chatMessages');
 
         // Log for debugging purposes
-        console.log("Friend chat detected. Hiding 'no chat' message");
+
 
         // Hide "no chat" message and show chat messages
         noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
         chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
     } else {
         // Log for debugging purposes
-        console.log("No friend chat detected yet.");
+
     }
 
     return currentChatFriend;
