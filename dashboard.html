@@ -1108,7 +1108,6 @@ scrollbar-thumb {
         <div class="main-content">
         <div class="dashboard-header">
             <h1>Welcome, <span id="displayName">User</span>!</h1>
-            <p>Your personalized dashboard</p>
         </div>
         <div class="timer-container">
             <div class="pomodoro-timer custom-timer">
@@ -1139,36 +1138,43 @@ scrollbar-thumb {
         <h2>Tasks</h2>
         <div class="goal-card">
             <input type="text" id="task-input" placeholder="Enter new task">
-            <input type="date" id="task-due-date" placeholder="Due date"> <!-- New date input -->
+            <input type="date" id="task-due-date" placeholder="Due date"> <!-- Task due date -->
             <button onclick="createTask()">Create Task</button>
         </div>
         <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
     </div>
+    
     <div class="goals-section">
         <h2>Goals</h2>
         <div class="goal-card">
             <input type="text" id="goal-input" placeholder="Enter new goal">
+            <input type="date" id="goal-due-date" placeholder="Due date"> <!-- Goal due date -->
             <button onclick="createGoal()">Create Goal</button>
         </div>
         <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
     </div>
+
     <div class="projects-section">
         <h2>Projects</h2>
         <div class="goal-card">
             <input type="text" id="project-input" placeholder="Enter new project">
+            <input type="date" id="project-due-date" placeholder="Due date"> <!-- Project due date -->
             <button onclick="createProject()">Create Project</button>
         </div>
         <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
     </div>
+
     <div class="plans-section">
         <h2>Plans</h2>
         <div class="goal-card">
             <input type="text" id="plan-input" placeholder="Enter new plan">
+            <input type="date" id="plan-due-date" placeholder="Due date"> <!-- Plan due date -->
             <button onclick="createPlan()">Create Plan</button>
         </div>
         <div id="plans-list"></div> <!-- Plan items will be added here dynamically -->
     </div>
 </div>
+
 
 <!-- Edit Modal -->
 <div id="edit-modal" class="edit-modal">
@@ -1796,54 +1802,178 @@ function correctDate(date) {
 
 function createProject() {
     const projectInput = document.getElementById('project-input');
+    const projectDueDate = document.getElementById('project-due-date'); // Assume there's a due date input for projects
     const project = projectInput.value.trim();
+    let dueDate = projectDueDate.value ? new Date(projectDueDate.value) : null;
+
     if (project) {
+        if (dueDate) {
+            dueDate.setHours(0, 0, 0, 0); // Normalize to midnight
+            dueDate.setDate(dueDate.getDate() + 1); // Increment by one day
+        }
+
         db.collection('projects').add({
             project: project,
+            dueDate: dueDate, // Store the due date if provided
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
+        }).then(docRef => {
             console.log('Project created:', project);
+            if (dueDate) {
+                createProjectEvent(docRef.id, project, dueDate); // Create event if due date exists
+            }
         }).catch((error) => {
             console.error('Error creating project:', error);
         });
+
         projectInput.value = '';
+        projectDueDate.value = ''; // Clear date input
+    }
+}
+
+async function createProjectEvent(projectId, projectTitle, dueDate) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    const projectEvent = {
+        title: projectTitle,
+        description: "project converted to event",
+        day: dueDate.getDate(),
+        month: dueDate.getMonth(),
+        year: dueDate.getFullYear(),
+        uid: user.uid,
+        linkedProjectId: projectId, // Link project to event
+        startTime: "",
+        endTime: ""
+    };
+
+    try {
+        await db.collection('events').add(projectEvent);
+        console.log('Project event created:', projectEvent);
+    } catch (error) {
+        console.error('Error creating project event:', error);
     }
 }
 
 function createGoal() {
     const goalInput = document.getElementById('goal-input');
+    const goalDueDate = document.getElementById('goal-due-date'); // Assume there's a due date input for goals
     const goal = goalInput.value.trim();
+    let dueDate = goalDueDate.value ? new Date(goalDueDate.value) : null;
+
     if (goal) {
+        if (dueDate) {
+            dueDate.setHours(0, 0, 0, 0); // Normalize to midnight
+            dueDate.setDate(dueDate.getDate() + 1); // Increment by one day
+        }
+
         db.collection('goals').add({
             goal: goal,
+            dueDate: dueDate, // Store the due date if provided
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
+        }).then(docRef => {
             console.log('Goal created:', goal);
+            if (dueDate) {
+                createGoalEvent(docRef.id, goal, dueDate); // Create event if due date exists
+            }
         }).catch((error) => {
             console.error('Error creating goal:', error);
         });
+
         goalInput.value = '';
+        goalDueDate.value = ''; // Clear date input
+    }
+}
+
+async function createGoalEvent(goalId, goalTitle, dueDate) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    const goalEvent = {
+        title: goalTitle,
+        description: "goal converted to event",
+        day: dueDate.getDate(),
+        month: dueDate.getMonth(),
+        year: dueDate.getFullYear(),
+        uid: user.uid,
+        linkedGoalId: goalId, // Link goal to event
+        startTime: "",
+        endTime: ""
+    };
+
+    try {
+        await db.collection('events').add(goalEvent);
+        console.log('Goal event created:', goalEvent);
+    } catch (error) {
+        console.error('Error creating goal event:', error);
     }
 }
 
 function createPlan() {
     const planInput = document.getElementById('plan-input');
+    const planDueDate = document.getElementById('plan-due-date'); // Assume there's a due date input for plans
     const plan = planInput.value.trim();
+    let dueDate = planDueDate.value ? new Date(planDueDate.value) : null;
+
     if (plan) {
+        if (dueDate) {
+            dueDate.setHours(0, 0, 0, 0); // Normalize to midnight
+            dueDate.setDate(dueDate.getDate() + 1); // Increment by one day
+        }
+
         db.collection('plans').add({
             plan: plan,
+            dueDate: dueDate, // Store the due date if provided
             userId: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
+        }).then(docRef => {
             console.log('Plan created:', plan);
+            if (dueDate) {
+                createPlanEvent(docRef.id, plan, dueDate); // Create event if due date exists
+            }
         }).catch((error) => {
             console.error('Error creating plan:', error);
         });
+
         planInput.value = '';
+        planDueDate.value = ''; // Clear date input
     }
 }
+
+async function createPlanEvent(planId, planTitle, dueDate) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error("No user is signed in");
+        return;
+    }
+
+    const planEvent = {
+        title: planTitle,
+        description: "plan converted to event",
+        day: dueDate.getDate(),
+        month: dueDate.getMonth(),
+        year: dueDate.getFullYear(),
+        uid: user.uid,
+        linkedPlanId: planId, // Link plan to event
+        startTime: "",
+        endTime: ""
+    };
+
+    try {
+        await db.collection('events').add(planEvent);
+        console.log('Plan event created:', planEvent);
+    } catch (error) {
+        console.error('Error creating plan event:', error);
+    }
+}
+
 
 function loadTasks() {
     db.collection('tasks')
@@ -1916,19 +2046,56 @@ if (task.dueDate) {
 function loadProjects() {
     db.collection('projects')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
+        .orderBy('dueDate') // Order by dueDate first (nulls come first)
+        .orderBy('createdAt') // Then by creation date
         .onSnapshot(snapshot => {
             const projectsList = document.getElementById('projects-list');
             projectsList.innerHTML = '';
+
+            const projectsWithDate = [];
+            const projectsWithoutDate = [];
+
             snapshot.forEach(doc => {
                 const project = doc.data();
+                if (project.dueDate) {
+                    projectsWithDate.push({ id: doc.id, project });
+                } else {
+                    projectsWithoutDate.push({ id: doc.id, project });
+                }
+            });
+
+            const sortedProjects = [...projectsWithoutDate, ...projectsWithDate];
+
+            sortedProjects.forEach(({ id, project }) => {
                 const projectDiv = document.createElement('div');
                 projectDiv.className = 'project-item';
-                projectDiv.textContent = project.project;
+
+                if (project.dueDate) {
+                    const dueDate = project.dueDate.toDate();
+                    const today = new Date();
+
+                    if (dueDate < today) {
+                        projectDiv.style.backgroundColor = 'var(--primary-color)';
+                    }
+
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
+                    dueDateText.style.marginLeft = '100px';
+                    dueDateText.style.color = '#c9302c';
+                    dueDateText.style.fontWeight = 'bold';
+                    dueDateText.style.padding = '5px 10px';
+                    dueDateText.style.borderRadius = '8px';
+                    dueDateText.style.display = 'inline-block';
+                    projectDiv.appendChild(dueDateText);
+                }
+
+                const projectText = document.createElement('span');
+                projectText.textContent = project.project;
+                projectDiv.insertBefore(projectText, projectDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'project', project.project));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'project'));
+                buttonContainer.appendChild(createEditButton(id, 'project', project.project));
+                buttonContainer.appendChild(createDeleteButton(id, 'project'));
 
                 projectDiv.appendChild(buttonContainer);
                 projectsList.appendChild(projectDiv);
@@ -1939,19 +2106,56 @@ function loadProjects() {
 function loadGoals() {
     db.collection('goals')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
+        .orderBy('dueDate') // Order by dueDate first (nulls come first)
+        .orderBy('createdAt') // Then by creation date
         .onSnapshot(snapshot => {
             const goalsList = document.getElementById('goals-list');
             goalsList.innerHTML = '';
+
+            const goalsWithDate = [];
+            const goalsWithoutDate = [];
+
             snapshot.forEach(doc => {
                 const goal = doc.data();
+                if (goal.dueDate) {
+                    goalsWithDate.push({ id: doc.id, goal });
+                } else {
+                    goalsWithoutDate.push({ id: doc.id, goal });
+                }
+            });
+
+            const sortedGoals = [...goalsWithoutDate, ...goalsWithDate];
+
+            sortedGoals.forEach(({ id, goal }) => {
                 const goalDiv = document.createElement('div');
                 goalDiv.className = 'goal-item';
-                goalDiv.textContent = goal.goal;
+
+                if (goal.dueDate) {
+                    const dueDate = goal.dueDate.toDate();
+                    const today = new Date();
+
+                    if (dueDate < today) {
+                        goalDiv.style.backgroundColor = 'var(--primary-color)';
+                    }
+
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
+                    dueDateText.style.marginLeft = '100px';
+                    dueDateText.style.color = '#c9302c';
+                    dueDateText.style.fontWeight = 'bold';
+                    dueDateText.style.padding = '5px 10px';
+                    dueDateText.style.borderRadius = '8px';
+                    dueDateText.style.display = 'inline-block';
+                    goalDiv.appendChild(dueDateText);
+                }
+
+                const goalText = document.createElement('span');
+                goalText.textContent = goal.goal;
+                goalDiv.insertBefore(goalText, goalDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'goal', goal.goal));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'goal'));
+                buttonContainer.appendChild(createEditButton(id, 'goal', goal.goal));
+                buttonContainer.appendChild(createDeleteButton(id, 'goal'));
 
                 goalDiv.appendChild(buttonContainer);
                 goalsList.appendChild(goalDiv);
@@ -1962,19 +2166,56 @@ function loadGoals() {
 function loadPlans() {
     db.collection('plans')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
+        .orderBy('dueDate') // Order by dueDate first (nulls come first)
+        .orderBy('createdAt') // Then by creation date
         .onSnapshot(snapshot => {
             const plansList = document.getElementById('plans-list');
             plansList.innerHTML = '';
+
+            const plansWithDate = [];
+            const plansWithoutDate = [];
+
             snapshot.forEach(doc => {
                 const plan = doc.data();
+                if (plan.dueDate) {
+                    plansWithDate.push({ id: doc.id, plan });
+                } else {
+                    plansWithoutDate.push({ id: doc.id, plan });
+                }
+            });
+
+            const sortedPlans = [...plansWithoutDate, ...plansWithDate];
+
+            sortedPlans.forEach(({ id, plan }) => {
                 const planDiv = document.createElement('div');
                 planDiv.className = 'plan-item';
-                planDiv.textContent = plan.plan;
+
+                if (plan.dueDate) {
+                    const dueDate = plan.dueDate.toDate();
+                    const today = new Date();
+
+                    if (dueDate < today) {
+                        planDiv.style.backgroundColor = 'var(--primary-color)';
+                    }
+
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
+                    dueDateText.style.marginLeft = '100px';
+                    dueDateText.style.color = '#c9302c';
+                    dueDateText.style.fontWeight = 'bold';
+                    dueDateText.style.padding = '5px 10px';
+                    dueDateText.style.borderRadius = '8px';
+                    dueDateText.style.display = 'inline-block';
+                    planDiv.appendChild(dueDateText);
+                }
+
+                const planText = document.createElement('span');
+                planText.textContent = plan.plan;
+                planDiv.insertBefore(planText, planDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'plan', plan.plan));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'plan'));
+                buttonContainer.appendChild(createEditButton(id, 'plan', plan.plan));
+                buttonContainer.appendChild(createDeleteButton(id, 'plan'));
 
                 planDiv.appendChild(buttonContainer);
                 plansList.appendChild(planDiv);
