@@ -4124,50 +4124,24 @@ function createUnfriendButton(friendEmail) {
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 1024 1024'); // Updated viewBox from your SVG
+    svg.setAttribute('viewBox', '0 0 1024 1024'); // Updated viewBox from your provided SVG
     svg.setAttribute('xmlns', svgNS);
-    svg.setAttribute('fill', '#ffffff'); // Set fill color to white as per the request
+    svg.setAttribute('fill', '#ffffff'); // Set the fill color to white
 
-    // Create the path element with the updated data
+    // Create the path for the outer circle and the "X"
     const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('fill', '#ffffff'); // Set path color to white
+    path.setAttribute('fill', '#ffffff'); // Set the "X" and circle to white
     path.setAttribute('d', 'M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336L512 457.664z');
-    path.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
-    path.setAttribute('class', 'a');
 
-    const circle1 = document.createElementNS(svgNS, 'circle');
-    circle1.setAttribute('cx', '11.5');
-    circle1.setAttribute('cy', '5.99202');
-    circle1.setAttribute('r', '5');
-    circle1.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
-    circle1.setAttribute('class', 'b');
-
-    const circle2 = document.createElementNS(svgNS, 'circle');
-    circle2.setAttribute('cx', '16.5');
-    circle2.setAttribute('cy', '18.00798');
-    circle2.setAttribute('r', '5');
-    circle2.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
-    circle2.setAttribute('class', 'a');
-
-    const line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('x1', '14.5');
-    line.setAttribute('x2', '18.5');
-    line.setAttribute('y1', '18.00798');
-    line.setAttribute('y2', '18.00798');
-    line.setAttribute('stroke-width', '2'); // Slightly thicker stroke width
-    line.setAttribute('class', 'a');
-
-    // Append SVG elements to the SVG container
+    // Append path to the SVG
     svg.appendChild(path);
-    svg.appendChild(circle1);
-    svg.appendChild(circle2);
-    svg.appendChild(line);
 
-    // Append SVG to the button
+    // Append the SVG to the button
     button.appendChild(svg);
 
     return button;
 }
+
 
 function createViewFriendInfoButton(friendEmail, friendDisplayName) {
     const button = document.createElement('button');
