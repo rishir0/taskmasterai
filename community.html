@@ -581,31 +581,33 @@ body.night-mode {
 }
 
 .info-button {
-    background-color: transparent; /* Transparent background */
-    border: none; /* Remove default button border */
+    background-color: var(--primary-color); /* Use primary color for the button background */
+    border: none; /* Remove default border */
     cursor: pointer; /* Pointer cursor on hover */
-    padding: 8px; /* Padding for spacing */
-    display: inline-flex; /* Align SVG inline with other elements */
-    align-items: center; /* Center SVG vertically */
-    justify-content: center; /* Center SVG horizontally */
+    width: 40px; /* Set width and height to create a circular button */
+    height: 40px;
+    border-radius: 50%; /* Makes the button circular */
+    display: inline-flex; /* Align SVG in the center */
+    align-items: center; /* Vertically center the SVG */
+    justify-content: center; /* Horizontally center the SVG */
     transition: transform 0.2s ease, background-color 0.2s ease; /* Smooth hover effect */
 }
 
 .info-button svg {
-    width: 1em; /* Match font size */
-    height: 1em; /* Match font size */
-    fill: white; /* SVG color */
+    width: 24px; /* Larger SVG size */
+    height: 24px;
+    fill: white; /* White color for the SVG */
     transition: fill 0.2s ease; /* Smooth color transition */
 }
 
 .info-button:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Slight background change on hover */
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly lighter background on hover */
     transform: scale(1.1); /* Slight zoom effect on hover */
 }
 
 .info-button:focus {
     outline: none; /* Remove focus outline */
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5); /* Add a subtle glow on focus */
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.5); /* Subtle glow when focused */
 }
 
 
