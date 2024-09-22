@@ -754,10 +754,15 @@ body.night-mode {
         <div class="upload-section">
             <label for="file-upload" class="upload-button">Upload New File</label>
             <input type="file" id="file-upload" accept=".pdf,.docx,.pptx,.txt" style="display:none;">
+            <!-- Loading indicator -->
+            <div id="loading-indicator" style="display: none; margin-top: 10px;">
+                Uploading file, please wait...
+            </div>
         </div>
         <div id="shared-files-container"></div>
     </div>
 </div>
+
 
 <div id="uploader-details-modal" class="modal">
     <div class="modal-content">
@@ -820,12 +825,16 @@ document.getElementById('file-upload').addEventListener('change', async (event) 
     const storageRef = storage.ref(`uploads/${file.name}`);
     const uploadTask = storageRef.put(file);
 
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.style.display = 'block'; // Show the loading indicator
+
     uploadTask.on('state_changed', 
         (snapshot) => {
             // Optional: Handle upload progress
         }, 
         (error) => {
             console.error('Upload failed:', error);
+            loadingIndicator.style.display = 'none'; // Hide the loading indicator on error
         }, 
         async () => {
             const fileUrl = await storageRef.getDownloadURL();
@@ -835,11 +844,14 @@ document.getElementById('file-upload').addEventListener('change', async (event) 
                 uploaderId: user.uid,
                 uploaderName: displayName // Store the displayName
             });
+
+            loadingIndicator.style.display = 'none'; // Hide the loading indicator after upload completes
             loadSharedFiles(); // Refresh the current user's shared files
             loadCommunityUploads(); // Refresh the community uploads
         }
     );
 });
+
 
 
 // Function to load current user's shared files
