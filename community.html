@@ -580,6 +580,34 @@ body.night-mode {
     cursor: pointer;
 }
 
+.info-button {
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove default button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    padding: 8px; /* Padding for spacing */
+    display: inline-flex; /* Align SVG inline with other elements */
+    align-items: center; /* Center SVG vertically */
+    justify-content: center; /* Center SVG horizontally */
+    transition: transform 0.2s ease, background-color 0.2s ease; /* Smooth hover effect */
+}
+
+.info-button svg {
+    width: 1em; /* Match font size */
+    height: 1em; /* Match font size */
+    fill: white; /* SVG color */
+    transition: fill 0.2s ease; /* Smooth color transition */
+}
+
+.info-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Slight background change on hover */
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+.info-button:focus {
+    outline: none; /* Remove focus outline */
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5); /* Add a subtle glow on focus */
+}
+
 
 
     </style>
@@ -824,7 +852,7 @@ async function loadCommunityUploads() {
             <p>${data.fileName}</p>
             <div class="file-actions">
                 <button class="info-button" onclick="showUploaderDetails('${data.uploaderName}')">
-                    <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style="width: 1em; height: 1em;">
                         <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.696-3.534c.63 0 1.332-.288 2.196-1.458l.911-1.22a.334.334 0 0 0-.074-.472.38.38 0 0 0-.505.06l-1.475 1.679a.241.241 0 0 1-.279.061.211.211 0 0 1-.12-.244l1.858-7.446a.499.499 0 0 0-.575-.613l-3.35.613a.35.35 0 0 0-.276.258l-.086.334a.25.25 0 0 0 .243.312h1.73l-1.476 5.922c-.054.234-.144.63-.144.918 0 .666.396 1.296 1.422 1.296zm1.83-10.536c.702 0 1.242-.414 1.386-1.044.036-.144.054-.306.054-.414 0-.504-.396-.972-1.134-.972-.702 0-1.242.414-1.386 1.044a1.868 1.868 0 0 0-.054.414c0 .504.396.972 1.134.972z" fill="white"></path>
                     </svg>
                 </button>
@@ -834,6 +862,7 @@ async function loadCommunityUploads() {
         communityUploadsContainer.appendChild(fileCard);
     });
 }
+
 
 // Function to display uploader details in a modal
 function showUploaderDetails(name) {
