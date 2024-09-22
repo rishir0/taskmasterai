@@ -632,6 +632,11 @@ body.night-mode {
     height: 24px; /* Adjust the SVG height */
 }
 
+.community-uploads #token-count {
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 20px;
+}
 
 
     </style>
@@ -738,16 +743,15 @@ body.night-mode {
                 </div>
             </div>
         </div>
-<div class="main-content">
-    <div class="content-wrapper">
-        <div class="community-uploads">
-            <h2>Community Uploads</h2>
-            <div class="search-bar">
-                <input type="text" placeholder="Search files...">
-            </div>
-            <div id="community-uploads-container"></div>
-        </div>
+<div class="community-uploads">
+    <h2>Community Uploads</h2>
+    <p id="token-count">Current Tokens: 500</p> <!-- Display token count -->
+    <div class="search-bar">
+        <input type="text" placeholder="Search files...">
     </div>
+    <div id="community-uploads-container"></div>
+</div>
+
 
     <div class="shared-files">
         <h2>Your Shared Files</h2>
@@ -810,6 +814,68 @@ body.night-mode {
     const firestore = firebase.firestore();
     const storage = firebase.storage();
     var auth = firebase.auth();
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const tokenCountElement = document.getElementById('token-count');
+    const user = auth.currentUser;
+
+    // Initial token setup
+    let userTokens = 500;
+
+    // Fetch user's token balance from Firestore
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    if (userDoc.exists && userDoc.data().tokens) {
+        userTokens = userDoc.data().tokens;
+    } else {
+        // If no tokens exist, set them to 500
+        await db.collection('users').doc(user.uid).set({ tokens: 500 }, { merge: true });
+    }
+
+    // Update the token display
+    tokenCountElement.textContent = `Current Tokens: ${userTokens}`;
+
+    // Handle file download logic and token deduction
+    async function handleFileDownload(fileType) {
+        let cost;
+        switch (fileType) {
+            case '.pdf':
+                cost = 250;
+                break;
+            case '.docx':
+                cost = 200;
+                break;
+            case '.pptx':
+                cost = 150;
+                break;
+            case '.txt':
+                cost = 100;
+                break;
+            default:
+                return;
+        }
+
+        // Check if the user has enough tokens
+        if (userTokens >= cost) {
+            userTokens -= cost;
+            await db.collection('users').doc(user.uid).update({ tokens: userTokens });
+            tokenCountElement.textContent = `Current Tokens: ${userTokens}`;
+            // Allow the download
+            alert(`You have unlocked the ${fileType} file!`);
+        } else {
+            alert('Not enough tokens to download this file.');
+        }
+    }
+
+    // Example usage of handleFileDownload when a file is clicked
+    document.querySelectorAll('.file-card a').forEach(fileLink => {
+        fileLink.addEventListener('click', (event) => {
+            const fileType = event.target.getAttribute('data-file-type');
+            event.preventDefault(); // Prevent automatic download
+            handleFileDownload(fileType);
+        });
+    });
+});
+
 
 // Function to handle file upload
 document.getElementById('file-upload').addEventListener('change', async (event) => {
