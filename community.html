@@ -880,7 +880,7 @@ async function loadCommunityUploads() {
         const data = doc.data();
         const fileCard = document.createElement('div');
         fileCard.classList.add('file-card');
-        fileCard.innerHTML = 
+        fileCard.innerHTML = `
             <p>${data.fileName}</p>
             <div class="file-actions">
                 <button class="info-button" onclick="showUploaderDetails('${data.uploaderName}')">
@@ -890,11 +890,10 @@ async function loadCommunityUploads() {
                 </button>
                 <a href="${data.fileUrl}" target="_blank">Download</a>
             </div>
-        ;
+        `;
         communityUploadsContainer.appendChild(fileCard);
     });
 }
-
 
 
 
