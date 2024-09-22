@@ -417,7 +417,6 @@ body.night-mode {
     margin-right: 300px; /* Space for sidebar */
 }
 
-
 .community-uploads {
     width: 89%;
     background-color: var(--card-bg);
@@ -425,11 +424,10 @@ body.night-mode {
     border-radius: var(--border-radius);
     height: 970px; /* Set a fixed height to make the card taller */
     overflow-y: auto; /* Enable vertical scrolling */
-
 }
 
 .community-uploads h2 {
-    font-size: 1.8rem;
+    font-size: 1.8rem; /* Header font size remains the same */
     color: white;
     margin-bottom: 20px;
 }
@@ -442,6 +440,7 @@ body.night-mode {
     background-color: var(--glass-bg);
     color: var(--text-color);
     margin-bottom: 20px;
+    font-size: 0.9rem; /* Reduced font size */
 }
 
 .community-uploads .file-card {
@@ -454,10 +453,11 @@ body.night-mode {
     margin-bottom: 20px;
     width: 100%; /* Make the card take full width */
     min-height: 80px; /* Optional: set a minimum height for a taller card */
+    font-size: 0.9rem; /* Reduced font size */
 }
 
 .community-uploads .file-card p {
-    font-size: 1.2rem; /* Make the text slightly larger */
+    font-size: 1rem; /* Reduced font size */
 }
 
 .community-uploads .file-card a {
@@ -466,13 +466,12 @@ body.night-mode {
     color: var(--text-color);
     text-decoration: none;
     border-radius: var(--border-radius);
-    font-size: 1.2rem;
+    font-size: 1rem; /* Reduced font size */
 }
 
 .community-uploads .file-card a:hover {
     background-color: var(--accent-color);
 }
-
 
 .shared-files {
     width: 420px; /* Width of the sidebar */
@@ -484,16 +483,14 @@ body.night-mode {
     top: 0;
     height: 100%; /* Full height */
     overflow-y: auto; /* Scroll if content overflows */
-    
 }
 
 .shared-files h2 {
-    font-size: 1.8rem;
+    font-size: 1.8rem; /* Header font size remains the same */
     color: white;
     margin-bottom: 10px;
     text-align: center; /* Centers the text */
 }
-
 
 .shared-files .file-card {
     background-color: var(--hover-bg);
@@ -503,10 +500,11 @@ body.night-mode {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    font-size: 0.8rem; /* Reduced font size */
 }
 
 .shared-files .file-card p {
-    font-size: 0.7rem;
+    font-size: 0.8rem; /* Reduced font size */
 }
 
 .shared-files .file-card a {
@@ -515,7 +513,7 @@ body.night-mode {
     color: var(--text-color);
     text-decoration: none;
     border-radius: var(--border-radius);
-    font-size: 0.7rem;
+    font-size: 0.8rem; /* Reduced font size */
 }
 
 .shared-files .file-card a:hover {
@@ -537,6 +535,7 @@ body.night-mode {
     cursor: pointer;
     display: inline-block;
     transition: background-color 0.3s ease;
+    font-size: 0.9rem; /* Reduced font size */
 }
 
 .upload-button:hover {
@@ -546,6 +545,7 @@ body.night-mode {
 #file-upload {
     display: none;
 }
+
 
 
 
@@ -653,7 +653,7 @@ body.night-mode {
                 </div>
             </div>
         </div>
-        <div class="main-content">
+<div class="main-content">
     <div class="content-wrapper">
         <div class="community-uploads">
             <h2>Community Uploads</h2>
@@ -673,6 +673,7 @@ body.night-mode {
         <div id="shared-files-container"></div>
     </div>
 </div>
+
 
             
         
@@ -750,24 +751,29 @@ document.getElementById('file-upload').addEventListener('change', async (event) 
 });
 
 
-    // Function to load current user's shared files
-    async function loadSharedFiles() {
-        const user = auth.currentUser;
-        const sharedFilesContainer = document.getElementById('shared-files-container');
-        sharedFilesContainer.innerHTML = ''; // Clear previous entries
+// Function to load current user's shared files
+async function loadSharedFiles() {
+    const user = auth.currentUser;
+    const sharedFilesContainer = document.getElementById('shared-files-container');
+    sharedFilesContainer.innerHTML = ''; // Clear previous entries
 
-        const querySnapshot = await db.collection('uploads').where('uploaderId', '==', user.uid).get();
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const fileCard = document.createElement('div');
-            fileCard.classList.add('file-card');
-            fileCard.innerHTML = `
-                <p>${data.fileName}</p>
+    const querySnapshot = await db.collection('uploads').where('uploaderId', '==', user.uid).get();
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const fileCard = document.createElement('div');
+        fileCard.classList.add('file-card');
+        fileCard.innerHTML = `
+            <p>${data.fileName}</p>
+            <div class="file-actions">
                 <a href="${data.fileUrl}" target="_blank">Download</a>
-            `;
-            sharedFilesContainer.appendChild(fileCard);
-        });
-    }
+                <button class="info-button" onclick="showUploaderDetails('${data.uploaderName}', '${data.uploaderId}')">
+                    ℹ️
+                </button>
+            </div>
+        `;
+        sharedFilesContainer.appendChild(fileCard);
+    });
+}
 
 // Function to load community uploads (excluding the current user's files)
 async function loadCommunityUploads() {
@@ -782,21 +788,31 @@ async function loadCommunityUploads() {
         fileCard.classList.add('file-card');
         fileCard.innerHTML = `
             <p>${data.fileName}</p>
-            <p>Uploaded by: ${data.uploaderName}</p> <!-- Display uploader's name -->
-            <a href="${data.fileUrl}" target="_blank">Download</a>
+            <div class="file-actions">
+                <a href="${data.fileUrl}" target="_blank">Download</a>
+                <button class="info-button" onclick="showUploaderDetails('${data.uploaderName}', '${data.uploaderId}')">
+                    ℹ️
+                </button>
+            </div>
         `;
         communityUploadsContainer.appendChild(fileCard);
     });
 }
 
+// Function to display uploader details
+function showUploaderDetails(name, id) {
+    alert(`Uploader: ${name}\nID: ${id}`);
+}
 
-    // Listen for auth changes and load the files accordingly
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            loadSharedFiles();
-            loadCommunityUploads();
-        }
-    });
+// Listen for auth changes and load the files accordingly
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        loadSharedFiles();
+        loadCommunityUploads();
+    }
+});
+
+
 
     let inactivityTimeout;
 let isUserOffline = false;
