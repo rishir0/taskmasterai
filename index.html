@@ -114,23 +114,24 @@
             color: var(--primary-color);
         }
 
-        .get-started-btn {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            margin-left: 1.5rem;
-        }
+.get-started-btn {
+    background-color: var(--accent-color) !important;
+    color: white !important; /* Text always white */
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    margin-left: 1.5rem;
+}
 
-        .get-started-btn:hover {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            transform: translateY(-2px);
-        }
+.get-started-btn:hover {
+    background-color: var(--primary-color) !important; /* Background changes on hover */
+    color: white !important; /* Ensure text stays white on hover */
+    transform: translateY(-2px);
+}
+
 
         .hero {
             padding: 8rem 0;
