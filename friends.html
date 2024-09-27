@@ -6873,6 +6873,41 @@ function closeHelpModal() {
 }
 
 
+// Function to listen for new messages for the current user
+function listenForIncomingMessages() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        console.error("No current user found.");
+        return;
+    }
+
+    const currentUserId = currentUser.email; // Using email as the unique identifier
+
+    // Set up a Firestore query to listen for new messages where the current user is the recipient
+    db.collection('chats')
+        .where('recipient', '==', currentUserId) // Current user is the recipient
+        .orderBy('timestamp') // Order by timestamp
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const messageData = change.doc.data();
+                    const messageSender = messageData.sender; // Get the sender of the message
+
+                    // Send a notification to the current user
+                    sendNotificationToUser(messageSender, messageData.message);
+                }
+            });
+        }, error => {
+            console.error("Error listening for incoming messages:", error);
+        });
+}
+
+// Call the listener function to start checking for messages
+listenForIncomingMessages();
+
+
+
 </script>
 
 <script>
