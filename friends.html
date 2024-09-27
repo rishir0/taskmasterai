@@ -3735,8 +3735,7 @@ function testNotification() {
 testNotification();
 
 
-// Listen for messages from all accepted friends
-function listenForMessages() {
+function loadNotifications() {
     const currentUser = firebase.auth().currentUser;
 
     if (!currentUser) {
@@ -3744,51 +3743,27 @@ function listenForMessages() {
         return;
     }
 
-    const currentUserId = currentUser.uid;
-
-    // Fetch the current user's accepted friends
-    db.collection('users').doc(currentUserId).get()
-        .then(doc => {
-            if (doc.exists) {
-                const acceptedFriends = doc.data().acceptedFriends || []; // Get the accepted friends list
-                console.log("Accepted friends:", acceptedFriends);
-
-                // Set up a listener for each friend's messages
-                acceptedFriends.forEach(friendEmail => {
-                    setupFriendMessageListener(currentUser.email, friendEmail);
-                });
-            } else {
-                console.warn("Current user document does not exist.");
-            }
-        })
-        .catch(error => {
-            console.error("Error getting current user data:", error);
-        });
-}
-
-// Set up a listener for messages from a specific friend
-function setupFriendMessageListener(currentUserEmail, friendEmail) {
-    const chatId = getChatId(currentUserEmail, friendEmail); // Implement this function to get the chat ID
-
-    // Listen for messages in the friend's chat
-    db.collection('chats').doc(chatId).collection('messages')
+    // Listen for notifications for the current user
+    db.collection('notifications')
+        .where('recipient', '==', currentUser.email)
         .orderBy('timestamp')
         .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const messageData = change.doc.data();
+            snapshot.forEach(doc => {
+                const notificationData = doc.data();
 
-                    // Check if the message is from the friend and not the current user
-                    if (messageData.sender !== currentUserEmail) {
-                        console.log(`New message from ${messageData.sender}: ${messageData.message}`);
-                        sendNotificationToUser(messageData.sender, messageData.message); // Send notification to the recipient
-                    }
-                }
+                // Display notification for the recipient
+                sendNotificationToUser(notificationData.sender, notificationData.message);
+
+                // Delete the notification after displaying it
+                db.collection('notifications').doc(doc.id).delete().catch(error => {
+                    console.error("Error deleting notification:", error);
+                });
             });
         }, error => {
-            console.error("Error listening for messages:", error);
+            console.error("Error loading notifications:", error);
         });
 }
+
 
 
 
@@ -4681,7 +4656,7 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-            // Notify all group members
+            // Optionally, notify all group members
             sendNotificationToUsers(chatInput, currentGroupId);
         }).catch((error) => {
             console.error('Error sending group message: ', error);
@@ -4701,9 +4676,14 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-
-            // Send notification to the recipient
-            sendNotificationToUser(currentChatFriend, chatInput);
+            
+            // Store notification for recipient
+            db.collection('notifications').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
