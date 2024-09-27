@@ -3645,31 +3645,6 @@ function clearRecentEmojis() {
         });
     });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow('/chat.html'); // Or the URL of your chat page
-        })
-    );
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                
-            } else {
-                console.log('Notification permission denied.');
-            }
-        });
-    }
-});
-
 
 document.addEventListener('DOMContentLoaded', function() {
     auth.onAuthStateChanged(function(user) {
@@ -4544,86 +4519,128 @@ document.addEventListener("DOMContentLoaded", function() {
         setupMessageListener(); // Set up message listener with the new chatId
     }
 
-function sendMessage() {
-    const chatInput = chatInputElement.value.trim();
-    const currentUser = firebase.auth().currentUser;
+    function sendMessage() {
+        const chatInput = chatInputElement.value.trim();
+        const currentUser = firebase.auth().currentUser;
 
-    if (!chatInput || !currentUser) return; // Exit if no input or no current user
+        if (!chatInput || !currentUser) return; // Exit if no input or no current user
 
-    if (currentGroupId) {
-        // Sending a message to a group
-        db.collection('groupchats').doc(currentGroupId).collection('messages').add({
-            sender: currentUser.email,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            chatInputElement.value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending group message: ', error);
-        });
-    } else if (currentChatFriend) {
-        // Sending a message to an individual
-        if (!chatId) {
-            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            // Wait for chatId to be updated before sending the message
-            return; // Exit the function to wait for the chatId update
+        if (currentGroupId) {
+            // Sending a message to a group
+            db.collection('groupchats').doc(currentGroupId).collection('messages').add({
+                sender: currentUser.email,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                chatInputElement.value = ''; // Clear the input field after sending
+            }).catch((error) => {
+                console.error('Error sending group message: ', error);
+            });
+        } else if (currentChatFriend) {
+            // Sending a message to an individual
+            if (!chatId) {
+                updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
+                // Wait for chatId to be updated before sending the message
+                return; // Exit the function to wait for the chatId update
+            }
+
+            db.collection('chats').doc(chatId).collection('messages').add({
+                sender: currentUser.email,
+                recipient: currentChatFriend,
+                message: chatInput,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                chatInputElement.value = ''; // Clear the input field after sending
+            }).catch((error) => {
+                console.error('Error sending message: ', error);
+            });
+        } else {
+            console.error('No recipient or group chat selected.');
         }
-
-        db.collection('chats').doc(chatId).collection('messages').add({
-            sender: currentUser.email,
-            recipient: currentChatFriend,
-            message: chatInput,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            chatInputElement.value = ''; // Clear the input field after sending
-        }).catch((error) => {
-            console.error('Error sending message: ', error);
-        });
-    } else {
-        console.error('No recipient or group chat selected.');
     }
-}
 
-function scrollToBottom() {
-    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
-}
+    function scrollToBottom() {
+        chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+    }
 
-function setupMessageListener() {
-    if (chatId) {
-        db.collection('chats').doc(chatId).collection('messages')
-            .orderBy('timestamp')
-            .onSnapshot(snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        // Code to display the message
-                        scrollToBottom(); // Scroll to the bottom when a new message is added
-                    }
-                });
+    // Check if browser supports Notifications
+    function requestNotificationPermission() {
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+    }
+
+    // Show notification when a new message arrives
+    function showNotification(messageData) {
+        if (Notification.permission === "granted" && document.hidden) {
+            const notification = new Notification(`New message from ${messageData.sender}`, {
+                body: messageData.message,
+                icon: '/path/to/icon.png' // Optional icon for the notification
             });
-    } else if (currentGroupId) {
-        db.collection('groupchats').doc(currentGroupId).collection('messages')
-            .orderBy('timestamp')
-            .onSnapshot(snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        // Code to display the message
-                        scrollToBottom(); // Scroll to the bottom when a new message is added
-                    }
+
+            // Optional: Add click event to focus the chat window when the notification is clicked
+            notification.onclick = function () {
+                window.focus(); // Bring the chat window into focus
+                this.close();   // Close the notification
+            };
+        }
+    }
+
+    function setupMessageListener() {
+        if (chatId) {
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            const messageData = change.doc.data();
+
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
+                            
+                            // Show notification if the user is not active in the chat window
+                            if (messageData.sender !== firebase.auth().currentUser.email) {
+                                showNotification(messageData);
+                            }
+                        }
+                    });
                 });
-            });
-    }
-}
+        } else if (currentGroupId) {
+            db.collection('groupchats').doc(currentGroupId).collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            const messageData = change.doc.data();
 
-// Send message when the "Send" button is clicked
-sendButton.addEventListener('click', sendMessage);
-
-// Send message when the "Enter" key is pressed
-chatInputElement.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevents the default behavior of the "Enter" key
-        sendMessage();
+                            // Code to display the message
+                            scrollToBottom(); // Scroll to the bottom when a new message is added
+                            
+                            // Show notification if the user is not active in the chat window
+                            if (messageData.sender !== firebase.auth().currentUser.email) {
+                                showNotification(messageData);
+                            }
+                        }
+                    });
+                });
+        }
     }
+
+    // Request notification permission when the page loads
+    requestNotificationPermission();
+
+    // Send message when the "Send" button is clicked
+    sendButton.addEventListener('click', sendMessage);
+
+    // Send message when the "Enter" key is pressed
+    chatInputElement.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of the "Enter" key
+            sendMessage();
+        }
+    });
 });
+
 
 // Example function to start or switch chats
 function startChat(friendEmail) {
