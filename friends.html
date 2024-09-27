@@ -3718,27 +3718,6 @@ function sendNotificationToUsers(message, groupId) {
     }
 }
 
-// Function to listen for new messages in a specific chat
-function listenForMessages(chatId) {
-    db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('timestamp')
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const messageData = change.doc.data();
-
-                    // Check if the current user is not the sender
-                    if (messageData.sender !== firebase.auth().currentUser.email) {
-                        console.log("New message received:", messageData.message);
-                        sendNotificationToUser(messageData.sender, messageData.message);
-                    }
-                }
-            });
-        });
-}
-
-// Example usage: Call this function with the appropriate chatId
-// listenForMessages(chatId);
 
 
 // Optional: Function to send a test notification to check if it's working
@@ -3762,6 +3741,67 @@ function testNotification() {
 
 // Call testNotification() to check if notifications are working
 testNotification();
+
+
+// Listen for messages from all accepted friends
+function listenForMessages() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        console.error("No current user found.");
+        return;
+    }
+
+    const currentUserId = currentUser.uid;
+
+    // Fetch the current user's accepted friends
+    db.collection('users').doc(currentUserId).get()
+        .then(doc => {
+            if (doc.exists) {
+                const acceptedFriends = doc.data().acceptedFriends || []; // Get the accepted friends list
+                console.log("Accepted friends:", acceptedFriends);
+
+                // Set up a listener for each friend's messages
+                acceptedFriends.forEach(friendEmail => {
+                    setupFriendMessageListener(currentUser.email, friendEmail);
+                });
+            } else {
+                console.warn("Current user document does not exist.");
+            }
+        })
+        .catch(error => {
+            console.error("Error getting current user data:", error);
+        });
+}
+
+// Set up a listener for messages from a specific friend
+function setupFriendMessageListener(currentUserEmail, friendEmail) {
+    const chatId = getChatId(currentUserEmail, friendEmail); // Implement this function to get the chat ID
+
+    // Listen for messages in the friend's chat
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const messageData = change.doc.data();
+
+                    // Check if the message is from the friend and not the current user
+                    if (messageData.sender !== currentUserEmail) {
+                        console.log(`New message from ${messageData.sender}: ${messageData.message}`);
+                        sendNotificationToUser(messageData.sender, messageData.message); // Send notification
+                    }
+                }
+            });
+        }, error => {
+            console.error("Error listening for messages:", error);
+        });
+}
+
+// Call this function when the user is logged in or when the page loads
+document.addEventListener("DOMContentLoaded", function() {
+    listenForMessages();
+});
 
 
 
