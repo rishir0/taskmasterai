@@ -3427,6 +3427,63 @@ let isUserOffline = false;
 let currentChatFriend = null;
 let currentGroupId = null; // Ensure this variable is declared globally
 
+// Check if Notifications API is supported
+function requestNotificationPermission() {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+            } else {
+                console.log('Notification permission denied.');
+            }
+        });
+    } else {
+        console.log('This browser does not support notifications.');
+    }
+}
+
+// Function to show notifications
+function showNotification(messageData) {
+    if (Notification.permission === 'granted' && document.hidden) {
+        const notification = new Notification(`New message from ${messageData.sender}`, {
+            body: messageData.message,
+            icon: '/path/to/icon.png' // Optionally set a custom icon
+        });
+
+        notification.onclick = function() {
+            window.focus();  // Focus the window when the notification is clicked
+            notification.close();  // Close the notification
+        };
+    }
+}
+
+// Function to listen for real-time messages
+function setupMessageListener() {
+    if (currentChatFriend) {
+        const chatId = getChatId(auth.currentUser.email, currentChatFriend);
+        db.collection('chats').doc(chatId).collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        const messageData = change.doc.data();
+                        // Show notification for messages not sent by the current user
+                        if (messageData.sender !== auth.currentUser.email) {
+                            showNotification(messageData);
+                        }
+                        // Display the message in the chat UI (your existing logic here)
+                    }
+                });
+            });
+    }
+}
+
+// Call this when the page is loaded
+document.addEventListener("DOMContentLoaded", function() {
+    requestNotificationPermission();  // Ask for notification permission
+    setupMessageListener();  // Set up message listener for the chat
+});
+
 
 function setUserOnlineStatus(status) {
     const currentUser = firebase.auth().currentUser;
