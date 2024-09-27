@@ -4629,7 +4629,9 @@ function sendNotificationToFirestore(sender, recipient, message) {
 
 // Show browser notification for individual user
 function showBrowserNotification(sender, message) {
+    console.log("Attempting to show browser notification...");
     if (Notification.permission === "granted") {
+        console.log("Notification permission granted. Showing notification...");
         const notification = new Notification(`New message from ${sender}`, {
             body: message,
             icon: '/path/to/icon.png' // Optional: add a notification icon
@@ -4644,6 +4646,48 @@ function showBrowserNotification(sender, message) {
         console.warn("Notification permission not granted. Cannot show notification.");
     }
 }
+
+// Load and display notifications for recipient
+function loadNotifications() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        console.error("No current user found.");
+        return;
+    }
+
+    console.log(`Checking for notifications for recipient: ${currentUser.email}`);
+
+    db.collection('notifications')
+        .where('recipient', '==', currentUser.email)
+        .onSnapshot(snapshot => {
+            console.log(`Snapshot received with ${snapshot.docChanges().length} changes.`);
+
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const notificationData = change.doc.data();
+
+                    console.log(`New notification from ${notificationData.sender}: ${notificationData.message}`);
+
+                    // Show notification and delete it from Firestore after it's shown
+                    showBrowserNotification(notificationData.sender, notificationData.message);
+                    db.collection('notifications').doc(change.doc.id).delete().then(() => {
+                        console.log("Notification deleted from Firestore after being shown.");
+                    }).catch(error => {
+                        console.error("Error deleting notification from Firestore:", error);
+                    });
+                }
+            });
+        }, error => {
+            console.error("Error loading notifications:", error);
+        });
+}
+
+// Listen for new notifications on page load
+document.addEventListener("DOMContentLoaded", function () {
+    loadNotifications();
+});
+
 
 // Send message and notification for group or individual
 function sendMessage() {
@@ -4683,41 +4727,6 @@ function sendMessage() {
         console.error('No recipient or group chat selected.');
     }
 }
-
-// Load and display notifications for recipient
-function loadNotifications() {
-    const currentUser = firebase.auth().currentUser;
-
-    if (!currentUser) {
-        console.error("No current user found.");
-        return;
-    }
-
-    db.collection('notifications')
-        .where('recipient', '==', currentUser.email)
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const notificationData = change.doc.data();
-
-                    // Show notification and delete it from Firestore after it's shown
-                    showBrowserNotification(notificationData.sender, notificationData.message);
-                    db.collection('notifications').doc(change.doc.id).delete().then(() => {
-                        console.log("Notification deleted from Firestore after being shown.");
-                    }).catch(error => {
-                        console.error("Error deleting notification from Firestore:", error);
-                    });
-                }
-            });
-        }, error => {
-            console.error("Error loading notifications:", error);
-        });
-}
-
-// Listen for new notifications on page load
-document.addEventListener("DOMContentLoaded", function () {
-    loadNotifications();
-});
 
 
 
