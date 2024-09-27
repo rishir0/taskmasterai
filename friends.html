@@ -3647,40 +3647,99 @@ function clearRecentEmojis() {
 
 // Request notification permission on page load
 document.addEventListener("DOMContentLoaded", function() {
-    if ("Notification" in window && Notification.permission !== "granted") {
-        Notification.requestPermission();
+    if ("Notification" in window) {
+        console.log("Notifications supported in this browser.");
+        if (Notification.permission === "granted") {
+            console.log("Notification permission already granted.");
+        } else if (Notification.permission !== "denied") {
+            console.log("Requesting notification permission...");
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted.");
+                } else {
+                    console.log("Notification permission denied.");
+                }
+            }).catch(error => {
+                console.error("Error while requesting notification permission:", error);
+            });
+        } else {
+            console.log("Notification permission previously denied.");
+        }
+    } else {
+        console.warn("This browser does not support notifications.");
     }
 });
 
 // Show notification for individual user
 function sendNotificationToUser(recipient, message) {
-    if (Notification.permission === "granted" && document.hidden) {
-        const notification = new Notification(`New message from ${firebase.auth().currentUser.email}`, {
-            body: message,
-            icon: '/path/to/icon.png' // Optional: add a notification icon here
-        });
+    console.log("Attempting to send notification to individual user...");
+    if (Notification.permission === "granted") {
+        if (document.hidden) {
+            console.log(`User is on another tab or window, sending notification to ${recipient}`);
+            const notification = new Notification(`New message from ${firebase.auth().currentUser.email}`, {
+                body: message,
+                icon: '/path/to/icon.png' // Optional: add a notification icon here
+            });
 
-        notification.onclick = function () {
-            window.focus(); // Bring the chat window into focus
-            this.close();   // Close the notification
-        };
+            notification.onclick = function () {
+                console.log("Notification clicked. Focusing window...");
+                window.focus(); // Bring the chat window into focus
+                this.close();   // Close the notification
+            };
+        } else {
+            console.log("User is active in the chat window, no notification sent.");
+        }
+    } else {
+        console.warn("Notification permission not granted. Cannot send notification.");
     }
 }
 
 // Show notification for group users
 function sendNotificationToUsers(message, groupId) {
-    if (Notification.permission === "granted" && document.hidden) {
-        const notification = new Notification(`New group message`, {
-            body: message,
-            icon: '/path/to/icon.png' // Optional: add a notification icon here
+    console.log("Attempting to send notification to group users...");
+    if (Notification.permission === "granted") {
+        if (document.hidden) {
+            console.log(`User is on another tab or window, sending group message notification for group ${groupId}`);
+            const notification = new Notification(`New group message in ${groupId}`, {
+                body: message,
+                icon: '/path/to/icon.png' // Optional: add a notification icon here
+            });
+
+            notification.onclick = function () {
+                console.log("Group notification clicked. Focusing window...");
+                window.focus(); // Bring the chat window into focus
+                this.close();   // Close the notification
+            };
+        } else {
+            console.log("User is active in the chat window, no group notification sent.");
+        }
+    } else {
+        console.warn("Notification permission not granted. Cannot send group notification.");
+    }
+}
+
+// Optional: Function to send a test notification to check if it's working
+function testNotification() {
+    console.log("Testing notifications...");
+    if (Notification.permission === "granted") {
+        const notification = new Notification("Test Notification", {
+            body: "This is a test notification.",
+            icon: '/path/to/icon.png'
         });
 
         notification.onclick = function () {
-            window.focus(); // Bring the chat window into focus
-            this.close();   // Close the notification
+            console.log("Test notification clicked. Focusing window...");
+            window.focus();
+            this.close();
         };
+    } else {
+        console.warn("Cannot test notification because permission is not granted.");
     }
 }
+
+// Call testNotification() to check if notifications are working
+testNotification();
+
 
 
 
