@@ -3645,30 +3645,43 @@ function clearRecentEmojis() {
         });
     });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow('/chat.html'); // Or the URL of your chat page
-        })
-    );
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                
-            } else {
-                console.log('Notification permission denied.');
-            }
-        });
+// Request notification permission on page load
+document.addEventListener("DOMContentLoaded", function() {
+    if ("Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
     }
 });
+
+// Show notification for individual user
+function sendNotificationToUser(recipient, message) {
+    if (Notification.permission === "granted" && document.hidden) {
+        const notification = new Notification(`New message from ${firebase.auth().currentUser.email}`, {
+            body: message,
+            icon: '/path/to/icon.png' // Optional: add a notification icon here
+        });
+
+        notification.onclick = function () {
+            window.focus(); // Bring the chat window into focus
+            this.close();   // Close the notification
+        };
+    }
+}
+
+// Show notification for group users
+function sendNotificationToUsers(message, groupId) {
+    if (Notification.permission === "granted" && document.hidden) {
+        const notification = new Notification(`New group message`, {
+            body: message,
+            icon: '/path/to/icon.png' // Optional: add a notification icon here
+        });
+
+        notification.onclick = function () {
+            window.focus(); // Bring the chat window into focus
+            this.close();   // Close the notification
+        };
+    }
+}
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -4558,6 +4571,9 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
+
+            // Send notification for group message
+            sendNotificationToUsers(chatInput, currentGroupId);
         }).catch((error) => {
             console.error('Error sending group message: ', error);
         });
@@ -4576,6 +4592,9 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
+
+            // Send notification for individual chat
+            sendNotificationToUser(currentChatFriend, chatInput);
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
@@ -4583,6 +4602,7 @@ function sendMessage() {
         console.error('No recipient or group chat selected.');
     }
 }
+
 
 function scrollToBottom() {
     chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
