@@ -3673,22 +3673,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Show notification for individual user
 function sendNotificationToUser(recipient, message) {
+    const currentUser = firebase.auth().currentUser; // Get the current user
     console.log("Attempting to send notification to individual user...");
-    if (Notification.permission === "granted") {
-        const notification = new Notification(`New message from ${firebase.auth().currentUser.email}`, {
-            body: message,
 
-        });
+    // Check if the current user is the recipient
+    if (currentUser && currentUser.email === recipient) {
+        console.log("Current user is the recipient. Notification will be shown.");
+        
+        if (Notification.permission === "granted") {
+            const notification = new Notification(`New message from ${currentUser.email}`, {
+                body: message,
+            });
 
-        notification.onclick = function () {
-            console.log("Notification clicked. Focusing window...");
-            window.focus(); // Bring the chat window into focus
-            this.close();   // Close the notification
-        };
+            notification.onclick = function () {
+                console.log("Notification clicked. Focusing window...");
+                window.focus(); // Bring the chat window into focus
+                this.close();   // Close the notification
+            };
+        } else {
+            console.warn("Notification permission not granted. Cannot send notification.");
+        }
     } else {
-        console.warn("Notification permission not granted. Cannot send notification.");
+        console.log("Current user is not the recipient. Notification will not be shown.");
     }
 }
+
 
 // Show notification for group users
 function sendNotificationToUsers(message, groupId) {
