@@ -3645,162 +3645,30 @@ function clearRecentEmojis() {
         });
     });
 
-// Request notification permission on page load
-document.addEventListener("DOMContentLoaded", function() {
-    if ("Notification" in window) {
-        console.log("Notifications supported in this browser.");
-        if (Notification.permission === "granted") {
-            console.log("Notification permission already granted.");
-        } else if (Notification.permission !== "denied") {
-            console.log("Requesting notification permission...");
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    console.log("Notification permission granted.");
-                } else {
-                    console.log("Notification permission denied.");
-                }
-            }).catch(error => {
-                console.error("Error while requesting notification permission:", error);
-            });
-        } else {
-            console.log("Notification permission previously denied.");
-        }
-    } else {
-        console.warn("This browser does not support notifications.");
-    }
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(function(clientList) {
+            if (clientList.length > 0) {
+                return clientList[0].focus();
+            }
+            return clients.openWindow('/chat.html'); // Or the URL of your chat page
+        })
+    );
 });
 
 
-// Show notification for individual user
-function sendNotificationToUser(recipient, message) {
-    const currentUser = firebase.auth().currentUser; // Get the current user
-    console.log("Attempting to send notification to individual user...");
-
-    // Check if the current user is the recipient
-    if (currentUser && currentUser.email === recipient) {
-        console.log("Current user is the recipient. Notification will be shown.");
-        
-        if (Notification.permission === "granted") {
-            const notification = new Notification(`New message from ${currentUser.email}`, {
-                body: message,
-            });
-
-            notification.onclick = function () {
-                console.log("Notification clicked. Focusing window...");
-                window.focus(); // Bring the chat window into focus
-                this.close();   // Close the notification
-            };
-        } else {
-            console.warn("Notification permission not granted. Cannot send notification.");
-        }
-    } else {
-        console.log("Current user is not the recipient. Notification will not be shown.");
-    }
-}
-
-
-// Show notification for group users
-function sendNotificationToUsers(message, groupId) {
-    console.log("Attempting to send notification to group users...");
-    if (Notification.permission === "granted") {
-        const notification = new Notification(`New group message in ${groupId}`, {
-            body: message,
-
-        });
-
-        notification.onclick = function () {
-            console.log("Group notification clicked. Focusing window...");
-            window.focus(); // Bring the chat window into focus
-            this.close();   // Close the notification
-        };
-    } else {
-        console.warn("Notification permission not granted. Cannot send group notification.");
-    }
-}
-
-
-
-
-// Optional: Function to send a test notification to check if it's working
-function testNotification() {
-    console.log("Testing notifications...");
-    if (Notification.permission === "granted") {
-        const notification = new Notification("Test Notification", {
-            body: "This is a test notification.",
-
-        });
-
-        notification.onclick = function () {
-            console.log("Test notification clicked. Focusing window...");
-            window.focus();
-            this.close();
-        };
-    } else {
-        console.warn("Cannot test notification because permission is not granted.");
-    }
-}
-
-// Call testNotification() to check if notifications are working
-testNotification();
-
-
-// Listen for messages from all accepted friends
-function listenForMessages() {
-    const currentUser = firebase.auth().currentUser;
-
-    if (!currentUser) {
-        console.log("No current user found.");
-        return;
-    }
-
-    const currentUserId = currentUser.uid;
-
-    // Fetch the current user's accepted friends
-    db.collection('users').doc(currentUserId).get()
-        .then(doc => {
-            if (doc.exists) {
-                const acceptedFriends = doc.data().acceptedFriends || []; // Get the accepted friends list
-                console.log("Accepted friends:", acceptedFriends);
-
-                // Set up a listener for each friend's messages
-                acceptedFriends.forEach(friendEmail => {
-                    setupFriendMessageListener(currentUser.email, friendEmail);
-                });
+document.addEventListener('DOMContentLoaded', function() {
+    if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                
             } else {
-                console.warn("Current user document does not exist.");
+                console.log('Notification permission denied.');
             }
-        })
-        .catch(error => {
-            console.error("Error getting current user data:", error);
         });
-}
-
-// Set up a listener for messages from a specific friend
-function setupFriendMessageListener(currentUserEmail, friendEmail) {
-    const chatId = getChatId(currentUserEmail, friendEmail); // Implement this function to get the chat ID
-
-    // Listen for messages in the friend's chat
-    db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('timestamp')
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const messageData = change.doc.data();
-
-                    // Check if the message is from the friend and not the current user
-                    if (messageData.sender !== currentUserEmail) {
-                        console.log(`New message from ${messageData.sender}: ${messageData.message}`);
-                        sendNotificationToUser(messageData.sender, messageData.message); // Send notification to the recipient
-                    }
-                }
-            });
-        }, error => {
-            console.error("Error listening for messages:", error);
-        });
-}
-
-
-
+    }
+});
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -4674,7 +4542,10 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateChatId(userEmail, chatFriend) {
         chatId = getChatId(userEmail, chatFriend);
         setupMessageListener(); // Set up message listener with the new chatId
+        setupMessageNotificationListener(); // Set up notification listener with the new chatId
     }
+});
+
 
 function sendMessage() {
     const chatInput = chatInputElement.value.trim();
@@ -4690,8 +4561,6 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-            // Notify all group members
-            sendNotificationToUsers(chatInput, currentGroupId);
         }).catch((error) => {
             console.error('Error sending group message: ', error);
         });
@@ -4710,9 +4579,6 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-
-            // Send notification to the recipient
-            sendNotificationToUser(currentChatFriend, chatInput);
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
@@ -4720,8 +4586,6 @@ function sendMessage() {
         console.error('No recipient or group chat selected.');
     }
 }
-
-
 
 function scrollToBottom() {
     chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
@@ -4752,6 +4616,100 @@ function setupMessageListener() {
             });
     }
 }
+
+// Request notification permission on page load
+document.addEventListener("DOMContentLoaded", function() {
+    if ("Notification" in window) {
+        console.log("Notifications supported in this browser.");
+        if (Notification.permission === "granted") {
+            console.log("Notification permission already granted.");
+        } else if (Notification.permission !== "denied") {
+            console.log("Requesting notification permission...");
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted.");
+                } else {
+                    console.log("Notification permission denied.");
+                }
+            }).catch(error => {
+                console.error("Error while requesting notification permission:", error);
+            });
+        } else {
+            console.log("Notification permission previously denied.");
+        }
+    } else {
+        console.warn("This browser does not support notifications.");
+    }
+});
+
+
+function setupMessageNotificationListener() {
+    const currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
+        console.error("No user is signed in.");
+        return;
+    }
+
+    if (chatId) {
+        // Listen for individual chat messages
+        db.collection('chats').doc(chatId).collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        const messageData = change.doc.data();
+                        if (messageData.recipient === currentUser.email) {
+                            showNotification(messageData.sender, messageData.message); // Show notification if the current user is the recipient
+                        }
+                        scrollToBottom(); // Scroll to the bottom when a new message is added
+                    }
+                });
+            });
+    } else if (currentGroupId) {
+        // Listen for group chat messages
+        db.collection('groupchats').doc(currentGroupId).collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        const messageData = change.doc.data();
+                        // In group chats, you could optionally check if the user is part of the group
+                        if (messageData.sender !== currentUser.email) {
+                            showNotification(messageData.sender, messageData.message); // Show notification for new messages from others
+                        }
+                        scrollToBottom(); // Scroll to the bottom when a new message is added
+                    }
+                });
+            });
+    }
+}
+
+// Function to show notification
+function showNotification(senderEmail, message) {
+    // Get sender's display name
+    db.collection('users').where('email', '==', senderEmail).get().then(querySnapshot => {
+        if (!querySnapshot.empty) {
+            const senderDisplayName = querySnapshot.docs[0].data().displayName;
+            
+            // Display notification
+            const notificationElement = document.createElement('div');
+            notificationElement.classList.add('notification');
+            notificationElement.innerHTML = `
+                <p><strong>${senderDisplayName}:</strong> ${message}</p>
+            `;
+            document.body.appendChild(notificationElement);
+
+            // Automatically hide the notification after 5 seconds
+            setTimeout(() => {
+                notificationElement.remove();
+            }, 5000);
+        }
+    }).catch((error) => {
+        console.error('Error fetching sender display name: ', error);
+    });
+}
+
 
 // Send message when the "Send" button is clicked
 sendButton.addEventListener('click', sendMessage);
@@ -6871,41 +6829,6 @@ function closeHelpModal() {
     const helpModal = document.getElementById('helpModal');
     helpModal.style.display = 'none';
 }
-
-
-// Function to listen for new messages for the current user
-function listenForIncomingMessages() {
-    const currentUser = firebase.auth().currentUser;
-
-    if (!currentUser) {
-        console.error("No current user found.");
-        return;
-    }
-
-    const currentUserId = currentUser.email; // Using email as the unique identifier
-
-    // Set up a Firestore query to listen for new messages where the current user is the recipient
-    db.collection('chats')
-        .where('recipient', '==', currentUserId) // Current user is the recipient
-        .orderBy('timestamp') // Order by timestamp
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    const messageData = change.doc.data();
-                    const messageSender = messageData.sender; // Get the sender of the message
-
-                    // Send a notification to the current user
-                    sendNotificationToUser(messageSender, messageData.message);
-                }
-            });
-        }, error => {
-            console.error("Error listening for incoming messages:", error);
-        });
-}
-
-// Call the listener function to start checking for messages
-listenForIncomingMessages();
-
 
 
 </script>
