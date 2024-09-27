@@ -3718,6 +3718,29 @@ function sendNotificationToUsers(message, groupId) {
     }
 }
 
+// Function to listen for new messages in a specific chat
+function listenForMessages(chatId) {
+    db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    const messageData = change.doc.data();
+
+                    // Check if the current user is not the sender
+                    if (messageData.sender !== firebase.auth().currentUser.email) {
+                        console.log("New message received:", messageData.message);
+                        sendNotificationToUser(messageData.sender, messageData.message);
+                    }
+                }
+            });
+        });
+}
+
+// Example usage: Call this function with the appropriate chatId
+// listenForMessages(chatId);
+
+
 // Optional: Function to send a test notification to check if it's working
 function testNotification() {
     console.log("Testing notifications...");
@@ -4630,8 +4653,7 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-
-            // Send notification for group message
+            // Optionally, notify all group members
             sendNotificationToUsers(chatInput, currentGroupId);
         }).catch((error) => {
             console.error('Error sending group message: ', error);
@@ -4651,9 +4673,6 @@ function sendMessage() {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             chatInputElement.value = ''; // Clear the input field after sending
-
-            // Send notification for individual chat
-            sendNotificationToUser(currentChatFriend, chatInput);
         }).catch((error) => {
             console.error('Error sending message: ', error);
         });
@@ -4661,6 +4680,7 @@ function sendMessage() {
         console.error('No recipient or group chat selected.');
     }
 }
+
 
 
 function scrollToBottom() {
