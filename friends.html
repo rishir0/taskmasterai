@@ -3638,30 +3638,6 @@ function clearRecentEmojis() {
         });
     });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window' }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow('/chat.html'); // Or the URL of your chat page
-        })
-    );
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                
-            } else {
-                console.log('Notification permission denied.');
-            }
-        });
-    }
-});
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -4629,6 +4605,16 @@ function startChat(friendEmail) {
     // Use startChat(friendEmail) when starting or switching chats
 });
 
+
+// Request notification permission
+if (Notification.permission === 'default') {
+    Notification.requestPermission().then((permission) => {
+        if (permission !== 'granted') {
+            console.log('Notification permission denied');
+        }
+    });
+}
+        
 let replies = {};
 
 function openChat(friendEmail) {
@@ -4663,6 +4649,14 @@ function openChat(friendEmail) {
                                     .then((querySnapshot) => {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                        
+                                        // Show browser notification
+                                        if (Notification.permission === 'granted') {
+                                            new Notification(`New message from ${senderDisplayName}`, {
+                                                body: message.message,
+                                                
+                                            });
+                                        }
                                     });
                             }
 
