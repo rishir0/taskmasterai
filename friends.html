@@ -4618,6 +4618,9 @@ if (Notification.permission === 'default') {
         
 let replies = {};
 
+// Store the active listener unsubscribe function
+let unsubscribeFromMessages = null;
+
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
@@ -4626,6 +4629,11 @@ function openChat(friendEmail) {
 
     currentChatFriend = friendEmail;
 
+    // Unsubscribe from any existing listener before setting a new one
+    if (unsubscribeFromMessages) {
+        unsubscribeFromMessages();
+    }
+
     db.collection('users').where('email', '==', friendEmail).get()
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
@@ -4633,7 +4641,8 @@ function openChat(friendEmail) {
                 const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
                 chatWithSpan.innerHTML = friendDisplayName;
 
-                db.collection('chats').doc(chatId).collection('messages')
+                // Set up a new listener
+                unsubscribeFromMessages = db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
                     .onSnapshot((querySnapshot) => {
                         chatWindow.innerHTML = '';
@@ -4657,9 +4666,9 @@ function openChat(friendEmail) {
                                         
                                         // Show browser notification only for the latest message
                                         if (doc.id === latestMessageDoc.id && Notification.permission === 'granted') {
-                                            new Notification(` ${senderDisplayName}`, {
+                                            new Notification(`New message from ${senderDisplayName}`, {
                                                 body: message.message,
-                                                
+                                                icon: 'https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/apple-touch-icon.png?alt=media&token=3f0a1187-813a-403f-aa4f-5c0ccd58c16c'
                                             });
                                         }
                                     });
