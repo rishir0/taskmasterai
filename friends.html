@@ -4617,7 +4617,7 @@ if (Notification.permission === 'default') {
         
 let replies = {};
 
-// Declare the unsubscribe function outside to maintain its state across function calls
+// Store the active listener unsubscribe function
 let unsubscribeFromMessages = null;
 
 function openChat(friendEmail) {
@@ -4628,10 +4628,9 @@ function openChat(friendEmail) {
 
     currentChatFriend = friendEmail;
 
-    // Check if there's an existing listener and unsubscribe it
-    if (typeof unsubscribeFromMessages === 'function') {
+    // Unsubscribe from any existing listener before setting a new one
+    if (unsubscribeFromMessages) {
         unsubscribeFromMessages();
-        unsubscribeFromMessages = null; // Reset after unsubscribing
     }
 
     db.collection('users').where('email', '==', friendEmail).get()
@@ -4641,7 +4640,7 @@ function openChat(friendEmail) {
                 const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
                 chatWithSpan.innerHTML = friendDisplayName;
 
-                // Set up a new listener for messages
+                // Set up a new listener
                 unsubscribeFromMessages = db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
                     .onSnapshot((querySnapshot) => {
