@@ -4636,6 +4636,10 @@ function openChat(friendEmail) {
                     .orderBy('timestamp', 'asc')
                     .onSnapshot((querySnapshot) => {
                         chatWindow.innerHTML = '';
+
+                        // Get the latest message
+                        const latestMessageDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+                        
                         querySnapshot.forEach((doc) => {
                             const message = doc.data();
                             const messageId = doc.id;
@@ -4650,8 +4654,8 @@ function openChat(friendEmail) {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
                                         
-                                        // Show browser notification
-                                        if (Notification.permission === 'granted') {
+                                        // Show browser notification only for the latest message
+                                        if (doc.id === latestMessageDoc.id && Notification.permission === 'granted') {
                                             new Notification(`New message from ${senderDisplayName}`, {
                                                 body: message.message,
                                                 
@@ -4670,7 +4674,7 @@ function openChat(friendEmail) {
                             } else {
                                 messageDiv.classList.add('message', 'received');
                             }
-
+                            
                             // Add options for reply and reactions
                             const optionsContainer = document.createElement('div');
                             optionsContainer.classList.add('message-options');
