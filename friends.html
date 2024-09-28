@@ -4556,12 +4556,7 @@ function sendMessage() {
         });
     } else if (currentChatFriend) {
         // Sending a message to an individual
-        if (!chatId) {
-            updateChatId(currentUser.email, currentChatFriend); // Ensure chatId is set
-            // Wait for chatId to be updated before sending the message
-            return; // Exit the function to wait for the chatId update
-        }
-
+        
         db.collection('chats').doc(chatId).collection('messages').add({
             sender: currentUser.email,
             recipient: currentChatFriend,
