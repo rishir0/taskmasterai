@@ -4656,7 +4656,7 @@ function openChat(friendEmail) {
                                         
                                         // Show browser notification only for the latest message
                                         if (doc.id === latestMessageDoc.id && Notification.permission === 'granted') {
-                                            new Notification(`New message from ${senderDisplayName}`, {
+                                            new Notification(` ${senderDisplayName}`, {
                                                 body: message.message,
                                                 
                                             });
