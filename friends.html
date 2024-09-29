@@ -4606,6 +4606,10 @@ if (Notification.permission === 'default') {
         
 let replies = {};
 
+// Store the active listener unsubscribe function
+let unsubscribeFromMessages = null;
+let lastNotifiedMessageId = null; // Track the ID of the last notified message
+
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
@@ -4614,6 +4618,11 @@ function openChat(friendEmail) {
 
     currentChatFriend = friendEmail;
 
+    // Unsubscribe from any existing listener before setting a new one
+    if (unsubscribeFromMessages) {
+        unsubscribeFromMessages();
+    }
+
     db.collection('users').where('email', '==', friendEmail).get()
         .then((querySnapshot) => {
             if (!querySnapshot.empty) {
@@ -4621,7 +4630,8 @@ function openChat(friendEmail) {
                 const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
                 chatWithSpan.innerHTML = friendDisplayName;
 
-                db.collection('chats').doc(chatId).collection('messages')
+                // Set up a new listener
+                unsubscribeFromMessages = db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
                     .onSnapshot((querySnapshot) => {
                         chatWindow.innerHTML = '';
@@ -4643,12 +4653,10 @@ function openChat(friendEmail) {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
                                         
-                                        // Show browser notification only for the latest message
-                                        if (doc.id === latestMessageDoc.id && Notification.permission === 'granted') {
-                                            new Notification(` ${senderDisplayName}`, {
-                                                body: message.message,
-                                                
-                                            });
+                                        // Show notification only for the latest message and avoid duplicate notifications
+                                        if (doc.id === latestMessageDoc.id && Notification.permission === 'granted' && messageId !== lastNotifiedMessageId) {
+                                            lastNotifiedMessageId = messageId; // Update the last notified message ID
+                                            showNotification(senderDisplayName, message.message);
                                         }
                                     });
                             }
@@ -4727,6 +4735,26 @@ function openChat(friendEmail) {
         });
 }
 
+// Helper function to show notifications with cross-browser support
+function showNotification(senderDisplayName, message) {
+    const notificationOptions = {
+        body: message,
+        icon: 'https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/apple-touch-icon.png?alt=media&token=3f0a1187-813a-403f-aa4f-5c0ccd58c16c'
+    };
+
+    // For standard notifications
+    if ("Notification" in window) {
+        new Notification(`New message from ${senderDisplayName}`, notificationOptions);
+    }
+    // For older Safari versions
+    else if ("webkitNotifications" in window) {
+        window.webkitNotifications.createNotification(
+            notificationOptions.icon,
+            `New message from ${senderDisplayName}`,
+            message
+        ).show();
+    }
+}
 
 function openReplyModal(chatId, messageId, originalMessage) {
     const modal = document.getElementById('modal4');
