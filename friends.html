@@ -4744,13 +4744,13 @@ function showNotification(senderDisplayName, message) {
 
     // For standard notifications
     if ("Notification" in window) {
-        new Notification(`New message from ${senderDisplayName}`, notificationOptions);
+        new Notification(` ${senderDisplayName}`, notificationOptions);
     }
     // For older Safari versions
     else if ("webkitNotifications" in window) {
         window.webkitNotifications.createNotification(
             notificationOptions.icon,
-            `New message from ${senderDisplayName}`,
+            ` ${senderDisplayName}`,
             message
         ).show();
     }
