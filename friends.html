@@ -4653,8 +4653,8 @@ function openChat(friendEmail) {
                                         const senderDoc = querySnapshot.docs[0];
                                         const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
                                         
-                                        // Show notification only for the latest message and avoid duplicate notifications
-                                        if (doc.id === latestMessageDoc.id && Notification.permission === 'granted' && messageId !== lastNotifiedMessageId) {
+                                        // Check if the current URL is not taskmaster.one/friends
+                                        if (window.location.href !== "https://taskmaster.one/friends" && doc.id === latestMessageDoc.id && Notification.permission === 'granted' && messageId !== lastNotifiedMessageId) {
                                             lastNotifiedMessageId = messageId; // Update the last notified message ID
                                             showNotification(senderDisplayName, message.message);
                                         }
@@ -4671,6 +4671,7 @@ function openChat(friendEmail) {
                             } else {
                                 messageDiv.classList.add('message', 'received');
                             }
+
                             
                             // Add options for reply and reactions
                             const optionsContainer = document.createElement('div');
@@ -4739,22 +4740,36 @@ function openChat(friendEmail) {
 function showNotification(senderDisplayName, message) {
     const notificationOptions = {
         body: message,
-        icon: 'https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/apple-touch-icon.png?alt=media&token=3f0a1187-813a-403f-aa4f-5c0ccd58c16c'
+        icon: 'https://firebasestorage.googleapis.com/v0/b/deepworkai-c3419.appspot.com/o/apple-touch-icon.png?alt=media&token=3f0a1187-813a-403f-aa4f-5c0ccd58c16c',
+        tag: 'chat-notification' // Ensure only one notification is shown at a time
     };
 
     // For standard notifications
     if ("Notification" in window) {
-        new Notification(`New message from ${senderDisplayName}`, notificationOptions);
+        const notification = new Notification(` ${senderDisplayName}`, notificationOptions);
+        
+        // Open the chat tab/website when the notification is clicked
+        notification.onclick = () => {
+            window.focus();
+            window.location.href = 'https://taskmaster.one/friends';
+        };
     }
     // For older Safari versions
     else if ("webkitNotifications" in window) {
-        window.webkitNotifications.createNotification(
+        const notification = window.webkitNotifications.createNotification(
             notificationOptions.icon,
-            `New message from ${senderDisplayName}`,
+            ` ${senderDisplayName}`,
             message
-        ).show();
+        );
+        notification.show();
+        
+        notification.onclick = () => {
+            window.focus();
+            window.location.href = 'https://taskmaster.one/friends';
+        };
     }
 }
+
 
 function openReplyModal(chatId, messageId, originalMessage) {
     const modal = document.getElementById('modal4');
