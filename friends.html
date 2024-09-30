@@ -1857,9 +1857,16 @@ body.night-mode {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block;
-    margin-left: -50px; /* Adjust this value to move it left */
+    display: inline-block; /* Ensure it behaves as an inline element */
+    margin-left: 8px; /* Properly space it from friendName */
+    vertical-align: middle; /* Align vertically with friendName */
 }
+
+.friend-name {
+    display: inline-block; /* Ensure friendName behaves like an inline element */
+    vertical-align: middle; /* Align vertically with latestMessageSpan */
+}
+
 
 
 
