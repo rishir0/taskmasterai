@@ -5299,13 +5299,13 @@ function sendGroupMessage(groupId) {
     });
 }
 
-function refreshOnlineFriends() {
+function refreshGroupChats() {
     loadGroupChats(); // Call the loadPinnedFriends function here
     loadPinnedGroups();
 }
 
 document.getElementById('refreshGroupButton').addEventListener('click', () => {
-    refreshOnlineFriends();
+    refreshGroupChats();
 
     // Optional: Add a simple rotation animation
     const button = document.getElementById('refreshGroupButton');
