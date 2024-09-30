@@ -5299,23 +5299,6 @@ function sendGroupMessage(groupId) {
     });
 }
 
-function refreshOnlineFriends() {
-    loadGroupChats
-    loadPinnedGroups();
-}
-
-document.getElementById('refreshPinnedButton').addEventListener('click', () => {
-    refreshOnlineFriends();
-
-    // Optional: Add a simple rotation animation
-    const button = document.getElementById('refreshPinnedButton');
-    button.style.transition = 'transform 0.5s ease-in-out';
-    button.style.transform = 'rotate(360deg)';
-
-    setTimeout(() => {
-        button.style.transform = 'none';
-    }, 500);
-});
 // Function to load group chats
 function loadGroupChats() {
     const currentUser = firebase.auth().currentUser;
