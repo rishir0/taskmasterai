@@ -3950,6 +3950,12 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
+                                    // Set the friend name and avatar when clicked
+                                    listItem.addEventListener('click', () => {
+                                        updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
+                                    });
+
+
                                     // Create span for friend's name
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
@@ -5328,6 +5334,11 @@ function loadGroupChats() {
                 avatarContainer.style.marginRight = '10px'; // Space between avatar and name
 
                 loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
+
+                // Set the group name and avatar when clicked
+                groupItem.addEventListener('click', () => {
+                    updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
+                });
 
                 // Create group name element
                 const groupNameElement = document.createElement('span');
