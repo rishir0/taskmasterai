@@ -1411,6 +1411,36 @@ body.night-mode {
     background-color: transparent;
 }
 
+#hideButton2 {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 1px; /* Reduced to make it closer */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+    color: #ff0000;
+}
+
+#hideButton2 svg {
+    width: 42px;  /* Reduced size for better alignment */
+    height: 42px; /* Reduced size for better alignment */
+}
+
+#hideButton2:active {
+    transform: scale(1.2);
+}
+
+#hideButton2:active svg path {
+    stroke: #ff0000;
+}
+
+#hideButton2:hover {
+    background-color: transparent;
+}
+
         
 .message-options {
     display: flex;
