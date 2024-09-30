@@ -1,95 +1,97 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
     :root {
-        --primary-color: #009bf5; /* Keep primary color white */
-        --secondary-color: #8d8aaf; /* Consistent secondary color */
-        --accent-color: #003366; /* Consistent accent color */
-        --text-color: #ffffff;
-        --bg-color: rgba(255, 255, 255, 0.1);
-        --card-bg: rgba(255, 255, 255, 0.1);
-        --glass-bg: rgba(255, 255, 255, 0.1);
-        --hover-bg: rgba(255, 255, 255, 0.1);
-        --border-radius: 15px;
+        --primary-color: #009bf5 !important; /* Keep primary color white */
+        --secondary-color: #8d8aaf !important; /* Consistent secondary color */
+        --accent-color: #003366 !important; /* Consistent accent color */
+        --text-color: #ffffff !important;
+        --bg-color: rgba(255, 255, 255, 0.1) !important;
+        --card-bg: rgba(255, 255, 255, 0.1) !important;
+        --glass-bg: rgba(255, 255, 255, 0.1) !important;
+        --hover-bg: rgba(255, 255, 255, 0.1) !important;
+        --border-radius: 15px !important;
     }
     
     body {
-        font-family: 'Poppins', sans-serif;
-        line-height: 1.6;
-        color: var(--text-color);
-        background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
-        background-size: 400% 400%;
-        animation: gradientBG 10s ease infinite;
-        backdrop-filter: blur(10px);
+        font-family: 'Poppins', sans-serif !important;
+        line-height: 1.6 !important;
+        color: var(--text-color) !important;
+        background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8)) !important;
+        background-size: 400% 400% !important;
+        animation: gradientBG 10s ease infinite !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        0% { background-position: 0% 50% !important; }
+        50% { background-position: 100% 50% !important; }
+        100% { background-position: 0% 50% !important; }
     }
     
     .card {
-        margin-bottom: 20px;
+        margin-bottom: 20px !important;
     }
 
     .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 10px 15px;
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+        padding: 10px 15px !important;
     }
 
     .card-body {
-        padding: 15px;
+        padding: 15px !important;
     }
     `;
 
-    const darkThemeStyles = `
+
+
+const darkThemeStyles = `
 :root {
-    --primary-color: #009bf5; /* Keep primary color white */
-    --secondary-color: #8d8aaf; /* Consistent secondary color */
-    --accent-color: #003366; /* Consistent accent color */
-    --text-color: #ffffff; /* Keep text color white */
-    --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color */
-    --card-bg: rgba(31, 31, 31, 0.9); /* Darker card background */
-    --glass-bg: rgba(31, 31, 31, 0.9); /* Darker glass background */
-    --hover-bg: rgba(55, 55, 55, 0.9); /* Darker hover background */
-    --border-radius: 15px;
+    --primary-color: #009bf5 !important; /* Keep primary color white */
+    --secondary-color: #8d8aaf !important; /* Consistent secondary color */
+    --accent-color: #003366 !important; /* Consistent accent color */
+    --text-color: #ffffff !important; /* Keep text color white */
+    --bg-color: rgba(31, 31, 31, 0.9) !important; /* Darker background color */
+    --card-bg: rgba(31, 31, 31, 0.9) !important; /* Darker card background */
+    --glass-bg: rgba(31, 31, 31, 0.9) !important; /* Darker glass background */
+    --hover-bg: rgba(55, 55, 55, 0.9) !important; /* Darker hover background */
+    --border-radius: 15px !important;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background: linear-gradient(135deg, rgba(5, 5, 5, 0.9), rgba(15, 15, 15, 0.9), rgba(25, 25, 25, 0.9));
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
-    backdrop-filter: blur(10px);
+    font-family: 'Poppins', sans-serif !important;
+    line-height: 1.6 !important;
+    color: var(--text-color) !important;
+    background: linear-gradient(135deg, rgba(5, 5, 5, 0.9), rgba(15, 15, 15, 0.9), rgba(25, 25, 25, 0.9)) !important;
+    background-size: 400% 400% !important;
+    animation: gradientBG 10s ease infinite !important;
+    backdrop-filter: blur(10px) !important;
 }
 
 @keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% { background-position: 0% 50% !important; }
+    50% { background-position: 100% 50% !important; }
+    100% { background-position: 0% 50% !important; }
 }
 
 .card {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    margin-bottom: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    margin-bottom: 20px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Slight shadow for depth */
 }
 
 .card-header {
-    background-color: var(--secondary-color);
-    border-bottom: 1px solid #333333; /* Darker border */
-    padding: 10px 15px;
-    border-radius: var(--border-radius) var(--border-radius) 0 0; /* Rounded top corners */
+    background-color: var(--secondary-color) !important;
+    border-bottom: 1px solid #333333 !important; /* Darker border */
+    padding: 10px 15px !important;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important; /* Rounded top corners */
 }
 
 .card-body {
-    padding: 15px;
-    border-radius: 0 0 var(--border-radius) var(--border-radius); /* Rounded bottom corners */
+    padding: 15px !important;
+    border-radius: 0 0 var(--border-radius) var(--border-radius) !important; /* Rounded bottom corners */
 }
 
 
