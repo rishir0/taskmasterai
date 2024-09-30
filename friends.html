@@ -1411,6 +1411,35 @@ body.night-mode {
     background-color: transparent;
 }
 
+#hideButton2 {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 1px; /* Reduced to make it closer */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+    color: #ff0000;
+}
+
+#hideButton2 svg {
+    width: 42px;  /* Reduced size for better alignment */
+    height: 42px; /* Reduced size for better alignment */
+}
+
+#hideButton2:active {
+    transform: scale(1.2);
+}
+
+#hideButton2:active svg path {
+    stroke: #ff0000;
+}
+
+#hideButton2:hover {
+    background-color: transparent;
+}
         
 .message-options {
     display: flex;
@@ -2094,7 +2123,7 @@ body.night-mode {
             <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
     </button>
-    <button id="hideButton">
+    <button id="hideButton2">
         <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" preserveAspectRatio="xMidYMid meet">
             <g id="SVGRepo_iconCarrier">
                 <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
@@ -2110,7 +2139,10 @@ body.night-mode {
 
 <div class="scrollable-content">
     <div class="chat-window">
-        <h2><span id="chatWith"></span></h2>
+        <h2>
+            <div id="avatarContainer" style="display: inline-block; vertical-align: middle;"></div>
+            <span id="chatWith"></span>
+        </h2>
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
@@ -6804,6 +6836,38 @@ function closeHelpModal() {
 }
 
 
+// Function to dynamically update the chat header with group/friend name and avatar
+function updateChatHeader(name, id, isGroup = false) {
+    // Select the avatar container and the name span
+    const avatarContainer = document.getElementById('avatarContainer');
+    const chatWith = document.getElementById('chatWith');
+
+    // Update the name in the chat header
+    chatWith.innerHTML = name;
+
+    // Clear the previous avatar content before adding a new one
+    avatarContainer.innerHTML = '';
+
+    // Create a new avatar element
+    const avatarElement = document.createElement('div');
+    avatarElement.classList.add('user-avatar');
+    avatarElement.style.width = '40px';
+    avatarElement.style.height = '40px';
+    avatarElement.style.marginRight = '10px';
+    avatarElement.style.display = 'inline-block';
+    avatarElement.style.verticalAlign = 'middle';
+
+    // Load avatar based on whether it's a group or a friend
+    if (isGroup) {
+        loadGCPicture(id, avatarElement); // Load group avatar
+    } else {
+        loadFriendProfilePicture(id, avatarElement); // Load friend avatar
+    }
+
+    // Append the new avatar to the container
+    avatarContainer.appendChild(avatarElement);
+}
+
 </script>
 
 <script>
@@ -6835,6 +6899,33 @@ function closeHelpModal() {
         } else {
             onlineFriends.style.display = 'none'; // Hide the container
             localStorage.setItem('onlineFriendsHidden', 'true'); // Update the saved state
+        }
+    };
+</script>
+
+<script>
+    // Get the second hide button and the group list container
+    const hideButton2 = document.getElementById('hideButton2');
+    const groupList = document.getElementById('groupList');
+
+    // Check the saved state in localStorage for the group list
+    const isGroupListHidden = localStorage.getItem('groupListHidden');
+
+    // Set the initial visibility based on the saved state
+    if (isGroupListHidden === 'true') {
+        groupList.style.display = 'none';
+    } else {
+        groupList.style.display = 'block';
+    }
+
+    // Toggle visibility when the hideButton2 is clicked
+    hideButton2.onclick = function() {
+        if (groupList.style.display === 'none') {
+            groupList.style.display = 'block'; // Show the group list
+            localStorage.setItem('groupListHidden', 'false'); // Update the saved state
+        } else {
+            groupList.style.display = 'none'; // Hide the group list
+            localStorage.setItem('groupListHidden', 'true'); // Update the saved state
         }
     };
 </script>
