@@ -6766,15 +6766,24 @@ function closeHelpModal() {
     const hideButton = document.getElementById('hideButton');
     const onlineFriends = document.getElementById('onlineFriends');
 
-    // Set the initial state (visible by default)
-    onlineFriends.style.display = 'block';
+    // Check the saved state in localStorage
+    const isHidden = localStorage.getItem('onlineFriendsHidden');
+
+    // Set the initial visibility based on the saved state
+    if (isHidden === 'true') {
+        onlineFriends.style.display = 'none';
+    } else {
+        onlineFriends.style.display = 'block';
+    }
 
     // Toggle visibility when the button is clicked
     hideButton.onclick = function() {
         if (onlineFriends.style.display === 'none') {
             onlineFriends.style.display = 'block'; // Show the container
+            localStorage.setItem('onlineFriendsHidden', 'false'); // Update the saved state
         } else {
             onlineFriends.style.display = 'none'; // Hide the container
+            localStorage.setItem('onlineFriendsHidden', 'true'); // Update the saved state
         }
     };
 </script>
