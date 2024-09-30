@@ -1884,6 +1884,48 @@ body.night-mode {
     margin-left: 10px;
 }
 
+/* Container to center friendName and latestMessageSpan */
+.name-message-container {
+    display: flex;
+    flex-direction: column; /* Stack the name and message vertically */
+    align-items: center;    /* Center the elements horizontally */
+    flex: 1; /* Allow this container to take up remaining space */
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Optional line divider */
+    cursor: pointer;
+}
+
+.user-avatar {
+    margin-right: 10px;
+}
+
+.friend-name {
+    font-size: 1rem;
+    color: var(--text-color); /* Use the text color variable */
+}
+
+.latest-message {
+    background-color: var(--primary-color); /* Use the primary color */
+    color: var(--text-color); /* Ensure the text is readable */
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 200px; /* Adjust this to prevent overflow */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    margin-top: 4px; /* Add a small gap between the name and message */
+}
+
+.status-icon, .pinnedFriendsButton, .viewFriendInfoButton, .unfriendButton {
+    margin-left: 5px; /* Adjust spacing as needed */
+}
 
         
     </style>
@@ -4088,19 +4130,26 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-                                        // Append the elements to the list item
-                                    listItem.appendChild(statusIcon);
-                                    listItem.appendChild(avatarContainer);
-                                    listItem.appendChild(friendName);
-                                    listItem.appendChild(latestMessageSpan);
-                                    listItem.appendChild(pinnedFriendsButton);
-                                    listItem.appendChild(viewFriendInfoButton);
-                                    listItem.appendChild(unfriendButton);
-                                    
-                                    onlineFriendsList.appendChild(listItem);
+// Append the elements to the list item
+listItem.appendChild(statusIcon);
+listItem.appendChild(avatarContainer);
 
-                                     // Track this friend element
-                                    friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
+// Create a container to wrap both the friend's name and the latest message
+const nameAndMessageContainer = document.createElement('div');
+nameAndMessageContainer.classList.add('name-message-container');
+nameAndMessageContainer.appendChild(friendName);
+nameAndMessageContainer.appendChild(latestMessageSpan);
+
+listItem.appendChild(nameAndMessageContainer);
+listItem.appendChild(pinnedFriendsButton);
+listItem.appendChild(viewFriendInfoButton);
+listItem.appendChild(unfriendButton);
+
+onlineFriendsList.appendChild(listItem);
+
+// Track this friend element
+friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
+
 
                                     // Fetch the latest message for this friend
                                     const chatId = getChatId(currentUserEmail, friendEmail);
