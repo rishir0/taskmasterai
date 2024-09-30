@@ -4092,19 +4092,27 @@ db.collection('chats').doc(chatId).collection('messages')
             const latestMessageDoc = messagesSnapshot.docs[0];
             const latestMessageData = latestMessageDoc.data();
             const latestMessageText = latestMessageData.message || '';
+            const senderEmail = latestMessageData.sender;
 
             // Update the latest message span
             latestMessageSpan.innerHTML = latestMessageText;
 
-            // Apply additional styling to move it more to the left
-            latestMessageSpan.style.marginLeft = '-10px'; // Adjust this value as needed
+            // Apply styles based on whether the message is sent by the current user or received
+            if (senderEmail === currentUserEmail) {
+                latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
+            } else {
+                latestMessageSpan.style.backgroundColor = 'var(--accent-color)';
+            }
+
+            // Ensure the text color remains readable
+            latestMessageSpan.style.color = 'var(--text-color)';
         } else {
             latestMessageSpan.innerHTML = 'No messages yet';
-            
-            // Ensure the margin is applied even if there are no messages
-            latestMessageSpan.style.marginLeft = '-10px'; // Adjust this value as needed
+            latestMessageSpan.style.backgroundColor = 'var(--primary-color)'; // Default color for no messages
+            latestMessageSpan.style.color = 'var(--text-color)';
         }
     });
+
 
                                 }
                             }
