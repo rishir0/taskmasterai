@@ -3925,16 +3925,21 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
-                                    // Create span for friend's name
-                                    const friendName = document.createElement('span');
-                                    friendName.innerHTML = friendDisplayName;
-                                    friendName.classList.add('friend-name');
-                                    friendName.onclick = () => openChat(friendEmail);
+// Create the span for friend's name
+const friendName = document.createElement('span');
+friendName.innerHTML = friendDisplayName;
+friendName.classList.add('friend-name');
+friendName.onclick = () => openChat(friendEmail);
 
-                                    // Create the latest message span with a tag-like style
-                                    const latestMessageSpan = document.createElement('span');
-                                    latestMessageSpan.classList.add('latest-message');
-                                    latestMessageSpan.innerHTML = 'Loading...';
+// Create the latest message span with a tag-like style
+const latestMessageSpan = document.createElement('span');
+latestMessageSpan.classList.add('latest-message');
+latestMessageSpan.innerHTML = 'Loading...';
+
+// Append the friendName and latestMessageSpan in the correct order
+listItem.appendChild(friendName);
+listItem.appendChild(latestMessageSpan);
+
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
