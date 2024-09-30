@@ -3926,29 +3926,32 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
+// Create the container for friendName and latestMessageSpan
+const friendContainer = document.createElement('div');
+friendContainer.style.display = 'inline-flex'; // Ensures both elements are in a row
+friendContainer.style.alignItems = 'center'; // Vertically aligns the items
+
 // Create the span for friend's name
 const friendName = document.createElement('span');
 friendName.innerHTML = friendDisplayName;
 friendName.classList.add('friend-name');
+friendName.style.display = 'inline-block'; // Ensure it behaves correctly
 friendName.onclick = () => openChat(friendEmail);
 
 // Create the latest message span with a tag-like style
 const latestMessageSpan = document.createElement('span');
 latestMessageSpan.classList.add('latest-message');
 latestMessageSpan.innerHTML = 'Loading...';
+latestMessageSpan.style.display = 'inline-block'; // Ensure it behaves correctly
+latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
 
-// Apply similar styling to match the pinnedFriendsButton but adjusted to move it more to the left
-latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
-latestMessageSpan.style.color = 'var(--text-color)';
-latestMessageSpan.style.padding = '4px 8px';
-latestMessageSpan.style.borderRadius = '12px';
-latestMessageSpan.style.marginLeft = '4px'; // Adjusted to move it more to the left
-latestMessageSpan.style.display = 'inline-block';
-latestMessageSpan.style.whiteSpace = 'nowrap';
-latestMessageSpan.style.overflow = 'hidden';
-latestMessageSpan.style.textOverflow = 'ellipsis';
-latestMessageSpan.style.maxWidth = '200px'; // Prevents overflow
-latestMessageSpan.style.verticalAlign = 'middle'; // Aligns it with friendName
+// Append friendName and latestMessageSpan to the container
+friendContainer.appendChild(friendName);
+friendContainer.appendChild(latestMessageSpan);
+
+// Append the friendContainer to your parent element
+parentElement.appendChild(friendContainer);
+
 
 
 
