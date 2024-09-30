@@ -3853,14 +3853,13 @@ function loadOnlineFriends() {
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
 
-
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
             .then((querySnapshot) => {
                 if (!querySnapshot.empty) {
                     const userDoc = querySnapshot.docs[0];
                     const data = userDoc.data();
-                    
+
                     if (data.acceptedFriends) {
                         data.acceptedFriends.forEach((email) => {
                             acceptedFriends.add(email);
@@ -3874,68 +3873,39 @@ function loadOnlineFriends() {
                             pinnedFriendsSet.add(email);
                         });
                     }
-                    
-                    // Now fetch online users
-                    db.collection('users').get().then((querySnapshot) => {
-    const onlineFriendsList = document.getElementById('onlineFriends');
-    onlineFriendsList.innerHTML = ''; // Clear the list before appending new items
 
-    querySnapshot.forEach((doc) => {
-        const friendRef = doc.ref; // Reference to the friend's document
-        const friend = doc.data();
-        const friendEmail = friend.email;
-        let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
+                    // Now listen for real-time changes for all users
+                    db.collection('users').onSnapshot((snapshot) => {
+                        const onlineFriendsList = document.getElementById('onlineFriends');
+                        onlineFriendsList.innerHTML = ''; // Clear the list before appending new items
 
-        if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-            // Update display name if changed
-            if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                displayNameMap.set(friendEmail, friendDisplayName);
+                        snapshot.forEach((doc) => {
+                            const friend = doc.data();
+                            const friendEmail = friend.email;
+                            let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
-                const listItem = document.createElement('li');
-                listItem.classList.add('friend-item');
+                            if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
+                                // Update display name if changed
+                                if (displayNameMap.get(friendEmail) !== friendDisplayName) {
+                                    displayNameMap.set(friendEmail, friendDisplayName);
 
+                                    const listItem = document.createElement('li');
+                                    listItem.classList.add('friend-item');
 
                                     // Create user avatar container
                                     const avatarContainer = document.createElement('div');
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                // Create or update a span for the friend's name
-                const friendName = document.createElement('span');
-                friendName.innerHTML = friendDisplayName;
-                friendName.classList.add('friend-name');
+                                    // Create or update a span for the friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.innerHTML = friendDisplayName;
+                                    friendName.classList.add('friend-name');
 
-// Function to initialize the listener for a friend's status
-function monitorFriendStatus(friendEmail) {
-    const statusIcon = document.createElement('span');
-    statusIcon.classList.add('status-icon');
-
-    // Listen for changes to the friend's online status in real-time
-    const friendStatusRef = db.collection('users').doc(friendEmail);
-
-    friendStatusRef.onSnapshot((doc) => {
-        if (doc.exists) {
-            const friendData = doc.data();
-            const isOnline = friendData.online;
-
-            // Update the status icon based on the online status
-            if (isOnline) {
-                statusIcon.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-            } else {
-                statusIcon.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.364 5.63605C21.8787 9.15077 21.8787 14.8493 18.364 18.364M18.364 18.364L15.5355 15.5355M18.364 18.364L21 21M15.5355 8.46447C17.4882 10.4171 17.4882 13.5829 15.5355 15.5355M15.5355 15.5355L12.7071 12.7071M8.46447 15.5355C7.66839 14.7395 7.19687 13.7417 7.04991 12.7068M5.63604 18.364C3.13732 15.8652 2.41501 12.2628 3.46913 9.12598M11.2929 11.2929C11.4739 11.1119 11.7239 11 12 11C12.5523 11 13 11.4477 13 12C13 12.2761 12.8881 12.5261 12.7071 12.7071M11.2929 11.2929L3 3M11.2929 11.2929L12.7071 12.7071" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>`;
-            }
-        }
-    });
-
-    return statusIcon;
-}
-
+                                    // Create status icon container
+                                    const statusIcon = document.createElement('span');
+                                    statusIcon.classList.add('status-icon');
+                                    updateStatusIcon(friend.online, statusIcon);
 
                 
                                         // Create and append Unfriend button
@@ -4371,6 +4341,18 @@ function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
     }
 }
 
+// Function to update the status icon
+function updateStatusIcon(isOnline, statusIcon) {
+    if (isOnline) {
+        statusIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.63604 18.3639C2.12132 14.8492 2.12132 9.15071 5.63604 5.63599M18.364 5.63599C21.8787 9.15071 21.8787 14.8492 18.364 18.3639M8.46447 15.5355C6.51184 13.5829 6.51184 10.417 8.46447 8.46441M15.5355 8.46441C17.4882 10.417 17.4882 13.5829 15.5355 15.5355M13 11.9999C13 12.5522 12.5523 12.9999 12 12.9999C11.4477 12.9999 11 12.5522 11 11.9999C11 11.4477 11.4477 10.9999 12 10.9999C12.5523 10.9999 13 11.4477 13 11.9999Z" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+    } else {
+        statusIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.364 5.63605C21.8787 9.15077 21.8787 14.8493 18.364 18.364M18.364 18.364L15.5355 15.5355M18.364 18.364L21 21M15.5355 8.46447C17.4882 10.4171 17.4882 13.5829 15.5355 15.5355M15.5355 15.5355L12.7071 12.7071M8.46447 15.5355C7.66839 14.7395 7.19687 13.7417 7.04991 12.7068M5.63604 18.364C3.13732 15.8652 2.41501 12.2628 3.46913 9.12598M11.2929 11.2929C11.4739 11.1119 11.7239 11 12 11C12.5523 11 13 11.4477 13 12C13 12.2761 12.8881 12.5261 12.7071 12.7071M11.2929 11.2929L3 3M11.2929 11.2929L12.7071 12.7071" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+    }
+}
 
 function createUnfriendButton(friendEmail) {
     const button = document.createElement('button');
