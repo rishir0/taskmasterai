@@ -3921,6 +3921,11 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
+                                    // Set the friend name and avatar when clicked
+                                    listItem.addEventListener('click', () => {
+                                        updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
+                                    });
+
                                     // Create span for friend's name
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
@@ -5299,6 +5304,11 @@ function loadGroupChats() {
                 avatarContainer.style.marginRight = '10px'; // Space between avatar and name
 
                 loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
+
+                // Set the group name and avatar when clicked
+                groupItem.addEventListener('click', () => {
+                    updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
+                });
 
                 // Create group name element
                 const groupNameElement = document.createElement('span');
@@ -6806,34 +6816,35 @@ function closeHelpModal() {
     helpModal.style.display = 'none';
 }
 
-// Function to load avatar and display it in the chat header
-function loadHeaderWithAvatar(friendEmail) {
+// Function to dynamically update the chat header with group/friend name and avatar
+function updateChatHeader(name, id, isGroup = false) {
     // Select the avatar container
     const avatarContainer = document.getElementById('avatarContainer');
+    const chatWith = document.getElementById('chatWith');
 
-    // Clear any previous avatar content
-    avatarContainer.innerHTML = '';
+    // Update the name in chat header, but do not clear the avatar
+    chatWith.innerHTML = name;
 
-    // Create user avatar element
-    const avatarElement = document.createElement('div');
-    avatarElement.classList.add('user-avatar');
-    
-    // Set the size to match the <h2> text size (use '1em' to match text size)
-    avatarElement.style.width = '1em';
-    avatarElement.style.height = '1em';
-    avatarElement.style.display = 'inline-block';
-    avatarElement.style.marginRight = '10px';
-    avatarElement.style.verticalAlign = 'middle'; // Align the avatar with the text
+    // Clear previous avatar content in the avatar container only if it's necessary
+    if (!avatarContainer.firstChild) {
+        const avatarElement = document.createElement('div');
+        avatarElement.classList.add('user-avatar');
+        avatarElement.style.width = '40px';
+        avatarElement.style.height = '40px';
+        avatarElement.style.marginRight = '10px';
+        avatarElement.style.display = 'inline-block';
+        avatarElement.style.verticalAlign = 'middle';
 
-    // Call a function to load the friend's profile picture into the avatar element
-    loadFriendProfilePicture(friendEmail, avatarElement);
+        // Load avatar based on group or friend
+        if (isGroup) {
+            loadGCPicture(id, avatarElement); // Load group avatar
+        } else {
+            loadFriendProfilePicture(id, avatarElement); // Load friend avatar
+        }
 
-    // Append the avatar element to the container
-    avatarContainer.appendChild(avatarElement);
+        avatarContainer.appendChild(avatarElement);
+    }
 }
-
-// Example usage: Load avatar for a friend
-loadHeaderWithAvatar(friendEmail);
 
 
 </script>
