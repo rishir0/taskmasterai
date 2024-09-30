@@ -1857,17 +1857,9 @@ body.night-mode {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block; /* Ensure it behaves as an inline element */
-    margin-left: 4px; /* Adjusted for a closer position to friendName */
-    vertical-align: middle; /* Align vertically with friendName */
+    display: inline-block;
+    margin-left: -50px; /* Adjust this value to move it left */
 }
-
-
-.friend-name {
-    display: inline-block; /* Ensure friendName behaves like an inline element */
-    vertical-align: middle; /* Align vertically with latestMessageSpan */
-}
-
 
 
 
@@ -3926,35 +3918,17 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
-// Create the container for friendName and latestMessageSpan
-const friendContainer = document.createElement('div');
-friendContainer.style.display = 'inline-flex'; // Ensures both elements are in a row
-friendContainer.style.alignItems = 'center'; // Vertically aligns the items
+                                    // Create span for friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.innerHTML = friendDisplayName;
+                                    friendName.classList.add('friend-name');
+                                    friendName.onclick = () => openChat(friendEmail);
 
-// Create the span for friend's name
-const friendName = document.createElement('span');
-friendName.innerHTML = friendDisplayName;
-friendName.classList.add('friend-name');
-friendName.style.display = 'inline-block'; // Ensure it behaves correctly
-friendName.onclick = () => openChat(friendEmail);
-
-// Create the latest message span with a tag-like style
-const latestMessageSpan = document.createElement('span');
-latestMessageSpan.classList.add('latest-message');
-latestMessageSpan.innerHTML = 'Loading...';
-latestMessageSpan.style.display = 'inline-block'; // Ensure it behaves correctly
-latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
-
-// Append friendName and latestMessageSpan to the container
-friendContainer.appendChild(friendName);
-friendContainer.appendChild(latestMessageSpan);
-
-// Append the friendContainer to your parent element
-parentElement.appendChild(friendContainer);
-
-
-
-
+                                    // Create the latest message span with a tag-like style
+                                    const latestMessageSpan = document.createElement('span');
+                                    latestMessageSpan.classList.add('latest-message');
+                                    latestMessageSpan.innerHTML = 'Loading...';
+                                    latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
@@ -4095,17 +4069,14 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-// Append the elements to the list item in the desired order
-listItem.appendChild(statusIcon);
-listItem.appendChild(avatarContainer);
-listItem.appendChild(friendName);
-listItem.appendChild(latestMessageSpan); // Append latestMessageSpan immediately after friendName
-
-// Now append the buttons
-listItem.appendChild(pinnedFriendsButton);
-listItem.appendChild(viewFriendInfoButton);
-listItem.appendChild(unfriendButton);
-
+                                        // Append the elements to the list item
+                                    listItem.appendChild(statusIcon);
+                                    listItem.appendChild(avatarContainer);
+                                    listItem.appendChild(friendName);
+                                    listItem.appendChild(latestMessageSpan);
+                                    listItem.appendChild(pinnedFriendsButton);
+                                    listItem.appendChild(viewFriendInfoButton);
+                                    listItem.appendChild(unfriendButton);
                                     
                                     onlineFriendsList.appendChild(listItem);
 
@@ -4126,17 +4097,6 @@ db.collection('chats').doc(chatId).collection('messages')
 
             // Update the latest message span
             latestMessageSpan.innerHTML = latestMessageText;
-            latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
-            latestMessageSpan.style.color = 'var(--text-color)';
-            latestMessageSpan.style.padding = '4px 8px';
-            latestMessageSpan.style.borderRadius = '12px';
-            latestMessageSpan.style.marginLeft = '4px'; // Adjusted to move it more to the left
-            latestMessageSpan.style.display = 'inline-block';
-            latestMessageSpan.style.whiteSpace = 'nowrap';
-            latestMessageSpan.style.overflow = 'hidden';
-            latestMessageSpan.style.textOverflow = 'ellipsis';
-            latestMessageSpan.style.maxWidth = '200px'; // Prevents overflow
-            latestMessageSpan.style.verticalAlign = 'middle'; // Aligns it with friendName
 
             // Apply styles based on whether the message is sent by the current user or received
             if (senderEmail === currentUserEmail) {
