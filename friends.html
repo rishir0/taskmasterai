@@ -5641,41 +5641,34 @@ unpinGroupButton.addEventListener('mouseout', () => {
     unpinGroupButton.style.backgroundColor = 'var(--primary-color)';
 });
 
+// Onclick handler to unpin the group
 unpinGroupButton.onclick = () => {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
         const currentUserUID = currentUser.uid;
-        
-        // Get the friend's email to unpin
-        const friendEmailToUnpin = friendEmail; // Use the variable for friend's email
 
-        // Fetch the current user's pinned friends
-        db.collection('pinnedFriends').doc(currentUserUID).get()
+        // Fetch the current user's pinned groups
+        db.collection('pinnedGroups').doc(currentUserUID).get()
             .then((doc) => {
                 if (doc.exists) {
-                    let pinnedFriends = doc.data().pinnedFriends || [];
-                    
-                    // Remove the friend from the pinned friends list
-                    pinnedFriends = pinnedFriends.filter(email => email !== friendEmailToUnpin);
-                    
-                    // Update the pinned friends list in Firestore
-                    return db.collection('pinnedFriends').doc(currentUserUID).update({
-                        pinnedFriends: pinnedFriends
+                    let pinnedGroups = doc.data().pinnedGroups || [];
+
+                    // Remove the group from the pinned groups list
+                    pinnedGroups = pinnedGroups.filter(group => group !== groupId); // Use groupId to filter out
+
+                    // Update the pinned groups list in Firestore
+                    return db.collection('pinnedGroups').doc(currentUserUID).update({
+                        pinnedGroups: pinnedGroups
                     });
-                } else {
-                    
                 }
             })
             .then(() => {
-                
-                // Optionally, you can refresh the list of pinned friends to reflect changes
-                loadPinnedFriends();
+                // Optionally, refresh the pinned groups list to reflect changes
+                loadPinnedGroups();
             })
             .catch((error) => {
-                console.error('Error unpinning friend:', error);
+                console.error('Error unpinning group:', error);
             });
-    } else {
-        
     }
 };
 
