@@ -3905,6 +3905,11 @@ function loadOnlineFriends() {
                                     friendName.classList.add('friend-name');
                                     friendName.onclick = () => openChat(friendEmail);
 
+                                    // Create the latest message span
+                                    const latestMessageSpan = document.createElement('span');
+                                    latestMessageSpan.classList.add('latest-message');
+                                    latestMessageSpan.innerHTML = 'Loading...';
+
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
                                     statusIcon.classList.add('status-icon');
@@ -4044,31 +4049,38 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-                                        // Append the friend's name and Unfriend button to the list item
-                                    listItem.appendChild(statusIcon);
+                                        // Append the elements to the list item
                                     listItem.appendChild(avatarContainer);
                                     listItem.appendChild(friendName);
-                                    listItem.appendChild(pinnedFriendsButton);
-                                    listItem.appendChild(viewFriendInfoButton);
-                                    listItem.appendChild(unfriendButton);
-
+                                    listItem.appendChild(latestMessageSpan);
+                                    listItem.appendChild(statusIcon);
                                     onlineFriendsList.appendChild(listItem);
 
-                                    friendElementsMap.set(friendEmail, listItem);
-                                }
-                            } else {
-                                if (friendElementsMap.has(friendEmail)) {
-                                    const listItem = friendElementsMap.get(friendEmail);
-                                    listItem.remove();
-                                    friendElementsMap.delete(friendEmail);
+                                    // Track this friend element
+                                    friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
+
+                                    // Fetch the latest message for this friend
+                                    const chatId = getChatId(currentUserEmail, friendEmail);
+                                    db.collection('chats').doc(chatId).collection('messages')
+                                        .orderBy('timestamp', 'desc')
+                                        .limit(1)
+                                        .onSnapshot((messagesSnapshot) => {
+                                            if (!messagesSnapshot.empty) {
+                                                const latestMessageDoc = messagesSnapshot.docs[0];
+                                                const latestMessageData = latestMessageDoc.data();
+                                                const latestMessageText = latestMessageData.message || '';
+
+                                                // Update the latest message span
+                                                latestMessageSpan.innerHTML = latestMessageText;
+                                            } else {
+                                                latestMessageSpan.innerHTML = 'No messages yet';
+                                            }
+                                        });
                                 }
                             }
                         });
                     });
                 }
-            })
-            .catch((error) => {
-                console.error("Error fetching user data for accepted friends: ", error);
             });
     }
 }
