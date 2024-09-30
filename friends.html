@@ -1352,7 +1352,7 @@ body.night-mode {
     align-items: center;
 }
 
-#refreshButton, #refreshPinnedButton {
+#refreshButton, #refreshPinnedButton, #refreshGroupButton {
     background-color: transparent;
     border: none;
     padding: 0;
@@ -1364,20 +1364,20 @@ body.night-mode {
     transition: transform 0.2s ease-in-out;
 }
 
-#refreshButton svg, #refreshPinnedButton svg {
+#refreshButton svg, #refreshPinnedButton svg, #refreshGroupButton svg {
     width: 24px;
     height: 24px;
 }
 
-#refreshButton:active, #refreshPinnedButton:active {
+#refreshButton:active, #refreshPinnedButton:active, refreshGroupButton:active {
     transform: scale(1.2);
 }
 
-#refreshButton:active svg path, #refreshPinnedButton:active svg path {
+#refreshButton:active svg path, #refreshPinnedButton:active svg path, #refreshGroupButton:active svg path {
     stroke: #ffffff;
 }
 
-#refreshButton:hover, #refreshPinnedButton:hover {
+#refreshButton:hover, #refreshPinnedButton:hover, #refreshGroupButton:hover {
     background-color: transparent;
 }
 
@@ -2087,7 +2087,7 @@ body.night-mode {
         </g>
     </svg>
     All Friends
-    <button id="refreshFriendButton">
+    <button id="refreshButton">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
             <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
@@ -3874,12 +3874,12 @@ function addToAcceptedFriends(userId, senderEmail) {
 
 
 
-function refreshFriendButton() {
+function refreshOnlineFriends() {
     loadOnlineFriends();
 }
 
 document.getElementById('refreshButton').addEventListener('click', () => {
-    refreshFriendButton();
+    refreshOnlineFriends();
 
     // Optional: Add a simple rotation animation
     const button = document.getElementById('refreshButton');
@@ -4158,14 +4158,14 @@ db.collection('chats').doc(chatId).collection('messages')
     }
 }
 
-function refreshPinnedFriends() {
+function refreshOnlineFriends() {
     loadPinnedFriends(); // Call the loadPinnedFriends function here
     loadPinnedGroups();
     loadOnlineFriends();
 }
 
 document.getElementById('refreshPinnedButton').addEventListener('click', () => {
-    refreshPinnedFriends();
+    refreshOnlineFriends();
 
     // Optional: Add a simple rotation animation
     const button = document.getElementById('refreshPinnedButton');
@@ -4391,7 +4391,7 @@ unpinButton.onclick = () => {
 }
 
 // Ensure this is called initially to load pinned friends on page load
-refreshPinnedFriends();
+refreshOnlineFriends();
 
         
 function togglePinnedFriend(friendEmail, friendDisplayName, pinnedFriendsSet) {
@@ -5299,15 +5299,16 @@ function sendGroupMessage(groupId) {
     });
 }
 
-function refreshGroupButton() {
-    loadGroupChats();
+function refreshOnlineFriends() {
+    loadGroupChats(); // Call the loadPinnedFriends function here
+    loadPinnedGroups();
 }
 
-document.getElementById('refreshButton').addEventListener('click', () => {
-    refreshGroupButton();
+document.getElementById('refreshGroupButton').addEventListener('click', () => {
+    refreshOnlineFriends();
 
     // Optional: Add a simple rotation animation
-    const button = document.getElementById('refreshButton');
+    const button = document.getElementById('refreshGroupButton');
     button.style.transition = 'transform 0.5s ease-in-out';
     button.style.transform = 'rotate(360deg)';
 
@@ -5315,7 +5316,6 @@ document.getElementById('refreshButton').addEventListener('click', () => {
         button.style.transform = 'none';
     }, 500);
 });
-
 // Function to load group chats
 function loadGroupChats() {
     const currentUser = firebase.auth().currentUser;
