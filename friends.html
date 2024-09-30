@@ -6761,6 +6761,23 @@ function closeHelpModal() {
     });
 </script>
 
+<script>
+    // Get the button and the online friends container
+    const hideButton = document.getElementById('hideButton');
+    const onlineFriends = document.getElementById('onlineFriends');
+
+    // Set the initial state (visible by default)
+    onlineFriends.style.display = 'block';
+
+    // Toggle visibility when the button is clicked
+    hideButton.onclick = function() {
+        if (onlineFriends.style.display === 'none') {
+            onlineFriends.style.display = 'block'; // Show the container
+        } else {
+            onlineFriends.style.display = 'none'; // Hide the container
+        }
+    };
+</script>
 
 </body>
 </html>
