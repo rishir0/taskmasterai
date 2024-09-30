@@ -1858,9 +1858,10 @@ body.night-mode {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block; /* Ensure it behaves as an inline element */
-    margin-left: 8px; /* Properly space it from friendName */
+    margin-left: 4px; /* Adjusted for a closer position to friendName */
     vertical-align: middle; /* Align vertically with friendName */
 }
+
 
 .friend-name {
     display: inline-block; /* Ensure friendName behaves like an inline element */
@@ -3935,6 +3936,20 @@ friendName.onclick = () => openChat(friendEmail);
 const latestMessageSpan = document.createElement('span');
 latestMessageSpan.classList.add('latest-message');
 latestMessageSpan.innerHTML = 'Loading...';
+
+// Apply similar styling to match the pinnedFriendsButton but adjusted to move it more to the left
+latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
+latestMessageSpan.style.color = 'var(--text-color)';
+latestMessageSpan.style.padding = '4px 8px';
+latestMessageSpan.style.borderRadius = '12px';
+latestMessageSpan.style.marginLeft = '4px'; // Adjusted to move it more to the left
+latestMessageSpan.style.display = 'inline-block';
+latestMessageSpan.style.whiteSpace = 'nowrap';
+latestMessageSpan.style.overflow = 'hidden';
+latestMessageSpan.style.textOverflow = 'ellipsis';
+latestMessageSpan.style.maxWidth = '200px'; // Prevents overflow
+latestMessageSpan.style.verticalAlign = 'middle'; // Aligns it with friendName
+
 
 // Append the friendName and latestMessageSpan in the correct order
 listItem.appendChild(friendName);
