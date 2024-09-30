@@ -2094,7 +2094,7 @@ body.night-mode {
             <path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
     </button>
-    <button id="hideButton">
+    <button id="hideButton2">
         <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" preserveAspectRatio="xMidYMid meet">
             <g id="SVGRepo_iconCarrier">
                 <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
@@ -5273,6 +5273,25 @@ function sendGroupMessage(groupId) {
     });
 }
 
+
+function refreshOnlineFriends() {
+    loadGroupChats();
+    loadPinnedGroups();
+}
+
+document.getElementById('refreshButton').addEventListener('click', () => {
+    refreshOnlineFriends();
+
+    // Optional: Add a simple rotation animation
+    const button = document.getElementById('refreshButton');
+    button.style.transition = 'transform 0.5s ease-in-out';
+    button.style.transform = 'rotate(360deg)';
+
+    setTimeout(() => {
+        button.style.transform = 'none';
+    }, 500);
+});
+
 // Function to load group chats
 function loadGroupChats() {
     const currentUser = firebase.auth().currentUser;
@@ -5611,41 +5630,34 @@ unpinGroupButton.addEventListener('mouseout', () => {
     unpinGroupButton.style.backgroundColor = 'var(--primary-color)';
 });
 
+// Onclick handler to unpin the group
 unpinGroupButton.onclick = () => {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
         const currentUserUID = currentUser.uid;
-        
-        // Get the friend's email to unpin
-        const friendEmailToUnpin = friendEmail; // Use the variable for friend's email
 
-        // Fetch the current user's pinned friends
-        db.collection('pinnedFriends').doc(currentUserUID).get()
+        // Fetch the current user's pinned groups
+        db.collection('pinnedGroups').doc(currentUserUID).get()
             .then((doc) => {
                 if (doc.exists) {
-                    let pinnedFriends = doc.data().pinnedFriends || [];
-                    
-                    // Remove the friend from the pinned friends list
-                    pinnedFriends = pinnedFriends.filter(email => email !== friendEmailToUnpin);
-                    
-                    // Update the pinned friends list in Firestore
-                    return db.collection('pinnedFriends').doc(currentUserUID).update({
-                        pinnedFriends: pinnedFriends
+                    let pinnedGroups = doc.data().pinnedGroups || [];
+
+                    // Remove the group from the pinned groups list
+                    pinnedGroups = pinnedGroups.filter(group => group !== groupId); // Use groupId to filter out
+
+                    // Update the pinned groups list in Firestore
+                    return db.collection('pinnedGroups').doc(currentUserUID).update({
+                        pinnedGroups: pinnedGroups
                     });
-                } else {
-                    
                 }
             })
             .then(() => {
-                
-                // Optionally, you can refresh the list of pinned friends to reflect changes
-                loadPinnedFriends();
+                // Optionally, refresh the pinned groups list to reflect changes
+                loadPinnedGroups();
             })
             .catch((error) => {
-                console.error('Error unpinning friend:', error);
+                console.error('Error unpinning group:', error);
             });
-    } else {
-        
     }
 };
 
@@ -6818,32 +6830,34 @@ function closeHelpModal() {
 
 // Function to dynamically update the chat header with group/friend name and avatar
 function updateChatHeader(name, id, isGroup = false) {
-    // Select the avatar container
+    // Select the avatar container and the name span
     const avatarContainer = document.getElementById('avatarContainer');
     const chatWith = document.getElementById('chatWith');
 
-    // Update the name in chat header, but do not clear the avatar
+    // Update the name in the chat header
     chatWith.innerHTML = name;
 
-    // Clear previous avatar content in the avatar container only if it's necessary
-    if (!avatarContainer.firstChild) {
-        const avatarElement = document.createElement('div');
-        avatarElement.classList.add('user-avatar');
-        avatarElement.style.width = '40px';
-        avatarElement.style.height = '40px';
-        avatarElement.style.marginRight = '10px';
-        avatarElement.style.display = 'inline-block';
-        avatarElement.style.verticalAlign = 'middle';
+    // Clear the previous avatar content before adding a new one
+    avatarContainer.innerHTML = '';
 
-        // Load avatar based on group or friend
-        if (isGroup) {
-            loadGCPicture(id, avatarElement); // Load group avatar
-        } else {
-            loadFriendProfilePicture(id, avatarElement); // Load friend avatar
-        }
+    // Create a new avatar element
+    const avatarElement = document.createElement('div');
+    avatarElement.classList.add('user-avatar');
+    avatarElement.style.width = '40px';
+    avatarElement.style.height = '40px';
+    avatarElement.style.marginRight = '10px';
+    avatarElement.style.display = 'inline-block';
+    avatarElement.style.verticalAlign = 'middle';
 
-        avatarContainer.appendChild(avatarElement);
+    // Load avatar based on whether it's a group or a friend
+    if (isGroup) {
+        loadGCPicture(id, avatarElement); // Load group avatar
+    } else {
+        loadFriendProfilePicture(id, avatarElement); // Load friend avatar
     }
+
+    // Append the new avatar to the container
+    avatarContainer.appendChild(avatarElement);
 }
 
 
@@ -6881,6 +6895,34 @@ function updateChatHeader(name, id, isGroup = false) {
         }
     };
 </script>
+
+<script>
+    // Get the second hide button and the group list container
+    const hideButton2 = document.getElementById('hideButton2');
+    const groupList = document.getElementById('groupList');
+
+    // Check the saved state in localStorage for the group list
+    const isGroupListHidden = localStorage.getItem('groupListHidden');
+
+    // Set the initial visibility based on the saved state
+    if (isGroupListHidden === 'true') {
+        groupList.style.display = 'none';
+    } else {
+        groupList.style.display = 'block';
+    }
+
+    // Toggle visibility when the hideButton2 is clicked
+    hideButton2.onclick = function() {
+        if (groupList.style.display === 'none') {
+            groupList.style.display = 'block'; // Show the group list
+            localStorage.setItem('groupListHidden', 'false'); // Update the saved state
+        } else {
+            groupList.style.display = 'none'; // Hide the group list
+            localStorage.setItem('groupListHidden', 'true'); // Update the saved state
+        }
+    };
+</script>
+
 
 </body>
 </html>
