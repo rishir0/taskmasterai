@@ -3951,9 +3951,6 @@ latestMessageSpan.style.maxWidth = '200px'; // Prevents overflow
 latestMessageSpan.style.verticalAlign = 'middle'; // Aligns it with friendName
 
 
-// Append the friendName and latestMessageSpan in the correct order
-listItem.appendChild(friendName);
-listItem.appendChild(latestMessageSpan);
 
 
                                     // Create the status icon
@@ -4096,10 +4093,10 @@ if (!onlineFriendsList) {
                                         friendName.onclick = () => openChat(friendEmail);
 
 // Append the elements to the list item in the desired order
+listItem.appendChild(latestMessageSpan); // Append latestMessageSpan immediately after friendName
 listItem.appendChild(statusIcon);
 listItem.appendChild(avatarContainer);
 listItem.appendChild(friendName);
-listItem.appendChild(latestMessageSpan); // Append latestMessageSpan immediately after friendName
 
 // Now append the buttons
 listItem.appendChild(pinnedFriendsButton);
