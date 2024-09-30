@@ -3852,6 +3852,8 @@ function loadOnlineFriends() {
         const acceptedFriends = new Set();
         const displayNameMap = new Map(); // To store the display names of friends
         const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
+        const onlineFriendsList = document.getElementById('onlineFriends');
+        const friendElementsMap = new Map(); // To store references to each friend's list item
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -3874,21 +3876,29 @@ function loadOnlineFriends() {
                         });
                     }
 
-                    // Now listen for real-time changes for all users
+                    // Listen for real-time changes for all users
                     db.collection('users').onSnapshot((snapshot) => {
-                        const onlineFriendsList = document.getElementById('onlineFriends');
-                        onlineFriendsList.innerHTML = ''; // Clear the list before appending new items
-
                         snapshot.forEach((doc) => {
                             const friend = doc.data();
                             const friendEmail = friend.email;
                             let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
                             if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                // Update display name if changed
-                                if (displayNameMap.get(friendEmail) !== friendDisplayName) {
-                                    displayNameMap.set(friendEmail, friendDisplayName);
+                                // If the friend's list item is already present, update it
+                                if (friendElementsMap.has(friendEmail)) {
+                                    const listItem = friendElementsMap.get(friendEmail);
 
+                                    // Update the display name if it has changed
+                                    const friendName = listItem.querySelector('.friend-name');
+                                    if (friendName.innerText !== friendDisplayName) {
+                                        friendName.innerText = friendDisplayName;
+                                    }
+
+                                    // Update the status icon
+                                    const statusIcon = listItem.querySelector('.status-icon');
+                                    updateStatusIcon(friend.online, statusIcon);
+                                } else {
+                                    // Create a new list item for this friend
                                     const listItem = document.createElement('li');
                                     listItem.classList.add('friend-item');
 
@@ -3897,7 +3907,7 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
 
-                                    // Create or update a span for the friend's name
+                                    // Create a span for the friend's name
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
                                     friendName.classList.add('friend-name');
@@ -3906,7 +3916,6 @@ function loadOnlineFriends() {
                                     const statusIcon = document.createElement('span');
                                     statusIcon.classList.add('status-icon');
                                     updateStatusIcon(friend.online, statusIcon);
-
                 
                                         // Create and append Unfriend button
                                         const unfriendButton = createUnfriendButton(friendEmail);
@@ -4043,24 +4052,33 @@ if (!onlineFriendsList) {
                                         friendName.onclick = () => openChat(friendEmail);
 
                                         // Append the friend's name and Unfriend button to the list item
-                                        listItem.appendChild(statusIcon);
-                                        listItem.appendChild(avatarContainer);
-                                        listItem.appendChild(friendName);
-                                        listItem.appendChild(pinnedFriendsButton);
-                                        listItem.appendChild(viewFriendInfoButton);
-                                        listItem.appendChild(unfriendButton);
-                                        onlineFriendsList.appendChild(listItem);
-                                    }
+                                    listItem.appendChild(statusIcon);
+                                    listItem.appendChild(avatarContainer);
+                                    listItem.appendChild(friendName);
+                                    listItem.appendChild(pinnedFriendsButton);
+                                    listItem.appendChild(viewFriendInfoButton);
+                                    listItem.appendChild(unfriendButton);
+
+                                    onlineFriendsList.appendChild(listItem);
+
+                                    friendElementsMap.set(friendEmail, listItem);
                                 }
-                            });
+                            } else {
+                                if (friendElementsMap.has(friendEmail)) {
+                                    const listItem = friendElementsMap.get(friendEmail);
+                                    listItem.remove();
+                                    friendElementsMap.delete(friendEmail);
+                                }
+                            }
                         });
+                    });
                 }
             })
             .catch((error) => {
                 console.error("Error fetching user data for accepted friends: ", error);
             });
     }
-}     
+}
 
 function refreshOnlineFriends() {
     loadPinnedFriends(); // Call the loadPinnedFriends function here
