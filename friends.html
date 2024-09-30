@@ -3850,10 +3850,10 @@ function loadOnlineFriends() {
     if (currentUser) {
         const currentUserEmail = currentUser.email;
         const acceptedFriends = new Set();
-        const displayNameMap = new Map(); // To store the display names of friends
-        const pinnedFriendsSet = new Set(); // Initialize the pinned friends set
+        const displayNameMap = new Map();
+        const pinnedFriendsSet = new Set();
         const onlineFriendsList = document.getElementById('onlineFriends');
-        const friendElementsMap = new Map(); // To store references to each friend's list item
+        const friendElementsMap = new Map(); // Map to track added friends
 
         // Fetch the current user's accepted friends
         db.collection('users').where('email', '==', currentUserEmail).get()
@@ -3869,50 +3869,43 @@ function loadOnlineFriends() {
                         });
                     }
 
-                    // Populate the pinnedFriendsSet with the user's pinned friends
                     if (data.pinnedFriends) {
                         data.pinnedFriends.forEach((email) => {
                             pinnedFriendsSet.add(email);
                         });
                     }
 
-                    // Listen for real-time changes for all users
+                    // Listen for updates to the users collection
                     db.collection('users').onSnapshot((snapshot) => {
+                        // Clear the list first to avoid duplication
+                        onlineFriendsList.innerHTML = '';
+
+                        // Clear the tracking map since we're rebuilding the list
+                        friendElementsMap.clear();
+
                         snapshot.forEach((doc) => {
                             const friend = doc.data();
                             const friendEmail = friend.email;
                             let friendDisplayName = (friend.displayName === 'Anonymous') ? friend.email : friend.displayName;
 
                             if (acceptedFriends.has(friendEmail) && friendEmail !== currentUserEmail) {
-                                // If the friend's list item is already present, update it
-                                if (friendElementsMap.has(friendEmail)) {
-                                    const listItem = friendElementsMap.get(friendEmail);
-
-                                    // Update the display name if it has changed
-                                    const friendName = listItem.querySelector('.friend-name');
-                                    if (friendName.innerText !== friendDisplayName) {
-                                        friendName.innerText = friendDisplayName;
-                                    }
-
-                                    // Update the status icon
-                                    const statusIcon = listItem.querySelector('.status-icon');
-                                    updateStatusIcon(friend.online, statusIcon);
-                                } else {
-                                    // Create a new list item for this friend
+                                if (!friendElementsMap.has(friendEmail)) {
+                                    // Create the list item for the friend
                                     const listItem = document.createElement('li');
                                     listItem.classList.add('friend-item');
 
                                     // Create user avatar container
                                     const avatarContainer = document.createElement('div');
                                     avatarContainer.classList.add('user-avatar');
-                                    loadFriendProfilePicture(friendEmail, avatarContainer); // Load friend profile picture
+                                    loadFriendProfilePicture(friendEmail, avatarContainer);
 
-                                    // Create a span for the friend's name
+                                    // Create span for friend's name
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
                                     friendName.classList.add('friend-name');
+                                    friendName.onclick = () => openChat(friendEmail);
 
-                                    // Create status icon container
+                                    // Create the status icon
                                     const statusIcon = document.createElement('span');
                                     statusIcon.classList.add('status-icon');
                                     updateStatusIcon(friend.online, statusIcon);
