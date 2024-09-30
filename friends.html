@@ -2110,7 +2110,10 @@ body.night-mode {
 
 <div class="scrollable-content">
     <div class="chat-window">
-        <h2><span id="chatWith"></span></h2>
+        <h2>
+            <div id="avatarContainer" style="display: inline-block; vertical-align: middle;"></div>
+            <span id="chatWith"></span>
+        </h2>
         <div id="chatMessages">
             <!-- Chat messages will be displayed here -->
         </div>
@@ -3918,11 +3921,6 @@ function loadOnlineFriends() {
                                     avatarContainer.classList.add('user-avatar');
                                     loadFriendProfilePicture(friendEmail, avatarContainer);
 
-                                    // Set the friend name and avatar when clicked
-                                    listItem.addEventListener('click', () => {
-                                        updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
-                                    });
-
                                     // Create span for friend's name
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
@@ -5301,11 +5299,6 @@ function loadGroupChats() {
                 avatarContainer.style.marginRight = '10px'; // Space between avatar and name
 
                 loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
-
-                // Set the group name and avatar when clicked
-                groupItem.addEventListener('click', () => {
-                    updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
-                });
 
                 // Create group name element
                 const groupNameElement = document.createElement('span');
@@ -6813,33 +6806,34 @@ function closeHelpModal() {
     helpModal.style.display = 'none';
 }
 
-// Function to dynamically update the chat header with group/friend name and avatar
-function updateChatHeader(name, id, isGroup = false) {
-    const chatWith = document.getElementById('chatWith');
-    chatWith.innerHTML = ''; // Clear previous content
+// Function to load avatar and display it in the chat header
+function loadHeaderWithAvatar(friendEmail) {
+    // Select the avatar container
+    const avatarContainer = document.getElementById('avatarContainer');
 
-    // Create the avatar container
-    const avatarContainer = document.createElement('div');
-    avatarContainer.classList.add('user-avatar');
-    avatarContainer.style.width = '40px';
-    avatarContainer.style.height = '40px';
-    avatarContainer.style.marginRight = '10px';
+    // Clear any previous avatar content
+    avatarContainer.innerHTML = '';
 
-    if (isGroup) {
-        // Load group chat avatar
-        loadGCPicture(id, avatarContainer); // id is the groupId
-    } else {
-        // Load friend avatar
-        loadFriendProfilePicture(id, avatarContainer); // id is the friendEmail
-    }
+    // Create user avatar element
+    const avatarElement = document.createElement('div');
+    avatarElement.classList.add('user-avatar');
+    
+    // Set the size to match the <h2> text size (use '1em' to match text size)
+    avatarElement.style.width = '1em';
+    avatarElement.style.height = '1em';
+    avatarElement.style.display = 'inline-block';
+    avatarElement.style.marginRight = '10px';
+    avatarElement.style.verticalAlign = 'middle'; // Align the avatar with the text
 
-    // Create a text node for the name (group or friend)
-    const nameNode = document.createTextNode(name);
+    // Call a function to load the friend's profile picture into the avatar element
+    loadFriendProfilePicture(friendEmail, avatarElement);
 
-    // Append the avatar and name to the chat header
-    chatWith.appendChild(avatarContainer);
-    chatWith.appendChild(nameNode);
+    // Append the avatar element to the container
+    avatarContainer.appendChild(avatarElement);
 }
+
+// Example usage: Load avatar for a friend
+loadHeaderWithAvatar(friendEmail);
 
 
 </script>
