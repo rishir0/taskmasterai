@@ -4082,23 +4082,30 @@ if (!onlineFriendsList) {
                                      // Track this friend element
                                     friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
 
-                                    // Fetch the latest message for this friend
-                                    const chatId = getChatId(currentUserEmail, friendEmail);
-                                    db.collection('chats').doc(chatId).collection('messages')
-                                        .orderBy('timestamp', 'desc')
-                                        .limit(1)
-                                        .onSnapshot((messagesSnapshot) => {
-                                            if (!messagesSnapshot.empty) {
-                                                const latestMessageDoc = messagesSnapshot.docs[0];
-                                                const latestMessageData = latestMessageDoc.data();
-                                                const latestMessageText = latestMessageData.message || '';
+// Fetch the latest message for this friend
+const chatId = getChatId(currentUserEmail, friendEmail);
+db.collection('chats').doc(chatId).collection('messages')
+    .orderBy('timestamp', 'desc')
+    .limit(1)
+    .onSnapshot((messagesSnapshot) => {
+        if (!messagesSnapshot.empty) {
+            const latestMessageDoc = messagesSnapshot.docs[0];
+            const latestMessageData = latestMessageDoc.data();
+            const latestMessageText = latestMessageData.message || '';
 
-                                                // Update the latest message span
-                                                latestMessageSpan.innerHTML = latestMessageText;
-                                            } else {
-                                                latestMessageSpan.innerHTML = 'No messages yet';
-                                            }
-                                        });
+            // Update the latest message span
+            latestMessageSpan.innerHTML = latestMessageText;
+
+            // Apply additional styling to move it more to the left
+            latestMessageSpan.style.marginLeft = '-10px'; // Adjust this value as needed
+        } else {
+            latestMessageSpan.innerHTML = 'No messages yet';
+            
+            // Ensure the margin is applied even if there are no messages
+            latestMessageSpan.style.marginLeft = '-10px'; // Adjust this value as needed
+        }
+    });
+
                                 }
                             }
                         });
