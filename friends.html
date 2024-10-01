@@ -1913,30 +1913,6 @@ body.night-mode {
     overflow-y: auto; /* Enable vertical scrolling when visible */
 }
 
-/* Style for the no-accepted-friend message */
-.no-accepted-friend {
-    display: flex;
-    flex-direction: row; /* Align SVG and text horizontally */
-    justify-content: center;
-    align-items: center;
-    padding-top: -50px;
-    height: calc(100vh + 50px); /* Adjust height as needed */
-    color: white; /* Change text color to primary */
-    font-size: 2.5rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1); /* Keeps the glass background */
-    border-radius: var(--border-radius);
-    margin-bottom: 15px;
-    margin-top: -25px;
-}
-
-/* SVG size and color for the no-accepted-friend message */
-.no-accepted-friend .friend-svg {
-    width: 2.5rem; /* Same size as the text */
-    height: 2.5rem;
-    margin-right: 10px; /* Space between SVG and text */
-    fill: white; /* Set SVG color to white */
-}
 
 
         
@@ -2211,14 +2187,6 @@ body.night-mode {
                 </svg>
                 <span>Need help?</span>
             </div>
-
-            <div id="notFriendMessage" class="no-accepted-friend" style="display:none;">
-    <svg class="friend-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 13L14 9M15 11C15 12.6569 13.6569 14 12 14C10.3431 14 9 12.6569 9 11C9 9.34315 10.3431 8 12 8C13.6569 8 15 9.34315 15 11ZM21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    This person is not currently your friend. Please re-add them.
-</div>
-
         </div>
         
 
@@ -4762,7 +4730,6 @@ let lastNotifiedMessageId = null; // Track the ID of the last notified message
 function openChat(friendEmail) {
     const chatWithSpan = document.getElementById('chatWith');
     const chatWindow = document.getElementById('chatMessages');
-    const notFriendMessage = document.getElementById('notFriendMessage'); // Element to display "not a friend" message
     const currentUser = firebase.auth().currentUser;
     const chatId = getChatId(currentUser.email, friendEmail);
 
@@ -4773,68 +4740,54 @@ function openChat(friendEmail) {
         unsubscribeFromMessages();
     }
 
-    // Fetch current user's accepted friends
-    db.collection('users').doc(currentUser.uid).get().then((currentUserDoc) => {
-        const currentUserData = currentUserDoc.data();
-
-        // Fetch the friend's document
-        db.collection('users').where('email', '==', friendEmail).get().then((querySnapshot) => {
+    db.collection('users').where('email', '==', friendEmail).get()
+        .then((querySnapshot) => {
             if (!querySnapshot.empty) {
                 const friendDoc = querySnapshot.docs[0];
                 const friendDisplayName = (friendDoc.data().displayName === 'Anonymous') ? friendEmail : friendDoc.data().displayName;
                 chatWithSpan.innerHTML = friendDisplayName;
 
-                // Check if the friend is in the current user's accepted friends list
-                if (!currentUserData.acceptedFriends || !currentUserData.acceptedFriends.includes(friendEmail)) {
-                    // Display "not a friend" message
-                    chatWindow.innerHTML = '';
-                    notFriendMessage.style.display = 'block';
-                    notFriendMessage.textContent = "This person is not currently your friend. Please re-add them.";
-                } else {
-                    // Hide the "not a friend" message and show chat
-                    notFriendMessage.style.display = 'none';
+                // Set up a new listener
+                unsubscribeFromMessages = db.collection('chats').doc(chatId).collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((querySnapshot) => {
+                        chatWindow.innerHTML = '';
 
-                    // Set up the chat listener
-                    unsubscribeFromMessages = db.collection('chats').doc(chatId).collection('messages')
-                        .orderBy('timestamp', 'asc')
-                        .onSnapshot((querySnapshot) => {
-                            chatWindow.innerHTML = '';
+                        // Get the latest message
+                        const latestMessageDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+                        
+                        querySnapshot.forEach((doc) => {
+                            const message = doc.data();
+                            const messageId = doc.id;
+                            const senderEmail = message.sender;
+                            const messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message-container');
 
-                            // Get the latest message
-                            const latestMessageDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-                            
-                            querySnapshot.forEach((doc) => {
-                                const message = doc.data();
-                                const messageId = doc.id;
-                                const senderEmail = message.sender;
-                                const messageDiv = document.createElement('div');
-                                messageDiv.classList.add('message-container');
+                            // Sender display name
+                            if (senderEmail !== currentUser.email) {
+                                db.collection('users').where('email', '==', senderEmail).get()
+                                    .then((querySnapshot) => {
+                                        const senderDoc = querySnapshot.docs[0];
+                                        const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
+                                        
+                                        // Show notification only for the latest message and avoid duplicate notifications
+                                        if (doc.id === latestMessageDoc.id && Notification.permission === 'granted' && messageId !== lastNotifiedMessageId) {
+                                            lastNotifiedMessageId = messageId; // Update the last notified message ID
+                                            showNotification(senderDisplayName, message.message);
+                                        }
+                                    });
+                            }
 
-                                // Sender display name
-                                if (senderEmail !== currentUser.email) {
-                                    db.collection('users').where('email', '==', senderEmail).get()
-                                        .then((querySnapshot) => {
-                                            const senderDoc = querySnapshot.docs[0];
-                                            const senderDisplayName = (senderDoc.data().displayName === 'Anonymous') ? senderEmail : senderDoc.data().displayName;
-                                            
-                                            // Show notification only for the latest message and avoid duplicate notifications
-                                            if (doc.id === latestMessageDoc.id && Notification.permission === 'granted' && messageId !== lastNotifiedMessageId) {
-                                                lastNotifiedMessageId = messageId; // Update the last notified message ID
-                                                showNotification(senderDisplayName, message.message);
-                                            }
-                                        });
-                                }
+                            const textElement = document.createElement('span');
+                            textElement.classList.add('message-text');
+                            textElement.textContent = message.message;
+                            messageDiv.appendChild(textElement);
 
-                                const textElement = document.createElement('span');
-                                textElement.classList.add('message-text');
-                                textElement.textContent = message.message;
-                                messageDiv.appendChild(textElement);
-
-                                if (senderEmail === currentUser.email) {
-                                    messageDiv.classList.add('message', 'sent');
-                                } else {
-                                    messageDiv.classList.add('message', 'received');
-                                }
+                            if (senderEmail === currentUser.email) {
+                                messageDiv.classList.add('message', 'sent');
+                            } else {
+                                messageDiv.classList.add('message', 'received');
+                            }
                             
                             // Add options for reply and reactions
                             const optionsContainer = document.createElement('div');
