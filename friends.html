@@ -1891,10 +1891,28 @@ body.night-mode {
 }
 
 
-/* Define the flipping animation */
+/* Define the flipping animation for the SVG */
 .flipped {
     transform: rotate(180deg);
     transition: transform 0.5s ease;
+}
+
+/* Button flip animation */
+.button-flip {
+    animation: scaleButton 0.5s forwards; /* Apply scale animation */
+}
+
+/* Scale button animation keyframes */
+@keyframes scaleButton {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1); /* Scale up slightly */
+    }
+    100% {
+        transform: scale(1); /* Return to original size */
+    }
 }
 
 /* Smooth transition for hiding and showing the group list */
@@ -1911,6 +1929,7 @@ body.night-mode {
     opacity: 0; /* Fade out */
     pointer-events: none; /* Ensure it's non-interactive */
 }
+
 
 
 
@@ -6954,6 +6973,7 @@ function updateChatHeader(name, id, isGroup = false) {
     if (isGroupListHidden === 'true') {
         groupList.classList.add('hidden'); // Initially hide the group list
         svgIcon.classList.add('flipped'); // Flip the SVG initially if hidden
+        hideButton2.classList.add('button-flip'); // Apply button flip initially
     } else {
         groupList.classList.remove('hidden');
         svgIcon.classList.remove('flipped');
@@ -6964,14 +6984,17 @@ function updateChatHeader(name, id, isGroup = false) {
         if (groupList.classList.contains('hidden')) {
             groupList.classList.remove('hidden'); // Show the group list with animation
             svgIcon.classList.remove('flipped'); // Reflip the SVG back to normal
+            hideButton2.classList.remove('button-flip'); // Remove button flip animation
             localStorage.setItem('groupListHidden', 'false'); // Update the saved state
         } else {
             groupList.classList.add('hidden'); // Hide the group list with animation
             svgIcon.classList.add('flipped'); // Flip the SVG upside down
+            hideButton2.classList.add('button-flip'); // Apply button flip animation
             localStorage.setItem('groupListHidden', 'true'); // Update the saved state
         }
     };
 </script>
+
 
 
 
