@@ -1898,40 +1898,19 @@ body.night-mode {
 }
 
 /* Smooth transition for hiding and showing the online friends container */
-#onlineFriends {
+#onlineFriends, #groupList {
     transition: opacity 0.5s ease, max-height 0.5s ease;
     max-height: 500px; /* Set a reasonable max-height */
     opacity: 1;
     overflow: hidden; /* Ensure content is hidden smoothly */
 }
 
-/* Hidden state */
-#onlineFriends.hidden {
+/* Hidden state for both containers */
+#onlineFriends.hidden, #groupList.hidden {
     max-height: 0; /* Collapsing the height */
     opacity: 0; /* Fade out */
     pointer-events: none; /* Ensure it's non-interactive */
 }
-
-/* Smooth transition for hiding and showing the group list */
-#groupList {
-    transition: opacity 0.5s ease, max-height 0.5s ease;
-    max-height: 500px; /* Set a reasonable max-height */
-    opacity: 1;
-    overflow: hidden; /* Ensure content is hidden smoothly */
-}
-
-/* Hidden state */
-#groupList.hidden {
-    max-height: 0; /* Collapsing the height */
-    opacity: 0; /* Fade out */
-    pointer-events: none; /* Ensure it's non-interactive */
-}
-
-
-
-
-
-
 
         
     </style>
@@ -6933,69 +6912,42 @@ function updateChatHeader(name, id, isGroup = false) {
 </script>
 
 <script>
-    // Get the button and the online friends container
+    // Get the buttons and their corresponding containers
     const hideButton = document.getElementById('hideButton');
     const onlineFriends = document.getElementById('onlineFriends');
-    const svgIcon = hideButton.querySelector('svg'); // Assuming the SVG is inside the button
-
-    // Check the saved state in localStorage
-    const isHidden = localStorage.getItem('onlineFriendsHidden');
-
-    // Set the initial visibility and SVG rotation based on the saved state
-    if (isHidden === 'true') {
-        onlineFriends.classList.add('hidden'); // Initially hide the online friends container
-        svgIcon.classList.add('flipped'); // Flip the SVG initially if hidden
-    } else {
-        onlineFriends.classList.remove('hidden');
-        svgIcon.classList.remove('flipped');
-    }
-
-    // Toggle visibility when the button is clicked
-    hideButton.onclick = function() {
-        if (onlineFriends.classList.contains('hidden')) {
-            onlineFriends.classList.remove('hidden'); // Show the online friends container with animation
-            svgIcon.classList.remove('flipped'); // Reflip the SVG back to normal
-            localStorage.setItem('onlineFriendsHidden', 'false'); // Update the saved state
-        } else {
-            onlineFriends.classList.add('hidden'); // Hide the online friends container with animation
-            svgIcon.classList.add('flipped'); // Flip the SVG upside down
-            localStorage.setItem('onlineFriendsHidden', 'true'); // Update the saved state
-        }
-    };
-</script>
-
-
-<script>
-    // Get the second hide button and the group list container
     const hideButton2 = document.getElementById('hideButton2');
     const groupList = document.getElementById('groupList');
-    const svgIcon = hideButton2.querySelector('svg'); // Assuming the SVG is inside the button
 
-    // Check the saved state in localStorage for the group list
+    // Check the saved state in localStorage for both lists
+    const isOnlineFriendsHidden = localStorage.getItem('onlineFriendsHidden');
     const isGroupListHidden = localStorage.getItem('groupListHidden');
 
-    // Set the initial visibility and SVG rotation based on the saved state
-    if (isGroupListHidden === 'true') {
-        groupList.classList.add('hidden'); // Initially hide the group list
-        svgIcon.classList.add('flipped'); // Flip the SVG initially if hidden
+    // Set the initial visibility based on the saved state
+    if (isOnlineFriendsHidden === 'true') {
+        onlineFriends.classList.add('hidden'); // Initially hide the online friends container
     } else {
-        groupList.classList.remove('hidden');
-        svgIcon.classList.remove('flipped');
+        onlineFriends.classList.remove('hidden'); // Show online friends if not hidden
     }
 
-    // Toggle visibility when the hideButton2 is clicked
+    if (isGroupListHidden === 'true') {
+        groupList.classList.add('hidden'); // Initially hide the group list container
+    } else {
+        groupList.classList.remove('hidden'); // Show group list if not hidden
+    }
+
+    // Toggle visibility for online friends when hideButton is clicked
+    hideButton.onclick = function() {
+        onlineFriends.classList.toggle('hidden'); // Toggle the online friends container with animation
+        localStorage.setItem('onlineFriendsHidden', onlineFriends.classList.contains('hidden') ? 'true' : 'false'); // Update the saved state
+    };
+
+    // Toggle visibility for group list when hideButton2 is clicked
     hideButton2.onclick = function() {
-        if (groupList.classList.contains('hidden')) {
-            groupList.classList.remove('hidden'); // Show the group list with animation
-            svgIcon.classList.remove('flipped'); // Reflip the SVG back to normal
-            localStorage.setItem('groupListHidden', 'false'); // Update the saved state
-        } else {
-            groupList.classList.add('hidden'); // Hide the group list with animation
-            svgIcon.classList.add('flipped'); // Flip the SVG upside down
-            localStorage.setItem('groupListHidden', 'true'); // Update the saved state
-        }
+        groupList.classList.toggle('hidden'); // Toggle the group list container with animation
+        localStorage.setItem('groupListHidden', groupList.classList.contains('hidden') ? 'true' : 'false'); // Update the saved state
     };
 </script>
+
 
 
 
