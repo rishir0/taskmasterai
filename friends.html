@@ -313,15 +313,16 @@ body.night-mode {
 .add-friend {
     display: flex;
     align-items: center;
-    gap: 10px; /* Spacing between input and button */
-    margin-left: auto; /* Align to the right, inline with "All Friends" */
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center; /* Centers the input and button horizontally */
 }
 
 .add-friend input[type="text"] {
     padding: 10px;
     border: 3px solid var(--primary-color);
     border-radius: var(--border-radius);
-    width: 250px; /* Adjusted width for full visibility of "Enter friend's email" */
+    width: 250px; /* Adjusted width for "Enter friend's email" visibility */
     box-sizing: border-box;
     font-size: 16px;
     background-color: var(--card-bg);
