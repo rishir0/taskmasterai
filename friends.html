@@ -1930,6 +1930,26 @@ body.night-mode {
     pointer-events: none; /* Ensure it's non-interactive */
 }
 
+/* Define the flipping animation for the SVG */
+.flipped {
+    transform: rotate(180deg);
+    transition: transform 0.5s ease;
+}
+
+/* Smooth transition for hiding and showing the online friends container */
+#onlineFriends {
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    max-height: 500px; /* Set a reasonable max-height */
+    opacity: 1;
+    overflow: hidden; /* Ensure content is hidden smoothly */
+}
+
+/* Hidden state */
+#onlineFriends.hidden {
+    max-height: 0; /* Collapsing the height */
+    opacity: 0; /* Fade out */
+    pointer-events: none; /* Ensure it's non-interactive */
+}
 
 
 
@@ -6937,24 +6957,29 @@ function updateChatHeader(name, id, isGroup = false) {
     // Get the button and the online friends container
     const hideButton = document.getElementById('hideButton');
     const onlineFriends = document.getElementById('onlineFriends');
+    const svgIcon = hideButton.querySelector('svg'); // Assuming the SVG is inside the button
 
     // Check the saved state in localStorage
     const isHidden = localStorage.getItem('onlineFriendsHidden');
 
-    // Set the initial visibility based on the saved state
+    // Set the initial visibility and SVG rotation based on the saved state
     if (isHidden === 'true') {
-        onlineFriends.style.display = 'none';
+        onlineFriends.classList.add('hidden'); // Initially hide the online friends container
+        svgIcon.classList.add('flipped'); // Flip the SVG initially if hidden
     } else {
-        onlineFriends.style.display = 'block';
+        onlineFriends.classList.remove('hidden');
+        svgIcon.classList.remove('flipped');
     }
 
     // Toggle visibility when the button is clicked
     hideButton.onclick = function() {
-        if (onlineFriends.style.display === 'none') {
-            onlineFriends.style.display = 'block'; // Show the container
+        if (onlineFriends.classList.contains('hidden')) {
+            onlineFriends.classList.remove('hidden'); // Show the online friends container with animation
+            svgIcon.classList.remove('flipped'); // Reflip the SVG back to normal
             localStorage.setItem('onlineFriendsHidden', 'false'); // Update the saved state
         } else {
-            onlineFriends.style.display = 'none'; // Hide the container
+            onlineFriends.classList.add('hidden'); // Hide the online friends container with animation
+            svgIcon.classList.add('flipped'); // Flip the SVG upside down
             localStorage.setItem('onlineFriendsHidden', 'true'); // Update the saved state
         }
     };
