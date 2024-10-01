@@ -1902,7 +1902,7 @@ body.night-mode {
     transition: opacity 0.5s ease, max-height 0.5s ease;
     max-height: 500px; /* Set a reasonable max-height */
     opacity: 1;
-    overflow: visible; /* Allow overflowing content to be visible */
+    overflow: hidden; /* Initially hidden for transition */
 }
 
 /* Hidden state for both containers */
@@ -1911,6 +1911,12 @@ body.night-mode {
     opacity: 0; /* Fade out */
     pointer-events: none; /* Ensure it's non-interactive */
 }
+
+/* Scrollable content when expanded */
+#onlineFriends:not(.hidden), #groupList:not(.hidden) {
+    overflow-y: auto; /* Enable vertical scrolling when visible */
+}
+
 
 
         
