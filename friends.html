@@ -1894,23 +1894,24 @@ body.night-mode {
 /* Define the flipping animation */
 .flipped {
     transform: rotate(180deg);
-    transition: transform 0.5s ease; /* Smooth transition for flipping */
+    transition: transform 0.5s ease;
 }
 
-/* Apply smooth display transition for the group list (optional) */
+/* Smooth transition for hiding and showing the group list */
 #groupList {
-    transition: display 0.5s ease, opacity 0.5s ease;
-}
-
-/* To smoothly hide the section, fade it out before setting display to none */
-#groupList[style*="display: none"] {
-    opacity: 0;
-}
-
-/* When the section is visible, ensure it's fully opaque */
-#groupList[style*="display: block"] {
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    max-height: 500px; /* Set a reasonable max-height */
     opacity: 1;
+    overflow: hidden; /* Ensure content is hidden smoothly */
 }
+
+/* Hidden state */
+#groupList.hidden {
+    max-height: 0; /* Collapsing the height */
+    opacity: 0; /* Fade out */
+    pointer-events: none; /* Ensure it's non-interactive */
+}
+
 
 
 
@@ -6951,26 +6952,27 @@ function updateChatHeader(name, id, isGroup = false) {
 
     // Set the initial visibility and SVG rotation based on the saved state
     if (isGroupListHidden === 'true') {
-        groupList.style.display = 'none';
+        groupList.classList.add('hidden'); // Initially hide the group list
         svgIcon.classList.add('flipped'); // Flip the SVG initially if hidden
     } else {
-        groupList.style.display = 'block';
+        groupList.classList.remove('hidden');
         svgIcon.classList.remove('flipped');
     }
 
     // Toggle visibility when the hideButton2 is clicked
     hideButton2.onclick = function() {
-        if (groupList.style.display === 'none') {
-            groupList.style.display = 'block'; // Show the group list
+        if (groupList.classList.contains('hidden')) {
+            groupList.classList.remove('hidden'); // Show the group list with animation
             svgIcon.classList.remove('flipped'); // Reflip the SVG back to normal
             localStorage.setItem('groupListHidden', 'false'); // Update the saved state
         } else {
-            groupList.style.display = 'none'; // Hide the group list
+            groupList.classList.add('hidden'); // Hide the group list with animation
             svgIcon.classList.add('flipped'); // Flip the SVG upside down
             localStorage.setItem('groupListHidden', 'true'); // Update the saved state
         }
     };
 </script>
+
 
 
 </body>
