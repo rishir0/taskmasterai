@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
-    :root {
-        --primary-color: #009bf5; /* Keep primary color white */
-        --secondary-color: #8d8aaf; /* Consistent secondary color */
-        --accent-color: #003366; /* Consistent accent color */
+     :root {
+        --primary-color: rgba(116, 116, 119, 0.8)); * Keep primary color white */
+        --secondary-color: rgba(255, 255, 255, 0.1); /* Consistent secondary color */
+        --accent-color: rgba(255, 255, 255, 0.1); /* Consistent accent color */
         --text-color: #ffffff;
         --bg-color: rgba(255, 255, 255, 0.1);
         --card-bg: rgba(255, 255, 255, 0.1);
@@ -41,6 +41,47 @@ document.addEventListener('DOMContentLoaded', function() {
     .card-body {
         padding: 15px;
     }
+
+    .logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+#tasks-projects .tasks-section h2,
+#tasks-projects .projects-section h2,
+#tasks-projects .goals-section h2,
+#tasks-projects .plans-section h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.upgrade-btn {
+    background: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
     `;
 
     const darkThemeStyles = `
