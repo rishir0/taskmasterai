@@ -3837,7 +3837,8 @@ function showAcceptPopup(senderEmail, requestId) {
     if (confirm(`You have a new friend request from ${senderEmail}. Do you want to accept it?`)) {
         acceptFriendRequest(requestId, senderEmail);
     } else {
-        
+        // User denied the request, delete the friend request
+        deleteFriendRequest(requestId);
     }
 }
 
@@ -3901,6 +3902,16 @@ function addToAcceptedFriends(userId, senderEmail) {
     }
 }
 
+
+function deleteFriendRequest(requestId) {
+    db.collection('friendRequests').doc(requestId).delete()
+    .then(() => {
+        console.log('Friend request deleted successfully');
+    })
+    .catch((error) => {
+        console.error('Error deleting friend request:', error);
+    });
+}
 
 
 function refreshOnlineFriends() {
