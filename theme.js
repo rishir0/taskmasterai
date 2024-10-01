@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
      :root {
-        --primary-color: rgba(116, 116, 119, 0.8)); * Keep primary color white */
+        --primary-color: rgba(240, 240, 240, 0.1); * Keep primary color white */
         --secondary-color: rgba(255, 255, 255, 0.1); /* Consistent secondary color */
         --accent-color: rgba(255, 255, 255, 0.1); /* Consistent accent color */
         --text-color: #ffffff;
