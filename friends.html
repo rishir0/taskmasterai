@@ -313,15 +313,15 @@ body.night-mode {
 .add-friend {
     display: flex;
     align-items: center;
-    gap: 10px; /* Improved spacing between input and button */
-    margin-bottom: 20px;
+    gap: 10px; /* Spacing between input and button */
+    margin-left: auto; /* Align to the right, inline with "All Friends" */
 }
 
 .add-friend input[type="text"] {
     padding: 10px;
     border: 3px solid var(--primary-color);
     border-radius: var(--border-radius);
-    width: calc(100% - 130px); /* Adjusted width to ensure proper spacing */
+    width: 250px; /* Adjusted width for full visibility of "Enter friend's email" */
     box-sizing: border-box;
     font-size: 16px;
     background-color: var(--card-bg);
@@ -329,16 +329,16 @@ body.night-mode {
 }
 
 .add-friend button {
-    background-color: var(--primary-color); /* or any color */
+    background-color: var(--primary-color);
     border: none;
     padding: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px; /* Longer width */
-    height: 40px; /* Height to keep it balanced */
-    border-radius: 20px; /* Creates the squircle effect */
+    width: 80px;
+    height: 40px;
+    border-radius: 20px; /* Squircle effect */
     transition: background-color 0.3s;
 }
 
@@ -347,14 +347,12 @@ body.night-mode {
 }
 
 .add-friend button svg {
-    width: 30px; /* Adjusted SVG size */
+    width: 30px;
     height: 30px;
-    fill: #ffffff; /* Ensures the SVG color is white */
-    margin: 0; /* Reset margin if needed */
-    transform: translateX(0); /* Adjust the X-axis if needed */
-    transform: translateY(0px); /* Adjust the X-axis if needed */
-
+    fill: #ffffff;
+    margin: 0;
 }
+
 
 .message-container {
     position: relative; /* Allows absolute positioning of child elements */
