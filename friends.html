@@ -4176,12 +4176,13 @@ listItem.style.display = 'flex';
 listItem.style.justifyContent = 'space-between'; // Space out the left and right sections
 listItem.style.alignItems = 'center'; // Vertically center the items
 
-// Now append the left and right containers to the listItem
-listItem.appendChild(leftButtonsContainer); // Add the left buttons
-listItem.appendChild(rightContentContainer); // Add the right content
+// Now append the right and left containers to the listItem in reverse order
+listItem.appendChild(rightContentContainer); // Add the right content first
+listItem.appendChild(leftButtonsContainer); // Add the left buttons last
 
 // Finally, append the listItem to the online friends list
 onlineFriendsList.appendChild(listItem);
+
 
 
                                      // Track this friend element
