@@ -3984,6 +3984,7 @@ function loadOnlineFriends() {
                                     // Set the friend name and avatar when clicked
                                     listItem.addEventListener('click', () => {
                                         updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
+                                        openChat(friendEmail); // Open the chat with the selected friend
                                         showChatMessages(); // Hide "no chat" message and show chat messages
                                     });
 
