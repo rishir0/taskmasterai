@@ -43,19 +43,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     .logo {
-    font-size: 1.4rem;
-    font-weight: 700;
+
+
     color: var(--text-color);
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
+
+
 }
 
-.logo svg {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-}
+
+
+
 
 #tasks-projects .tasks-section h2,
 #tasks-projects .projects-section h2,
