@@ -1879,16 +1879,6 @@ body.night-mode {
 }
 
 
-.friend-container {
-    display: flex; /* Ensure the friend name and latest message are inline */
-    align-items: center; /* Vertically align them */
-}
-
-.friend-name {
-    font-weight: bold;
-    margin-right: 8px; /* Add space between the name and message */
-}
-
 .latest-message {
     background-color: var(--primary-color) !important; /* Use the primary color */
     color: var(--text-color) !important; /* Ensure the text is readable */
@@ -1900,9 +1890,8 @@ body.night-mode {
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
     display: inline-block !important;
-    margin-left: 0 !important; /* Remove any left margin */
+    margin-left: -50px !important; /* Adjust this value to move it left */
 }
-
 
 
 
@@ -3993,6 +3982,10 @@ function loadOnlineFriends() {
                                     });
 
 
+                                   // Create a container for friend's name and latest message
+const nameAndMessageContainer = document.createElement('div');
+nameAndMessageContainer.classList.add('name-message-container');
+
 // Create span for friend's name
 const friendName = document.createElement('span');
 friendName.innerHTML = friendDisplayName;
@@ -4002,15 +3995,12 @@ friendName.onclick = () => openChat(friendEmail);
 // Create the latest message span with a tag-like style
 const latestMessageSpan = document.createElement('span');
 latestMessageSpan.classList.add('latest-message');
-latestMessageSpan.innerHTML = 'Loading...';
+latestMessageSpan.innerHTML = 'Loading...'; // Or the actual latest message when available
 latestMessageSpan.onclick = () => openChat(friendEmail);
 
-// Append both spans to the parent container (assumed as container)
-const container = document.createElement('div'); // Ensure there is a container for both elements
-container.classList.add('friend-container');
-container.appendChild(friendName);
-container.appendChild(latestMessageSpan);
-
+// Append the friend name and latest message to the container
+nameAndMessageContainer.appendChild(friendName);
+nameAndMessageContainer.appendChild(latestMessageSpan);
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
@@ -4151,14 +4141,13 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-                                        // Append the elements to the list item
-                                    listItem.appendChild(statusIcon);
-                                    listItem.appendChild(avatarContainer);
-container.appendChild(friendName);
-container.appendChild(latestMessageSpan);
-                                    listItem.appendChild(pinnedFriendsButton);
-                                    listItem.appendChild(viewFriendInfoButton);
-                                    listItem.appendChild(unfriendButton);
+// Now append all elements to the list item
+listItem.appendChild(statusIcon);
+listItem.appendChild(avatarContainer);
+listItem.appendChild(nameAndMessageContainer); // Append the name-message container here
+listItem.appendChild(pinnedFriendsButton);
+listItem.appendChild(viewFriendInfoButton);
+listItem.appendChild(unfriendButton);
                                     
                                     onlineFriendsList.appendChild(listItem);
 
