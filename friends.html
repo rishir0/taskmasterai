@@ -6868,12 +6868,6 @@ function showChatMessages() {
     chatMessages.style.setProperty('display', 'block', 'important');
 }
 
-// Add the click event listener to the friendName element
-friendName.onclick = () => {
-    openChat(friendEmail); // Open the chat with the selected friend
-    currentChatFriend = friendEmail; // Set the current chat friend
-    showChatMessages(); // Hide "no chat" message and show chat messages
-};
 
 // Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
