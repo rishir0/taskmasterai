@@ -1890,6 +1890,7 @@ body.night-mode {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
+    margin-left: -50px; /* Adjust this value to move it left */
 }
 
 
@@ -3980,20 +3981,17 @@ function loadOnlineFriends() {
                                     });
 
 
-// Create span for friend's name
-const friendName = document.createElement('span');
-friendName.innerHTML = friendDisplayName;
-friendName.classList.add('friend-name');
+                                    // Create span for friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.innerHTML = friendDisplayName;
+                                    friendName.classList.add('friend-name');
+                                    friendName.onclick = () => openChat(friendEmail);
 
-// Apply styles to ensure it's inline and has no margin
-friendName.style.marginRight = '4px'; // Optional: small space between name and message
-friendName.onclick = () => openChat(friendEmail);
-
-// Create the latest message span with a tag-like style
-const latestMessageSpan = document.createElement('span');
-latestMessageSpan.classList.add('latest-message');
-latestMessageSpan.innerHTML = 'Loading...';
-latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
+                                    // Create the latest message span with a tag-like style
+                                    const latestMessageSpan = document.createElement('span');
+                                    latestMessageSpan.classList.add('latest-message');
+                                    latestMessageSpan.innerHTML = 'Loading...';
+                                    latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
