@@ -3982,17 +3982,24 @@ function loadOnlineFriends() {
                                     });
 
 
-                                    // Create span for friend's name
-                                    const friendName = document.createElement('span');
-                                    friendName.innerHTML = friendDisplayName;
-                                    friendName.classList.add('friend-name');
-                                    friendName.onclick = () => openChat(friendEmail);
+// Create span for friend's name
+const friendName = document.createElement('span');
+friendName.innerHTML = friendDisplayName;
+friendName.classList.add('friend-name');
+friendName.onclick = () => openChat(friendEmail);
 
-                                    // Create the latest message span with a tag-like style
-                                    const latestMessageSpan = document.createElement('span');
-                                    latestMessageSpan.classList.add('latest-message');
-                                    latestMessageSpan.innerHTML = 'Loading...';
-                                    latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
+// Create the latest message span with a tag-like style
+const latestMessageSpan = document.createElement('span');
+latestMessageSpan.classList.add('latest-message');
+latestMessageSpan.innerHTML = 'Loading...';
+latestMessageSpan.onclick = () => openChat(friendEmail);
+
+// Append both spans to the parent container (assumed as container)
+const container = document.createElement('div'); // Ensure there is a container for both elements
+container.classList.add('friend-container');
+container.appendChild(friendName);
+container.appendChild(latestMessageSpan);
+
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
