@@ -3997,10 +3997,10 @@ function loadOnlineFriends() {
                                     const friendName = document.createElement('span');
                                     friendName.innerHTML = friendDisplayName;
                                     friendName.classList.add('friend-name');
-                                    friendName.onclick = () => {
-                                    openChat(friendEmail); // Open the chat with the selected friend
-                                    currentChatFriend = friendEmail; // Set the current chat friend
-                                    showChatMessages(); // Hide "no chat" message and show chat messages
+friendName.onclick = () => {
+    openChat(friendEmail); // Open the chat with the selected friend
+    currentChatFriend = friendEmail; // Set the current chat friend
+    showChatMessages(); // Hide "no chat" message and show chat messages
 };
 
                                     // Create the latest message span
@@ -4008,9 +4008,9 @@ function loadOnlineFriends() {
                                     latestMessageSpan.classList.add('latest-message');
                                     latestMessageSpan.innerHTML = 'Loading...';
                                     latestMessageSpan.onclick = () => {
-                                    openChat(friendEmail); // Open the chat with the selected friend
-                                    currentChatFriend = friendEmail; // Set the current chat friend
-                                    showChatMessages(); // Hide "no chat" message and show chat messages
+    openChat(friendEmail); // Open the chat with the selected friend
+    currentChatFriend = friendEmail; // Set the current chat friend
+    showChatMessages(); // Hide "no chat" message and show chat messages
 };
 
                                     // Append the friend's name and latest message to the container
@@ -4154,7 +4154,11 @@ if (!onlineFriendsList) {
 }
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => openChat(friendEmail);
+                                        friendName.onclick = () => {
+    openChat(friendEmail); // Open the chat with the selected friend
+    currentChatFriend = friendEmail; // Set the current chat friend
+    showChatMessages(); // Hide "no chat" message and show chat messages
+};
 
 // Create a container for left-side buttons
 const leftButtonsContainer = document.createElement('div');
@@ -4446,7 +4450,11 @@ unpinButton.onclick = () => {
 
 
                                         // Add click event to open chat
-                                        friendName.onclick = () => openChat(friendEmail);
+                                        friendName.onclick = () => {
+    openChat(friendEmail); // Open the chat with the selected friend
+    currentChatFriend = friendEmail; // Set the current chat friend
+    showChatMessages(); // Hide "no chat" message and show chat messages
+};
 
                                     // Append buttons to the list item
                                     
@@ -4901,7 +4909,7 @@ function openChat(friendEmail) {
                             // Scroll to the bottom of the chat window after a new message is added
                             chatWindow.scrollTop = chatWindow.scrollHeight;
 
-                            checkCurrentFriendChat();
+                            
                         });
                     });
             }
@@ -6369,7 +6377,7 @@ function loadGroupMessages(groupId) {
                 // Scroll to the bottom of the chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                checkCurrentGroupChat();
+                
 
             });
         });
@@ -6853,9 +6861,10 @@ function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    // Show "no chat" message and hide chat messages
-    noChatMessage.style.setProperty('display', 'flex', 'important');
-    chatMessages.style.setProperty('display', 'none', 'important');
+
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
+    chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
 }
 
 // Show chat messages
@@ -6863,32 +6872,28 @@ function showChatMessages() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-    // Hide "no chat" message and show chat messages
-    noChatMessage.style.setProperty('display', 'none', 'important');
-    chatMessages.style.setProperty('display', 'block', 'important');
+
+    // Use !important to ensure visibility is forced
+    noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
+    chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
 }
+
+
 
 
 // Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
+
     if (currentGroupId) {
-        // Hide "no chat" message if there's a group chat
-        showChatMessages(); // Show chat messages
+        // Hide "no chat" message immediately if there's a group chat
+        const noChatMessage = document.getElementById('noChatSelected');
+        const chatMessages = document.getElementById('chatMessages');
+        
+        noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
+        chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
     }
-}
 
-// Initialize chat visibility on app load
-window.onload = function() {
-    // If no current chat friend is set, show the "no chat" message initially
-    if (!currentChatFriend) {
-        showNoChatMessage(); // Show "no chat" message
-    }
-};
-
-// Example of how to call the function when a chat is closed or switched
-function resetChat() {
-    currentChatFriend = null; // Reset the current chat friend
-    showNoChatMessage(); // Show "no chat" message
+    return currentGroupId;
 }
 
 
