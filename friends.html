@@ -1879,12 +1879,11 @@ body.night-mode {
 }
 
 
-.list-item {
+.list-item-content {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* This will give space between larger groups */
-    padding: 8px; /* Optional, for extra padding around the item */
-    gap: 8px; /* Ensures consistent spacing between all elements */
+    justify-content: space-between; /* Ensures proper spacing between icons */
+    padding: 8px; /* Add padding if needed */
 }
 
 .name-message-container {
@@ -1909,18 +1908,11 @@ body.night-mode {
     display: inline-block !important;
 }
 
-/* Individual button and icon styles */
-.list-item img, .list-item button {
-    margin-left: 8px; /* Add consistent spacing between icons/buttons */
-    padding: 6px;
-    border: none;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+/* General styles for all action buttons (viewFriendInfo, unfriend, etc.) */
+.list-item-content button, .list-item-content img {
+    margin-left: 8px; /* Consistent spacing for all icons and buttons */
 }
+
 
 
 
@@ -4012,6 +4004,9 @@ function loadOnlineFriends() {
                                         updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
                                     });
 
+// Create a container for the list item content to apply consistent spacing
+const listItemContent = document.createElement('div');
+listItemContent.classList.add('list-item-content');
 
                                    // Create a container for friend's name and latest message
 const nameAndMessageContainer = document.createElement('div');
@@ -4029,9 +4024,10 @@ latestMessageSpan.classList.add('latest-message');
 latestMessageSpan.innerHTML = 'Loading...'; // Or the actual latest message when available
 latestMessageSpan.onclick = () => openChat(friendEmail);
 
-// Append the friend name and latest message to the container
+// Add friendName and latestMessageSpan to the container
 nameAndMessageContainer.appendChild(friendName);
 nameAndMessageContainer.appendChild(latestMessageSpan);
+
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
@@ -4180,7 +4176,7 @@ listItem.appendChild(pinnedFriendsButton);
 listItem.appendChild(viewFriendInfoButton);
 listItem.appendChild(unfriendButton);
                                     
-                                    onlineFriendsList.appendChild(listItem);
+                                    onlineFriendsList.appendChild(listItemContent);
 
                                      // Track this friend element
                                     friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
