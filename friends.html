@@ -4521,14 +4521,14 @@ function updateStatusIcon(isOnline, statusIcon) {
 }
 
 function createUnfriendButton(friendEmail) {
-    const unfriendButton = document.createElement('button');
-    unfriendButton.className = 'unfriend-button';
-    unfriendButton.onclick = () => unfriendUser(friendEmail);
+    const button = document.createElement('button');
+    button.className = 'unfriend-button';
+    button.onclick = () => unfriendUser(friendEmail);
 
     // Create SVG element
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('viewBox', '0 0 1024 1024'); // ViewBox for the "X" icon
+    svg.setAttribute('viewBox', '0 0 1024 1024'); // Updated viewBox from your provided SVG
     svg.setAttribute('xmlns', svgNS);
     svg.setAttribute('width', '20');
     svg.setAttribute('height', '20'); // Match size with pinnedFriendsButton
@@ -4543,19 +4543,7 @@ function createUnfriendButton(friendEmail) {
     svg.appendChild(path);
 
     // Append the SVG to the button
-    unfriendButton.appendChild(svg);
-
-    // Apply the same styles as pinnedFriendsButton
-    unfriendButton.style.backgroundColor = 'var(--primary-color)';
-    unfriendButton.style.border = 'none';
-    unfriendButton.style.borderRadius = '50%';
-    unfriendButton.style.marginLeft = '8px';
-    unfriendButton.style.marginRight = '0';
-    unfriendButton.style.padding = '6px';
-    unfriendButton.style.cursor = 'pointer';
-    unfriendButton.style.display = 'flex';
-    unfriendButton.style.alignItems = 'center';
-    unfriendButton.style.justifyContent = 'center';
+    button.appendChild(svg);
 
     return button;
 }
