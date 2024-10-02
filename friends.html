@@ -1879,25 +1879,19 @@ body.night-mode {
 }
 
 
-.name-message-container {
-    display: flex;
-    align-items: center; /* Vertically aligns the name and message */
-}
-
-
 .latest-message {
-    background-color: var(--primary-color) !important;
-    color: var(--text-color) !important;
-    padding: 4px 8px !important;
-    border-radius: 12px !important;
-    max-width: 200px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    display: inline-block !important;
+    background-color: var(--primary-color); /* Use the primary color */
+    color: var(--text-color); /* Ensure the text is readable */
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 200px; /* Adjust this to prevent overflow */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    margin-left: -50px; /* Adjust this value to move it left */
 }
-
-
 
 
 /* Define the flipping animation for the SVG */
@@ -3987,25 +3981,27 @@ function loadOnlineFriends() {
                                     });
 
 
-// Create a container for friend's name and latest message
-const nameAndMessageContainer = document.createElement('div');
-nameAndMessageContainer.classList.add('name-message-container');
+                                    // Create a container for friend's name and latest message
+                                    const nameAndMessageContainer = document.createElement('div');
+                                    nameAndMessageContainer.classList.add('name-message-container');
+                                    nameAndMessageContainer.style.display = 'flex'; // Use flexbox for alignment
+                                    nameAndMessageContainer.style.alignItems = 'center'; // Center items vertically
 
-// Create span for friend's name
-const friendName = document.createElement('span');
-friendName.innerHTML = friendDisplayName;
-friendName.classList.add('friend-name');
-friendName.onclick = () => openChat(friendEmail);
+                                    // Create span for friend's name
+                                    const friendName = document.createElement('span');
+                                    friendName.innerHTML = friendDisplayName;
+                                    friendName.classList.add('friend-name');
+                                    friendName.onclick = () => openChat(friendEmail);
 
-// Create the latest message span with a tag-like style
-const latestMessageSpan = document.createElement('span');
-latestMessageSpan.classList.add('latest-message');
-latestMessageSpan.innerHTML = 'Loading...'; // Or the actual latest message when available
-latestMessageSpan.onclick = () => openChat(friendEmail);
+                                    // Create the latest message span
+                                    const latestMessageSpan = document.createElement('span');
+                                    latestMessageSpan.classList.add('latest-message');
+                                    latestMessageSpan.innerHTML = 'Loading...';
+                                    latestMessageSpan.onclick = () => openChat(friendEmail); // Add the onclick function
 
-// Append the friend name and latest message to the container
-nameAndMessageContainer.appendChild(friendName);
-nameAndMessageContainer.appendChild(latestMessageSpan);
+                                    // Append the friend's name and latest message to the container
+                                    nameAndMessageContainer.appendChild(friendName);
+                                    nameAndMessageContainer.appendChild(latestMessageSpan);
 
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
@@ -4146,77 +4142,49 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-// Create a container for left-side buttons
-const leftButtonsContainer = document.createElement('div');
-leftButtonsContainer.classList.add('left-buttons-container');
-leftButtonsContainer.style.display = 'flex';
-
-
-// Append the buttons to the left container
-leftButtonsContainer.appendChild(pinnedFriendsButton);
-leftButtonsContainer.appendChild(viewFriendInfoButton);
-leftButtonsContainer.appendChild(unfriendButton);
-
-// Create a container for the right-side content
-const rightContentContainer = document.createElement('div');
-rightContentContainer.classList.add('right-content-container');
-rightContentContainer.style.display = 'flex';
-rightContentContainer.style.alignItems = 'center'; // Vertically center the content
-rightContentContainer.style.justifyContent = 'flex-start'; // Align content to the left within the right container
-
-
-// Append the status, avatar, and name-message to the right container
-rightContentContainer.appendChild(statusIcon);
-rightContentContainer.appendChild(avatarContainer);
-rightContentContainer.appendChild(nameAndMessageContainer);
-
-// Apply flex styles to listItem
-listItem.style.display = 'flex';
-listItem.style.justifyContent = 'space-between'; // Space out the left and right sections
-listItem.style.alignItems = 'center'; // Vertically center the items
-
-// Now append the right and left containers to the listItem in reverse order
-listItem.appendChild(rightContentContainer); // Add the right content first
-listItem.appendChild(leftButtonsContainer); // Add the left buttons last
-
-// Finally, append the listItem to the online friends list
-onlineFriendsList.appendChild(listItem);
-
-
+                                        // Append the elements to the list item
+                                    listItem.appendChild(statusIcon);
+                                    listItem.appendChild(avatarContainer);
+                                    listItem.appendChild(nameAndMessageContainer);
+                                    listItem.appendChild(pinnedFriendsButton);
+                                    listItem.appendChild(viewFriendInfoButton);
+                                    listItem.appendChild(unfriendButton);
+                                    
+                                    onlineFriendsList.appendChild(listItem);
 
                                      // Track this friend element
                                     friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
 
-// Fetch the latest message for this friend
-const chatId = getChatId(currentUserEmail, friendEmail);
-db.collection('chats').doc(chatId).collection('messages')
-    .orderBy('timestamp', 'desc')
-    .limit(1)
-    .onSnapshot((messagesSnapshot) => {
-        if (!messagesSnapshot.empty) {
-            const latestMessageDoc = messagesSnapshot.docs[0];
-            const latestMessageData = latestMessageDoc.data();
-            const latestMessageText = latestMessageData.message || '';
-            const senderEmail = latestMessageData.sender;
+                                    // Fetch the latest message for this friend
+                                    const chatId = getChatId(currentUserEmail, friendEmail);
+                                    db.collection('chats').doc(chatId).collection('messages')
+                                        .orderBy('timestamp', 'desc')
+                                        .limit(1)
+                                        .onSnapshot((messagesSnapshot) => {
+                                            if (!messagesSnapshot.empty) {
+                                                const latestMessageDoc = messagesSnapshot.docs[0];
+                                                const latestMessageData = latestMessageDoc.data();
+                                                const latestMessageText = latestMessageData.message || '';
+                                                const senderEmail = latestMessageData.sender;
 
-            // Update the latest message span
-            latestMessageSpan.innerHTML = latestMessageText;
+                                                // Update the latest message span
+                                                latestMessageSpan.innerHTML = latestMessageText;
 
-            // Apply styles based on whether the message is sent by the current user or received
-            if (senderEmail === currentUserEmail) {
-                latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
-            } else {
-                latestMessageSpan.style.backgroundColor = 'var(--accent-color)';
-            }
+                                                // Apply styles based on whether the message is sent by the current user or received
+                                                if (senderEmail === currentUserEmail) {
+                                                    latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
+                                                } else {
+                                                    latestMessageSpan.style.backgroundColor = 'var(--accent-color)';
+                                                }
 
-            // Ensure the text color remains readable
-            latestMessageSpan.style.color = 'var(--text-color)';
-        } else {
-            latestMessageSpan.innerHTML = 'No messages yet';
-            latestMessageSpan.style.backgroundColor = 'var(--primary-color)'; // Default color for no messages
-            latestMessageSpan.style.color = 'var(--text-color)';
-        }
-    });
+                                                // Ensure the text color remains readable
+                                                latestMessageSpan.style.color = 'var(--text-color)';
+                                            } else {
+                                                latestMessageSpan.innerHTML = 'No messages yet';
+                                                latestMessageSpan.style.backgroundColor = 'var(--primary-color)'; // Default color for no messages
+                                                latestMessageSpan.style.color = 'var(--text-color)';
+                                            }
+                                        });
 
 
                                 }
