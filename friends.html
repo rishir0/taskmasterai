@@ -6853,10 +6853,9 @@ function showNoChatMessage() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-
-    // Use !important to ensure visibility is forced
-    noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
-    chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
+    // Show "no chat" message and hide chat messages
+    noChatMessage.style.setProperty('display', 'flex', 'important');
+    chatMessages.style.setProperty('display', 'none', 'important');
 }
 
 // Show chat messages
@@ -6864,34 +6863,40 @@ function showChatMessages() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-
-    // Use !important to ensure visibility is forced
-    noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
-    chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
+    // Hide "no chat" message and show chat messages
+    noChatMessage.style.setProperty('display', 'none', 'important');
+    chatMessages.style.setProperty('display', 'block', 'important');
 }
 
-
+// Add the click event listener to the friendName element
+friendName.onclick = () => {
+    openChat(friendEmail); // Open the chat with the selected friend
+    currentChatFriend = friendEmail; // Set the current chat friend
+    showChatMessages(); // Hide "no chat" message and show chat messages
+};
 
 // Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
-
     if (currentGroupId) {
-        // Hide "no chat" message immediately if there's a group chat
-        const noChatMessage = document.getElementById('noChatSelected');
-        const chatMessages = document.getElementById('chatMessages');
-        
-        noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
-        chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
+        // Hide "no chat" message if there's a group chat
+        showChatMessages(); // Show chat messages
     }
-
-    return currentGroupId;
 }
 
-
-// Call this function when the app first loads
+// Initialize chat visibility on app load
 window.onload = function() {
-    checkCurrentFriendChat(); // Initially check if there's any active chat
+    // If no current chat friend is set, show the "no chat" message initially
+    if (!currentChatFriend) {
+        showNoChatMessage(); // Show "no chat" message
+    }
 };
+
+// Example of how to call the function when a chat is closed or switched
+function resetChat() {
+    currentChatFriend = null; // Reset the current chat friend
+    showNoChatMessage(); // Show "no chat" message
+}
+
 
 // Function to display the help modal
 function showHelpModal() {
