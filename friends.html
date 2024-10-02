@@ -4146,15 +4146,43 @@ if (!onlineFriendsList) {
                                         // Add click event to open chat
                                         friendName.onclick = () => openChat(friendEmail);
 
-// Now append all elements to the list item
-listItem.appendChild(statusIcon);
-listItem.appendChild(avatarContainer);
-listItem.appendChild(nameAndMessageContainer); // Append the name-message container here
-listItem.appendChild(pinnedFriendsButton);
-listItem.appendChild(viewFriendInfoButton);
-listItem.appendChild(unfriendButton);
-                                    
-                                    onlineFriendsList.appendChild(listItem);
+// Create a container for left-side buttons
+const leftButtonsContainer = document.createElement('div');
+leftButtonsContainer.classList.add('left-buttons-container');
+leftButtonsContainer.style.display = 'flex';
+leftButtonsContainer.style.gap = '8px'; // Add space between buttons
+leftButtonsContainer.style.flexShrink = '0'; // Prevent shrinking
+
+// Append the buttons to the left container
+leftButtonsContainer.appendChild(pinnedFriendsButton);
+leftButtonsContainer.appendChild(viewFriendInfoButton);
+leftButtonsContainer.appendChild(unfriendButton);
+
+// Create a container for the right-side content
+const rightContentContainer = document.createElement('div');
+rightContentContainer.classList.add('right-content-container');
+rightContentContainer.style.display = 'flex';
+rightContentContainer.style.alignItems = 'center'; // Vertically center the content
+rightContentContainer.style.justifyContent = 'flex-start'; // Align content to the left within the right container
+rightContentContainer.style.gap = '8px'; // Add space between avatar, status, and name-message
+
+// Append the status, avatar, and name-message to the right container
+rightContentContainer.appendChild(statusIcon);
+rightContentContainer.appendChild(avatarContainer);
+rightContentContainer.appendChild(nameAndMessageContainer);
+
+// Apply flex styles to listItem
+listItem.style.display = 'flex';
+listItem.style.justifyContent = 'space-between'; // Space out the left and right sections
+listItem.style.alignItems = 'center'; // Vertically center the items
+
+// Now append the left and right containers to the listItem
+listItem.appendChild(leftButtonsContainer); // Add the left buttons
+listItem.appendChild(rightContentContainer); // Add the right content
+
+// Finally, append the listItem to the online friends list
+onlineFriendsList.appendChild(listItem);
+
 
                                      // Track this friend element
                                     friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
