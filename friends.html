@@ -3864,6 +3864,8 @@ function acceptFriendRequest(requestId, senderEmail) {
             
             // Open a chat with the sender
             openChat(senderEmail);
+            showChatMessages();
+            updateChatHeader(friendDisplayName, friendEmail, false);
             
             // Update the online friends list
             loadOnlineFriends();
