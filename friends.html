@@ -3984,6 +3984,7 @@ function loadOnlineFriends() {
                                     // Set the friend name and avatar when clicked
                                     listItem.addEventListener('click', () => {
                                         updateChatHeader(friendDisplayName, friendEmail, false); // false indicates it's a friend
+                                        showChatMessages(); // Hide "no chat" message and show chat messages
                                     });
 
 
@@ -4453,7 +4454,8 @@ unpinButton.onclick = () => {
                                         friendName.onclick = () => {
     openChat(friendEmail); // Open the chat with the selected friend
     currentChatFriend = friendEmail; // Set the current chat friend
-    showChatMessages(); // Hide "no chat" message and show chat messages
+    updateChatHeader(friendDisplayName, friendEmail, false);     
+    showChatMessages(); // Hide "no chat" message and show chat messages                                   
 };
 
                                     // Append buttons to the list item
@@ -5439,6 +5441,7 @@ function loadGroupChats() {
                 // Set the group name and avatar when clicked
                 groupItem.addEventListener('click', () => {
                     updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
+                    showChatMessages(); // Hide "no chat" message and show chat messages
                 });
 
                 // Create group name element
@@ -6878,23 +6881,6 @@ function showChatMessages() {
     chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
 }
 
-
-
-
-// Check if there's a current group chat and hide "no chat" message if active
-function checkCurrentGroupChat() {
-
-    if (currentGroupId) {
-        // Hide "no chat" message immediately if there's a group chat
-        const noChatMessage = document.getElementById('noChatSelected');
-        const chatMessages = document.getElementById('chatMessages');
-        
-        noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
-        chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
-    }
-
-    return currentGroupId;
-}
 
 
 // Function to display the help modal
