@@ -4160,7 +4160,7 @@ leftButtonsContainer.appendChild(unfriendButton);
 // Create a container for the right-side content
 const rightContentContainer = document.createElement('div');
 rightContentContainer.classList.add('right-content-container');
-
+rightContentContainer.style.display = 'flex';
 rightContentContainer.style.alignItems = 'center'; // Vertically center the content
 rightContentContainer.style.justifyContent = 'flex-start'; // Align content to the left within the right container
 
@@ -4171,7 +4171,7 @@ rightContentContainer.appendChild(avatarContainer);
 rightContentContainer.appendChild(nameAndMessageContainer);
 
 // Apply flex styles to listItem
-
+listItem.style.display = 'flex';
 listItem.style.justifyContent = 'space-between'; // Space out the left and right sections
 listItem.style.alignItems = 'center'; // Vertically center the items
 
