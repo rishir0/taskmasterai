@@ -6840,71 +6840,56 @@ function loadGCPicture(groupId, avatarContainer) {
 }
 
 
-// Show the "no chat" message
-function showNoChatMessage() {
+// Function to hide the "no chat" message and show chat messages
+function updateChatVisibility() {
     const noChatMessage = document.getElementById('noChatSelected');
     const chatMessages = document.getElementById('chatMessages');
 
-
-    // Use !important to ensure visibility is forced
-    noChatMessage.style.setProperty('display', 'flex', 'important'); // Show "no chat" message
-    chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
-}
-
-// Show chat messages
-function showChatMessages() {
-    const noChatMessage = document.getElementById('noChatSelected');
-    const chatMessages = document.getElementById('chatMessages');
-
-
-    // Use !important to ensure visibility is forced
-    noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
-    chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
-}
-
-function checkCurrentFriendChat() {
-    // Wait until a current friend chat is set
     if (currentChatFriend) {
-        // Once currentChatFriend is set, hide "no chat" message, regardless of group ID
-        const noChatMessage = document.getElementById('noChatSelected');
-        const chatMessages = document.getElementById('chatMessages');
-
-        // Log for debugging purposes
-
-
-        // Hide "no chat" message and show chat messages
         noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
         chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
     } else {
-        // Log for debugging purposes
-
+        noChatMessage.style.setProperty('display', 'flex', 'important');  // Show "no chat" message
+        chatMessages.style.setProperty('display', 'none', 'important');  // Hide chat messages
     }
+}
 
+// Function to check current friend chat
+function checkCurrentFriendChat() {
+    updateChatVisibility(); // Call the visibility update function
     return currentChatFriend;
 }
 
+// Function to set the current chat friend
+function setCurrentChatFriend(friendEmail) {
+    currentChatFriend = friendEmail;
+    updateChatVisibility(); // Update visibility immediately
+}
+
 // Example of how to use this function
-// Call this periodically to check if currentChatFriend has been set
 setInterval(() => {
     checkCurrentFriendChat();
-}, 1000); // This will check every 0.5 seconds if a chat friend is set
+}, 1000); // This will check every second if a chat friend is set
 
-
+// When a friend is clicked
+listItem.addEventListener('click', () => {
+    updateChatHeader(friendDisplayName, friendEmail, false); // Update chat header
+    setCurrentChatFriend(friendEmail); // Set the current chat friend
+});
 
 // Check if there's a current group chat and hide "no chat" message if active
 function checkCurrentGroupChat() {
+    const noChatMessage = document.getElementById('noChatSelected');
+    const chatMessages = document.getElementById('chatMessages');
 
     if (currentGroupId) {
-        // Hide "no chat" message immediately if there's a group chat
-        const noChatMessage = document.getElementById('noChatSelected');
-        const chatMessages = document.getElementById('chatMessages');
-        
         noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
         chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
     }
 
     return currentGroupId;
 }
+
 
 
 // Call this function when the app first loads
