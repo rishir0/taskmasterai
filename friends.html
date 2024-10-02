@@ -1879,13 +1879,21 @@ body.night-mode {
 }
 
 
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* This will give space between larger groups */
+    padding: 8px; /* Optional, for extra padding around the item */
+    gap: 8px; /* Ensures consistent spacing between all elements */
+}
+
 .name-message-container {
     display: flex;
-    align-items: center; /* Vertically aligns the name and message */
+    align-items: center;
 }
 
 .friend-name {
-    margin-right: 8px; /* Adds space between the friend name and the latest message */
+    margin-right: 8px;
     font-weight: bold;
 }
 
@@ -1900,6 +1908,20 @@ body.night-mode {
     white-space: nowrap !important;
     display: inline-block !important;
 }
+
+/* Individual button and icon styles */
+.list-item img, .list-item button {
+    margin-left: 8px; /* Add consistent spacing between icons/buttons */
+    padding: 6px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
 
 
 
