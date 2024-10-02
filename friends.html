@@ -1879,19 +1879,28 @@ body.night-mode {
 }
 
 
+.name-message-container {
+    display: flex;
+    align-items: center; /* Vertically aligns the name and message */
+}
+
+.friend-name {
+    margin-right: 8px; /* Adds space between the friend name and the latest message */
+    font-weight: bold;
+}
+
 .latest-message {
-    background-color: var(--primary-color) !important; /* Use the primary color */
-    color: var(--text-color) !important; /* Ensure the text is readable */
+    background-color: var(--primary-color) !important;
+    color: var(--text-color) !important;
     padding: 4px 8px !important;
     border-radius: 12px !important;
-    text-align: center !important;
-    max-width: 200px !important; /* Adjust this to prevent overflow */
+    max-width: 200px !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
     display: inline-block !important;
-    margin-left: -50px !important; /* Adjust this value to move it left */
 }
+
 
 
 
