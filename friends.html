@@ -4007,6 +4007,42 @@ latestMessageSpan.onclick = () => openChat(friendEmail);
 nameAndMessageContainer.appendChild(friendName);
 nameAndMessageContainer.appendChild(latestMessageSpan);
 
+// Append nameAndMessageContainer to the appropriate parent element
+rightContentContainer.appendChild(nameAndMessageContainer);
+
+// Fetch the latest message for this friend
+const chatId = getChatId(currentUserEmail, friendEmail);
+db.collection('chats').doc(chatId).collection('messages')
+    .orderBy('timestamp', 'desc')
+    .limit(1)
+    .onSnapshot((messagesSnapshot) => {
+        if (!messagesSnapshot.empty) {
+            const latestMessageDoc = messagesSnapshot.docs[0];
+            const latestMessageData = latestMessageDoc.data();
+            const latestMessageText = latestMessageData.message || '';
+            const senderEmail = latestMessageData.sender;
+
+            // Update the latest message span with the message text
+            latestMessageSpan.innerHTML = latestMessageText;
+
+            // Apply background color based on whether the message is sent by the current user or received
+            if (senderEmail === currentUserEmail) {
+                latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
+            } else {
+                latestMessageSpan.style.backgroundColor = 'var(--accent-color)';
+            }
+
+            // Set text color to maintain readability
+            latestMessageSpan.style.color = 'var(--text-color)';
+        } else {
+            // If no messages exist yet
+            latestMessageSpan.innerHTML = 'No messages yet';
+            latestMessageSpan.style.backgroundColor = 'var(--primary-color)'; // Default background
+            latestMessageSpan.style.color = 'var(--text-color)';
+        }
+    });
+
+
                                     // Create the status icon
                                     const statusIcon = document.createElement('span');
                                     statusIcon.classList.add('status-icon');
@@ -4186,38 +4222,6 @@ onlineFriendsList.appendChild(listItem);
 
                                      // Track this friend element
                                     friendElementsMap.set(friendEmail, { listItem, latestMessageSpan });
-
-// Fetch the latest message for this friend
-const chatId = getChatId(currentUserEmail, friendEmail);
-db.collection('chats').doc(chatId).collection('messages')
-    .orderBy('timestamp', 'desc')
-    .limit(1)
-    .onSnapshot((messagesSnapshot) => {
-        if (!messagesSnapshot.empty) {
-            const latestMessageDoc = messagesSnapshot.docs[0];
-            const latestMessageData = latestMessageDoc.data();
-            const latestMessageText = latestMessageData.message || '';
-            const senderEmail = latestMessageData.sender;
-
-            // Update the latest message span
-            latestMessageSpan.innerHTML = latestMessageText;
-
-            // Apply styles based on whether the message is sent by the current user or received
-            if (senderEmail === currentUserEmail) {
-                latestMessageSpan.style.backgroundColor = 'var(--primary-color)';
-            } else {
-                latestMessageSpan.style.backgroundColor = 'var(--accent-color)';
-            }
-
-            // Ensure the text color remains readable
-            latestMessageSpan.style.color = 'var(--text-color)';
-        } else {
-            latestMessageSpan.innerHTML = 'No messages yet';
-            latestMessageSpan.style.backgroundColor = 'var(--primary-color)'; // Default color for no messages
-            latestMessageSpan.style.color = 'var(--text-color)';
-        }
-    });
-
 
                                 }
                             }
