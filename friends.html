@@ -6870,26 +6870,6 @@ function showChatMessages() {
     chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
 }
 
-function checkCurrentFriendChat() {
-    // Wait until a current friend chat is set
-    if (currentChatFriend) {
-        // Once currentChatFriend is set, hide "no chat" message, regardless of group ID
-        const noChatMessage = document.getElementById('noChatSelected');
-        const chatMessages = document.getElementById('chatMessages');
-
-        // Log for debugging purposes
-
-
-        // Hide "no chat" message and show chat messages
-        noChatMessage.style.setProperty('display', 'none', 'important');  // Hide "no chat" message
-        chatMessages.style.setProperty('display', 'block', 'important');  // Show chat messages
-    } else {
-        // Log for debugging purposes
-
-    }
-
-    return currentChatFriend;
-}
 
 
 // Check if there's a current group chat and hide "no chat" message if active
