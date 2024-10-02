@@ -4150,7 +4150,7 @@ if (!onlineFriendsList) {
 const leftButtonsContainer = document.createElement('div');
 leftButtonsContainer.classList.add('left-buttons-container');
 leftButtonsContainer.style.display = 'flex';
-leftButtonsContainer.style.gap = '8px'; // Add space between buttons
+
 leftButtonsContainer.style.flexShrink = '0'; // Prevent shrinking
 
 // Append the buttons to the left container
@@ -4164,7 +4164,7 @@ rightContentContainer.classList.add('right-content-container');
 rightContentContainer.style.display = 'flex';
 rightContentContainer.style.alignItems = 'center'; // Vertically center the content
 rightContentContainer.style.justifyContent = 'flex-start'; // Align content to the left within the right container
-rightContentContainer.style.gap = '8px'; // Add space between avatar, status, and name-message
+
 
 // Append the status, avatar, and name-message to the right container
 rightContentContainer.appendChild(statusIcon);
