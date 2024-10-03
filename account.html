@@ -1581,10 +1581,10 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         const removeDarkThemeBtn = document.getElementById('remove-dark-theme');
 
     const lightThemeStyles = `
-    :root {
-        --primary-color: #009bf5;
-        --secondary-color: #8d8aaf;
-        --accent-color: #003366;
+     :root {
+        --primary-color: #333333; * Keep primary color white */
+        --secondary-color: rgba(255, 255, 255, 0.1); /* Consistent secondary color */
+        --accent-color: rgba(255, 255, 255, 0.1); /* Consistent accent color */
         --text-color: #ffffff;
         --bg-color: rgba(255, 255, 255, 0.1);
         --card-bg: rgba(255, 255, 255, 0.1);
@@ -1622,6 +1622,43 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
     .card-body {
         padding: 15px;
     }
+
+    .logo {
+
+
+    color: var(--text-color);
+
+
+}
+
+
+
+
+
+#tasks-projects .tasks-section h2,
+#tasks-projects .projects-section h2,
+#tasks-projects .goals-section h2,
+#tasks-projects .plans-section h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.upgrade-btn {
+    background: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
     `;
 
     const darkThemeStyles = `
