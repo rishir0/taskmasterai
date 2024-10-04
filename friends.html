@@ -5699,13 +5699,8 @@ function loadPinnedGroups() {
                                 avatarContainer.style.height = '40px';
                                 avatarContainer.style.marginRight = '10px'; // Space between avatar and name
 
-                                loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
-
-                                                // Set the group name and avatar when clicked
-                groupItem.addEventListener('click', () => {
-                    updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
-                    showChatMessages(); // Hide "no chat" message and show chat messages
-                });
+                                // Load group profile picture or default avatar
+                                loadGCPicture(groupId, avatarContainer);
 
                                 // Create group name element
                                 const groupNameElement = document.createElement('span');
@@ -5715,6 +5710,14 @@ function loadPinnedGroups() {
                                 // Append the avatar container BEFORE the group name
                                 groupItem.appendChild(avatarContainer); // Avatar first
                                 groupItem.appendChild(groupNameElement); // Then the group name
+
+                                // Add the click event listener
+                                groupItem.addEventListener('click', () => {
+                                    openGroupChat(groupId); // Open the corresponding group chat
+                                    currentGroupId = groupId; // Set the current group ID
+                                    updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
+                                    showChatMessages(); // Hide "no chat" message and show chat messages
+                                });
 
                 // Button container
                 const buttonContainer = document.createElement('div');
@@ -5896,10 +5899,7 @@ buttonContainer.appendChild(deleteButton);
 
 
 
-                groupItem.onclick = () => {
-                    openGroupChat(doc.id);
-                    currentGroupId = doc.id; // Set the current group ID
-                };
+
 
                 // Append the button container to the group item
                 groupItem.appendChild(buttonContainer);
