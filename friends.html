@@ -5692,21 +5692,6 @@ function loadPinnedGroups() {
                                 groupItem.style.alignItems = 'center'; // Vertically align items
                                 groupItem.style.justifyContent = 'flex-start'; // Left align items
 
-                                // Set the group name as text
-                                const groupNameElement = document.createElement('span');
-                                groupNameElement.textContent = groupName;
-                                groupItem.appendChild(groupNameElement);
-
-                                // Add the onclick event to open the group chat
-                                groupItem.onclick = () => {
-                                    openGroupChat(groupId);
-                                    currentGroupId = groupId; // Set the current group ID
-                                };
-
-                                // Add group item to the pinned group list
-                                pinnedGroupsList.appendChild(groupItem);
-                            
-
                                 // Create the group avatar container
                                 const avatarContainer = document.createElement('div');
                                 avatarContainer.classList.add('group-avatar');
@@ -5724,6 +5709,15 @@ function loadPinnedGroups() {
                                 // Append the avatar container BEFORE the group name
                                 groupItem.appendChild(avatarContainer); // Avatar first
                                 groupItem.appendChild(groupNameElement); // Then the group name
+
+                                // Add the onclick event to open the group chat
+                                groupItem.onclick = () => {
+                                    openGroupChat(groupId);
+                                    currentGroupId = groupId; // Set the current group ID
+                                };
+
+                                // Add group item to the pinned group list
+                                pinnedGroupsList.appendChild(groupItem);
 
                 // Button container
                 const buttonContainer = document.createElement('div');
