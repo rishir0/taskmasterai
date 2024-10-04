@@ -5426,11 +5426,11 @@ function loadGroupChats() {
                 const groupName = group.groupName || 'Unnamed Group';
 
                 // Create a group item container
-                const groupItem2 = document.createElement('div');
-                groupItem2.classList.add('group-item');
-                groupItem2.style.display = 'flex'; // Flexbox layout
-                groupItem2.style.alignItems = 'center'; // Vertically align items
-                groupItem2.style.justifyContent = 'flex-start'; // Left align items
+                const groupItem = document.createElement('div');
+                groupItem.classList.add('group-item');
+                groupItem.style.display = 'flex'; // Flexbox layout
+                groupItem.style.alignItems = 'center'; // Vertically align items
+                groupItem.style.justifyContent = 'flex-start'; // Left align items
 
                 // Create the group avatar container
                 const avatarContainer = document.createElement('div');
@@ -5442,7 +5442,7 @@ function loadGroupChats() {
                 loadGCPicture(groupId, avatarContainer); // Load group profile picture or default avatar
 
                 // Set the group name and avatar when clicked
-                groupItem2.addEventListener('click', () => {
+                groupItem.addEventListener('click', () => {
                     updateChatHeader(groupName, groupId, true); // true indicates it's a group chat
                     showChatMessages(); // Hide "no chat" message and show chat messages
                 });
@@ -5453,8 +5453,8 @@ function loadGroupChats() {
                 groupNameElement.classList.add('group-name');
 
                 // Append the avatar container BEFORE the group name
-                groupItem2.appendChild(avatarContainer); // Avatar first
-                groupItem2.appendChild(groupNameElement); // Then the group name
+                groupItem.appendChild(avatarContainer); // Avatar first
+                groupItem.appendChild(groupNameElement); // Then the group name
 
                 // Button container
                 const buttonContainer = document.createElement('div');
@@ -5637,16 +5637,16 @@ buttonContainer.appendChild(deleteButton);
 
 
 
-                groupItem2.onclick = () => {
+                groupItem.onclick = () => {
                     openGroupChat(doc.id);
                     currentGroupId = doc.id; // Set the current group ID
                 };
 
                 // Append the button container to the group item
-                groupItem2.appendChild(buttonContainer);
+                groupItem.appendChild(buttonContainer);
 
                 // Finally, append the group item to the group list
-                groupList.appendChild(groupItem2);
+                groupList.appendChild(groupItem);
 
                 // Append the 'Pinned Group' button before the View Members button
                 buttonContainer.appendChild(pinnedGroupButton);
@@ -5691,6 +5691,21 @@ function loadPinnedGroups() {
                                 groupItem.style.display = 'flex'; // Flexbox layout
                                 groupItem.style.alignItems = 'center'; // Vertically align items
                                 groupItem.style.justifyContent = 'flex-start'; // Left align items
+
+                                // Set the group name as text
+                                const groupNameElement = document.createElement('span');
+                                groupNameElement.textContent = groupName;
+                                groupItem.appendChild(groupNameElement);
+
+                                // Add the onclick event to open the group chat
+                                groupItem.onclick = () => {
+                                    openGroupChat(groupId);
+                                    currentGroupId = groupId; // Set the current group ID
+                                };
+
+                                // Add group item to the pinned group list
+                                pinnedGroupsList.appendChild(groupItem);
+                            
 
                                 // Create the group avatar container
                                 const avatarContainer = document.createElement('div');
