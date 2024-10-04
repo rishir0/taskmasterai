@@ -5710,15 +5710,6 @@ function loadPinnedGroups() {
                                 groupItem.appendChild(avatarContainer); // Avatar first
                                 groupItem.appendChild(groupNameElement); // Then the group name
 
-                                // Add the onclick event to open the group chat
-                                groupItem.onclick = () => {
-                                    openGroupChat(groupId);
-                                    currentGroupId = groupId; // Set the current group ID
-                                };
-
-                                // Add group item to the pinned group list
-                                pinnedGroupsList.appendChild(groupItem);
-
                 // Button container
                 const buttonContainer = document.createElement('div');
                 buttonContainer.classList.add('buttons');
@@ -5902,6 +5893,7 @@ buttonContainer.appendChild(deleteButton);
                 groupItem.onclick = () => {
                     openGroupChat(doc.id);
                     currentGroupId = doc.id; // Set the current group ID
+                    showChatMessages(); // Hide "no chat" message and show chat messages
                 };
 
                 // Append the button container to the group item
