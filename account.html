@@ -932,12 +932,14 @@ scrollbar-thumb {
   margin-right: 0em; /* Adjust spacing as needed */
 }
 
-/* If you want the rule to only apply to specific input types, use this: */
-input[type="text"], input[type="email"], input[type="password"] {
-    color: white;
+
+/* Styling for the placeholder text */
+.form-group input[type="text"]::placeholder,
+.form-group input[type="email"]::placeholder,
+.form-group input[type="password"]::placeholder {
+    color: var(--placeholder-color, #fff); /* Change placeholder color */
+    opacity: 1; /* Ensure full opacity for all browsers */
 }
-
-
 
     </style>
 </head>
