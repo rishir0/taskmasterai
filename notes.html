@@ -1326,9 +1326,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    // Function to generate AI summaries using Hugging Face API
-    const apiKey = "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";
-    const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+// Function to generate AI summaries using Hugging Face API
+const apiKey = "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"; // Keep your API key secure
+const modelEndpoint = "https://api-inference.huggingface.co/models/Xenova/gpt-4o";
 
 // Function to generate AI summaries using Hugging Face API
 async function generateSummary(text) {
@@ -1338,29 +1338,30 @@ async function generateSummary(text) {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ inputs: text })
+        // Adjust the input structure if needed based on model requirements
+        body: JSON.stringify({ inputs: text }) // Use the correct input format for the new model
     });
 
     if (response.ok) {
         const result = await response.json();
-        return result[0].summary_text; // Adjust based on actual API response structure
+        return result[0].generated_text; // Adjust based on the actual API response structure of the new model
     } else {
-        throw new Error('Error generating summary');
+        throw new Error('Error generating summary: ' + response.statusText);
     }
 }
 
-
-    // Load the notes when the page is loaded and the user is authenticated
-    document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                      // Load AI notes
-                loadManualNotes(); // Load manual notes
-            } else {
-                window.location.href = "login.html"; // Redirect to login page if not authenticated
-            }
-        });
+// Load the notes when the page is loaded and the user is authenticated
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // Load AI notes
+            loadManualNotes(); // Load manual notes
+        } else {
+            window.location.href = "login.html"; // Redirect to login page if not authenticated
+        }
     });
+});
+
 
 
 
