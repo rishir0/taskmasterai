@@ -1055,6 +1055,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Function to delete an existing note
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
+
+function openModal() {
+    document.getElementById("noteModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("noteModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("noteModal");
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
     </script>
     
             <script>
