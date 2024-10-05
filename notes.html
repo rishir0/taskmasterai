@@ -536,7 +536,6 @@ body.night-mode {
     vertical-align: middle; /* Aligns the icon vertically with the text */
     display: inline-block; /* Ensures it behaves as an inline element */
 }
-
 /* Modal styling */
 .modal {
     display: none; /* Hidden by default */
@@ -548,16 +547,19 @@ body.night-mode {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 .modal-content {
     background-color: var(--card-bg, #f5f5f5); /* Card background color */
-    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 80%; /* Could be more or less, depending on screen size */
     max-width: 600px; /* Max width for larger screens */
+    text-align: center; /* Center text and content */
 }
 
 .close {
@@ -575,46 +577,21 @@ body.night-mode {
 }
 
 /* Heading styles */
-h6, h3 {
-    color: var(--text-color, #333); /* Use a variable or default text color */
-    margin-bottom: 10px; /* Space below headings */
-}
-
 h6 {
+    color: var(--text-color, #333); /* Use a variable or default text color */
     font-size: 24px; /* Font size for h2 */
     font-weight: bold; /* Bold font */
+    margin-bottom: 20px; /* Space below heading */
 }
 
-h3 {
-    font-size: 24px; /* Font size for h3 */
-    font-weight: bold; /* Semi-bold for h3 */
+/* Centered paragraph for 'or' */
+.or-text {
+    font-size: 18px;
+    color: var(--text-color, #666); /* Text color for 'or' */
+    margin: 15px 0; /* Space around 'or' */
 }
 
-/* Paragraph styles */
-p1 {
-    color: var(--text-color, #666); /* Text color for paragraphs */
-    margin: 5px 0 15px; /* Space above and below paragraphs */
-    line-height: 1.5; /* Improve readability */
-}
-
-textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px; /* Slightly rounded corners */
-    border: 3px solid var(--primary-color, #ccc);
-    background-color: var(--card-bg, #f5f5f5); /* Match card background */
-    margin-bottom: 0px;
-    margin-top: 20px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    resize: none; /* Prevent resizing */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
-
-textarea:focus {
-    border-color: var(--accent-color, #0056b3);
-    box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
-}
-
+/* Button styles */
 .create-manual-note-btn {
     background-color: var(--primary-color, #f5f5f5); /* Use card background color */
     color: var(--text-color, #333);
@@ -623,14 +600,19 @@ textarea:focus {
     border-radius: 50px; /* Make buttons round */
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 10px; /* Space above button */
-    margin-bottom: 10px;
+    margin: 10px 0; /* Space above and below button */
+    display: block; /* Ensure block display for centering */
+    width: 80%; /* Optional: adjust button width */
+    max-width: 300px; /* Set a maximum width for larger screens */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .create-manual-note-btn:hover {
     background-color: var(--accent-color, #0056b3);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 
 
@@ -794,17 +776,17 @@ textarea:focus {
         </div>
         
         
-        
-        <div class="modal" id="noteModal">
+<div class="modal" id="noteModal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h6>Choose an option below</h6>
         
         <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
-        <p style="text-align: center; margin: 10px 0;">or</p>
+        <p class="or-text">or</p>
         <button class="create-manual-note-btn" onclick="createManualNote()">Create Personal Note</button>
     </div>
 </div>
+
 
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
