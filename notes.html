@@ -536,6 +536,8 @@ body.night-mode {
     vertical-align: middle; /* Aligns the icon vertically with the text */
     display: inline-block; /* Ensures it behaves as an inline element */
 }
+
+
 /* Modal styling */
 .modal {
     display: none; /* Hidden by default */
@@ -576,34 +578,31 @@ body.night-mode {
     cursor: pointer;
 }
 
-/* Heading styles */
 h6 {
-    color: var(--text-color, #333); /* Use a variable or default text color */
-    font-size: 24px; /* Font size for h2 */
-    font-weight: bold; /* Bold font */
-    margin-bottom: 20px; /* Space below heading */
+    color: var(--text-color, #333);
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-/* Centered paragraph for 'or' */
 .or-text {
     font-size: 18px;
-    color: var(--text-color, #666); /* Text color for 'or' */
-    margin: 15px 0; /* Space around 'or' */
+    color: var(--text-color, #666);
+    margin: 15px 0;
 }
 
-/* Button styles */
 .create-manual-note-btn {
-    background-color: var(--primary-color, #f5f5f5); /* Use card background color */
+    background-color: var(--primary-color, #f5f5f5);
     color: var(--text-color, #333);
     border: none;
     padding: 10px 20px;
-    border-radius: 50px; /* Make buttons round */
+    border-radius: 50px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin: 10px 0; /* Space above and below button */
-    display: block; /* Ensure block display for centering */
-    width: 80%; /* Optional: adjust button width */
-    max-width: 300px; /* Set a maximum width for larger screens */
+    margin: 10px 0;
+    display: block;
+    width: 80%;
+    max-width: 300px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -612,6 +611,7 @@ h6 {
     background-color: var(--accent-color, #0056b3);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 
 
@@ -1026,20 +1026,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// Function to open the modal
 function openModal() {
-    document.getElementById("noteModal").style.display = "block";
+    const modal = document.getElementById("noteModal");
+    modal.style.display = "flex"; // Ensure modal is flex to be centered
 }
 
+// Function to close the modal
 function closeModal() {
-    document.getElementById("noteModal").style.display = "none";
+    const modal = document.getElementById("noteModal");
+    modal.style.display = "none"; // Hide modal
 }
 
+// Close modal if clicking outside the modal content
 window.onclick = function(event) {
     const modal = document.getElementById("noteModal");
     if (event.target === modal) {
-        closeModal();
+        modal.style.display = "none"; // Close if clicking outside modal content
     }
 }
+
 
     </script>
     
