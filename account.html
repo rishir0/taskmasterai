@@ -932,9 +932,9 @@ scrollbar-thumb {
   margin-right: 0em; /* Adjust spacing as needed */
 }
 
-/* Applies to all text input fields */
-input {
-    color: white; /* Sets the text color inside input fields to white */
+/* If you want the rule to only apply to specific input types, use this: */
+input[type="text"], input[type="email"], input[type="password"] {
+    color: white;
 }
 
 
