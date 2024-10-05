@@ -1151,75 +1151,78 @@ function createManualNote() {
 
 
 
-    // Function to load manual notes from Firestore
-    function loadManualNotes() {
-        db.collection('manualnotes')
-            .where('userId', '==', firebase.auth().currentUser.uid)
-            .orderBy('createdAt')
-            .onSnapshot(snapshot => {
-                const notesList = document.getElementById('notes-list');
-                notesList.innerHTML = ''; // Clear the list before adding notes
-                snapshot.forEach(doc => {
-                    const note = doc.data();
-                    const noteDiv = document.createElement('div');
-                    noteDiv.className = 'note-item';
-                    noteDiv.textContent = note.note;
+ // Function to load manual notes from Firestore
+function loadManualNotes() {
+    db.collection('manualnotes')
+        .where('userId', '==', firebase.auth().currentUser.uid)
+        .orderBy('createdAt')
+        .onSnapshot(snapshot => {
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = ''; // Clear the list before adding notes
+            snapshot.forEach(doc => {
+                const note = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.innerHTML = `
+                    <strong>${note.title}</strong> - ${note.date}<br/>
+                    ${note.note}
+                `;
 
-                    const buttonContainer = createButtonContainer();
-                    buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
-                    buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
 
-                    noteDiv.appendChild(buttonContainer);
-                    notesList.appendChild(noteDiv);
-                });
+                noteDiv.appendChild(buttonContainer);
+                notesList.appendChild(noteDiv);
             });
-    }
+        });
+}
 
-    // Function to create button container for edit/delete actions
-    function createButtonContainer() {
-        const container = document.createElement('div');
-        container.className = 'button-container';
-        return container;
-    }
+// Function to create button container for edit/delete actions
+function createButtonContainer() {
+    const container = document.createElement('div');
+    container.className = 'button-container';
+    return container;
+}
 
-    // Function to create an Edit button
-    function createEditButton(id, type) {
-        const button = document.createElement('button');
-        button.textContent = 'Edit';
-        button.onclick = () => editItem(id, type);
-        return button;
-    }
+// Function to create an Edit button
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.onclick = () => editItem(id, type);
+    return button;
+}
 
-    // Function to create a Delete button
-    function createDeleteButton(id, type) {
-        const button = document.createElement('button');
-        button.textContent = 'Delete';
-        button.onclick = () => deleteItem(id, type);
-        return button;
-    }
+// Function to create a Delete button
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
 
-    // Function to edit a note
-    function editItem(id, type) {
-        const newValue = prompt(`Enter new ${type}:`);
-        if (newValue) {
-            db.collection(type + 's').doc(id).update({
-                [type]: newValue
-            }).then(() => {
-                console.log(`${type} updated:`, newValue);
-            }).catch((error) => {
-                console.error(`Error updating ${type}:`, error);
-            });
-        }
-    }
-
-    // Function to delete a note
-    function deleteItem(id, type) {
-        db.collection(type + 's').doc(id).delete().then(() => {
-            console.log(`${type} deleted:`, id);
+// Function to edit a note
+function editItem(id, type) {
+    const newValue = prompt(`Enter new ${type}:`);
+    if (newValue) {
+        db.collection(type + 's').doc(id).update({
+            [type]: newValue
+        }).then(() => {
+            console.log(`${type} updated:`, newValue);
         }).catch((error) => {
-            console.error(`Error deleting ${type}:`, error);
+            console.error(`Error updating ${type}:`, error);
         });
     }
+}
+
+// Function to delete a note
+function deleteItem(id, type) {
+    db.collection(type + 's').doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
 
     // Function to generate AI summaries using Hugging Face API
     const apiKey = "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";
