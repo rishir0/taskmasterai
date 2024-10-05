@@ -701,6 +701,109 @@ textarea:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Modal 3 styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: var(--card-bg, #f5f5f5); /* Card background color */
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 600px; /* Max width for larger screens */
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right; /* Align to the right */
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black; /* Change color on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Heading styles for modal 3 */
+h6 {
+    color: var(--text-color, #333); /* Use a variable or default text color */
+    font-size: 24px; /* Font size */
+    font-weight: bold; /* Bold font */
+    margin-bottom: 20px;
+}
+
+/* Paragraph and input styles for modal 3 */
+p {
+    color: var(--text-color, #666); /* Text color */
+    margin: 5px 0 15px; /* Space above and below */
+    line-height: 1.5; /* Improve readability */
+}
+
+input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 2px solid var(--primary-color, #ccc);
+    background-color: var(--card-bg, #f5f5f5);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="date"]:focus {
+    border-color: var(--accent-color, #0056b3);
+    box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+}
+
+/* Textarea for modal 3 */
+#personalTextarea3 {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px; /* Slightly rounded corners */
+    border: 3px solid var(--primary-color, #ccc);
+    background-color: var(--card-bg, #f5f5f5); /* Match card background */
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    resize: none; /* Prevent resizing */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#personalTextarea3:focus {
+    border-color: var(--accent-color, #0056b3);
+    box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+}
+
+/* Button styling for modal 3 */
+#createPersonalNoteBtn3 {
+    background-color: var(--primary-color, #f5f5f5); /* Use card background color */
+    color: var(--text-color, #333);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px; /* Make buttons round */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 10px; /* Space above button */
+    margin-bottom: 10px;
+}
+
+#createPersonalNoteBtn3:hover {
+    background-color: var(--accent-color, #0056b3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 
     </style>
@@ -870,7 +973,7 @@ textarea:focus {
         
         <button class="create-manual-note-btn" onclick="openModal2()">Generate Note</button>
         <p class="or-text">or</p>
-        <button class="create-manual-note-btn" onclick="createManualNote()">Create Personal Note</button>
+        <button class="create-manual-note-btn" onclick="openModal3()">Create Personal Note</button>
     </div>
 </div>
 
@@ -882,9 +985,25 @@ textarea:focus {
         <h6>Generate Note</h6>
         <p>Enter text below to generate a note.</p>
         <textarea placeholder="Enter text here..." rows="4"></textarea>
-        <button class="create-manual-note-btn" onclick="generateNote()">Generate Note</button>
+        <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
     </div>
 </div>
+
+<!-- Modal 3: Personal Note Modal -->
+<div class="modal" id="personalNoteModal3">
+    <div class="modal-content" id="modalContent3">
+        <span class="close" id="closeModal3" onclick="closeModal3()">&times;</span>
+        <h6>Personal Note</h6>
+        <p>Title:</p>
+        <input type="text" id="personalNoteTitle3" placeholder="Enter title here..." />
+        <p>Date:</p>
+        <input type="date" id="personalNoteDate3" />
+        <p>Enter text below to create a personal note.</p>
+        <textarea id="personalTextarea3" placeholder="Enter text here..." rows="4"></textarea>
+        <button class="create-manual-note-btn" id="createPersonalNoteBtn3" onclick="createManualNote()">Create Personal Note</button>
+    </div>
+</div>
+
 
 
     </body>
@@ -1164,6 +1283,27 @@ window.onclick = function(event) {
         modal2.style.display = "none"; // Close if clicking outside modal content
     }
 }
+
+// Function to open Modal 3
+function openModal3() {
+    const modal = document.getElementById("personalNoteModal3");
+    modal.style.display = "block"; // Show modal
+}
+
+// Function to close Modal 3
+function closeModal3() {
+    const modal = document.getElementById("personalNoteModal3");
+    modal.style.display = "none"; // Hide modal
+}
+
+// Close modal if clicking outside the modal content for Modal 3
+window.onclick = function(event) {
+    const modal3 = document.getElementById("personalNoteModal3");
+    if (event.target === modal3) {
+        modal3.style.display = "none"; // Close if clicking outside modal content
+    }
+}
+
 
 
 
