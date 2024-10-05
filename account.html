@@ -932,14 +932,12 @@ scrollbar-thumb {
   margin-right: 0em; /* Adjust spacing as needed */
 }
 
-
 /* Styling for the placeholder text */
-.form-group input[type="text"]::placeholder,
-.form-group input[type="email"]::placeholder,
-.form-group input[type="password"]::placeholder {
-    color: var(--placeholder-color, #fff); /* Change placeholder color */
+.form-group input[type="email"]::placeholder {
+    color: var(--placeholder-color, #a9a9a9); /* Change placeholder color to gray */
     opacity: 1; /* Ensure full opacity for all browsers */
 }
+
 
     </style>
 </head>
@@ -1668,6 +1666,16 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Styling for the placeholder text */
+.form-group input[type="text"]::placeholder,
+.form-group input[type="email"]::placeholder,
+.form-group input[type="password"]::placeholder {
+    color: var(--placeholder-color, #fff); /* Change placeholder color */
+    opacity: 1; /* Ensure full opacity for all browsers */
+}
+
+
     `;
 
     const darkThemeStyles = `
