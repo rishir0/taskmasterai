@@ -1309,15 +1309,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-const huggingFaceApiKey = "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"; // Your Hugging Face API key
-const longformerModelEndpoint = "https://api-inference.huggingface.co/models/allenai/longformer-base-4096";
+    // Function to generate AI summaries using Hugging Face API
+    const apiKey = "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";
+    const modelEndpoint = "https://api-inference.huggingface.co/models/allenai/longformer-base-4096";
 
-// Function to generate AI summaries using Longformer
-async function generateSummaryWithLongformer(text) {
-    const response = await fetch(longformerModelEndpoint, {
+// Function to generate AI summaries using Hugging Face API
+async function generateSummary(text) {
+    const response = await fetch(modelEndpoint, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ inputs: text })
@@ -1327,8 +1328,7 @@ async function generateSummaryWithLongformer(text) {
         const result = await response.json();
         return result[0].summary_text; // Adjust based on actual API response structure
     } else {
-        const errorDetails = await response.json();
-        throw new Error(`Error generating summary: ${errorDetails.error}`);
+        throw new Error('Error generating summary');
     }
 }
 
