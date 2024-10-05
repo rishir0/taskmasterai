@@ -1162,13 +1162,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to create a note using AI summarization
+// Function to create a note using AI summarization from Modal 2
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
     
     if (noteText) {
-        generateSummaryWithLongformer(noteText)
+        generateSummary(noteText)  // Assume generateSummary() is defined elsewhere for AI summarization
             .then(summary => {
                 const notesList = document.getElementById('notes-list');
                 const noteDiv = document.createElement('div');
