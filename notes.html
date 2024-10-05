@@ -796,19 +796,15 @@ textarea:focus {
         
         
         <div class="modal" id="noteModal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h6>Generate Note</h6>
-                <p1>Enter text below to generate a note.</p>
-                <textarea placeholder="Enter text here..." rows="4"></textarea>
-                <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h6>Choose an option below</h6>
         
-                <h3>Personal Note</h3>
-                <p1>Enter text to create a note.</p1>
-                <textarea placeholder="Enter personal note here..." rows="4"></textarea>
-                <button class="create-manual-note-btn" onclick="createManualNote()">Create Personal Note</button>
-            </div>
-        </div>
+        <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
+        <p style="text-align: center; margin: 10px 0;">or</p>
+        <button class="create-manual-note-btn" onclick="createManualNote()">Create Personal Note</button>
+    </div>
+</div>
 
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
