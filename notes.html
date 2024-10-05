@@ -812,29 +812,29 @@ input[type="text"]:focus, input[type="date"]:focus {
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
 }
 
 /* Title styling */
 .note-item strong {
     font-size: 1.5rem; /* Title size */
-    color: var(--heading-color, #333); /* Title color */
-    display: block; /* Make title a block element */
-    margin-bottom: 5px; /* Space below title */
+    color: var(--text-color, #fffff); /* Title color */
+    display: inline; /* Keep title inline */
+    margin-right: 10px; /* Space between title and date */
 }
 
 /* Date styling */
 .note-item span.date {
     font-size: 0.9rem; /* Date size */
     color: var(--sub-heading-color, #666); /* Date color */
-    margin-bottom: 10px; /* Space below date */
-    display: block; /* Make date a block element */
+    display: inline; /* Keep date inline */
 }
 
 /* Note text styling */
 .note-item p.note-text {
     font-size: 1rem; /* Note text size */
     color: var(--sub-text-color, #777); /* Note text color */
-    margin: 0; /* Remove default margins */
+    margin: 5px 0 0 0; /* Space above note text */
 }
 
 /* Button container styling */
@@ -877,6 +877,7 @@ input[type="text"]:focus, input[type="date"]:focus {
 .button-container button.delete:hover {
     background-color: var(--delete-button-hover-color, #c82333); /* Delete button hover color */
 }
+
 
     </style>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
