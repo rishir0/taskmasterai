@@ -79,6 +79,14 @@ document.addEventListener('DOMContentLoaded', function() {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Set placeholder text to white for all input fields */
+input::placeholder, 
+textarea::placeholder {
+    color: white; /* Change placeholder color to white */
+    opacity: 1;   /* Ensure full opacity for all browsers */
+}
+
+
     `;
 
     const darkThemeStyles = `
