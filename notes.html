@@ -811,31 +811,31 @@ textarea:focus {
         </div>
 
     </body>
-<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<!-- Add Firebase products that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
-<script>
-    // Firebase project configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
-        authDomain: "deepworkai-c3419.firebaseapp.com",
-        projectId: "deepworkai-c3419",
-        storageBucket: "deepworkai-c3419.appspot.com",
-        messagingSenderId: "367439182644",
-        appId: "1:367439182644:web:304216430df97eff68c361"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    <script>
+        // Firebase project configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDaMAlQRMXiDsZ4P0b06P18id3y5xBiZ1k",
+            authDomain: "deepworkai-c3419.firebaseapp.com",
+            projectId: "deepworkai-c3419",
+            storageBucket: "deepworkai-c3419.appspot.com",
+            messagingSenderId: "367439182644",
+            appId: "1:367439182644:web:304216430df97eff68c361"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
 
-    // Initialize Firestore
-    const db = firebase.firestore();
-    var auth = firebase.auth();
-    const auth = firebase.auth();
+        // Initialize Firestore
+        const db = firebase.firestore();
+        var auth = firebase.auth();
+        const firestore = firebase.firestore();
 
-            document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const username = user.displayName || user.email;
@@ -940,10 +940,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Load AI-generated notes
-    function loadNotes() {
-        // Your AI note loading logic here (placeholder function)
-    }
+
 
     // Function to load manual notes from Firestore
     function loadManualNotes() {
@@ -1041,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                loadNotes();       // Load AI notes
+                      // Load AI notes
                 loadManualNotes(); // Load manual notes
             } else {
                 window.location.href = "login.html"; // Redirect to login page if not authenticated
