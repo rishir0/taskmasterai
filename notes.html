@@ -1167,7 +1167,7 @@ function createNote() {
     const noteText = noteInput.value.trim();
     
     if (noteText) {
-        generateSummary(noteText)  // Assume generateSummary() is defined elsewhere for AI summarization
+        generateSummaryWithT5(noteText)  // Using the T5 summary function here
             .then(summary => {
                 const notesList = document.getElementById('notes-list');
                 const noteDiv = document.createElement('div');
@@ -1309,29 +1309,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Function to generate AI summaries using Hugging Face API
-    const apiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/google/pegasus-large";
+const huggingFaceApiKey = "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"; // Your Hugging Face API key
+const t5ModelEndpoint = "https://api-inference.huggingface.co/models/t5-base";
 
-// Function to generate AI summaries using Hugging Face API
-async function generateSummary(text) {
-    const response = await fetch(modelEndpoint, {
+async function generateSummaryWithT5(text) {
+    const response = await fetch(t5ModelEndpoint, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${apiKey}`, // Your API key
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ inputs: text })
+        body: JSON.stringify({ inputs: `summarize: ${text}` }) // T5 expects the input format like this
     });
 
     if (response.ok) {
         const result = await response.json();
-        console.log('Pegasus output:', result); // Log the result for debugging
-        return result[0].summary_text; // Adjust this based on the actual API response structure if needed
+        return result[0].summary_text; // Adjust based on actual API response structure
     } else {
         const errorDetails = await response.json();
         throw new Error(`Error generating summary: ${errorDetails.error}`);
     }
 }
+
 
 
 // Load the notes when the page is loaded and the user is authenticated
