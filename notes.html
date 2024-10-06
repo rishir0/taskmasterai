@@ -1532,6 +1532,9 @@ const progressContainer = document.querySelector('.upload-progress');
 const summaryContainer = document.getElementById('summaryContainer');
 const pdfSummary = document.getElementById('pdfSummary');
 
+// Set PDF.js worker source
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
 // Helper function to split text into chunks by character limit
 function splitTextIntoChunks(text, maxLength = 4000) {
     const chunks = [];
@@ -1571,67 +1574,50 @@ async function generateSummary(text) {
     return summaries.join(" ");
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const pdfFileInput = document.getElementById('pdfFileInput');
-    const pdfDragArea = document.getElementById('pdfDragArea');
-    const progressBar = document.getElementById('progressBar2'); // Progress bar element
+// Function to handle file upload
+async function handleFileUpload(file) {
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    progressBar.value = 0;
 
-    // Set PDF.js worker source
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+    // Read PDF file
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
 
-    // Handle click on "Select File"
-    document.querySelector('.file-select').addEventListener('click', function() {
-        pdfFileInput.click(); // Open file selector
-    });
-
-    // Handle file selection
-    pdfFileInput.addEventListener('change', function() {
-        const file = pdfFileInput.files[0];
-        handlePdfUpload(file);
-    });
-
-    // Handle drag and drop
-    pdfDragArea.addEventListener('dragover', function(e) {
-        e.preventDefault(); // Prevent default drag behavior
-    });
-    pdfDragArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handlePdfUpload(files[0]); // Handle the first dropped file
+    reader.onload = async function () {
+        const pdfData = new Uint8Array(reader.result);
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        
+        let textContent = '';
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const text = await page.getTextContent();
+            textContent += text.items.map(item => item.str).join(' ');
         }
-    });
 
-    // Upload PDF function
-    function handlePdfUpload(file) {
-        if (!file) return;
+        // Simulate upload progress
+        let progress = 0;
+        const uploadInterval = setInterval(() => {
+            progress += 20;
+            progressBar.value = progress;
+            if (progress >= 100) {
+                clearInterval(uploadInterval);
+            }
+        }, 500);
 
-        // Show progress bar
-        progressBar.style.display = 'block';
-
-        // Read the file content
-        const reader = new FileReader();
-        reader.onload = function() {
-            const pdfData = new Uint8Array(reader.result);
-            // Load the PDF using pdfjsLib
-            pdfjsLib.getDocument({ data: pdfData }).promise.then(async function(pdf) {
-                // Process the PDF pages here or send to your API
-                const summary = await generateSummaryFromPdf(pdf);
-                console.log(summary);
-                
-                // Hide progress bar on success
-                progressBar.style.display = 'none';
-            }).catch(function(error) {
-                console.error("Error processing PDF:", error);
-                // Handle error (e.g., hide progress bar, show error message)
-                progressBar.style.display = 'none';
-            });
-        };
-
-        reader.readAsArrayBuffer(file); // Read the PDF as an array buffer
-    }
-});
-
+        // Once upload is "done", generate the summary
+        if (progress >= 100) {
+            try {
+                const summary = await generateSummary(textContent);
+                pdfSummary.textContent = summary;
+                summaryContainer.style.display = 'block';
+            } catch (error) {
+                pdfSummary.textContent = "Error generating summary: " + error.message;
+                summaryContainer.style.display = 'block';
+            }
+        }
+    };
+}
 
 // Click handler for drag area
 pdfDragArea.addEventListener('click', () => {
@@ -2320,14 +2306,6 @@ dragArea.onclick = () => {
     fileInput.click();
 };
 
-// Handle file selection
-fileInput.onchange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        console.log("PDF selected:", file.name);
-        // Handle the file upload here
-    }
-};
 
 
 </script>
