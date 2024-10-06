@@ -1953,27 +1953,13 @@ function createNote() {
         .then(summary => {
             // Only append the note to the DOM if the summary is successfully generated
             
-            
-            // Check if a note with the same content already exists
-            // Format summary into key points
-            const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
-
-            noteDiv.innerHTML = `
-                <ul>${formattedSummary}</ul>
-                <div class="button-container">
-                    <button class="edit" onclick="editNote()">Edit</button>
-                    <button class="delete" onclick="deleteNote()">Delete</button>
-                </div>
-            `;
-            
             // Save the generated note to Firestore
             saveNoteToFirestore(noteText, summary).then(docId => {
                 // Append the note to the list only after it has been saved to Firestore
                 noteDiv.setAttribute('data-id', docId); // Set data-id attribute to use later for edit/delete
-                notesList.appendChild(noteDiv); // Append it to the DOM (you can skip this part if needed)
                 
-                // Immediately remove the noteDiv from the DOM to avoid duplication
-                noteDiv.remove(); // Remove the note immediately after appending it
+                
+
 
                 hideProgressBar(); // Hide the progress bar after note generation is complete
 
