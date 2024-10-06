@@ -878,6 +878,70 @@ input[type="text"]:focus, input[type="date"]:focus {
     background-color: var(--delete-button-hover-color, #c82333); /* Delete button hover color */
 }
 
+/* Styles for note items */
+.note-item {
+    background-color: var(--card-bg, #f5f5f5); /* Card background color */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+/* Bullet point (ul and li) styling */
+.note-item ul {
+    list-style-type: disc; /* Use bullet points */
+    padding-left: 20px; /* Indent bullet points */
+    margin-bottom: 10px; /* Add some spacing after bullet points */
+}
+
+.note-item ul li {
+    margin-bottom: 5px; /* Space between each bullet point */
+    font-size: 1rem; /* Adjust size to match note text */
+    color: var(--sub-text-color, #777); /* Use consistent text color */
+}
+
+/* Button container styling */
+.note-item .button-container {
+    display: flex; /* Flexbox for button layout */
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px; /* Space above buttons */
+    justify-content: flex-start; /* Align buttons to the start */
+}
+
+/* Edit and Delete button styling */
+.note-item .button-container button {
+    background-color: var(--primary-color, #007BFF); /* Button background */
+    color: var(--text-color, #fff); /* Button text color */
+    border: none; /* Remove border */
+    padding: 8px 12px; /* Padding for buttons */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transition effects */
+}
+
+.note-item .button-container button:hover {
+    background-color: var(--accent-color, #0056b3); /* Button hover background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+}
+
+/* Specific styles for Edit button */
+.note-item .button-container button.edit {
+    background-color: var(--edit-button-color, #28a745); /* Edit button color */
+}
+
+.note-item .button-container button.edit:hover {
+    background-color: var(--edit-button-hover-color, #218838); /* Edit button hover color */
+}
+
+/* Specific styles for Delete button */
+.note-item .button-container button.delete {
+    background-color: var(--delete-button-color, #dc3545); /* Delete button color */
+}
+
+.note-item .button-container button.delete:hover {
+    background-color: var(--delete-button-hover-color, #c82333); /* Delete button hover color */
+}
 
     </style>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
