@@ -1537,6 +1537,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 // Helper function to split text into chunks by character limit
 function splitTextIntoChunks(text, maxLength = 4000) {
+    console.log('Splitting text into chunks...');
     const chunks = [];
     let start = 0;
     while (start < text.length) {
@@ -1544,38 +1545,51 @@ function splitTextIntoChunks(text, maxLength = 4000) {
         chunks.push(text.slice(start, end));
         start = end;
     }
+    console.log(`Text split into ${chunks.length} chunk(s).`);
     return chunks;
 }
 
 // Function to generate a summary using Hugging Face API
 async function generateSummary(text) {
+    console.log('Generating summary...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     
     for (let chunk of chunks) {
-        const response = await fetch(modelEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${huggingFaceApiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ inputs: chunk })
-        });
+        try {
+            console.log('Sending chunk to Hugging Face API...');
+            const response = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inputs: chunk })
+            });
 
-        if (response.ok) {
-            const result = await response.json();
-            summaries.push(result[0].summary_text);
-        } else {
-            const errorDetails = await response.json();
-            throw new Error(`Error generating summary: ${errorDetails.error}`);
+            if (response.ok) {
+                const result = await response.json();
+                summaries.push(result[0].summary_text);
+                console.log('Received summary for chunk.');
+            } else {
+                const errorDetails = await response.json();
+                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
+                throw new Error(`Error generating summary: ${errorDetails.error}`);
+            }
+        } catch (error) {
+            console.error(`Failed to generate summary: ${error.message}`);
+            throw error;
         }
     }
 
+    console.log('Summary generation complete.');
     return summaries.join(" ");
 }
 
 // Function to handle file upload
 async function handleFileUpload(file) {
+    console.log('File upload started...');
+    
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
@@ -1585,49 +1599,69 @@ async function handleFileUpload(file) {
     reader.readAsArrayBuffer(file);
 
     reader.onload = async function () {
-        const pdfData = new Uint8Array(reader.result);
-        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-        
-        let textContent = '';
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-            const page = await pdf.getPage(pageNum);
-            const text = await page.getTextContent();
-            textContent += text.items.map(item => item.str).join(' ');
-        }
+        try {
+            console.log('PDF file read successfully, processing PDF...');
+            const pdfData = new Uint8Array(reader.result);
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            
+            let textContent = '';
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
+                const page = await pdf.getPage(pageNum);
+                const text = await page.getTextContent();
+                textContent += text.items.map(item => item.str).join(' ');
+            }
 
-        // Simulate upload progress
-        let progress = 0;
-        const uploadInterval = setInterval(() => {
-            progress += 20;
-            progressBar.value = progress;
+            console.log('PDF text extraction complete.');
+
+            // Simulate upload progress
+            let progress = 0;
+            const uploadInterval = setInterval(() => {
+                progress += 20;
+                progressBar.value = progress;
+                console.log(`Upload progress: ${progress}%`);
+                if (progress >= 100) {
+                    clearInterval(uploadInterval);
+                }
+            }, 500);
+
+            // Once upload is "done", generate the summary
             if (progress >= 100) {
-                clearInterval(uploadInterval);
+                console.log('Upload complete, generating summary...');
+                try {
+                    const summary = await generateSummary(textContent);
+                    pdfSummary.textContent = summary;
+                    summaryContainer.style.display = 'block';
+                    console.log('Summary generation complete.');
+                } catch (error) {
+                    pdfSummary.textContent = "Error generating summary: " + error.message;
+                    summaryContainer.style.display = 'block';
+                    console.error('Error during summary generation: ' + error.message);
+                }
             }
-        }, 500);
-
-        // Once upload is "done", generate the summary
-        if (progress >= 100) {
-            try {
-                const summary = await generateSummary(textContent);
-                pdfSummary.textContent = summary;
-                summaryContainer.style.display = 'block';
-            } catch (error) {
-                pdfSummary.textContent = "Error generating summary: " + error.message;
-                summaryContainer.style.display = 'block';
-            }
+        } catch (error) {
+            console.error('Error processing PDF: ' + error.message);
         }
+    };
+
+    reader.onerror = function () {
+        console.error('Failed to read PDF file: ' + reader.error);
     };
 }
 
 // Click handler for drag area
 pdfDragArea.addEventListener('click', () => {
+    console.log('File input clicked.');
     pdfFileInput.click();
 });
 
 // Handle file selection
 pdfFileInput.addEventListener('change', () => {
     if (pdfFileInput.files.length > 0) {
+        console.log('File selected: ' + pdfFileInput.files[0].name);
         handleFileUpload(pdfFileInput.files[0]);
+    } else {
+        console.warn('No file selected.');
     }
 });
 
@@ -1635,18 +1669,24 @@ pdfFileInput.addEventListener('change', () => {
 pdfDragArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     pdfDragArea.classList.add('dragover');
+    console.log('File is being dragged over the area.');
 });
 
 pdfDragArea.addEventListener('dragleave', () => {
     pdfDragArea.classList.remove('dragover');
+    console.log('File drag left the area.');
 });
 
 pdfDragArea.addEventListener('drop', (e) => {
     e.preventDefault();
     pdfDragArea.classList.remove('dragover');
+    console.log('File dropped onto the area.');
 
     if (e.dataTransfer.files.length > 0) {
+        console.log('File selected via drag-and-drop: ' + e.dataTransfer.files[0].name);
         handleFileUpload(e.dataTransfer.files[0]);
+    } else {
+        console.warn('No file dropped.');
     }
 });
 
