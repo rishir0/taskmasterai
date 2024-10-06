@@ -964,7 +964,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     width: 2em;  /* Keep the icon size */
     height: 2em; /* Keep the icon size */
     fill: white; /* Set the SVG color to white */
-    margin-right: 0px; /* Space between icon and text */
+    margin-right: -1px; /* Space between icon and text */
 }
 
 
@@ -1053,6 +1053,75 @@ textarea::placeholder {
     width: 0;
     transition: width 2s ease; /* Smooth fill animation */
 }
+
+/* Modal4 base styles */
+.modal4 {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Background overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal4 .modal-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 350px;
+    text-align: center;
+    position: relative;
+}
+
+.modal4 .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.pdf-icon-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.modal4 h3.modal-header {
+    color: var(--text-color);
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+}
+
+.pdf-drag-area {
+    border: 2px dashed var(--accent-color);
+    padding: 20px;
+    background-color: var(--glass-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: var(--border-radius);
+}
+
+.pdf-drag-area:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.pdf-drag-area p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.pdf-drag-area .file-select {
+    color: var(--accent-color);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 
 
     </style>
@@ -1238,7 +1307,7 @@ textarea::placeholder {
     </span>
     </div>    
     <div class="note-option-card">
-        <div class="card-content">
+        <div class="card-content" >
             <div class="icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 791.454 791.454" class="note-icon pdf-icon"><g><path fill="var(--accent-color)" fill-rule="evenodd" d="M202.808 0h264.609l224.265 233.758v454.661c0 56.956-46.079 103.035-102.838 103.035H202.808c-56.956 0-103.035-46.079-103.035-103.035V103.035C99.772 46.079 145.851 0 202.808 0z" clip-rule="evenodd" ></path><g fill="#fff"><path fill-rule="evenodd" d="M467.219 0v231.978h224.463z" clip-rule="evenodd" opacity=".302" fill="#ffffff" ></path><path d="M214.278 590.525V445.959h61.505c15.228 0 27.292 4.153 36.389 12.657 9.097 8.306 13.646 19.579 13.646 33.62s-4.549 25.314-13.646 33.62c-9.097 8.504-21.161 12.657-36.389 12.657H251.26v52.012zm36.982-83.456h20.37c5.537 0 9.888-1.187 12.855-3.955 2.966-2.571 4.549-6.131 4.549-10.877s-1.582-8.306-4.549-10.877c-2.966-2.769-7.317-3.955-12.855-3.955h-20.37zm89.785 83.456V445.959h51.221c10.086 0 19.579 1.384 28.478 4.351 8.899 2.966 17.008 7.12 24.127 12.855 7.12 5.537 12.855 13.052 17.008 22.545 3.955 9.493 6.131 20.37 6.131 32.631 0 12.064-2.175 22.941-6.131 32.433-4.153 9.493-9.888 17.008-17.008 22.545-7.12 5.735-15.228 9.888-24.127 12.855-8.899 2.966-18.392 4.351-28.478 4.351zm36.191-31.444h10.679c5.735 0 11.075-.593 16.019-1.978 4.746-1.384 9.295-3.56 13.646-6.526 4.153-2.966 7.515-7.12 9.888-12.657s3.56-12.064 3.56-19.579c0-7.713-1.187-14.239-3.56-19.776s-5.735-9.69-9.888-12.657c-4.351-2.966-8.899-5.142-13.646-6.526-4.944-1.384-10.284-1.978-16.019-1.978h-10.679zM486.6 590.525V445.959h102.838v31.445h-65.856v23.138h52.605v31.247h-52.605v58.736z" fill="#ffffff" ></path></g></g></svg>
             </div>
@@ -1247,19 +1316,6 @@ textarea::placeholder {
                 <p>Upload a PDF file</p>
             </div>
         </div>
-            <span class="unavailable-tag">
-        UNAVAILABLE
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="unavailable-icon">
-            <g clip-path="url(#clip0_429_11057)">
-                <path d="M5.63604 5.63598C4.00736 7.26466 3 9.51466 3 11.9999C3 16.9705 7.02944 20.9999 12 20.9999C14.4853 20.9999 16.7353 19.9926 18.364 18.3639M5.63604 5.63598C7.26472 4.0073 9.51472 2.99994 12 2.99994C16.9706 2.99994 21 7.02938 21 11.9999C21 14.4852 19.9926 16.7352 18.364 18.3639M5.63604 5.63598L18.364 18.3639" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </g>
-            <defs>
-                <clipPath id="clip0_429_11057">
-                    <rect width="24" height="24" fill="white"></rect>
-                </clipPath>
-            </defs>
-        </svg>
-    </span>
     </div>
 </div>
         
@@ -1328,6 +1384,32 @@ textarea::placeholder {
         </div>
     </div>
 </div>
+
+<!-- PDF Upload Modal -->
+<div class="modal4" id="pdfUploadModal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <div class="pdf-upload-container">
+            <div class="pdf-icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 791.454 791.454" class="note-icon pdf-icon">
+                    <g>
+                        <path fill="var(--accent-color)" fill-rule="evenodd" d="M202.808 0h264.609l224.265 233.758v454.661c0 56.956-46.079 103.035-102.838 103.035H202.808c-56.956 0-103.035-46.079-103.035-103.035V103.035C99.772 46.079 145.851 0 202.808 0z" clip-rule="evenodd" ></path>
+                        <g fill="#fff">
+                            <path fill-rule="evenodd" d="M467.219 0v231.978h224.463z" clip-rule="evenodd" opacity=".302" fill="#ffffff" ></path>
+                            <path d="M214.278 590.525V445.959h61.505c15.228 0 27.292 4.153 36.389 12.657 9.097 8.306 13.646 19.579 13.646 33.62s-4.549 25.314-13.646 33.62c-9.097 8.504-21.161 12.657-36.389 12.657H251.26v52.012zm36.982-83.456h20.37c5.537 0 9.888-1.187 12.855-3.955 2.966-2.571 4.549-6.131 4.549-10.877s-1.582-8.306-4.549-10.877c-2.966-2.769-7.317-3.955-12.855-3.955h-20.37zm89.785 83.456V445.959h51.221c10.086 0 19.579 1.384 28.478 4.351 8.899 2.966 17.008 7.12 24.127 12.855 7.12 5.537 12.855 13.052 17.008 22.545 3.955 9.493 6.131 20.37 6.131 32.631 0 12.064-2.175 22.941-6.131 32.433-4.153 9.493-9.888 17.008-17.008 22.545-7.12 5.735-15.228 9.888-24.127 12.855-8.899 2.966-18.392 4.351-28.478 4.351zm36.191-31.444h10.679c5.735 0 11.075-.593 16.019-1.978 4.746-1.384 9.295-3.56 13.646-6.526 4.153-2.966 7.515-7.12 9.888-12.657s3.56-12.064 3.56-19.579c0-7.713-1.187-14.239-3.56-19.776s-5.735-9.69-9.888-12.657c-4.351-2.966-8.899-5.142-13.646-6.526-4.944-1.384-10.284-1.978-16.019-1.978h-10.679zM486.6 590.525V445.959h102.838v31.445h-65.856v23.138h52.605v31.247h-52.605v58.736z" fill="#ffffff" ></path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <h3 class="modal-header">PDF Upload</h3>
+            <div class="pdf-drag-area" id="pdfDragArea">
+                <p>Drag PDF file here, or <span class="file-select">click to select</span></p>
+                <input type="file" id="pdfFileInput" accept=".pdf" style="display:none">
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
     </body>
@@ -2084,6 +2166,61 @@ function createNote() {
     
     noteInput.value = ''; // Clear the textarea after note creation
 }
+
+
+// Get modal and elements
+const pdfModal = document.getElementById("pdfUploadModal");
+const closeButton = document.querySelector(".close-button");
+const dragArea = document.getElementById("pdfDragArea");
+const fileInput = document.getElementById("pdfFileInput");
+
+// Open modal
+function openPdfUploadModal() {
+    pdfModal.style.display = "flex";
+}
+
+// Close modal
+closeButton.onclick = () => {
+    pdfModal.style.display = "none";
+};
+
+// Close modal when clicking outside the modal content
+window.onclick = (event) => {
+    if (event.target === pdfModal) {
+        pdfModal.style.display = "none";
+    }
+};
+
+// File drag area click to select
+dragArea.onclick = () => {
+    fileInput.click();
+};
+
+// Handle file selection
+fileInput.onchange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        console.log("PDF selected:", file.name);
+        // Handle the file upload here
+    }
+};
+
+// Get the elements
+const noteOptionCard = document.querySelector('.note-option-card');
+const modal4 = document.getElementById('modal4');
+
+// Function to show modal
+noteOptionCard.addEventListener('click', function() {
+    modal4.style.display = 'block';
+});
+
+// Function to close modal on outside click
+window.addEventListener('click', function(event) {
+    if (event.target === modal4) {
+        modal4.style.display = 'none';
+    }
+});
+
 
 </script>
 
