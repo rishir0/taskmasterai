@@ -1121,6 +1121,17 @@ textarea::placeholder {
     text-decoration: underline;
 }
 
+.upload-progress {
+    margin-top: 20px;
+}
+
+#progressBar2 {
+    width: 100%;
+}
+
+#summaryContainer {
+    margin-top: 20px;
+}
 
 
     </style>
@@ -1405,10 +1416,20 @@ textarea::placeholder {
                 <p>Drag PDF file here, or <span class="file-select">click to select</span></p>
                 <input type="file" id="pdfFileInput" accept=".pdf" style="display:none">
             </div>
+            <!-- Progress bar -->
+            <div class="upload-progress" style="display: none;">
+                <p>Uploading...</p>
+                <progress id="progressBar2" value="0" max="100"></progress>
+            </div>
+
+            <!-- Display summary -->
+            <div class="summary-container" id="summaryContainer" style="display: none;">
+                <h4>Generated Note:</h4>
+                <p id="pdfSummary"></p>
+            </div>
         </div>
     </div>
 </div>
-
 
 
     </body>
@@ -1498,8 +1519,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// Hugging Face API setup
 const huggingFaceApiKey = "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";
 const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+// File input and progress bar elements
+const pdfFileInput = document.getElementById('pdfFileInput');
+const pdfDragArea = document.getElementById('pdfDragArea');
+const progressBar = document.getElementById('progressBar2');
+const progressContainer = document.querySelector('.upload-progress');
+const summaryContainer = document.getElementById('summaryContainer');
+const pdfSummary = document.getElementById('pdfSummary');
 
 // Helper function to split text into chunks by character limit
 function splitTextIntoChunks(text, maxLength = 4000) {
@@ -1513,11 +1543,11 @@ function splitTextIntoChunks(text, maxLength = 4000) {
     return chunks;
 }
 
-// Use this inside your function to split large text
+// Function to generate a summary using Hugging Face API
 async function generateSummary(text) {
     const chunks = splitTextIntoChunks(text);
-
     const summaries = [];
+    
     for (let chunk of chunks) {
         const response = await fetch(modelEndpoint, {
             method: 'POST',
@@ -1530,15 +1560,92 @@ async function generateSummary(text) {
 
         if (response.ok) {
             const result = await response.json();
-            summaries.push(result[0].summary_text); // Collect summary of each chunk
+            summaries.push(result[0].summary_text);
         } else {
             const errorDetails = await response.json();
             throw new Error(`Error generating summary: ${errorDetails.error}`);
         }
     }
 
-    return summaries.join(" "); // Combine all summaries into one result
+    return summaries.join(" ");
 }
+
+// Function to handle file upload
+async function handleFileUpload(file) {
+    // Show progress bar
+    progressContainer.style.display = 'block';
+    progressBar.value = 0;
+
+    // Read PDF file
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = async function () {
+        const pdfData = new Uint8Array(reader.result);
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        
+        let textContent = '';
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const text = await page.getTextContent();
+            textContent += text.items.map(item => item.str).join(' ');
+        }
+
+        // Simulate upload progress
+        let progress = 0;
+        const uploadInterval = setInterval(() => {
+            progress += 20;
+            progressBar.value = progress;
+            if (progress >= 100) {
+                clearInterval(uploadInterval);
+            }
+        }, 500);
+
+        // Once upload is "done", generate the summary
+        if (progress >= 100) {
+            try {
+                const summary = await generateSummary(textContent);
+                pdfSummary.textContent = summary;
+                summaryContainer.style.display = 'block';
+            } catch (error) {
+                pdfSummary.textContent = "Error generating summary: " + error.message;
+                summaryContainer.style.display = 'block';
+            }
+        }
+    };
+}
+
+// Click handler for drag area
+pdfDragArea.addEventListener('click', () => {
+    pdfFileInput.click();
+});
+
+// Handle file selection
+pdfFileInput.addEventListener('change', () => {
+    if (pdfFileInput.files.length > 0) {
+        handleFileUpload(pdfFileInput.files[0]);
+    }
+});
+
+// Drag-and-drop support
+pdfDragArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    pdfDragArea.classList.add('dragover');
+});
+
+pdfDragArea.addEventListener('dragleave', () => {
+    pdfDragArea.classList.remove('dragover');
+});
+
+pdfDragArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    pdfDragArea.classList.remove('dragover');
+
+    if (e.dataTransfer.files.length > 0) {
+        handleFileUpload(e.dataTransfer.files[0]);
+    }
+});
+
 
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
