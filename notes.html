@@ -2275,6 +2275,43 @@ function createNote() {
 }
 
 
+// Get modal and elements
+const pdfModal = document.getElementById("pdfUploadModal");
+const closeButton = document.querySelector(".close-button");
+const dragArea = document.getElementById("pdfDragArea");
+const fileInput = document.getElementById("pdfFileInput");
+
+// Open modal
+function openPdfUploadModal() {
+    pdfModal.style.display = "flex";
+}
+
+// Close modal
+closeButton.onclick = () => {
+    pdfModal.style.display = "none";
+};
+
+// Close modal when clicking outside the modal content
+window.onclick = (event) => {
+    if (event.target === pdfModal) {
+        pdfModal.style.display = "none";
+    }
+};
+
+// File drag area click to select
+dragArea.onclick = () => {
+    fileInput.click();
+};
+
+// Handle file selection
+fileInput.onchange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        console.log("PDF selected:", file.name);
+        // Handle the file upload here
+    }
+};
+
 
 </script>
 
