@@ -1309,12 +1309,12 @@ function loadGeneratedNotes() {
         .where('userId', '==', userId) // Get only the notes created by the current user
         .orderBy('timestamp', 'desc') // Order by the most recent
         .onSnapshot(snapshot => {
-            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = ''; // Clear the list before adding notes
             snapshot.forEach(doc => {
                 const noteData = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
-                noteDiv.setAttribute('data-type', 'generatednote'); // Set data-type attribute
+                noteDiv.setAttribute('data-id', doc.id); // Set data-id attribute for easy reference
 
                 // Format summary into key points
                 const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
