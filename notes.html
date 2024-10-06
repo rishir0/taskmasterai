@@ -1116,14 +1116,11 @@ input[type="text"]:focus, input[type="date"]:focus {
     <div class="modal-content">
         <span class="close" onclick="closeModal2()">&times;</span>
         <h6>Generate Note</h6>
-        <p>Title:</p>
-        <input type="text" class="title-input" placeholder="Enter title here..." /> <!-- Title input section -->
         <p>Enter text below to generate a note.</p>
         <textarea placeholder="Enter text here..." rows="4"></textarea>
         <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
     </div>
 </div>
-
 
 <!-- Modal 3: Personal Note Modal -->
 <div class="modal" id="personalNoteModal3">
@@ -1251,89 +1248,96 @@ async function generateSummary(text) {
     }
 }
 
+// Function to create a note using AI summarization and display it as key points
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
-    const titleInput = document.querySelector('#noteModal2 input.title-input'); // Select title input
     const noteText = noteInput.value.trim();
-    const noteTitle = titleInput.value.trim(); // Get the title value
 
-    if (noteText && noteTitle) {
+    if (noteText) {
         generateSummary(noteText) // Generate a summary from the notes
             .then(summary => {
-                const currentDate = new Date();
-                const formattedDate = currentDate.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
+                const notesList = document.getElementById('notes-list');
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
 
-                // Prepare note object to save in Firestore
-                const note = {
-                    title: noteTitle,
-                    summary: summary,
-                    dateCreated: formattedDate,
-                    userId: firebase.auth().currentUser.uid // Assuming user authentication is enabled
-                };
+                // Format summary into key points
+                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
-                // Save note to Firestore
-                db.collection("generatednotes").add(note)
-                    .then(() => {
-                        console.log('Note successfully added!');
-                        loadGeneratedNotes(); // Load notes after saving
-                    })
-                    .catch((error) => {
-                        console.error("Error adding note: ", error);
-                    });
+                noteDiv.innerHTML = `
+                    <ul>${formattedSummary}</ul>
+                    <div class="button-container">
+                        <button class="edit" onclick="editNote()">Edit</button>
+                        <button class="delete" onclick="deleteNote()">Delete</button>
+                    </div>
+                `;
+                notesList.appendChild(noteDiv);
 
-                // Clear inputs after note creation
-                noteInput.value = ''; 
-                titleInput.value = '';
-                closeModal2(); // Close Modal 2 after creating a note
+                // Save the generated note to Firestore
+                saveNoteToFirestore(noteText, summary);  // Call Firebase function to store the note
             })
             .catch(error => {
                 console.error('Error generating note:', error);
             });
-    } else {
-        alert('Please enter both a title and content for the note.'); // Validate inputs
+        noteInput.value = ''; // Clear the textarea after note creation
+        closeModal2(); // Close Modal 2 after creating a note
     }
 }
 
-function loadGeneratedNotes() {
-    const notesList = document.getElementById('notes-list');
-    notesList.innerHTML = ''; // Clear the existing notes
+// Function to save the generated note to Firestore
+function saveNoteToFirestore(noteText, summary) {
+    const userId = firebase.auth().currentUser.uid; // Get current user's ID
 
-    const userId = firebase.auth().currentUser.uid; // Get the current user's ID
-    
-    // Get notes from Firestore where userId matches the current user's ID
-    db.collection("generatednotes")
-      .where("userId", "==", userId)
-      .orderBy("dateCreated", "desc") // Optional: Sort by date
-      .get()
-      .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-              const note = doc.data();
-              const noteDiv = document.createElement('div');
-              noteDiv.className = 'note-item';
-
-              // Format the summary into key points
-              const formattedSummary = note.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
-
-              // Display the note with title, date, and buttons
-              noteDiv.innerHTML = `
-                  <strong>${note.title}</strong> <span class="date">${note.dateCreated}</span>
-                  <ul>${formattedSummary}</ul>
-                  <div class="button-container">
-                      <button class="edit" onclick="editNote()">Edit</button>
-                      <button class="delete" onclick="deleteNote()">Delete</button>
-                  </div>
-              `;
-              notesList.appendChild(noteDiv);
-          });
-      })
-      .catch((error) => {
-          console.log("Error getting documents: ", error);
-      });
+    // Add the note to Firestore
+    db.collection('generatednotes').add({
+        userId: userId,
+        note: noteText,
+        summary: summary,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
+    })
+    .then(() => {
+        console.log('Note successfully saved to Firestore');
+    })
+    .catch(error => {
+        console.error('Error saving note to Firestore: ', error);
+    });
 }
+
+// Function to load all the notes generated by the current user
+function loadGeneratedNotes() {
+    const userId = firebase.auth().currentUser.uid; // Get current user's ID
+    const notesList = document.getElementById('notes-list');
+
+    // Fetch the notes from Firestore for the current user
+    db.collection('generatednotes')
+        .where('userId', '==', userId) // Get only the notes created by the current user
+        .orderBy('timestamp', 'desc') // Order by the most recent
+        .get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                const noteData = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+
+                // Format summary into key points
+                const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+
+                noteDiv.innerHTML = `
+                    <ul>${formattedSummary}</ul>
+                    <div class="button-container">
+                        <button class="edit" onclick="editNote()">Edit</button>
+                        <button class="delete" onclick="deleteNote()">Delete</button>
+                    </div>
+                `;
+
+                // Append the note to the list
+                notesList.appendChild(noteDiv);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading notes: ', error);
+        });
+}
+
 
 
 // Function to create a manual note from Modal 3
