@@ -898,7 +898,7 @@ input[type="text"]:focus, input[type="date"]:focus {
 .note-item ul li {
     margin-bottom: 5px; /* Space between each bullet point */
     font-size: 1rem; /* Adjust size to match note text */
-    color: var(--sub-text-color, #777); /* Use consistent text color */
+    color: var(--sub-text-color, #fffff); /* Use consistent text color */
 }
 
 /* Button container styling */
@@ -1248,36 +1248,88 @@ async function generateSummary(text) {
     }
 }
 
-// Function to create a note using AI summarization and display it as key points
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
+    const titleInput = document.querySelector('#noteModal2 input.title-input'); // Select title input
     const noteText = noteInput.value.trim();
-    
-    if (noteText) {
+    const noteTitle = titleInput.value.trim(); // Get the title value
+
+    if (noteText && noteTitle) {
         generateSummary(noteText) // Generate a summary from the notes
             .then(summary => {
-                const notesList = document.getElementById('notes-list');
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-item';
+                const currentDate = new Date();
+                const formattedDate = currentDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
 
-                // Format summary into key points
-                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+                // Prepare note object to save in Firestore
+                const note = {
+                    title: noteTitle,
+                    summary: summary,
+                    dateCreated: formattedDate,
+                    userId: firebase.auth().currentUser.uid // Assuming user authentication is enabled
+                };
 
-                noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul>
-                    <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
-                    </div>
-                `;
-                notesList.appendChild(noteDiv);
+                // Save note to Firestore
+                db.collection("generatednotes").add(note)
+                    .then(() => {
+                        console.log('Note successfully added!');
+                        loadGeneratedNotes(); // Load notes after saving
+                    })
+                    .catch((error) => {
+                        console.error("Error adding note: ", error);
+                    });
+
+                // Clear inputs after note creation
+                noteInput.value = ''; 
+                titleInput.value = '';
+                closeModal2(); // Close Modal 2 after creating a note
             })
             .catch(error => {
                 console.error('Error generating note:', error);
             });
-        noteInput.value = ''; // Clear the textarea after note creation
-        closeModal2(); // Close Modal 2 after creating a note
+    } else {
+        alert('Please enter both a title and content for the note.'); // Validate inputs
     }
+}
+
+function loadGeneratedNotes() {
+    const notesList = document.getElementById('notes-list');
+    notesList.innerHTML = ''; // Clear the existing notes
+
+    const userId = firebase.auth().currentUser.uid; // Get the current user's ID
+    
+    // Get notes from Firestore where userId matches the current user's ID
+    db.collection("generatednotes")
+      .where("userId", "==", userId)
+      .orderBy("dateCreated", "desc") // Optional: Sort by date
+      .get()
+      .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              const note = doc.data();
+              const noteDiv = document.createElement('div');
+              noteDiv.className = 'note-item';
+
+              // Format the summary into key points
+              const formattedSummary = note.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+
+              // Display the note with title, date, and buttons
+              noteDiv.innerHTML = `
+                  <strong>${note.title}</strong> <span class="date">${note.dateCreated}</span>
+                  <ul>${formattedSummary}</ul>
+                  <div class="button-container">
+                      <button class="edit" onclick="editNote()">Edit</button>
+                      <button class="delete" onclick="deleteNote()">Delete</button>
+                  </div>
+              `;
+              notesList.appendChild(noteDiv);
+          });
+      })
+      .catch((error) => {
+          console.log("Error getting documents: ", error);
+      });
 }
 
 
