@@ -1334,55 +1334,6 @@ function createManualNote() {
 }
 
 
-// Function to create button container for edit/delete actions
-function createButtonContainer() {
-    const container = document.createElement('div');
-    container.className = 'button-container';
-    return container;
-}
-
-// Function to create an Edit button
-function createEditButton(id, type) {
-    const button = document.createElement('button');
-    button.textContent = 'Edit';
-    button.className = 'edit'; // Add edit class
-    button.onclick = () => editItem(id, type);
-    return button;
-}
-
-// Function to create a Delete button
-function createDeleteButton(id, type) {
-    const button = document.createElement('button');
-    button.textContent = 'Delete';
-    button.className = 'delete'; // Add delete class
-    button.onclick = () => deleteItem(id, type);
-    return button;
-}
-
-
-// Function to edit a note
-function editItem(id, type) {
-    const newValue = prompt(`Enter new ${type}:`);
-    if (newValue) {
-        db.collection(type + 's').doc(id).update({
-            [type]: newValue
-        }).then(() => {
-            console.log(`${type} updated:`, newValue);
-        }).catch((error) => {
-            console.error(`Error updating ${type}:`, error);
-        });
-    }
-}
-
-// Function to delete a note
-function deleteItem(id, type) {
-    db.collection(type + 's').doc(id).delete().then(() => {
-        console.log(`${type} deleted:`, id);
-    }).catch((error) => {
-        console.error(`Error deleting ${type}:`, error);
-    });
-}
-
 // Function to load all notes
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
@@ -1412,6 +1363,7 @@ function loadManualNotes() {
                 const note = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
+                noteDiv.setAttribute('data-type', 'manualnote'); // Set data-type attribute
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
                     ${note.note}
@@ -1451,6 +1403,7 @@ function loadGeneratedNotes() {
                 const noteData = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
+                noteDiv.setAttribute('data-type', 'generatednote'); // Set data-type attribute
 
                 // Format summary into key points
                 const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
@@ -1458,8 +1411,8 @@ function loadGeneratedNotes() {
                 noteDiv.innerHTML = `
                     <ul>${formattedSummary}</ul>
                     <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
+                        <button class="edit" onclick="editItem('${doc.id}', 'generatednotes')">Edit</button>
+                        <button class="delete" onclick="deleteItem('${doc.id}', 'generatednotes')">Delete</button>
                     </div>
                 `;
 
@@ -1477,6 +1430,55 @@ firebase.auth().onAuthStateChanged(user => {
         loadAllNotes(); // Load all notes on user authentication
     }
 });
+
+// Function to create button container for edit/delete actions
+function createButtonContainer() {
+    const container = document.createElement('div');
+    container.className = 'button-container';
+    return container;
+}
+
+// Function to create an Edit button
+function createEditButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Edit';
+    button.className = 'edit'; // Add edit class
+    button.onclick = () => editItem(id, type);
+    return button;
+}
+
+// Function to create a Delete button
+function createDeleteButton(id, type) {
+    const button = document.createElement('button');
+    button.textContent = 'Delete';
+    button.className = 'delete'; // Add delete class
+    button.onclick = () => deleteItem(id, type);
+    return button;
+}
+
+// Function to edit a note
+function editItem(id, type) {
+    const newValue = prompt(`Enter new value for ${type}:`);
+    if (newValue) {
+        db.collection(type).doc(id).update({
+            [type === 'manualnote' ? 'note' : 'summary']: newValue // Update the respective field
+        }).then(() => {
+            console.log(`${type} updated:`, newValue);
+        }).catch((error) => {
+            console.error(`Error updating ${type}:`, error);
+        });
+    }
+}
+
+// Function to delete a note
+function deleteItem(id, type) {
+    db.collection(type).doc(id).delete().then(() => {
+        console.log(`${type} deleted:`, id);
+    }).catch((error) => {
+        console.error(`Error deleting ${type}:`, error);
+    });
+}
+
 
 
 
