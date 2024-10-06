@@ -86,6 +86,18 @@ textarea::placeholder {
     opacity: 1;   /* Ensure full opacity for all browsers */
 }
 
+.sub-heading {
+    font-size: 1.5rem;
+    color: var(--sub-heading-color, #fffff);
+    margin-bottom: -60px;
+    margin-left: -412px;
+}
+
+.note-option-card p {
+    font-size: 1rem;
+    color: var(--sub-text-color, #fffff);
+}
+
 
     `;
 
