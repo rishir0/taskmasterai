@@ -1390,7 +1390,7 @@ function deleteItem(id, type) {
     });
 }
 
-// Note creation function (for both manual and generated notes)
+// Function to create a note using AI summarization and display it as key points
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
@@ -1408,8 +1408,8 @@ function createNote() {
                 noteDiv.innerHTML = `
                     <ul>${formattedSummary}</ul>
                     <div class="button-container">
-                        <button class="edit" onclick="editItem('${doc.id}', 'generatednotes')">Edit</button>
-                        <button class="delete" onclick="deleteItem('${doc.id}', 'generatednotes')">Delete</button>
+                        <button class="edit" onclick="editNote()">Edit</button>
+                        <button class="delete" onclick="deleteNote()">Delete</button>
                     </div>
                 `;
                 notesList.appendChild(noteDiv);
