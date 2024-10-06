@@ -1639,15 +1639,14 @@ function createNote() {
             saveNoteToFirestore(noteText, summary).then(docId => {
                 // Append the note to the list only after it has been saved to Firestore
                 noteDiv.setAttribute('data-id', docId); // Set data-id attribute to use later for edit/delete
-                notesList.appendChild(noteDiv); // Append it to the DOM (you can skip this part if needed)
-                
-                // Immediately remove the noteDiv from the DOM to avoid duplication
-                noteDiv.remove(); // Remove the note immediately after appending it
+                notesList.appendChild(noteDiv); // Only append once here
+
+                // Clear the note content after saving (if this is what you intended)
+                setTimeout(() => {
+                    noteDiv.innerHTML = '';  // Clears the inner HTML content of the note
+                }, 3000);  // Optional: Delay clearing to allow users to see the note for a while
 
                 hideProgressBar(); // Hide the progress bar after note generation is complete
-
-                // Optionally, call loadGeneratedNotes() here to reload all notes.
-                // loadGeneratedNotes();
             });
 
         })
