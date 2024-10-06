@@ -1395,34 +1395,44 @@ function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
 
-    if (noteText) {
-        generateSummary(noteText) // Generate a summary from the notes
-            .then(summary => {
-                const notesList = document.getElementById('notes-list');
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-item';
-
-                // Format summary into key points
-                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
-
-                noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul>
-                    <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
-                    </div>
-                `;
-                notesList.appendChild(noteDiv);
-
-                // Save the generated note to Firestore
-                saveNoteToFirestore(noteText, summary);  // Call Firebase function to store the note
-            })
-            .catch(error => {
-                console.error('Error generating note:', error);
-            });
-        noteInput.value = ''; // Clear the textarea after note creation
-        closeModal2(); // Close Modal 2 after creating a note
+    // Prevent the creation of an empty note
+    if (!noteText) {
+        return; // Early exit if there's no text
     }
+
+    // Generate a summary from the notes
+    generateSummary(noteText) 
+        .then(summary => {
+            // Only append the note to the DOM if the summary is successfully generated
+            const notesList = document.getElementById('notes-list');
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'note-item';
+
+            // Format summary into key points
+            const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+
+            noteDiv.innerHTML = `
+                <ul>${formattedSummary}</ul>
+                <div class="button-container">
+                    <button class="edit" onclick="editNote()">Edit</button>
+                    <button class="delete" onclick="deleteNote()">Delete</button>
+                </div>
+            `;
+            
+            // Save the generated note to Firestore
+            saveNoteToFirestore(noteText, summary).then(docId => {
+                // Append the note to the list only after it has been saved to Firestore
+                noteDiv.setAttribute('data-id', docId); // Set data-id attribute to use later for edit/delete
+                notesList.appendChild(noteDiv);
+            });
+
+        })
+        .catch(error => {
+            console.error('Error generating note:', error);
+        });
+    
+    noteInput.value = ''; // Clear the textarea after note creation
+    closeModal2(); // Close Modal 2 after creating a note
 }
 
 // Function to save the generated note to Firestore
@@ -1430,19 +1440,22 @@ function saveNoteToFirestore(noteText, summary) {
     const userId = firebase.auth().currentUser.uid; // Get current user's ID
 
     // Add the note to Firestore
-    db.collection('generatednotes').add({
+    return db.collection('generatednotes').add({
         userId: userId,
         note: noteText,
         summary: summary,
         timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
     })
-    .then(() => {
-        console.log('Note successfully saved to Firestore');
+    .then(docRef => {
+        console.log('Note successfully saved to Firestore with ID:', docRef.id);
+        return docRef.id; // Return the document ID for further use
     })
     .catch(error => {
         console.error('Error saving note to Firestore: ', error);
+        throw error; // Re-throw the error for further handling if needed
     });
 }
+
 
 
 
