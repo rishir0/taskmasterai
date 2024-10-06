@@ -965,7 +965,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     width: 2em;  /* Keep the icon size */
     height: 2em; /* Keep the icon size */
     fill: white; /* Set the SVG color to white */
-    margin-right: -1px; /* Space between icon and text */
+    margin-right: -2px; /* Space between icon and text */
 }
 
 
@@ -1180,6 +1180,30 @@ textarea::placeholder {
     margin-top: 20px;
 }
 
+/* WebKit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #1E1E1E;
+}
+
+/* Firefox */
+scrollbar {
+    width: 12px;
+    background-color: #1E1E1E;
+}
+
+scrollbar-thumb {
+    background-color: #333;
+    border-radius: 6px;
+}
 
     </style>
 </head>
