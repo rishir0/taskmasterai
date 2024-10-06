@@ -1260,14 +1260,14 @@ function createNote() {
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
 
-                // Format summary into key points (you can adjust this as per your needs)
+                // Format summary into key points
                 const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
                 noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul> <!-- Display as key points -->
-                    <div>
-                        <button onclick="editNote()">Edit</button>
-                        <button onclick="deleteNote()">Delete</button>
+                    <ul>${formattedSummary}</ul>
+                    <div class="button-container">
+                        <button class="edit" onclick="editNote()">Edit</button>
+                        <button class="delete" onclick="deleteNote()">Delete</button>
                     </div>
                 `;
                 notesList.appendChild(noteDiv);
@@ -1279,6 +1279,7 @@ function createNote() {
         closeModal2(); // Close Modal 2 after creating a note
     }
 }
+
 
 // Function to create a manual note from Modal 3
 function createManualNote() {
