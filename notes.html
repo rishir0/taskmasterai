@@ -1270,15 +1270,16 @@ function loadManualNotes() {
         .where('userId', '==', firebase.auth().currentUser.uid)
         .orderBy('createdAt')
         .onSnapshot(snapshot => {
-            const manualNotesContainer = document.getElementById('manual-notes-container');
-            manualNotesContainer.innerHTML = ''; // Clear only manual notes
+            // Clear only manual notes
+            const manualNotes = document.querySelectorAll("[data-type='manualnote']");
+            manualNotes.forEach(note => note.remove());
 
             snapshot.forEach(doc => {
                 const note = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
-                noteDiv.setAttribute('data-id', doc.id);
-                noteDiv.setAttribute('data-type', 'manualnote');
+                noteDiv.setAttribute('data-id', doc.id); // Set data-id for easy reference
+                noteDiv.setAttribute('data-type', 'manualnote'); // Set data-type attribute
 
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
@@ -1290,10 +1291,11 @@ function loadManualNotes() {
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnotes'));
 
                 noteDiv.appendChild(buttonContainer);
-                manualNotesContainer.appendChild(noteDiv);
+                document.getElementById('notes-list').appendChild(noteDiv);
             });
         });
 }
+
 
 function loadGeneratedNotes() {
     const userId = firebase.auth().currentUser?.uid;
