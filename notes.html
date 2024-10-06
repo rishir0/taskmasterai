@@ -1042,19 +1042,23 @@ textarea::placeholder {
 /* Updated Progress Bar Styling */
 .progress-bar {
     width: 100%;
-    height: 30px; /* Make the progress bar taller */
-    background-color: #f3f3f3;
-    border-radius: 5px;
+    height: 40px; /* Increase the height for a more prominent look */
+    background-color: var(--secondary-color, #f0f0f0); /* Use a secondary, soft background color */
+    border-radius: 20px; /* Make the progress bar rounder */
     overflow: hidden;
-    margin-top: 10px;
+    margin-top: 20px; /* Increase the spacing for a cleaner look */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
     position: relative;
+    padding: 2px; /* Add some inner padding for a sleek border effect */
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #007bff;
-    transition: width 2s ease;
+    background: linear-gradient(90deg, #007bff, #00b8ff); /* Add a gradient for a polished effect */
+    border-radius: 18px; /* Ensure the fill follows the rounded edges */
+    transition: width 1.5s ease-out; /* Smooth, slightly faster transition */
     position: relative;
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3); /* Soft shadow for the progress fill */
 }
 
 .progress-fill .progress-percent {
@@ -1063,8 +1067,10 @@ textarea::placeholder {
     top: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 18px; /* Make the percentage text bigger */
+    font-size: 20px; /* Slightly increase the percentage text size */
     font-weight: bold;
+    letter-spacing: 0.05em; /* Add slight letter spacing for readability */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Add subtle text shadow for clarity */
 }
 
 /* Ellipsis animation for "Generating Note..." */
@@ -1079,15 +1085,19 @@ textarea::placeholder {
 #ellipsis::after {
     content: "";
     animation: ellipsis 1.5s infinite;
-}
-
-/* Error message styling */
-#error-message {
-    margin-top: 15px;
-    font-size: 14px;
+    font-size: 20px; /* Match ellipsis size with the text */
     font-weight: bold;
+    color: var(--primary-color, #333); /* Make the ellipsis prominent */
 }
 
+/* Error Message Styling */
+.error-message {
+    color: #dc3545; /* Use a red color for the error message */
+    font-size: 16px; /* Error message size */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
 
 
 /* Modal4 base styles */
@@ -1911,70 +1921,108 @@ function deleteItem(id, type) {
     });
 }
 
-// Function to show the progress bar modal
 function showProgressBar() {
     const progressModal = document.getElementById('progressModal');
     const progressFill = document.querySelector('.progress-fill');
-    
-    // Reset progress bar width
-    progressFill.style.width = '0';
-    
-    // Show the progress modal
+    const progressPercent = document.querySelector('.progress-percent');
+    let progress = 0;
+
+    // Show the modal
     progressModal.style.display = 'block';
 
-    // Simulate the progress bar filling
-    setTimeout(() => {
-        progressFill.style.width = '100%'; // Animate the progress fill
-    }, 100);
+    // Simulate the progress over time
+    const progressInterval = setInterval(() => {
+        if (progress < 100) {
+            progress += 10; // Increase progress by 10%
+            progressFill.style.width = `${progress}%`;
+            progressPercent.textContent = `${progress}%`;
+        } else {
+            clearInterval(progressInterval);
+        }
+    }, 500); // Update every 500ms
 }
 
-// Function to hide the progress bar modal
 function hideProgressBar() {
     const progressModal = document.getElementById('progressModal');
+    const progressFill = document.querySelector('.progress-fill');
+    const progressPercent = document.querySelector('.progress-percent');
+
+    // Reset the progress bar
+    progressFill.style.width = '0%';
+    progressPercent.textContent = '0%';
+
+    // Hide the modal
     progressModal.style.display = 'none';
+}
+
+function handleError() {
+    const progressFill = document.querySelector('.progress-fill');
+    const progressPercent = document.querySelector('.progress-percent');
+    const modalContent = document.querySelector('.modal-content');
+
+    // Show error state in the progress bar
+    progressFill.style.backgroundColor = '#dc3545'; // Change fill color to red for error
+    progressPercent.textContent = 'Failed'; // Show "Failed" instead of percentage
+
+    // Add error message below the progress bar
+    const errorMessage = document.createElement('p');
+    errorMessage.classList.add('error-message');
+    errorMessage.textContent = 'Please try again.';
+    modalContent.appendChild(errorMessage); // Append error message to the modal
 }
 
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
 
-    // Prevent the creation of an empty note
-    if (!noteText) {
-        return; // Early exit if there's no text
-    }
+    if (!noteText) return; // Early exit if there's no text
 
-    // Close all modals and show the progress bar
-    closeModal2(); // Close note generation modal
-    closeModal();  // Close any other modals
-    showProgressBar(); // Show the progress bar modal
+    closeModal2();
+    closeModal();
+    showProgressBar();
 
-    // Generate a summary from the notes
-    generateSummary(noteText)
-        .then(summary => {
-            // Only append the note to the DOM if the summary is successfully generated
-            
-            // Save the generated note to Firestore
-            saveNoteToFirestore(noteText, summary).then(docId => {
-                // Append the note to the list only after it has been saved to Firestore
-                noteDiv.setAttribute('data-id', docId); // Set data-id attribute to use later for edit/delete
-                
-                
+    setTimeout(() => {
+        generateSummary(noteText)
+            .then(summary => {
+                const notesList = document.getElementById('notes-list');
+                const existingNotes = Array.from(notesList.children);
+                const isDuplicate = existingNotes.some(noteDiv => noteDiv.innerText.includes(summary));
 
+                if (isDuplicate) {
+                    console.error('Duplicate note detected.');
+                    hideProgressBar();
+                    return;
+                }
 
-                hideProgressBar(); // Hide the progress bar after note generation is complete
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
-                loadGeneratedNotes();
-                
+                noteDiv.innerHTML = `
+                    <ul>${formattedSummary}</ul>
+                    <div class="button-container">
+                        <button class="edit" onclick="editNote()">Edit</button>
+                        <button class="delete" onclick="deleteNote()">Delete</button>
+                    </div>
+                `;
+
+                saveNoteToFirestore(noteText, summary).then(docId => {
+                    noteDiv.setAttribute('data-id', docId);
+                    notesList.appendChild(noteDiv);
+
+                    hideProgressBar();
+                    loadGeneratedNotes();
+                });
+            })
+            .catch(error => {
+                console.error('Error generating note:', error);
+                handleError(); // Trigger the error handling function
             });
 
-        })
-        .catch(error => {
-            console.error('Error generating note:', error);
-            hideProgressBar(); // Hide the progress bar in case of an error
-        });
-    
-    noteInput.value = ''; // Clear the textarea after note creation
+        noteInput.value = ''; // Clear the textarea after note creation
+    }, 5000); // Simulate a 5-second delay for the note generation process
 }
+
 
 
 
