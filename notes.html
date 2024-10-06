@@ -1268,17 +1268,20 @@ function loadAllNotes() {
 
 // Function to load manual notes from Firestore
 function loadManualNotes() {
+    const notesList = document.getElementById('notes-list');
+
     db.collection('manualnotes')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt')
+        .orderBy('createdAt') // Ensure you have a createdAt timestamp in your documents
         .onSnapshot(snapshot => {
-            const notesList = document.getElementById('notes-list');
-            notesList.innerHTML = ''; // Clear the list before adding notes
+            // Clear the list before adding notes
+            notesList.innerHTML = ''; 
             snapshot.forEach(doc => {
                 const note = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
-                noteDiv.setAttribute('data-type', 'manualnote'); // Set data-type attribute
+                noteDiv.setAttribute('data-id', doc.id); // Set data-id attribute for easy reference
+
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
                     ${note.note}
@@ -1291,6 +1294,13 @@ function loadManualNotes() {
                 noteDiv.appendChild(buttonContainer);
                 notesList.appendChild(noteDiv);
             });
+
+            // Check if there are no notes and display a message
+            if (snapshot.empty) {
+                notesList.innerHTML = '<p>No manual notes found.</p>';
+            }
+        }, error => {
+            console.error('Error loading manual notes: ', error);
         });
 }
 
