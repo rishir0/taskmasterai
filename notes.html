@@ -1309,7 +1309,7 @@ function loadGeneratedNotes() {
         .where('userId', '==', userId)
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
-            const generatedNotesContainer = document.getElementById('generated-notes-container');
+            const notesList = document.getElementById('notes-list');
 
             snapshot.docChanges().forEach(change => {
                 const noteData = change.doc.data();
@@ -1336,13 +1336,13 @@ function loadGeneratedNotes() {
                         </div>
                     `;
 
-                    if (!generatedNotesContainer.contains(noteDiv)) {
-                        generatedNotesContainer.appendChild(noteDiv);
+                    if (!notesList.contains(noteDiv)) {
+                        notesList.appendChild(noteDiv);
                     }
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (noteDiv) {
-                        generatedNotesContainer.removeChild(noteDiv);
+                        notesList.removeChild(noteDiv);
                     }
                 }
             });
