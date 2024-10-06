@@ -1324,27 +1324,48 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+
 const huggingFaceApiKey = "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";
 const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
-// Function to generate a summary from long-form notes
-async function generateSummary(text) {
-    const response = await fetch(modelEndpoint, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${huggingFaceApiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ inputs: text })
-    });
-
-    if (response.ok) {
-        const result = await response.json();
-        return result[0].summary_text; // Return summarized text
-    } else {
-        const errorDetails = await response.json();
-        throw new Error(`Error generating summary: ${errorDetails.error}`);
+// Helper function to split text into chunks by character limit
+function splitTextIntoChunks(text, maxLength = 4000) {
+    const chunks = [];
+    let start = 0;
+    while (start < text.length) {
+        const end = start + maxLength;
+        chunks.push(text.slice(start, end));
+        start = end;
     }
+    return chunks;
+}
+
+// Use this inside your function to split large text
+async function generateSummary(text) {
+    const chunks = splitTextIntoChunks(text);
+
+    const summaries = [];
+    for (let chunk of chunks) {
+        const response = await fetch(modelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingFaceApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ inputs: chunk })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            summaries.push(result[0].summary_text); // Collect summary of each chunk
+        } else {
+            const errorDetails = await response.json();
+            throw new Error(`Error generating summary: ${errorDetails.error}`);
+        }
+    }
+
+    return summaries.join(" "); // Combine all summaries into one result
 }
 
 function loadAllNotes() {
