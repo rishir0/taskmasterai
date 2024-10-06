@@ -1248,92 +1248,6 @@ async function generateSummary(text) {
     }
 }
 
-// Function to create a note using AI summarization and display it as key points
-function createNote() {
-    const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
-    const noteText = noteInput.value.trim();
-
-    if (noteText) {
-        generateSummary(noteText) // Generate a summary from the notes
-            .then(summary => {
-                const notesList = document.getElementById('notes-list');
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-item';
-
-                // Format summary into key points
-                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
-
-                noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul>
-                    <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
-                    </div>
-                `;
-                notesList.appendChild(noteDiv);
-
-                // Save the generated note to Firestore
-                saveNoteToFirestore(noteText, summary);  // Call Firebase function to store the note
-            })
-            .catch(error => {
-                console.error('Error generating note:', error);
-            });
-        noteInput.value = ''; // Clear the textarea after note creation
-        closeModal2(); // Close Modal 2 after creating a note
-    }
-}
-
-// Function to save the generated note to Firestore
-function saveNoteToFirestore(noteText, summary) {
-    const userId = firebase.auth().currentUser.uid; // Get current user's ID
-
-    // Add the note to Firestore
-    db.collection('generatednotes').add({
-        userId: userId,
-        note: noteText,
-        summary: summary,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
-    })
-    .then(() => {
-        console.log('Note successfully saved to Firestore');
-    })
-    .catch(error => {
-        console.error('Error saving note to Firestore: ', error);
-    });
-}
-
-
-// Function to create a manual note from Modal 3
-function createManualNote() {
-    const title = document.getElementById('personalNoteTitle3').value.trim();
-    const date = document.getElementById('personalNoteDate3').value;
-    const noteInput = document.getElementById('personalTextarea3'); // Select textarea from Modal 3
-    const note = noteInput.value.trim();
-
-    if (note && title) {
-        db.collection('manualnotes').add({
-            title: title,
-            date: date,
-            note: note,
-            userId: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log('Manual note created:', note);
-            loadManualNotes(); // Reload manual notes after creation
-        }).catch((error) => {
-            console.error('Error creating manual note:', error);
-        });
-
-        // Clear the input fields after note creation
-        document.getElementById('personalNoteTitle3').value = '';
-        document.getElementById('personalNoteDate3').value = '';
-        noteInput.value = '';
-        
-        closeModal3(); // Close Modal 3 after creating a personal note
-    }
-}
-
-
 // Function to load all notes
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
@@ -1359,6 +1273,7 @@ function loadManualNotes() {
         .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = ''; // Clear the list before adding notes
             snapshot.forEach(doc => {
                 const note = doc.data();
                 const noteDiv = document.createElement('div');
@@ -1370,8 +1285,8 @@ function loadManualNotes() {
                 `;
 
                 const buttonContainer = createButtonContainer();
-                buttonContainer.appendChild(createEditButton(doc.id, 'manualnote'));
-                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnote'));
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualnotes'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnotes'));
 
                 noteDiv.appendChild(buttonContainer);
                 notesList.appendChild(noteDiv);
@@ -1394,11 +1309,7 @@ function loadGeneratedNotes() {
         .where('userId', '==', userId) // Get only the notes created by the current user
         .orderBy('timestamp', 'desc') // Order by the most recent
         .onSnapshot(snapshot => {
-            if (snapshot.empty) {
-                console.log('No generated notes found');
-                return;
-            }
-
+            const notesList = document.getElementById('notes-list');
             snapshot.forEach(doc => {
                 const noteData = doc.data();
                 const noteDiv = document.createElement('div');
@@ -1461,7 +1372,7 @@ function editItem(id, type) {
     const newValue = prompt(`Enter new value for ${type}:`);
     if (newValue) {
         db.collection(type).doc(id).update({
-            [type === 'manualnote' ? 'note' : 'summary']: newValue // Update the respective field
+            [type === 'manualnotes' ? 'note' : 'summary']: newValue // Update the respective field
         }).then(() => {
             console.log(`${type} updated:`, newValue);
         }).catch((error) => {
@@ -1478,6 +1389,93 @@ function deleteItem(id, type) {
         console.error(`Error deleting ${type}:`, error);
     });
 }
+
+// Note creation function (for both manual and generated notes)
+function createNote() {
+    const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
+    const noteText = noteInput.value.trim();
+
+    if (noteText) {
+        generateSummary(noteText) // Generate a summary from the notes
+            .then(summary => {
+                const notesList = document.getElementById('notes-list');
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+
+                // Format summary into key points
+                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+
+                noteDiv.innerHTML = `
+                    <ul>${formattedSummary}</ul>
+                    <div class="button-container">
+                        <button class="edit" onclick="editItem('${doc.id}', 'generatednotes')">Edit</button>
+                        <button class="delete" onclick="deleteItem('${doc.id}', 'generatednotes')">Delete</button>
+                    </div>
+                `;
+                notesList.appendChild(noteDiv);
+
+                // Save the generated note to Firestore
+                saveNoteToFirestore(noteText, summary);  // Call Firebase function to store the note
+            })
+            .catch(error => {
+                console.error('Error generating note:', error);
+            });
+        noteInput.value = ''; // Clear the textarea after note creation
+        closeModal2(); // Close Modal 2 after creating a note
+    }
+}
+
+// Function to save the generated note to Firestore
+function saveNoteToFirestore(noteText, summary) {
+    const userId = firebase.auth().currentUser.uid; // Get current user's ID
+
+    // Add the note to Firestore
+    db.collection('generatednotes').add({
+        userId: userId,
+        note: noteText,
+        summary: summary,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
+    })
+    .then(() => {
+        console.log('Note successfully saved to Firestore');
+    })
+    .catch(error => {
+        console.error('Error saving note to Firestore: ', error);
+    });
+}
+
+
+
+// Function to create a manual note from Modal 3
+function createManualNote() {
+    const title = document.getElementById('personalNoteTitle3').value.trim();
+    const date = document.getElementById('personalNoteDate3').value;
+    const noteInput = document.getElementById('personalTextarea3'); // Select textarea from Modal 3
+    const note = noteInput.value.trim();
+
+    if (note && title) {
+        db.collection('manualnotes').add({
+            title: title,
+            date: date,
+            note: note,
+            userId: firebase.auth().currentUser.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            console.log('Manual note created:', note);
+            loadManualNotes(); // Reload manual notes after creation
+        }).catch((error) => {
+            console.error('Error creating manual note:', error);
+        });
+
+        // Clear the input fields after note creation
+        document.getElementById('personalNoteTitle3').value = '';
+        document.getElementById('personalNoteDate3').value = '';
+        noteInput.value = '';
+        
+        closeModal3(); // Close Modal 3 after creating a personal note
+    }
+}
+
 
 
 
