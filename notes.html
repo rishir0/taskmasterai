@@ -1468,6 +1468,7 @@ function deleteItem(id, type) {
 document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
+            loadGeneratedNotes();
             loadManualNotes(); // Load manual notes
         } else {
             window.location.href = "login.html"; // Redirect to login page if not authenticated
@@ -1482,7 +1483,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-            // Load AI notes
+            loadGeneratedNotes();// Load AI notes
             loadManualNotes(); // Load manual notes
         } else {
             window.location.href = "login.html"; // Redirect to login page if not authenticated
