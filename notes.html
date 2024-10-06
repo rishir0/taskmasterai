@@ -1039,10 +1039,10 @@ textarea::placeholder {
     text-align: center;
 }
 
-/* Progress Bar Styling */
+/* Updated Progress Bar Styling */
 .progress-bar {
     width: 100%;
-    height: 10px;
+    height: 30px; /* Make the progress bar taller */
     background-color: #f3f3f3;
     border-radius: 5px;
     overflow: hidden;
@@ -1053,7 +1053,7 @@ textarea::placeholder {
 .progress-fill {
     height: 100%;
     background-color: #007bff;
-    transition: width 2s ease; /* Smooth fill animation */
+    transition: width 2s ease;
     position: relative;
 }
 
@@ -1063,7 +1063,8 @@ textarea::placeholder {
     top: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 12px;
+    font-size: 18px; /* Make the percentage text bigger */
+    font-weight: bold;
 }
 
 /* Ellipsis animation for "Generating Note..." */
@@ -1079,6 +1080,14 @@ textarea::placeholder {
     content: "";
     animation: ellipsis 1.5s infinite;
 }
+
+/* Error message styling */
+#error-message {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 
 
 /* Modal4 base styles */
@@ -1434,8 +1443,10 @@ textarea::placeholder {
                 <span class="progress-percent">0%</span> <!-- Percentage inside the progress bar -->
             </div>
         </div>
+        <p id="error-message" style="display: none; color: red; text-align: center;">Please try again.</p> <!-- Error message -->
     </div>
 </div>
+
 
 
 <!-- PDF Upload Modal -->
@@ -2291,7 +2302,13 @@ function showProgressBar() {
     const progressModal = document.getElementById('progressModal');
     const progressFill = document.querySelector('.progress-fill');
     const progressPercent = document.querySelector('.progress-percent');
+    const errorMessage = document.getElementById('error-message');
     let progress = 0;
+
+    // Reset any previous error messages and percentage text
+    errorMessage.style.display = 'none';
+    progressPercent.textContent = '0%';
+    progressFill.style.width = '0%';
 
     // Show the modal
     progressModal.style.display = 'block';
@@ -2319,6 +2336,15 @@ function hideProgressBar() {
 
     // Hide the modal
     progressModal.style.display = 'none';
+}
+
+function showError() {
+    const progressPercent = document.querySelector('.progress-percent');
+    const errorMessage = document.getElementById('error-message');
+
+    // Show error message and set percentage to "Failed"
+    progressPercent.textContent = 'Failed';
+    errorMessage.style.display = 'block';
 }
 
 function createNote() {
@@ -2374,12 +2400,13 @@ function createNote() {
             })
             .catch(error => {
                 console.error('Error generating note:', error);
-                hideProgressBar();
+                showError(); // Show error message and "Failed" percentage
             });
 
         noteInput.value = ''; // Clear the textarea after note creation
     }, 5000); // Simulate a 5-second delay for the note generation process
 }
+
 
 
 // Get modal and elements
