@@ -1056,7 +1056,6 @@ textarea::placeholder {
 
 
     </style>
-    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 </head>
 <body>
     <button class="sidebar-toggle">
@@ -1878,6 +1877,11 @@ window.onclick = function(event) {
     
 </script>
 
+<script>
+    document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+</script>
 
 <script>
     async function toggleNightMode() {
@@ -2083,12 +2087,6 @@ function createNote() {
 
 </script>
 
-
-<script>
-    document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-        document.querySelector('.sidebar').classList.toggle('active');
-    });
-</script>
 
     </body>
 </html>
