@@ -1098,7 +1098,11 @@ input[type="text"]:focus, input[type="date"]:focus {
             </div>
             
 <!-- Dynamically generated notes list -->
-<div id="notes-list"></div>
+<div id="notes-list">
+    <div id="manual-notes-container"></div>
+    <div id="generated-notes-container"></div>
+</div>
+
 
 <!-- Modal 1: Choose an Option Modal -->
 <div class="modal" id="noteModal">
@@ -1264,21 +1268,20 @@ function loadAllNotes() {
 }
 
 
-// Function to load manual notes from Firestore
 function loadManualNotes() {
-    const notesList = document.getElementById('notes-list');
-
     db.collection('manualnotes')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('createdAt') // Ensure you have a createdAt timestamp in your documents
+        .orderBy('createdAt')
         .onSnapshot(snapshot => {
-            // Clear the list before adding notes
-            notesList.innerHTML = ''; 
+            const manualNotesContainer = document.getElementById('manual-notes-container');
+            manualNotesContainer.innerHTML = ''; // Clear only manual notes
+
             snapshot.forEach(doc => {
                 const note = doc.data();
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
-                noteDiv.setAttribute('data-id', doc.id); // Set data-id attribute for easy reference
+                noteDiv.setAttribute('data-id', doc.id);
+                noteDiv.setAttribute('data-type', 'manualnote');
 
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
@@ -1290,34 +1293,25 @@ function loadManualNotes() {
                 buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnotes'));
 
                 noteDiv.appendChild(buttonContainer);
-                notesList.appendChild(noteDiv);
+                manualNotesContainer.appendChild(noteDiv);
             });
-
-            // Check if there are no notes and display a message
-            if (snapshot.empty) {
-                notesList.innerHTML = '<p>No manual notes found.</p>';
-            }
-        }, error => {
-            console.error('Error loading manual notes: ', error);
         });
 }
 
 function loadGeneratedNotes() {
-    const userId = firebase.auth().currentUser?.uid; // Get current user's ID
+    const userId = firebase.auth().currentUser?.uid;
 
     if (!userId) {
         console.error("User not authenticated yet");
         return;
     }
 
-    // Fetch the notes from Firestore for the current user in real-time
     db.collection('generatednotes')
-        .where('userId', '==', userId) // Get only the notes created by the current user
-        .orderBy('timestamp', 'desc') // Order by the most recent
+        .where('userId', '==', userId)
+        .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
-            const notesList = document.getElementById('notes-list');
+            const generatedNotesContainer = document.getElementById('generated-notes-container');
 
-            // Loop through the changes in the snapshot
             snapshot.docChanges().forEach(change => {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
@@ -1328,11 +1322,11 @@ function loadGeneratedNotes() {
                         noteDiv = document.createElement('div');
                         noteDiv.className = 'note-item';
                         noteDiv.setAttribute('data-id', noteId);
+                        noteDiv.setAttribute('data-type', 'generatednote');
                     } else {
                         noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
-                    // Format summary into key points
                     const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
                     noteDiv.innerHTML = `
@@ -1343,14 +1337,13 @@ function loadGeneratedNotes() {
                         </div>
                     `;
 
-                    // Append the note if it's new, or replace if modified
-                    if (!notesList.contains(noteDiv)) {
-                        notesList.appendChild(noteDiv);
+                    if (!generatedNotesContainer.contains(noteDiv)) {
+                        generatedNotesContainer.appendChild(noteDiv);
                     }
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (noteDiv) {
-                        notesList.removeChild(noteDiv);
+                        generatedNotesContainer.removeChild(noteDiv);
                     }
                 }
             });
