@@ -2043,7 +2043,7 @@ function createNote() {
 
                 saveNoteToFirestore(noteText, summary).then(docId => {
                     noteDiv.setAttribute('data-id', docId);
-                    notesList.appendChild(noteDiv);
+                    
 
                     hideProgressBar();
                     loadAllNotes()
