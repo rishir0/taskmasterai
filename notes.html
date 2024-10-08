@@ -2029,12 +2029,15 @@ function createNote() {
                     return;
                 }
 
-
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
 
 
                 saveNoteToFirestore(noteText, summary).then(docId => {
                     noteDiv.setAttribute('data-id', docId);
+                    
 
                     hideProgressBar();
                     loadGeneratedNotes();
