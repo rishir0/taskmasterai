@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1489,7 +1488,7 @@ scrollbar-thumb {
                 <span class="progress-percent">0%</span> <!-- Percentage inside the progress bar -->
             </div>
         </div>
-        <p id="error-message" style="display: none; color: red; text-align: center;">Please try again.</p> <!-- Error message -->
+        <p id="error-message" style="display: none; color: #c0392b; text-align: center;">Please try again.</p> <!-- Error message -->
     </div>
 </div>
 
@@ -1997,7 +1996,7 @@ function handleError() {
     const modalContent = document.querySelector('.modal-content');
 
     // Show error state in the progress bar
-    progressFill.style.backgroundColor = '#dc3545'; // Change fill color to red for error
+    progressFill.style.background = 'linear-gradient(90deg, #c0392b, #c0392b)'; // Create a gradient using the red color
     progressPercent.textContent = 'Failed'; // Show "Failed" instead of percentage
 
     // Add error message below the progress bar
