@@ -2083,7 +2083,7 @@ function createNote() {
                     noteDiv.setAttribute('data-id', docId);
 
                     hideProgressBar();
-                    loadGeneratedNotes(); // Reload the notes after the new one is saved
+                    loadAllNotes(); //Reload the notes after the new one is saved
                 });
             })
             .catch(error => {
