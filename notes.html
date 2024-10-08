@@ -1869,6 +1869,7 @@ function loadGeneratedNotes() {
                     const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
                     noteDiv.innerHTML = `
+                    <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
                         <ul>${formattedSummary}</ul>
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
@@ -2006,6 +2007,23 @@ function handleError() {
     modalContent.appendChild(errorMessage); // Append error message to the modal
 }
 
+// Helper function to generate a title from the text
+function generateTitle(text) {
+    const maxTitleLength = 50; // Limit title length
+    const firstSentence = text.split('.')[0]; // Use the first sentence for the title
+    return firstSentence.length > maxTitleLength ? firstSentence.slice(0, maxTitleLength) + '...' : firstSentence;
+}
+
+// Helper function to format the current date
+function formatDate() {
+    const now = new Date();
+    return now.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+}
+
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
@@ -2031,16 +2049,18 @@ function createNote() {
 
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
+
+                const title = generateTitle(noteText); // Generate the title from the text
+                const dateCreated = formatDate(); // Get the current date
+
                 const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
 
-
-                saveNoteToFirestore(noteText, summary).then(docId => {
+                saveNoteToFirestore(noteText, summary, title, dateCreated).then(docId => {
                     noteDiv.setAttribute('data-id', docId);
-                    
 
                     hideProgressBar();
-                    loadGeneratedNotes();
+                    loadGeneratedNotes(); // Reload the notes after the new one is saved
                 });
             })
             .catch(error => {
@@ -2056,8 +2076,9 @@ function createNote() {
 
 
 
-// Function to save the generated note to Firestore
-function saveNoteToFirestore(noteText, summary) {
+
+// Function to save the generated note, title, and date to Firestore
+function saveNoteToFirestore(noteText, summary, title, dateCreated) {
     const userId = firebase.auth().currentUser.uid; // Get current user's ID
 
     // Add the note to Firestore
@@ -2065,6 +2086,8 @@ function saveNoteToFirestore(noteText, summary) {
         userId: userId,
         note: noteText,
         summary: summary,
+        title: title, // Add title to the Firestore document
+        dateCreated: dateCreated, // Add dateCreated to the Firestore document
         timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
     })
     .then(docRef => {
