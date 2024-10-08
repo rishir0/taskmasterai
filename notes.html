@@ -2033,13 +2033,7 @@ function createNote() {
                 noteDiv.className = 'note-item';
                 const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
-                noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul>
-                    <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
-                    </div>
-                `;
+
 
                 saveNoteToFirestore(noteText, summary).then(docId => {
                     noteDiv.setAttribute('data-id', docId);
