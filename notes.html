@@ -365,15 +365,30 @@ body.night-mode {
             align-items: center;
         }
 
-        .beta-tag {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            color: var(--text-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
+.beta-tag {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    background-size: 200% 200%;
+    color: var(--text-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 10px;
+    animation: swish-gradient 3s infinite ease-in-out;
+}
+
+@keyframes swish-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 
 
 
