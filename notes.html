@@ -1855,6 +1855,11 @@ function loadGeneratedNotes() {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
 
+                // Extract title and timestamp (converted to a readable date)
+                const title = noteData.title || "Untitled"; // Fallback to 'Untitled' if no title is present
+                const timestamp = noteData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
+                const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
+
                 if (change.type === "added" || change.type === "modified") {
                     let noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (!noteDiv) {
@@ -1866,25 +1871,27 @@ function loadGeneratedNotes() {
                         noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
+                    // Format the summary as a list of bullet points
                     const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
+                    // Set the innerHTML including the title, date, and summary
                     noteDiv.innerHTML = `
-                    <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
+                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
                         <ul>${formattedSummary}</ul>
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
                             <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
                         </div>
                         <div class="ai-generated-tag">
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
-        <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-        <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-    </svg>
-    <span>AI Generated</span>
-</div>
-
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+                            </svg>
+                            <span>AI Generated</span>
+                        </div>
                     `;
 
+                    // Append the noteDiv if it doesn't already exist in the DOM
                     if (!notesList.contains(noteDiv)) {
                         notesList.appendChild(noteDiv);
                     }
@@ -1899,6 +1906,7 @@ function loadGeneratedNotes() {
             console.error('Error loading notes: ', error);
         });
 }
+
 
 
 
