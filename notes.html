@@ -2015,12 +2015,43 @@ function handleError() {
     modalContent.appendChild(errorMessage); // Append error message to the modal
 }
 
-// Helper function to generate a title from the text
-function generateTitle(text) {
-    const maxTitleLength = 50; // Limit title length
-    const firstSentence = text.split('.')[0]; // Use the first sentence for the title
-    return firstSentence.length > maxTitleLength ? firstSentence.slice(0, maxTitleLength) + '...' : firstSentence;
+async function generateTitle(text) {
+    const huggingFaceApiKey = "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"; // Your Hugging Face API key
+    const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+    try {
+        const response = await fetch(modelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingFaceApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                inputs: text, // The input text to generate a title from
+                parameters: {
+                    max_length: 10, // Limit the length of the generated title
+                    do_sample: false // Use deterministic output (no randomness)
+                }
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("Error generating title: ", data.error);
+            return "Untitled";
+        }
+
+        // Assuming the output from Hugging Face is in the 'summary_text' field
+        const title = data[0]?.summary_text?.trim() || "Untitled";
+        return title;
+
+    } catch (error) {
+        console.error("Error with Hugging Face API request: ", error);
+        return "Untitled";
+    }
 }
+
 
 // Helper function to format the current date
 function formatDate() {
