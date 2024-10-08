@@ -563,8 +563,9 @@ body.night-mode {
     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
 }
 
-.create-manual-note-btn {
-    background-color: var(--primary-color, #007BFF);
+.create-manual-note-btn1 {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    animation: swish-gradient 3s infinite ease-in-out;
     color: var(--text-color, #fff);
     border: none;
     padding: 10px 20px;
@@ -623,8 +624,9 @@ body.night-mode {
     align-items: center; /* Center vertically */
 }
 
-.modal-content {
-    background-color: var(--card-bg, #f5f5f5); /* Card background color */
+.modal-content1 {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    animation: swish-gradient 3s infinite ease-in-out;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -1458,7 +1460,7 @@ scrollbar-thumb {
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h6>Choose an option below</h6>
-        <button class="create-manual-note-btn" onclick="openModal2()">Generate Note</button>
+        <button class="create-manual-note-btn1" onclick="openModal2()">Generate Note</button>
         <p class="or-text">or</p>
         <button class="create-manual-note-btn" onclick="openModal3()">Create Personal Note</button>
     </div>
@@ -1466,7 +1468,7 @@ scrollbar-thumb {
 
 <!-- Modal 2: Generate Note Modal -->
 <div class="modal" id="noteModal2">
-    <div class="modal-content">
+    <div class="modal-content1">
         <span class="close" onclick="closeModal2()">&times;</span>
         <h6>Generate Note</h6>
         <p class="disclaimer">Please refrain from asking questions or incorporating mathematical elements, as these may disrupt the generation process. Thank you for your understanding.</p>
