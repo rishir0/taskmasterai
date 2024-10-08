@@ -2051,11 +2051,11 @@ function createNote() {
             })
             .catch(error => {
                 console.error('Error generating note:', error);
-                handleError(); // Trigger the error handling function
+                showError(); // Trigger the error handling function
             });
 
         noteInput.value = ''; // Clear the textarea after note creation
-    }, 5000); // Simulate a 5-second delay for the note generation process
+    }, 6000); // Simulate a 6-second delay for the note generation process
 }
 
 
@@ -2405,65 +2405,6 @@ function showError() {
     errorMessage.style.display = 'block';
 }
 
-function createNote() {
-    const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
-    const noteText = noteInput.value.trim();
-
-    // Prevent the creation of an empty note
-    if (!noteText) {
-        return; // Early exit if there's no text
-    }
-
-    // Close all modals and show the progress bar
-    closeModal2(); // Close note generation modal
-    closeModal();  // Close any other modals
-    showProgressBar(); // Show the progress bar modal
-
-    // Simulate a delay in note generation to update the progress bar
-    setTimeout(() => {
-        // Generate a summary from the notes
-        generateSummary(noteText)
-            .then(summary => {
-                // Check for duplicate note logic
-                const notesList = document.getElementById('notes-list');
-                const existingNotes = Array.from(notesList.children);
-                const isDuplicate = existingNotes.some(noteDiv => noteDiv.innerText.includes(summary));
-
-                if (isDuplicate) {
-                    console.error('Duplicate note detected, not adding it again.');
-                    hideProgressBar();
-                    return;
-                }
-
-                // Append the new note to the DOM after saving to Firestore
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-item';
-                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
-
-                noteDiv.innerHTML = `
-                    <ul>${formattedSummary}</ul>
-                    <div class="button-container">
-                        <button class="edit" onclick="editNote()">Edit</button>
-                        <button class="delete" onclick="deleteNote()">Delete</button>
-                    </div>
-                `;
-
-                saveNoteToFirestore(noteText, summary).then(docId => {
-                    noteDiv.setAttribute('data-id', docId);
-                    notesList.appendChild(noteDiv);
-
-                    hideProgressBar();
-                    loadGeneratedNotes();
-                });
-            })
-            .catch(error => {
-                console.error('Error generating note:', error);
-                showError(); // Show error message and "Failed" percentage
-            });
-
-        noteInput.value = ''; // Clear the textarea after note creation
-    }, 5000); // Simulate a 5-second delay for the note generation process
-}
 
 
 
