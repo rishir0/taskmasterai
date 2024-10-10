@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -563,45 +564,7 @@ body.night-mode {
     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
 }
 
-.create-manual-note-btn {
-    background-color: var(--primary-color, #007BFF);
-    color: var(--text-color, #fff);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
 
-.create-manual-note-btn:hover {
-    background-color: var(--accent-color, #0056b3);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.create-manual-note-btn1 {
-    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3)) !important;
-    background-size: 200% 100% !important; /* Double the background width for the swish effect */
-    color: var(--text-color, #fff) !important;
-    border: none !important;
-    padding: 10px 20px !important;
-    border-radius: 5px !important; /* Ensures the button retains its roundness */
-    cursor: pointer !important;
-    transition: box-shadow 0.3s ease !important;
-    background-position: 0% 0% !important;
-    animation: swish 3s ease infinite !important; /* Continuous swish animation */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-    display: inline-block !important; /* Ensures width is consistent with content */
-}
-
-/* Keyframes for swish animation */
-@keyframes swish {
-    0% {
-        background-position: 0% 0%;
-    }
-    100% {
-        background-position: 100% 0%;
-    }
-}
 
 
 
@@ -778,23 +741,7 @@ textarea:focus {
     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
 }
 
-/* Button styling */
-.create-manual-note-btn {
-    background-color: var(--primary-color, #f5f5f5); /* Use card background color */
-    color: var(--text-color, #333);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px; /* Make buttons round */
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 10px; /* Space above button */
-    margin-bottom: 10px;
-}
 
-.create-manual-note-btn:hover {
-    background-color: var(--accent-color, #0056b3);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
 /* Modal 3 styling */
 .modal {
@@ -1483,7 +1430,7 @@ scrollbar-thumb {
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h6>Choose an option below</h6>
-        <button class="create-manual-note-btn1" onclick="openModal2()">Generate Note</button>
+        <button class="create-manual-note-btn" onclick="openModal2()">Generate Note</button>
         <p class="or-text">or</p>
         <button class="create-manual-note-btn" onclick="openModal3()">Create Personal Note</button>
     </div>
@@ -1497,7 +1444,7 @@ scrollbar-thumb {
         <p class="disclaimer">Please refrain from asking questions or incorporating mathematical elements, as these may disrupt the generation process. Thank you for your understanding.</p>
         <p>Enter text below to generate a note.</p>
         <textarea placeholder="Enter text here..." rows="4"></textarea>
-        <button class="create-manual-note-btn1" onclick="createNote()">Generate Note</button>
+        <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
     </div>
 </div>
 
