@@ -579,30 +579,19 @@ body.night-mode {
 }
 
 .create-manual-note-btn1 {
-    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3));
-    background-size: 200% 100%; /* Double the background width for the swish effect */
+    background: linear-gradient(90deg, #007bff, #00b8ff);
     color: var(--text-color, #fff);
     border: none;
     padding: 10px 20px;
-    border-radius: 5px; /* Ensures the button retains its roundness */
+    border-radius: 5px;
     cursor: pointer;
-    transition: box-shadow 0.3s ease;
-    background-position: 0% 0%;
-    animation: swish2 3s ease infinite; /* Continuous swish animation */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.create-manual-note-btn1:hover {
+    background-color: var(--accent-color, #0056b3);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: inline-block; /* Ensures width is consistent with content */
 }
-
-/* Keyframes for swish animation */
-@keyframes swish2 {
-    0% {
-        background-position: 0% 0%;
-    }
-    100% {
-        background-position: 100% 0%;
-    }
-}
-
 
 
 .dev-tag {
