@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -563,7 +564,20 @@ body.night-mode {
     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
 }
 
+.create-manual-note-btn {
+    background-color: var(--primary-color, #007BFF);
+    color: var(--text-color, #fff);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
+.create-manual-note-btn:hover {
+    background-color: var(--accent-color, #0056b3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 
 
@@ -668,34 +682,6 @@ h6 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.create-manual-note-btn1 {
-    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3));
-    background-size: 200% 100%; /* Double the width of the background to allow it to move */
-    color: var(--text-color, #333);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-    margin: 10px 0;
-    display: block;
-    width: 80%;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex; /* Align icon and text */
-    align-items: center; /* Vertically center icon and text */
-    justify-content: center; /* Horizontally center content */
-}
-
-/* Hover effect */
-.create-manual-note-btn1:hover {
-    background-color: var(--accent-color, #0056b3);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-
 
 /* Modal styling */
 .modal {
@@ -768,7 +754,23 @@ textarea:focus {
     box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
 }
 
+/* Button styling */
+.create-manual-note-btn {
+    background-color: var(--primary-color, #f5f5f5); /* Use card background color */
+    color: var(--text-color, #333);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px; /* Make buttons round */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 10px; /* Space above button */
+    margin-bottom: 10px;
+}
 
+.create-manual-note-btn:hover {
+    background-color: var(--accent-color, #0056b3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 /* Modal 3 styling */
 .modal {
@@ -1243,13 +1245,6 @@ textarea::placeholder {
     font-size: 0.9rem; /* Adjust font size if needed */
 }
 
-.create-manual-note-btn1 svg.icon {
-    margin-right: 1px; /* Add space between icon and text */
-    width: 2rem; /* Set width to 2rem */
-    height: 2rem; /* Set height to 2rem */
-    fill: currentColor; /* Inherit the button's text color */
-}
-
 
     </style>
 </head>
@@ -1482,13 +1477,7 @@ textarea::placeholder {
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h6>Choose an option below</h6>
-               <button class="create-manual-note-btn1" onclick="openModal2()">
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" width="20" height="20">
-        <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-        <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-    </svg>
-    Generate Note
-</button>
+        <button class="create-manual-note-btn" onclick="openModal2()">Generate Note</button>
         <p class="or-text">or</p>
         <button class="create-manual-note-btn" onclick="openModal3()">Create Personal Note</button>
     </div>
@@ -1502,14 +1491,7 @@ textarea::placeholder {
         <p class="disclaimer">Please refrain from asking questions or incorporating mathematical elements, as these may disrupt the generation process. Thank you for your understanding.</p>
         <p>Enter text below to generate a note.</p>
         <textarea placeholder="Enter text here..." rows="4"></textarea>
-        <button class="create-manual-note-btn1" onclick="createNote()">
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" width="20" height="20">
-        <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-        <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-    </svg>
-    Generate Note
-</button>
-
+        <button class="create-manual-note-btn" onclick="createNote()">Generate Note</button>
     </div>
 </div>
 
