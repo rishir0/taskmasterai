@@ -669,7 +669,7 @@ h6 {
 }
 
 .create-manual-note-btn1 {
-    background: linear-gradient(90deg, #007bff, #00b8ff);
+    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3)) !important;
     background-size: 200% 100%; /* Double the width of the background to allow it to move */
     color: var(--text-color, #333);
     border: none;
@@ -688,6 +688,7 @@ h6 {
 
 /* Hover effect */
 .create-manual-note-btn1:hover {
+    background-color: var(--accent-color, #0056b3);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -1231,6 +1232,13 @@ scrollbar-thumb {
     font-size: 0.9rem; /* Adjust font size if needed */
 }
 
+.create-manual-note-btn1 svg.icon {
+    margin-right: 8px; /* Add space between icon and text */
+    width: 20px; /* Adjust icon size */
+    height: 20px;
+    fill: currentColor; /* Inherit the button's text color */
+}
+
 
     </style>
 </head>
@@ -1477,7 +1485,14 @@ scrollbar-thumb {
         <p class="disclaimer">Please refrain from asking questions or incorporating mathematical elements, as these may disrupt the generation process. Thank you for your understanding.</p>
         <p>Enter text below to generate a note.</p>
         <textarea placeholder="Enter text here..." rows="4"></textarea>
-        <button class="create-manual-note-btn1" onclick="createNote()">Generate Note</button>
+        <button class="create-manual-note-btn1" onclick="createNote()">
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" width="20" height="20">
+        <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+        <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+    </svg>
+    Generate Note
+</button>
+
     </div>
 </div>
 
