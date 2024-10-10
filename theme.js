@@ -150,7 +150,31 @@ body {
     border-radius: 0 0 var(--border-radius) var(--border-radius); /* Rounded bottom corners */
 }
 
+.upgrade-btn {
+    background: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: var(--accent-color);
+}
 
+.upgrade-btn svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.upgrade-btn:hover {
+    transform: scale(1.05);
+}
     `;
 
     function applyTheme(styles, themeName) {
