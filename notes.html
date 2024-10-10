@@ -669,7 +669,7 @@ h6 {
 }
 
 .create-manual-note-btn1 {
-    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3)) !important;
+    background: linear-gradient(90deg, var(--primary-color, #007BFF), var(--accent-color, #0056b3));
     background-size: 200% 100%; /* Double the width of the background to allow it to move */
     color: var(--text-color, #333);
     border: none;
@@ -684,6 +684,10 @@ h6 {
     margin-left: auto;
     margin-right: auto;
     animation: flow 4s linear infinite; /* Infinite horizontal flow animation */
+
+    display: flex; /* Align icon and text */
+    align-items: center; /* Vertically center icon and text */
+    justify-content: center; /* Horizontally center content */
 }
 
 /* Hover effect */
@@ -1233,7 +1237,7 @@ scrollbar-thumb {
 }
 
 .create-manual-note-btn1 svg.icon {
-    margin-right: 8px; /* Add space between icon and text */
+    margin-right: 3px; /* Add space between icon and text */
     width: 20px; /* Adjust icon size */
     height: 20px;
     fill: currentColor; /* Inherit the button's text color */
