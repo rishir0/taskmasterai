@@ -683,8 +683,6 @@ h6 {
     max-width: 300px;
     margin-left: auto;
     margin-right: auto;
-    animation: flow 4s linear infinite; /* Infinite horizontal flow animation */
-
     display: flex; /* Align icon and text */
     align-items: center; /* Vertically center icon and text */
     justify-content: center; /* Horizontally center content */
@@ -696,15 +694,6 @@ h6 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Keyframes for continuous horizontal flow animation */
-@keyframes flow {
-    0% {
-        background-position: 0% 0%;
-    }
-    100% {
-        background-position: 100% 0%;
-    }
-}
 
 
 
@@ -1205,30 +1194,48 @@ textarea::placeholder {
     margin-top: 20px;
 }
 
-/* WebKit Browsers (Chrome, Safari, Edge) */
+/* Hide scrollbar on WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 0; /* Hide scrollbar */
+    height: 0; /* For horizontal scrollbars */
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 6px;
+    background-color: transparent; /* Make the scrollbar transparent */
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #1E1E1E;
+    background-color: transparent; /* Make the track transparent */
 }
 
-/* Firefox */
-scrollbar {
+/* For Firefox */
+* {
+    scrollbar-width: thin; /* Minimal scrollbar width */
+    scrollbar-color: transparent transparent; /* Scrollbar and track colors both transparent */
+}
+
+/* Show scrollbar only while scrolling */
+.container {
+    overflow: auto;
+    scrollbar-width: thin; /* Show thinner scrollbars */
+    scrollbar-color: #333 #1E1E1E; /* Custom colors for Firefox */
+}
+
+/* Scrollbar styles when actively scrolling (WebKit browsers) */
+.container::-webkit-scrollbar {
     width: 12px;
-    background-color: #1E1E1E;
+    height: 12px;
 }
 
-scrollbar-thumb {
+.container::-webkit-scrollbar-thumb {
     background-color: #333;
     border-radius: 6px;
 }
+
+.container::-webkit-scrollbar-track {
+    background-color: #1E1E1E;
+}
+
 
 .disclaimer {
     margin: 10px 0; /* Add spacing above and below */
@@ -1237,9 +1244,9 @@ scrollbar-thumb {
 }
 
 .create-manual-note-btn1 svg.icon {
-    margin-right: 3px; /* Add space between icon and text */
-    width: 20px; /* Adjust icon size */
-    height: 20px;
+    margin-right: 1px; /* Add space between icon and text */
+    width: 2rem; /* Set width to 2rem */
+    height: 2rem; /* Set height to 2rem */
     fill: currentColor; /* Inherit the button's text color */
 }
 
@@ -1475,7 +1482,13 @@ scrollbar-thumb {
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h6>Choose an option below</h6>
-        <button class="create-manual-note-btn1" onclick="openModal2()">Generate Note</button>
+               <button class="create-manual-note-btn1" onclick="openModal2()">
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" width="20" height="20">
+        <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+        <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+    </svg>
+    Generate Note
+</button>
         <p class="or-text">or</p>
         <button class="create-manual-note-btn" onclick="openModal3()">Create Personal Note</button>
     </div>
