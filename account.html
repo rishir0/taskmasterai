@@ -1664,7 +1664,7 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
     align-items: center;
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
+   background-color: var(--accent-color);
 }
 
 /* Styling for the placeholder text */
@@ -1725,6 +1725,22 @@ body {
 .card-body {
     padding: 15px;
     border-radius: 0 0 var(--border-radius) var(--border-radius); /* Rounded bottom corners */
+}
+
+.upgrade-btn {
+    background: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 
