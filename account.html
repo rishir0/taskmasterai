@@ -1728,7 +1728,7 @@ body {
 }
 
 .upgrade-btn {
-    background: var(--hover-bg);
+    background: linear-gradient(45deg, var(--accent-color), #FF1493);
     color: var(--text-color);
     border: none;
     padding: 10px 20px;
@@ -1741,6 +1741,16 @@ body {
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-btn svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.upgrade-btn:hover {
+    transform: scale(1.05);
 }
 
 
