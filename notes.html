@@ -2387,6 +2387,8 @@ function showError() {
 // Get modal and elements
 const pdfModal = document.getElementById("pdfUploadModal");
 const closeButton = document.querySelector(".close-button");
+const dragArea = document.getElementById("pdfDragArea");
+const fileInput = document.getElementById("pdfFileInput");
 
 // Open modal
 function openPdfUploadModal() {
@@ -2404,6 +2406,12 @@ window.onclick = (event) => {
         pdfModal.style.display = "none";
     }
 };
+
+// File drag area click to select
+dragArea.onclick = () => {
+    fileInput.click();
+};
+
 
 
 </script>
