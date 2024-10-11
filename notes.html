@@ -1739,135 +1739,6 @@ async function generateSummary(text) {
     return summaries.join(" ");
 }
 
-// Function to handle file upload
-async function handleFileUpload(file) {
-    console.log('File upload started...');
-    
-    // Show progress bar
-    progressContainer.style.display = 'block';
-    progressBar.value = 0;
-
-    // Read PDF file
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = async function () {
-        try {
-            console.log('PDF file read successfully, processing PDF...');
-            const pdfData = new Uint8Array(reader.result);
-            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-            
-            let textContent = '';
-            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
-                const page = await pdf.getPage(pageNum);
-                const text = await page.getTextContent();
-                textContent += text.items.map(item => item.str).join(' ');
-            }
-
-            console.log('PDF text extraction complete.');
-
-            // Simulate upload progress
-            let progress = 0;
-            const uploadInterval = setInterval(() => {
-                progress += 20;
-                progressBar.value = progress;
-                console.log(`Upload progress: ${progress}%`);
-                if (progress >= 100) {
-                    clearInterval(uploadInterval);
-                }
-            }, 500);
-
-            // Once upload is "done", generate the summary
-            if (progress >= 100) {
-                console.log('Upload complete, generating summary...');
-                try {
-                    const summary = await generateSummary(textContent);
-                    pdfSummary.textContent = summary;
-                    summaryContainer.style.display = 'block';
-                    console.log('Summary generation complete.');
-
-                    // Save to Firestore
-                    await saveToFirestore2(file.name, summary);
-                    console.log('PDF summary saved to Firestore.');
-                } catch (error) {
-                    pdfSummary.textContent = "Error generating summary: " + error.message;
-                    summaryContainer.style.display = 'block';
-                    console.error('Error during summary generation: ' + error.message);
-                }
-            }
-        } catch (error) {
-            console.error('Error processing PDF: ' + error.message);
-        }
-    };
-
-    reader.onerror = function () {
-        console.error('Failed to read PDF file: ' + reader.error);
-    };
-}
-
-// Function to save summary to Firestore
-async function saveToFirestore2(fileName, summary) {
-    const userId = firebase.auth().currentUser?.uid;
-    if (!userId) {
-        console.error("User not authenticated yet");
-        return;
-    }
-
-    try {
-        // Add the PDF summary to Firestore in the 'generatedpdfs' collection
-        await db.collection('generatedpdfs').add({
-            userId: userId,
-            fileName: fileName,           // Store the file name
-            summary: summary,             // Store the generated summary
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
-        });
-        console.log(`Summary for ${fileName} saved successfully.`);
-    } catch (error) {
-        console.error("Error saving summary to Firestore: ", error);
-    }
-}
-
-// Click handler for drag area
-pdfDragArea.addEventListener('click', () => {
-    console.log('File input clicked.');
-    pdfFileInput.click();
-});
-
-// Handle file selection
-pdfFileInput.addEventListener('change', () => {
-    if (pdfFileInput.files.length > 0) {
-        console.log('File selected: ' + pdfFileInput.files[0].name);
-        handleFileUpload(pdfFileInput.files[0]);
-    } else {
-        console.warn('No file selected.');
-    }
-});
-
-// Drag-and-drop support
-pdfDragArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    pdfDragArea.classList.add('dragover');
-    console.log('File is being dragged over the area.');
-});
-
-pdfDragArea.addEventListener('dragleave', () => {
-    pdfDragArea.classList.remove('dragover');
-    console.log('File drag left the area.');
-});
-
-pdfDragArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    pdfDragArea.classList.remove('dragover');
-    console.log('File dropped onto the area.');
-
-    if (e.dataTransfer.files.length > 0) {
-        console.log('File selected via drag-and-drop: ' + e.dataTransfer.files[0].name);
-        handleFileUpload(e.dataTransfer.files[0]);
-    } else {
-        console.warn('No file dropped.');
-    }
-});
 
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
@@ -2516,8 +2387,6 @@ function showError() {
 // Get modal and elements
 const pdfModal = document.getElementById("pdfUploadModal");
 const closeButton = document.querySelector(".close-button");
-const dragArea = document.getElementById("pdfDragArea");
-const fileInput = document.getElementById("pdfFileInput");
 
 // Open modal
 function openPdfUploadModal() {
@@ -2535,12 +2404,6 @@ window.onclick = (event) => {
         pdfModal.style.display = "none";
     }
 };
-
-// File drag area click to select
-dragArea.onclick = () => {
-    fileInput.click();
-};
-
 
 
 </script>
