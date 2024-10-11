@@ -124,11 +124,6 @@ body {
     backdrop-filter: blur(10px);
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
 
 .card {
     background-color: var(--card-bg);
