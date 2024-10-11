@@ -1738,7 +1738,6 @@ async function generateSummary(text) {
     return summaries.join(" ");
 }
 
-// Function to handle file upload
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
@@ -1767,33 +1766,23 @@ async function handleFileUpload(file) {
             console.log('PDF text extraction complete.');
 
             // Simulate upload progress
-            let progress = 0;
-            const uploadInterval = setInterval(() => {
-                progress += 20;
-                progressBar.value = progress;
-                console.log(`Upload progress: ${progress}%`);
-                if (progress >= 100) {
-                    clearInterval(uploadInterval);
-                }
-            }, 500);
+            await simulateUploadProgress();
 
             // Once upload is "done", generate the summary
-            if (progress >= 100) {
-                console.log('Upload complete, generating summary...');
-                try {
-                    const summary = await generateSummary(textContent);
-                    pdfSummary.textContent = summary;
-                    summaryContainer.style.display = 'block';
-                    console.log('Summary generation complete.');
+            console.log('Upload complete, generating summary...');
+            try {
+                const summary = await generateSummary(textContent);
+                pdfSummary.textContent = summary;
+                summaryContainer.style.display = 'block';
+                console.log('Summary generation complete.');
 
-                    // Save to Firestore
-                    await saveToFirestore2(file.name, summary);
-                    console.log('PDF summary saved to Firestore.');
-                } catch (error) {
-                    pdfSummary.textContent = "Error generating summary: " + error.message;
-                    summaryContainer.style.display = 'block';
-                    console.error('Error during summary generation: ' + error.message);
-                }
+                // Save to Firestore
+                await saveToFirestore2(file.name, summary);
+                console.log('PDF summary saved to Firestore.');
+            } catch (error) {
+                pdfSummary.textContent = "Error generating summary: " + error.message;
+                summaryContainer.style.display = 'block';
+                console.error('Error during summary generation: ' + error.message);
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
@@ -1804,6 +1793,23 @@ async function handleFileUpload(file) {
         console.error('Failed to read PDF file: ' + reader.error);
     };
 }
+
+// Helper function to simulate upload progress
+async function simulateUploadProgress() {
+    let progress = 0;
+    return new Promise((resolve) => {
+        const uploadInterval = setInterval(() => {
+            progress += 20;
+            progressBar.value = progress;
+            console.log(`Upload progress: ${progress}%`);
+            if (progress >= 100) {
+                clearInterval(uploadInterval);
+                resolve(); // Resolve the promise once progress reaches 100%
+            }
+        }, 500);
+    });
+}
+
 
 // Function to save summary to Firestore
 async function saveToFirestore2(fileName, summary) {
