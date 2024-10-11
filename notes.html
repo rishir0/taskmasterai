@@ -1548,7 +1548,7 @@ textarea::placeholder {
 
 
 
-<!-- PDF Upload Modal -->
+<<!-- PDF Upload Modal -->
 <div class="modal4" id="pdfUploadModal">
     <div class="modal-content">
         <span class="close-button" id="closeModal">&times;</span>
@@ -1583,6 +1583,8 @@ textarea::placeholder {
         </div>
     </div>
 </div>
+
+
 
     </body>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -1676,16 +1678,12 @@ const huggingFaceApiKey = "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";
 const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
 // File input and progress bar elements
-    const pdfDragArea = document.getElementById('pdfDragArea');
-    const pdfFileInput = document.getElementById('pdfFileInput');
-    const fileSelect = document.getElementById('fileSelect');
-    const progressBar = document.getElementById('progressBar');
-    const progressContainer = document.getElementById('progressContainer');
-    const pdfSummary = document.getElementById('pdfSummary');
-    const summaryContainer = document.getElementById('summaryContainer');
-    const closeModal = document.getElementById('closeModal');
-    const pdfUploadModal = document.getElementById('pdfUploadModal');
-
+const pdfFileInput = document.getElementById('pdfFileInput');
+const pdfDragArea = document.getElementById('pdfDragArea');
+const progressBar = document.getElementById('progressBar2');
+const progressContainer = document.querySelector('.upload-progress');
+const summaryContainer = document.getElementById('summaryContainer');
+const pdfSummary = document.getElementById('pdfSummary');
 
 // Set PDF.js worker source
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
