@@ -1680,7 +1680,7 @@ const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart
 // File input and progress bar elements
 const pdfFileInput = document.getElementById('pdfFileInput');
 const pdfDragArea = document.getElementById('pdfDragArea');
-const progressBar = document.getElementById('progressBar2');
+const progressBar = document.getElementById('progressBar');
 const progressContainer = document.querySelector('.upload-progress');
 const summaryContainer = document.getElementById('summaryContainer');
 const pdfSummary = document.getElementById('pdfSummary');
@@ -1738,6 +1738,80 @@ async function generateSummary(text) {
     console.log('Summary generation complete.');
     return summaries.join(" ");
 }
+
+
+// Function to read and extract text from PDF using PDF.js
+async function extractTextFromPDF(pdfFile) {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+        reader.onload = async function(event) {
+            const typedArray = new Uint8Array(event.target.result);
+            const pdf = await pdfjsLib.getDocument(typedArray).promise;
+            let text = '';
+            for (let i = 0; i < pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items.map(item => item.str).join(' ');
+                text += pageText + '\n';
+            }
+            resolve(text);
+        };
+        reader.onerror = (err) => reject(err);
+        reader.readAsArrayBuffer(pdfFile);
+    });
+}
+
+// Function to handle file upload
+async function handleFileUpload(file) {
+    try {
+        progressContainer.style.display = 'block'; // Show progress bar
+        const extractedText = await extractTextFromPDF(file);
+        const summary = await generateSummary(extractedText); // Hugging Face summary
+        
+        // Store the summary in Firestore
+        await saveSummaryToFirestore(summary, file.name);
+        
+        pdfSummary.innerText = summary;
+        summaryContainer.style.display = 'block'; // Show the summary
+        progressContainer.style.display = 'none'; // Hide progress bar
+    } catch (error) {
+        console.error('Error handling PDF upload: ', error);
+    }
+}
+
+// Save summary to Firestore
+async function saveSummaryToFirestore(summary, fileName) {
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated");
+        return;
+    }
+
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+    // Save the data to Firestore
+    await db.collection('generatednotes').add({
+        userId: userId,
+        title: fileName || 'Untitled PDF',
+        summary: summary,
+        timestamp: timestamp
+    });
+}
+
+// Event listener for file input
+pdfFileInput.addEventListener('change', async function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+        await handleFileUpload(file);
+    }
+});
+
+// Drag area click to select
+pdfDragArea.addEventListener('click', () => {
+    pdfFileInput.click();
+});
+
 
 
 function loadAllNotes() {
