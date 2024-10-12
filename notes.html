@@ -1246,7 +1246,7 @@ textarea::placeholder {
 
 /* Adjusting the top property to position text better vertically */
 .progress-percentage {
-    top: calc(50% - 6px); /* Adjust this value to move text down */
+    top: calc(50% - 0px); /* Adjust this value to move text down */
 }
 
 
@@ -1788,12 +1788,55 @@ async function handleFileUpload(file) {
                 console.error('Error during summary generation: ' + error.message);
 
 
-                showError(); // Trigger the error handling function
+// Handle error condition
+progressBar.value = 0; // Reset the progress bar value
+
+// Set the fill color of the progress bar to red
+progressBar.style.backgroundColor = '#c9302c';
+
+// Update the inner HTML to show "Failed"
+const percentageDisplay = document.createElement('span');
+percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
+percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Clear existing percentage display, if any, before adding
+const existingPercentageDisplay = document.querySelector('.progress-percentage');
+if (existingPercentageDisplay) {
+    existingPercentageDisplay.remove();
+}
+
+// Append the "Failed" text to the progress bar
+progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Trigger the error handling function
+showError(); // Make sure this function handles other error logic
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
 
-            showError(); // Trigger the error handling function
+// Handle error condition
+progressBar.value = 0; // Reset the progress bar value
+
+// Set the fill color of the progress bar to red
+progressBar.style.backgroundColor = '#c9302c';
+
+// Update the inner HTML to show "Failed"
+const percentageDisplay = document.createElement('span');
+percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
+percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Clear existing percentage display, if any, before adding
+const existingPercentageDisplay = document.querySelector('.progress-percentage');
+if (existingPercentageDisplay) {
+    existingPercentageDisplay.remove();
+}
+
+// Append the "Failed" text to the progress bar
+progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Trigger the error handling function
+showError(); // Make sure this function handles other error logic
+
         }
     };
 
@@ -1801,7 +1844,29 @@ async function handleFileUpload(file) {
         console.error('Failed to read PDF file: ' + reader.error);
 
 
-        showError(); // Trigger the error handling function
+// Handle error condition
+progressBar.value = 0; // Reset the progress bar value
+
+// Set the fill color of the progress bar to red
+progressBar.style.backgroundColor = '#c9302c';
+
+// Update the inner HTML to show "Failed"
+const percentageDisplay = document.createElement('span');
+percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
+percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Clear existing percentage display, if any, before adding
+const existingPercentageDisplay = document.querySelector('.progress-percentage');
+if (existingPercentageDisplay) {
+    existingPercentageDisplay.remove();
+}
+
+// Append the "Failed" text to the progress bar
+progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Trigger the error handling function
+showError(); // Make sure this function handles other error logic
+
     };
 }
 
