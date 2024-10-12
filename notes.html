@@ -1607,10 +1607,13 @@ textarea::placeholder {
                 <p>Drag PDF file here, or <span class="file-select">click to select</span></p>
                 <input type="file" id="pdfFileInput" accept=".pdf" style="display:none">
             </div>
-            <!-- Progress bar -->
+<!-- Progress bar -->
 <div class="upload-progress" style="display: none;">
-    <p id="uploading-text">Uploading<span id="ellipsis"></span></p> <!-- Ellipsis added here -->
+    <p id="uploading-text">
+        Uploading<span id="ellipsis"></span> <!-- Ellipsis added here -->
+    </p>
     <progress id="progressBar2" value="0" max="100" data-percentage="0"></progress> <!-- Add data-percentage for fill text -->
+    <span class="progress-percentage">0%</span> <!-- Percentage display -->
 </div>
 
         </div>
@@ -1707,7 +1710,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleFileUpload(file) {
     console.log('File upload started...');
-
+    
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
@@ -1730,7 +1733,7 @@ async function handleFileUpload(file) {
                 textContent += text.items.map(item => item.str).join(' ');
             }
 
-            console.log('Extracted text:', textContent);
+            console.log('Extracted text:', textContent); // Log extracted text
 
             // Check if the text is successfully extracted before proceeding
             if (!textContent) {
@@ -1739,13 +1742,17 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
+
             // Simulate or use real-time upload progress
-            const uploadDuration = await simulateRealTimeUploadProgress();
+            await simulateRealTimeUploadProgress();
+
+
 
             // Once upload is "done", generate the summary
             console.log('Upload complete, generating summary...');
             try {
                 const summary = await generateSummary(textContent);
+                
 
                 console.log('Summary generation complete.');
 
@@ -1759,6 +1766,7 @@ async function handleFileUpload(file) {
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
             } catch (error) {
+
                 summaryContainer.style.display = 'block';
                 console.error('Error during summary generation: ' + error.message);
 
@@ -1811,7 +1819,6 @@ async function simulateRealTimeUploadProgress() {
         }, 100); // Update progress every 100ms for smoother transitions
     });
 }
-
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
