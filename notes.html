@@ -1203,69 +1203,45 @@ textarea::placeholder {
     text-decoration: underline;
 }
 
-#ellipsis::after {
-    content: "";
-    animation: ellipsis 1.5s infinite;
-    font-size: 20px; /* Match ellipsis size with the text */
-    font-weight: bold;
-    color: white; /* Make the ellipsis prominent */
-}
-
-@keyframes ellipsis {
-    0% { content: ""; }
-    25% { content: "."; }
-    50% { content: ".."; }
-    75% { content: "..."; }
-    100% { content: ""; }
-}
-
 .upload-progress {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 10px;
 }
 
-progress#progressBar2 {
+/* Main progress bar container */
+#progressBar2 {
     width: 100%;
-    height: 40px; /* Increase the height for a more prominent look */
+    height: 40px; /* Increase height */
     background-color: var(--secondary-color, #f0f0f0); /* Soft background color */
-    border-radius: 20px;
+    border-radius: 20px; /* Rounded corners */
     overflow: hidden;
-    margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Spacing above */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     position: relative;
-    padding: 2px;
+    padding: 2px; /* Padding for sleek border effect */
 }
 
-progress#progressBar2::-webkit-progress-value {
+/* Progress bar fill */
+#progressBar2::-webkit-progress-value {
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #00b8ff);
-    border-radius: 18px;
-    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
-    transition: width 1.5s ease-out;
+    background: linear-gradient(90deg, #007bff, #00b8ff); /* Gradient fill */
+    border-radius: 18px; /* Rounded corners */
+    transition: width 1.5s ease-out; /* Smooth transition */
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3); /* Soft shadow */
 }
 
-progress#progressBar2::-moz-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #007bff, #00b8ff);
-    border-radius: 18px;
-    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
-    transition: width 1.5s ease-out;
-}
-
-.progress-percentage {
+/* Progress fill percentage text */
+#progressBar2::after {
+    content: attr(data-percentage) "%"; /* Display percentage */
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 20px;
+    font-size: 20px; /* Increase text size */
     font-weight: bold;
-    letter-spacing: 0.05em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.05em; /* Add letter spacing */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Text shadow for clarity */
 }
-
 
 
 #summaryContainer {
@@ -1630,9 +1606,7 @@ progress#progressBar2::-moz-progress-bar {
 <div class="upload-progress" style="display: none;">
     <p id="uploading-text">Uploading<span id="ellipsis"></span></p> <!-- Ellipsis added here -->
     <progress id="progressBar2" value="0" max="100" data-percentage="0"></progress> <!-- Add data-percentage for fill text -->
-    <span class="progress-percentage">0%</span> <!-- Percentage display inside the progress bar -->
 </div>
-
 
         </div>
     </div>
@@ -1763,7 +1737,6 @@ async function handleFileUpload(file) {
             // Simulate upload progress
             await simulateUploadProgress();
 
-            startNewUpload();
 
             // Once upload is "done", generate the summary
             console.log('Upload complete, generating summary...');
@@ -1812,18 +1785,38 @@ async function handleFileUpload(file) {
 // Helper function to simulate upload progress
 async function simulateUploadProgress() {
     let progress = 0;
+    const progressBar = document.getElementById('progressBar2'); // Ensure we reference the progress bar
+
     return new Promise((resolve) => {
+        // Reset progress to 0 when starting a new upload
+        progressBar.value = 0;
+        progressBar.setAttribute('data-percentage', '0'); // Update displayed percentage to 0%
+
         const uploadInterval = setInterval(() => {
-            progress += 10;
-            progressBar.value = progress;
+            progress += 10; // Increment progress by 10%
+            progressBar.value = progress; // Update progress bar fill
+            progressBar.setAttribute('data-percentage', progress); // Update percentage text
             console.log(`Upload progress: ${progress}%`);
+
+            // Display percentage on the progress bar
+            const percentageDisplay = document.querySelector('.progress-percentage');
+            if (percentageDisplay) {
+                percentageDisplay.innerText = `${progress}%`; // Update the percentage text inside the progress bar
+            }
+
             if (progress >= 100) {
-                clearInterval(uploadInterval);
+                clearInterval(uploadInterval); // Stop updating once 100% is reached
                 resolve(); // Resolve the promise once progress reaches 100%
             }
-        }, 500);
+        }, 500); // Update progress every 500ms
     });
 }
+
+// Usage of simulateUploadProgress
+simulateUploadProgress().then(() => {
+    console.log('Upload completed!');
+});
+
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
@@ -2692,33 +2685,6 @@ function showError() {
     progressFill.style.background = 'linear-gradient(90deg, #c0392b, #c0392b)'; // Create a gradient using the red color
     progressPercent.textContent = 'Failed';
     errorMessage.style.display = 'block';
-}
-
-function updateProgressBar(percentage) {
-    const progressBar = document.getElementById('progressBar2');
-    progressBar.value = percentage;
-    progressBar.setAttribute('data-percentage', percentage); // Update the displayed percentage text
-}
-
-// Function to reset and increment the progress bar
-function incrementProgressBar() {
-    let percentage = 0; // Ensure the progress bar starts at 0%
-    updateProgressBar(percentage); // Reset to 0% at the start
-
-    // Use setInterval to update the progress bar every 1 second
-    const interval = setInterval(() => {
-        if (percentage < 100) {
-            percentage += 10; // Increment by 10%
-            updateProgressBar(percentage); // Update progress bar with current percentage
-        } else {
-            clearInterval(interval); // Clear interval when percentage reaches 100%
-        }
-    }, 1000); // Increment every 1 second (1000ms)
-}
-
-// Call this function whenever a new upload starts
-function startNewUpload() {
-    incrementProgressBar(); // This will start incrementing from 0% to 100%
 }
 
 
