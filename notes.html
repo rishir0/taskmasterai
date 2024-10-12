@@ -1672,72 +1672,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-// Hugging Face API setup
-const huggingFaceApiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
-
-// File input and progress bar elements
-const pdfFileInput = document.getElementById('pdfFileInput');
-const pdfDragArea = document.getElementById('pdfDragArea');
-const progressBar = document.getElementById('progressBar2');
-const progressContainer = document.querySelector('.upload-progress');
-const summaryContainer = document.getElementById('summaryContainer');
-const pdfSummary = document.getElementById('pdfSummary');
-
-// Set PDF.js worker source
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
-
-// Helper function to split text into chunks by character limit
-function splitTextIntoChunks(text, maxLength = 4000) {
-    console.log('Splitting text into chunks...');
-    const chunks = [];
-    let start = 0;
-    while (start < text.length) {
-        const end = start + maxLength;
-        chunks.push(text.slice(start, end));
-        start = end;
-    }
-    console.log(`Text split into ${chunks.length} chunk(s).`);
-    return chunks;
-}
-
-// Function to generate a summary using Hugging Face API
-async function generateSummary(text) {
-    console.log('Generating summary...');
-    const chunks = splitTextIntoChunks(text);
-    const summaries = [];
-    
-    for (let chunk of chunks) {
-        try {
-            console.log('Sending chunk to Hugging Face API...');
-            const response = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: chunk })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                summaries.push(result[0].summary_text);
-                console.log('Received summary for chunk.');
-            } else {
-                const errorDetails = await response.json();
-                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating summary: ${errorDetails.error}`);
-            }
-        } catch (error) {
-            console.error(`Failed to generate summary: ${error.message}`);
-            throw error;
-        }
-    }
-
-    console.log('Summary generation complete.');
-    return summaries.join(" ");
-}
-
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
@@ -1761,6 +1695,13 @@ async function handleFileUpload(file) {
                 const page = await pdf.getPage(pageNum);
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
+            }
+
+            console.log('Extracted text:', textContent); // Log extracted text
+
+            // Check if the text is successfully extracted before proceeding
+            if (!textContent) {
+                throw new Error('No text extracted from PDF.');
             }
 
             console.log('PDF text extraction complete.');
@@ -1809,6 +1750,78 @@ async function simulateUploadProgress() {
         }, 500);
     });
 }
+
+// Hugging Face API setup
+const huggingFaceApiKey = "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";
+const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+
+// File input and progress bar elements
+const pdfFileInput = document.getElementById('pdfFileInput');
+const pdfDragArea = document.getElementById('pdfDragArea');
+const progressBar = document.getElementById('progressBar2');
+const progressContainer = document.querySelector('.upload-progress');
+const summaryContainer = document.getElementById('summaryContainer');
+const pdfSummary = document.getElementById('pdfSummary');
+
+// Set PDF.js worker source
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+// Helper function to split text into chunks by character limit
+function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to avoid API issues
+    console.log('Splitting text into chunks...');
+    const chunks = [];
+    let start = 0;
+    while (start < text.length) {
+        const end = start + maxLength;
+        chunks.push(text.slice(start, end));
+        start = end;
+    }
+    console.log(`Text split into ${chunks.length} chunk(s).`);
+    return chunks;
+}
+
+// Function to generate a summary using Hugging Face API
+async function generateSummary(text) {
+    console.log('Generating summary...');
+    const chunks = splitTextIntoChunks(text);
+    const summaries = [];
+    
+    for (let chunk of chunks) {
+        try {
+            console.log('Sending chunk to Hugging Face API...');
+            const response = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inputs: chunk })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('API result:', result); // Log the API result
+                if (!result[0] || !result[0].summary_text) {
+                    console.error('Empty summary received from the API');
+                    throw new Error('Received an empty summary from the Hugging Face API.');
+                }
+                summaries.push(result[0].summary_text);
+                console.log('Received summary for chunk.');
+            } else {
+                const errorDetails = await response.json();
+                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
+                throw new Error(`Error generating summary: ${errorDetails.error}`);
+            }
+        } catch (error) {
+            console.error(`Failed to generate summary: ${error.message}`);
+            throw error;
+        }
+    }
+
+    console.log('Summary generation complete.');
+    return summaries.join(" ");
+}
+
 
 
 // Function to save summary to Firestore
