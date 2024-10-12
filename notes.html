@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1960,6 +1961,13 @@ window.onclick = (event) => {
 
 // Close modal when clicking the close button
 closeButton.onclick = closePdfUploadModal;
+
+// File input click handler
+pdfDragArea.addEventListener('click', () => {
+    console.log('File input clicked.');
+    pdfFileInput.click();
+});
+
 // Add click event listener to the close button
 closeButton.onclick = function() {
     // Hide the progress bar container
@@ -1967,12 +1975,7 @@ closeButton.onclick = function() {
     
     // Reset the progress bar value
     progressBar.value = 0;
-
-// File input click handler
-pdfDragArea.addEventListener('click', () => {
-    console.log('File input clicked.');
-    pdfFileInput.click();
-});
+};
 
 // Handle file selection
 pdfFileInput.addEventListener('change', () => {
