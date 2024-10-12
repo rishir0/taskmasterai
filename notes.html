@@ -1743,7 +1743,6 @@ const percentageDisplay = document.createElement('span');
     // Directly clear inline styles and class from percentage display
         percentageDisplay.innerText = ''; // Clear text
         percentageDisplay.style = ''; // Clear inline styles
-        percentageDisplay.className = ''; // Clear all classes if needed
 
 
     // Read PDF file
@@ -1917,6 +1916,7 @@ async function simulateRealTimeUploadProgress() {
             progressBar.value = progress; // Update progress bar fill
             percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
+            
             
 
             if (progress >= 100) {
