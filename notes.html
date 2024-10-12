@@ -1707,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleFileUpload(file) {
     console.log('File upload started...');
-    
+
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
@@ -1730,7 +1730,7 @@ async function handleFileUpload(file) {
                 textContent += text.items.map(item => item.str).join(' ');
             }
 
-            console.log('Extracted text:', textContent); // Log extracted text
+            console.log('Extracted text:', textContent);
 
             // Check if the text is successfully extracted before proceeding
             if (!textContent) {
@@ -1739,15 +1739,13 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
-            // Simulate upload progress
-            await simulateUploadProgress();
-
+            // Simulate or use real-time upload progress
+            const uploadDuration = await simulateRealTimeUploadProgress();
 
             // Once upload is "done", generate the summary
             console.log('Upload complete, generating summary...');
             try {
                 const summary = await generateSummary(textContent);
-                
 
                 console.log('Summary generation complete.');
 
@@ -1761,7 +1759,6 @@ async function handleFileUpload(file) {
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
             } catch (error) {
-
                 summaryContainer.style.display = 'block';
                 console.error('Error during summary generation: ' + error.message);
 
@@ -1790,40 +1787,30 @@ async function handleFileUpload(file) {
     };
 }
 
-// Helper function to simulate upload progress
-async function simulateUploadProgress() {
+// Helper function for real-time upload progress
+async function simulateRealTimeUploadProgress() {
+    const progressBar = document.getElementById('progressBar2');
+    const percentageDisplay = document.querySelector('.progress-percentage');
+    let startTime = Date.now(); // Record the start time
+
+    const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
     let progress = 0;
-    const progressBar = document.getElementById('progressBar2'); // Ensure we reference the progress bar
 
     return new Promise((resolve) => {
-        // Reset progress to 0 when starting a new upload
-        progressBar.value = 0;
-        progressBar.setAttribute('data-percentage', '0'); // Update displayed percentage to 0%
-
         const uploadInterval = setInterval(() => {
-            progress += 10; // Increment progress by 10%
-            progressBar.value = progress; // Update progress bar fill
-            progressBar.setAttribute('data-percentage', progress); // Update percentage text
-            console.log(`Upload progress: ${progress}%`);
+            const elapsedTime = Date.now() - startTime;
+            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
 
-            // Display percentage on the progress bar
-            const percentageDisplay = document.querySelector('.progress-percentage');
-            if (percentageDisplay) {
-                percentageDisplay.innerText = `${progress}%`; // Update the percentage text inside the progress bar
-            }
+            progressBar.value = progress; // Update progress bar fill
+            percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
 
             if (progress >= 100) {
                 clearInterval(uploadInterval); // Stop updating once 100% is reached
-                resolve(); // Resolve the promise once progress reaches 100%
+                resolve();
             }
-        }, 500); // Update progress every 500ms
+        }, 100); // Update progress every 100ms for smoother transitions
     });
 }
-
-// Usage of simulateUploadProgress
-simulateUploadProgress().then(() => {
-    console.log('Upload completed!');
-});
 
 
 // Hugging Face API setup
