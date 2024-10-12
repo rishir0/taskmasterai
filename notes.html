@@ -1198,7 +1198,7 @@ textarea::placeholder {
 }
 
 .pdf-drag-area .file-select {
-    color: var(--accent-color);
+    color: white;
     cursor: pointer;
     text-decoration: underline;
 }
@@ -1574,7 +1574,6 @@ textarea::placeholder {
                 <p>Uploading...</p>
                 <progress id="progressBar2" value="0" max="100"></progress>
             </div>
-
         </div>
     </div>
 </div>
@@ -1775,6 +1774,69 @@ const progressBar = document.getElementById('progressBar2');
 const progressContainer = document.querySelector('.upload-progress');
 const summaryContainer = document.getElementById('summaryContainer');
 const pdfSummary = document.getElementById('pdfSummary');
+// Get modal and elements
+const pdfModal = document.getElementById("pdfUploadModal");
+const closeButton = document.querySelector(".close-button");
+// Function to open the modal
+function openPdfUploadModal() {
+    pdfModal.style.display = "flex";
+}
+
+// Function to close the modal
+function closePdfUploadModal() {
+    pdfModal.style.display = "none";
+}
+
+// Close modal when clicking outside the modal content
+window.onclick = (event) => {
+    if (event.target === pdfModal) {
+        closePdfUploadModal();
+    }
+};
+
+// Close modal when clicking the close button
+closeButton.onclick = closePdfUploadModal;
+
+// File input click handler
+pdfDragArea.addEventListener('click', () => {
+    console.log('File input clicked.');
+    pdfFileInput.click();
+});
+
+// Handle file selection
+pdfFileInput.addEventListener('change', () => {
+    if (pdfFileInput.files.length > 0) {
+        console.log('File selected: ' + pdfFileInput.files[0].name);
+        handleFileUpload(pdfFileInput.files[0]);
+    } else {
+        console.warn('No file selected.');
+    }
+});
+
+// Drag-and-drop support
+pdfDragArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    pdfDragArea.classList.add('dragover');
+    console.log('File is being dragged over the area.');
+});
+
+pdfDragArea.addEventListener('dragleave', () => {
+    pdfDragArea.classList.remove('dragover');
+    console.log('File drag left the area.');
+});
+
+pdfDragArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    pdfDragArea.classList.remove('dragover');
+    console.log('File dropped onto the area.');
+
+    if (e.dataTransfer.files.length > 0) {
+        console.log('File selected via drag-and-drop: ' + e.dataTransfer.files[0].name);
+        handleFileUpload(e.dataTransfer.files[0]);
+    } else {
+        console.warn('No file dropped.');
+    }
+});
 
 // Set PDF.js worker source
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
@@ -1854,47 +1916,6 @@ async function saveToFirestore2(fileName, summary) {
         console.error("Error saving summary to Firestore: ", error);
     }
 }
-
-// Click handler for drag area
-pdfDragArea.addEventListener('click', () => {
-    console.log('File input clicked.');
-    pdfFileInput.click();
-});
-
-// Handle file selection
-pdfFileInput.addEventListener('change', () => {
-    if (pdfFileInput.files.length > 0) {
-        console.log('File selected: ' + pdfFileInput.files[0].name);
-        handleFileUpload(pdfFileInput.files[0]);
-    } else {
-        console.warn('No file selected.');
-    }
-});
-
-// Drag-and-drop support
-pdfDragArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    pdfDragArea.classList.add('dragover');
-    console.log('File is being dragged over the area.');
-});
-
-pdfDragArea.addEventListener('dragleave', () => {
-    pdfDragArea.classList.remove('dragover');
-    console.log('File drag left the area.');
-});
-
-pdfDragArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    pdfDragArea.classList.remove('dragover');
-    console.log('File dropped onto the area.');
-
-    if (e.dataTransfer.files.length > 0) {
-        console.log('File selected via drag-and-drop: ' + e.dataTransfer.files[0].name);
-        handleFileUpload(e.dataTransfer.files[0]);
-    } else {
-        console.warn('No file dropped.');
-    }
-});
 
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
@@ -2610,41 +2631,6 @@ function showError() {
     errorMessage.style.display = 'block';
 }
 
-
-
-
-// Get modal and elements
-const pdfModal = document.getElementById("pdfUploadModal");
-const closeButton = document.querySelector(".close-button");
-const dragArea = document.getElementById("pdfDragArea");
-const fileInput = document.getElementById("pdfFileInput");
-
-// Open modal
-function openPdfUploadModal() {
-    pdfModal.style.display = "flex";
-}
-
-// Close modal
-closeButton.onclick = () => {
-    pdfModal.style.display = "none";
-};
-
-function closePdfUploadModal() {
-    const modal = document.getElementById("pdfModal");
-    pdfModal.style.display = "none";
-}
-
-// Close modal when clicking outside the modal content
-window.onclick = (event) => {
-    if (event.target === pdfModal) {
-        pdfModal.style.display = "none";
-    }
-};
-
-// File drag area click to select
-dragArea.onclick = () => {
-    fileInput.click();
-};
 
 
 
