@@ -2039,20 +2039,23 @@ function loadGeneratedPDFs() {
                 const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
 
                 if (change.type === "added" || change.type === "modified") {
-                    let pdfDiv = document.querySelector(`[data-id='${pdfId}']`);
-                    if (!pdfDiv) {
-                        pdfDiv = document.createElement('div');
-                        pdfDiv.className = 'note-item'; // Use the same class as notes for consistent styling
-                        pdfDiv.setAttribute('data-id', pdfId);
-                        pdfDiv.setAttribute('data-type', 'generatedpdf');
+                    let pdfNoteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (!pdfNoteDiv) {
+                        pdfNoteDiv = document.createElement('div');
+                        pdfNoteDiv.className = 'note-item'; // Use the same class for consistent styling
+                        pdfNoteDiv.setAttribute('data-id', pdfId);
+                        pdfNoteDiv.setAttribute('data-type', 'generatedpdf');
                     } else {
-                        pdfDiv.innerHTML = ''; // Clear existing content to update
+                        pdfNoteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
+                    // Format the summary as a list of bullet points
+                    const formattedSummary = pdfData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+
                     // Set the innerHTML including the title, date, and summary
-                    pdfDiv.innerHTML = `
+                    pdfNoteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <p>${pdfData.summary}</p> <!-- Display PDF summary -->
+                        <ul>${formattedSummary}</ul> <!-- Display PDF summary as bullet points -->
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
                             <button class="delete" onclick="deleteItem('${pdfId}', 'generatedpdfs')">Delete</button>
@@ -2066,14 +2069,14 @@ function loadGeneratedPDFs() {
                         </div>
                     `;
 
-                    // Append the pdfDiv if it doesn't already exist in the DOM
-                    if (!notesList.contains(pdfDiv)) {
-                        notesList.appendChild(pdfDiv);
+                    // Append the noteDiv if it doesn't already exist in the DOM
+                    if (!notesList.contains(pdfNoteDiv)) {
+                        notesList.appendChild(pdfNoteDiv);
                     }
                 } else if (change.type === "removed") {
-                    const pdfDiv = document.querySelector(`[data-id='${pdfId}']`);
-                    if (pdfDiv) {
-                        notesList.removeChild(pdfDiv);
+                    const pdfNoteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (pdfNoteDiv) {
+                        notesList.removeChild(pdfNoteDiv);
                     }
                 }
             });
