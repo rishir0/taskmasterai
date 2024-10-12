@@ -1798,9 +1798,6 @@ async function handleFileUpload(file) {
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Add the error class to change the fill color
-progressBar.classList.add('error-progress'); // Add class for error styling
-
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
@@ -1814,6 +1811,14 @@ if (existingPercentageDisplay) {
 
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Change the gradient color on error
+const progressBarValueStyle = document.styleSheets[0].insertRule(`
+    #progressBar2::-webkit-progress-value {
+        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+    }
+`, 0);
+
 
 
 
@@ -1825,9 +1830,6 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Add the error class to change the fill color
-progressBar.classList.add('error-progress'); // Add class for error styling
-
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
@@ -1841,6 +1843,14 @@ if (existingPercentageDisplay) {
 
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Change the gradient color on error
+const progressBarValueStyle = document.styleSheets[0].insertRule(`
+    #progressBar2::-webkit-progress-value {
+        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+    }
+`, 0);
+
 
 
 
@@ -1855,9 +1865,6 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Add the error class to change the fill color
-progressBar.classList.add('error-progress'); // Add class for error styling
-
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
@@ -1871,6 +1878,14 @@ if (existingPercentageDisplay) {
 
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
+
+// Change the gradient color on error
+const progressBarValueStyle = document.styleSheets[0].insertRule(`
+    #progressBar2::-webkit-progress-value {
+        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+    }
+`, 0);
+
 
 
 
