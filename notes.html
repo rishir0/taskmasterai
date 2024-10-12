@@ -1203,45 +1203,69 @@ textarea::placeholder {
     text-decoration: underline;
 }
 
+#ellipsis::after {
+    content: "";
+    animation: ellipsis 1.5s infinite;
+    font-size: 20px; /* Match ellipsis size with the text */
+    font-weight: bold;
+    color: white; /* Make the ellipsis prominent */
+}
+
+@keyframes ellipsis {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+    100% { content: ""; }
+}
+
 .upload-progress {
-    margin-top: 10px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Main progress bar container */
-#progressBar2 {
+progress#progressBar2 {
     width: 100%;
-    height: 40px; /* Increase height */
+    height: 40px; /* Increase the height for a more prominent look */
     background-color: var(--secondary-color, #f0f0f0); /* Soft background color */
-    border-radius: 20px; /* Rounded corners */
+    border-radius: 20px;
     overflow: hidden;
-    margin-top: 20px; /* Spacing above */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     position: relative;
-    padding: 2px; /* Padding for sleek border effect */
+    padding: 2px;
 }
 
-/* Progress bar fill */
-#progressBar2::-webkit-progress-value {
+progress#progressBar2::-webkit-progress-value {
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #00b8ff); /* Gradient fill */
-    border-radius: 18px; /* Rounded corners */
-    transition: width 1.5s ease-out; /* Smooth transition */
-    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3); /* Soft shadow */
+    background: linear-gradient(90deg, #007bff, #00b8ff);
+    border-radius: 18px;
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+    transition: width 1.5s ease-out;
 }
 
-/* Progress fill percentage text */
-#progressBar2::after {
-    content: attr(data-percentage) "%"; /* Display percentage */
+progress#progressBar2::-moz-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #00b8ff);
+    border-radius: 18px;
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+    transition: width 1.5s ease-out;
+}
+
+.progress-percentage {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 20px; /* Increase text size */
+    font-size: 20px;
     font-weight: bold;
-    letter-spacing: 0.05em; /* Add letter spacing */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Text shadow for clarity */
+    letter-spacing: 0.05em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
+
 
 
 #summaryContainer {
@@ -1606,7 +1630,9 @@ textarea::placeholder {
 <div class="upload-progress" style="display: none;">
     <p id="uploading-text">Uploading<span id="ellipsis"></span></p> <!-- Ellipsis added here -->
     <progress id="progressBar2" value="0" max="100" data-percentage="0"></progress> <!-- Add data-percentage for fill text -->
+    <span class="progress-percentage">0%</span> <!-- Percentage display inside the progress bar -->
 </div>
+
 
         </div>
     </div>
