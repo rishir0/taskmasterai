@@ -1796,7 +1796,7 @@ async function handleFileUpload(file) {
 
 
 // Handle error condition
-progressBar.value = 0; // Reset the progress bar value
+progressBar.value = 100; // Reset the progress bar value
 
 // Add the error class to change the fill color
 progressBar.classList.add('error-progress'); // Add class for error styling
@@ -1823,7 +1823,7 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
             console.error('Error processing PDF: ' + error.message);
 
 // Handle error condition
-progressBar.value = 0; // Reset the progress bar value
+progressBar.value = 100; // Reset the progress bar value
 
 // Add the error class to change the fill color
 progressBar.classList.add('error-progress'); // Add class for error styling
@@ -1853,7 +1853,7 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
 
 // Handle error condition
-progressBar.value = 0; // Reset the progress bar value
+progressBar.value = 100; // Reset the progress bar value
 
 // Add the error class to change the fill color
 progressBar.classList.add('error-progress'); // Add class for error styling
