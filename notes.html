@@ -1316,6 +1316,11 @@ textarea::placeholder {
     font-size: 0.9rem; /* Adjust font size if needed */
 }
 
+/* Progress bar fill for the error state */
+.error-progress::-webkit-progress-value {
+    background-color: #c9302c; /* Red fill color for error */
+}
+
 
     </style>
 </head>
@@ -1791,8 +1796,8 @@ async function handleFileUpload(file) {
 // Handle error condition
 progressBar.value = 0; // Reset the progress bar value
 
-// Set the fill color of the progress bar to red
-progressBar.style.backgroundColor = '#c9302c';
+// Add the error class to change the fill color
+progressBar.classList.add('error-progress'); // Add class for error styling
 
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
@@ -1808,8 +1813,8 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Trigger the error handling function
-showError(); // Make sure this function handles other error logic
+
+
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
@@ -1817,8 +1822,8 @@ showError(); // Make sure this function handles other error logic
 // Handle error condition
 progressBar.value = 0; // Reset the progress bar value
 
-// Set the fill color of the progress bar to red
-progressBar.style.backgroundColor = '#c9302c';
+// Add the error class to change the fill color
+progressBar.classList.add('error-progress'); // Add class for error styling
 
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
@@ -1834,8 +1839,8 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Trigger the error handling function
-showError(); // Make sure this function handles other error logic
+
+
 
         }
     };
@@ -1847,8 +1852,8 @@ showError(); // Make sure this function handles other error logic
 // Handle error condition
 progressBar.value = 0; // Reset the progress bar value
 
-// Set the fill color of the progress bar to red
-progressBar.style.backgroundColor = '#c9302c';
+// Add the error class to change the fill color
+progressBar.classList.add('error-progress'); // Add class for error styling
 
 // Update the inner HTML to show "Failed"
 const percentageDisplay = document.createElement('span');
@@ -1864,8 +1869,7 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Trigger the error handling function
-showError(); // Make sure this function handles other error logic
+
 
     };
 }
