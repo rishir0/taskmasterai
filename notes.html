@@ -1737,6 +1737,8 @@ async function handleFileUpload(file) {
             // Simulate upload progress
             await simulateUploadProgress();
 
+            startNewUpload();
+
             // Once upload is "done", generate the summary
             console.log('Upload complete, generating summary...');
             try {
@@ -1786,7 +1788,7 @@ async function simulateUploadProgress() {
     let progress = 0;
     return new Promise((resolve) => {
         const uploadInterval = setInterval(() => {
-            progress += 20;
+            progress += 10;
             progressBar.value = progress;
             console.log(`Upload progress: ${progress}%`);
             if (progress >= 100) {
@@ -2313,7 +2315,7 @@ function createNote() {
             });
 
         noteInput.value = ''; // Clear the textarea after note creation
-    }, 6000); // Simulate a 6-second delay for the note generation process
+    }, 2000); // Simulate a 2-second delay for the note generation process
 }
 
 
@@ -2669,26 +2671,30 @@ function showError() {
 function updateProgressBar(percentage) {
     const progressBar = document.getElementById('progressBar2');
     progressBar.value = percentage;
-    progressBar.setAttribute('data-percentage', percentage); // Update the displayed percentage
+    progressBar.setAttribute('data-percentage', percentage); // Update the displayed percentage text
 }
 
-// Function to increment the progress bar
+// Function to reset and increment the progress bar
 function incrementProgressBar() {
-    let percentage = 10; // Start at 10%
-    
+    let percentage = 0; // Ensure the progress bar starts at 0%
+    updateProgressBar(percentage); // Reset to 0% at the start
+
     // Use setInterval to update the progress bar every 1 second
     const interval = setInterval(() => {
-        if (percentage <= 100) {
-            updateProgressBar(percentage); // Update progress bar with current percentage
+        if (percentage < 100) {
             percentage += 10; // Increment by 10%
+            updateProgressBar(percentage); // Update progress bar with current percentage
         } else {
-            clearInterval(interval); // Clear interval when percentage exceeds 100%
+            clearInterval(interval); // Clear interval when percentage reaches 100%
         }
     }, 1000); // Increment every 1 second (1000ms)
 }
 
-// Start the progress incrementing process
-incrementProgressBar(); // This will start incrementing from 10% to 100%
+// Call this function whenever a new upload starts
+function startNewUpload() {
+    incrementProgressBar(); // This will start incrementing from 0% to 100%
+}
+
 
 
 
