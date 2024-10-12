@@ -1575,11 +1575,6 @@ textarea::placeholder {
                 <progress id="progressBar2" value="0" max="100"></progress>
             </div>
 
-            <!-- Display summary -->
-            <div class="summary-container" id="summaryContainer" style="display: none;">
-                <h4>Generated Note:</h4>
-                <p id="pdfSummary"></p>
-            </div>
         </div>
     </div>
 </div>
@@ -1676,6 +1671,11 @@ async function handleFileUpload(file) {
     console.log('File upload started...');
     
     // Show progress bar
+    const progressContainer = document.querySelector('.upload-progress');
+    const progressBar = document.getElementById('progressBar2');
+    const summaryContainer = document.getElementById('summaryContainer'); // Assuming you have this container for the summary
+    const pdfSummary = document.getElementById('pdfSummary'); // Assuming this element displays the summary
+
     progressContainer.style.display = 'block';
     progressBar.value = 0;
 
@@ -1722,20 +1722,38 @@ async function handleFileUpload(file) {
                 console.log('PDF summary saved to Firestore.');
 
                 closePdfUploadModal();
+
+                // Hide progress bar after everything is done
+                progressContainer.style.display = 'none';
+                progressBar.value = 0;
+                
             } catch (error) {
                 pdfSummary.textContent = "Error generating summary: " + error.message;
                 summaryContainer.style.display = 'block';
                 console.error('Error during summary generation: ' + error.message);
+
+                // Hide progress bar in case of error
+                progressContainer.style.display = 'none';
+                progressBar.value = 0;
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
+
+            // Hide progress bar in case of error
+            progressContainer.style.display = 'none';
+            progressBar.value = 0;
         }
     };
 
     reader.onerror = function () {
         console.error('Failed to read PDF file: ' + reader.error);
+
+        // Hide progress bar in case of error
+        progressContainer.style.display = 'none';
+        progressBar.value = 0;
     };
 }
+
 
 // Helper function to simulate upload progress
 async function simulateUploadProgress() {
