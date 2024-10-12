@@ -2039,21 +2039,21 @@ function loadGeneratedPDFs() {
                 const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
 
                 if (change.type === "added" || change.type === "modified") {
-                    let pdfNoteDiv = document.querySelector(`[data-id='${pdfId}']`);
-                    if (!pdfNoteDiv) {
-                        pdfNoteDiv = document.createElement('div');
-                        pdfNoteDiv.className = 'note-item'; // Use the same class for consistent styling
-                        pdfNoteDiv.setAttribute('data-id', pdfId);
-                        pdfNoteDiv.setAttribute('data-type', 'generatedpdf');
+                    let noteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (!noteDiv) {
+                        noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item'; // Use the same class as notes for consistent styling
+                        noteDiv.setAttribute('data-id', pdfId);
+                        noteDiv.setAttribute('data-type', 'generatedpdf');
                     } else {
-                        pdfNoteDiv.innerHTML = ''; // Clear existing content to update
+                        noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
                     // Format the summary as a list of bullet points
                     const formattedSummary = pdfData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
 
                     // Set the innerHTML including the title, date, and summary
-                    pdfNoteDiv.innerHTML = `
+                    noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
                         <ul>${formattedSummary}</ul> <!-- Display PDF summary as bullet points -->
                         <div class="button-container">
@@ -2070,13 +2070,13 @@ function loadGeneratedPDFs() {
                     `;
 
                     // Append the noteDiv if it doesn't already exist in the DOM
-                    if (!notesList.contains(pdfNoteDiv)) {
-                        notesList.appendChild(pdfNoteDiv);
+                    if (!notesList.contains(noteDiv)) {
+                        notesList.appendChild(noteDiv);
                     }
                 } else if (change.type === "removed") {
-                    const pdfNoteDiv = document.querySelector(`[data-id='${pdfId}']`);
-                    if (pdfNoteDiv) {
-                        notesList.removeChild(pdfNoteDiv);
+                    const noteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (noteDiv) {
+                        notesList.removeChild(noteDiv);
                     }
                 }
             });
@@ -2084,6 +2084,7 @@ function loadGeneratedPDFs() {
             console.error('Error loading PDFs: ', error);
         });
 }
+
 
 
 
