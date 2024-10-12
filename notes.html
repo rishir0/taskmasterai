@@ -1736,7 +1736,7 @@ async function handleFileUpload(file) {
     console.log('File upload started...');
     
 const progressBar = document.getElementById('progressBar2');
-const percentageDisplay = document.querySelector('.progress-percentage');
+const percentageDisplay = document.createElement('span');
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
