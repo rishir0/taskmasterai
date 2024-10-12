@@ -1915,9 +1915,9 @@ async function simulateRealTimeUploadProgress() {
             progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
 
             progressBar.value = progress; // Update progress bar fill
-            percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
             percentageDisplay.style = ''; // Clear inline styles
-            percentageDisplay.className = ''; // Clear all classes if needed
+            percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
+            
 
             if (progress >= 100) {
                 clearInterval(uploadInterval); // Stop updating once 100% is reached
