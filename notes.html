@@ -1204,7 +1204,7 @@ textarea::placeholder {
 }
 
 .upload-progress {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 /* Main progress bar container */
@@ -2666,6 +2666,29 @@ function showError() {
     errorMessage.style.display = 'block';
 }
 
+function updateProgressBar(percentage) {
+    const progressBar = document.getElementById('progressBar2');
+    progressBar.value = percentage;
+    progressBar.setAttribute('data-percentage', percentage); // Update the displayed percentage
+}
+
+// Function to increment the progress bar
+function incrementProgressBar() {
+    let percentage = 10; // Start at 10%
+    
+    // Use setInterval to update the progress bar every 1 second
+    const interval = setInterval(() => {
+        if (percentage <= 100) {
+            updateProgressBar(percentage); // Update progress bar with current percentage
+            percentage += 10; // Increment by 10%
+        } else {
+            clearInterval(interval); // Clear interval when percentage exceeds 100%
+        }
+    }, 1000); // Increment every 1 second (1000ms)
+}
+
+// Start the progress incrementing process
+incrementProgressBar(); // This will start incrementing from 10% to 100%
 
 
 
