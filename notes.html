@@ -1992,6 +1992,72 @@ function loadGeneratedNotes() {
         });
 }
 
+function loadGeneratedPDFs() {
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    db.collection('generatedpdfs') // Assuming you're using a 'generatedpdfs' collection in Firestore
+        .where('userId', '==', userId)
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot => {
+            const notesList = document.getElementById('notes-list'); // Use the same notes-list container
+
+            snapshot.docChanges().forEach(change => {
+                const pdfData = change.doc.data();
+                const pdfId = change.doc.id;
+
+                // Extract title and timestamp (converted to a readable date)
+                const title = pdfData.title || "Untitled PDF"; // Fallback to 'Untitled PDF' if no title is present
+                const timestamp = pdfData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
+                const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
+
+                if (change.type === "added" || change.type === "modified") {
+                    let pdfDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (!pdfDiv) {
+                        pdfDiv = document.createElement('div');
+                        pdfDiv.className = 'note-item'; // Use the same class as notes for consistent styling
+                        pdfDiv.setAttribute('data-id', pdfId);
+                        pdfDiv.setAttribute('data-type', 'generatedpdf');
+                    } else {
+                        pdfDiv.innerHTML = ''; // Clear existing content to update
+                    }
+
+                    // Set the innerHTML including the title, date, and summary
+                    pdfDiv.innerHTML = `
+                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
+                        <p>${pdfData.summary}</p> <!-- Display PDF summary -->
+                        <div class="button-container">
+                            <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
+                            <button class="delete" onclick="deleteItem('${pdfId}', 'generatedpdfs')">Delete</button>
+                        </div>
+                        <div class="ai-generated-tag">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+                            </svg>
+                            <span>AI Generated</span>
+                        </div>
+                    `;
+
+                    // Append the pdfDiv if it doesn't already exist in the DOM
+                    if (!notesList.contains(pdfDiv)) {
+                        notesList.appendChild(pdfDiv);
+                    }
+                } else if (change.type === "removed") {
+                    const pdfDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (pdfDiv) {
+                        notesList.removeChild(pdfDiv);
+                    }
+                }
+            });
+        }, error => {
+            console.error('Error loading PDFs: ', error);
+        });
+}
 
 
 
