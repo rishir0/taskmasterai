@@ -2027,7 +2027,8 @@ function loadGeneratedPDFs() {
         .where('userId', '==', userId)
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
-            const notesList = document.getElementById('notes-list'); // Use the same notes-list container
+            console.log("PDF data snapshot received"); // Log to verify the function is running
+            const notesList = document.getElementById('notes-list');
 
             snapshot.docChanges().forEach(change => {
                 const pdfData = change.doc.data();
@@ -2050,7 +2051,7 @@ function loadGeneratedPDFs() {
                     }
 
                     // Format the summary as a list of bullet points
-                    const formattedSummary = pdfData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+                    const formattedSummary = pdfData.summary?.split('. ').map(point => `<li>${point.trim()}</li>`).join('') || "No summary available.";
 
                     // Set the innerHTML including the title, date, and summary
                     noteDiv.innerHTML = `
