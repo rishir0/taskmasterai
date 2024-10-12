@@ -2790,11 +2790,18 @@ function showError() {
     const progressPercent = document.querySelector('.progress-percent');
     const errorMessage = document.getElementById('error-message');
 
-    // Show error message and set percentage to "Failed"
-    progressFill.style.background = 'linear-gradient(90deg, #c0392b, #c0392b)'; // Create a gradient using the red color
-    progressPercent.textContent = 'Failed';
-    errorMessage.style.display = 'block';
+    // Check if the text content contains a percentage or a number
+    const progressText = progressPercent.textContent;
+    const hasNumberOrPercentage = /\d+%/.test(progressText); // Checks if there's a number followed by a %
+
+    if (hasNumberOrPercentage) {
+        // Show error message and set percentage to "Failed"
+        progressFill.style.background = 'linear-gradient(90deg, #c0392b, #c0392b)'; // Error gradient color
+        progressPercent.textContent = 'Failed';
+        errorMessage.style.display = 'block';
+    }
 }
+
 
 
 
