@@ -1708,8 +1708,8 @@ async function handleFileUpload(file) {
             console.log('Upload complete, generating summary...');
             try {
                 const summary = await generateSummary(textContent);
-                pdfSummary.textContent = summary;
-                summaryContainer.style.display = 'block';
+                
+
                 console.log('Summary generation complete.');
 
                 // Save to Firestore
@@ -1722,7 +1722,7 @@ async function handleFileUpload(file) {
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
             } catch (error) {
-                pdfSummary.textContent = "Error generating summary: " + error.message;
+
                 summaryContainer.style.display = 'block';
                 console.error('Error during summary generation: ' + error.message);
 
