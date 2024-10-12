@@ -1219,28 +1219,28 @@ textarea::placeholder {
 
 /* Main progress bar container */
 #progressBar2 {
-    width: 100%;
-    height: 40px; /* Increase height */
+    width: 100%; /* Full width */
+    height: 40px; /* Height of the bar */
     background-color: var(--secondary-color, #f0f0f0); /* Soft background color */
     border-radius: 20px; /* Rounded corners */
-    overflow: hidden;
-    margin-top: 20px; /* Spacing above */
+    overflow: hidden; /* Prevent overflow */
+    margin-top: 20px; /* Spacing above the progress bar */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    position: relative;
-    padding: 2px; /* Padding for sleek border effect */
+    position: relative; /* Needed for absolute positioning of the percentage text */
+    padding: 0; /* Remove padding to prevent extra space */
 }
 
 /* Progress percentage styling (inside the bar) */
 .progress-percentage {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); /* Center the text inside the progress bar */
-    color: #fff;
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: 0.05em; /* Add letter spacing */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Optional: Add shadow for better readability */
+    left: 50%; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translate(-50%, -50%); /* Adjust position to be centered */
+    color: #fff; /* White color for contrast */
+    font-size: 20px; /* Font size */
+    font-weight: bold; /* Bold text for emphasis */
+    letter-spacing: 0.05em; /* Slight letter spacing */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Text shadow for readability */
     pointer-events: none; /* Ensure text is not selectable/clickable */
 }
 
@@ -1255,19 +1255,6 @@ textarea::placeholder {
     box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3); /* Soft shadow */
 }
 
-/* Progress fill percentage text */
-#progressBar2::after {
-    content: attr(data-percentage) "%"; /* Display percentage */
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font-size: 20px; /* Increase text size */
-    font-weight: bold;
-    letter-spacing: 0.05em; /* Add letter spacing */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Text shadow for clarity */
-}
 
 
 #summaryContainer {
