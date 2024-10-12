@@ -1734,11 +1734,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleFileUpload(file) {
     console.log('File upload started...');
-    
-const progressBar = document.getElementById('progressBar2');
+
+    const progressBar = document.getElementById('progressBar2');
+    const progressContainer = document.getElementById('progressContainer'); // Assuming you have a container for the progress bar
+    const percentageDisplay = document.querySelector('.progress-percentage');
+
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
+
+    // Clear inline styles of the percentage display if it exists
+    if (percentageDisplay) {
+        percentageDisplay.style = ''; // Clear all inline styles
+        percentageDisplay.className = ''; // Optionally remove the class if needed
+    }
 
     // Read PDF file
     const reader = new FileReader();
