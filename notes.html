@@ -1636,6 +1636,7 @@ textarea::placeholder {
         Uploading<span id="ellipsis"></span> <!-- Ellipsis added here -->
     </p>
     <div class="progress-container" style="position: relative;">
+        <progress id="progressBar2"></progress> <!-- Progress bar -->
         <span class="progress-percentage">0%</span> <!-- Percentage display inside progress bar -->
     </div>
 </div>
@@ -1738,7 +1739,7 @@ async function handleFileUpload(file) {
     
     // Show progress bar
     progressContainer.style.display = 'block';
-    progressBar.value = 0;
+    progressBar.value = ;
 
     // Read PDF file
     const reader = new FileReader();
