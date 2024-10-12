@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1967,15 +1966,6 @@ pdfDragArea.addEventListener('click', () => {
     console.log('File input clicked.');
     pdfFileInput.click();
 });
-
-// Add click event listener to the close button
-closeButton.onclick = function() {
-    // Hide the progress bar container
-    progressContainer.style.display = 'none';
-    
-    // Reset the progress bar value
-    progressBar.value = 0;
-};
 
 // Handle file selection
 pdfFileInput.addEventListener('change', () => {
