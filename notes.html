@@ -1244,6 +1244,12 @@ textarea::placeholder {
     pointer-events: none; /* Ensure text is not selectable/clickable */
 }
 
+/* Adjusting the top property to position text better vertically */
+.progress-percentage {
+    top: calc(50% - 2px); /* Adjust this value to move text down */
+}
+
+
 
 /* Progress bar fill */
 #progressBar2::-webkit-progress-value {
@@ -1781,17 +1787,12 @@ async function handleFileUpload(file) {
                 summaryContainer.style.display = 'block';
                 console.error('Error during summary generation: ' + error.message);
 
-                // Hide progress bar in case of error
-                progressContainer.style.display = 'none';
-                progressBar.value = 0;
+
                 showError(); // Trigger the error handling function
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
 
-            // Hide progress bar in case of error
-            progressContainer.style.display = 'none';
-            progressBar.value = 0;
             showError(); // Trigger the error handling function
         }
     };
@@ -1799,9 +1800,7 @@ async function handleFileUpload(file) {
     reader.onerror = function () {
         console.error('Failed to read PDF file: ' + reader.error);
 
-        // Hide progress bar in case of error
-        progressContainer.style.display = 'none';
-        progressBar.value = 0;
+
         showError(); // Trigger the error handling function
     };
 }
