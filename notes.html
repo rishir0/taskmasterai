@@ -1782,7 +1782,7 @@ function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to 
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API and format it as key points
+// Function to generate a summary using Hugging Face API
 async function generateSummary(text) {
     console.log('Generating summary...');
     const chunks = splitTextIntoChunks(text);
@@ -1802,11 +1802,6 @@ async function generateSummary(text) {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('API result:', result); // Log the API result
-                if (!result[0] || !result[0].summary_text) {
-                    console.error('Empty summary received from the API');
-                    throw new Error('Received an empty summary from the Hugging Face API.');
-                }
                 summaries.push(result[0].summary_text);
                 console.log('Received summary for chunk.');
             } else {
@@ -1821,14 +1816,7 @@ async function generateSummary(text) {
     }
 
     console.log('Summary generation complete.');
-
-    // Join all the summaries into a single text and split into sentences
-    const fullSummary = summaries.join(" ");
-    const bulletPoints = fullSummary.split('. ').map(sentence => `• ${sentence.trim()}`).join('\n');
-
-    console.log('Bullet points generated:\n', bulletPoints);
-    
-    return bulletPoints;
+    return summaries.join(" ");
 }
 
 
