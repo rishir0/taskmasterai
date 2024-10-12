@@ -1960,6 +1960,13 @@ window.onclick = (event) => {
 
 // Close modal when clicking the close button
 closeButton.onclick = closePdfUploadModal;
+// Add click event listener to the close button
+closeButton.onclick = function() {
+    // Hide the progress bar container
+    progressContainer.style.display = 'none';
+    
+    // Reset the progress bar value
+    progressBar.value = 0;
 
 // File input click handler
 pdfDragArea.addEventListener('click', () => {
