@@ -1211,6 +1211,12 @@ textarea::placeholder {
     margin-bottom: 10px;
 }
 
+/* Progress container */
+.progress-container {
+    position: relative;
+    width: 100%;
+}
+
 /* Main progress bar container */
 #progressBar2 {
     width: 100%;
@@ -1223,6 +1229,20 @@ textarea::placeholder {
     position: relative;
     padding: 2px; /* Padding for sleek border effect */
 }
+
+/* Progress percentage styling (inside the bar) */
+.progress-percentage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Center the text inside the progress bar */
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Optional: Add shadow for better readability */
+    pointer-events: none; /* Ensure text is not selectable/clickable */
+}
+
 
 /* Progress bar fill */
 #progressBar2::-webkit-progress-value {
@@ -1612,9 +1632,12 @@ textarea::placeholder {
     <p id="uploading-text">
         Uploading<span id="ellipsis"></span> <!-- Ellipsis added here -->
     </p>
-    <progress id="progressBar2" value="0" max="100" data-percentage="0"></progress> <!-- Add data-percentage for fill text -->
-    <span class="progress-percentage">0%</span> <!-- Percentage display -->
+    <div class="progress-container" style="position: relative;">
+        <progress id="progressBar2" value="0" max="100" data-percentage="0"></progress> <!-- Progress bar -->
+        <span class="progress-percentage">0%</span> <!-- Percentage display inside progress bar -->
+    </div>
 </div>
+
 
         </div>
     </div>
