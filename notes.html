@@ -1768,6 +1768,7 @@ async function handleFileUpload(file) {
                 // Hide progress bar in case of error
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
+                showError(); // Trigger the error handling function
             }
         } catch (error) {
             console.error('Error processing PDF: ' + error.message);
@@ -1775,6 +1776,7 @@ async function handleFileUpload(file) {
             // Hide progress bar in case of error
             progressContainer.style.display = 'none';
             progressBar.value = 0;
+            showError(); // Trigger the error handling function
         }
     };
 
@@ -1784,6 +1786,7 @@ async function handleFileUpload(file) {
         // Hide progress bar in case of error
         progressContainer.style.display = 'none';
         progressBar.value = 0;
+        showError(); // Trigger the error handling function
     };
 }
 
