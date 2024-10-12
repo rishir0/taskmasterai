@@ -1720,6 +1720,8 @@ async function handleFileUpload(file) {
                 // Save to Firestore
                 await saveToFirestore2(file.name, summary);
                 console.log('PDF summary saved to Firestore.');
+
+                closePdfUploadModal();
             } catch (error) {
                 pdfSummary.textContent = "Error generating summary: " + error.message;
                 summaryContainer.style.display = 'block';
@@ -2627,6 +2629,11 @@ function openPdfUploadModal() {
 closeButton.onclick = () => {
     pdfModal.style.display = "none";
 };
+
+function closePdfUploadModal() {
+    const modal = document.getElementById("pdfModal");
+    pdfModal.style.display = "none";
+}
 
 // Close modal when clicking outside the modal content
 window.onclick = (event) => {
