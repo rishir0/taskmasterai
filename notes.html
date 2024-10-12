@@ -1735,6 +1735,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
+const progressBar = document.getElementById('progressBar2');
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
@@ -1798,11 +1799,16 @@ async function handleFileUpload(file) {
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Update the inner HTML to show "Failed"
+// Create the percentage display element
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Set the background to the error gradient color for the percentage display
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
+percentageDisplay.style.color = '#fff'; // Optional: Set text color for better contrast
+percentageDisplay.style.padding = '5px 10px'; // Optional: Add some padding
+percentageDisplay.style.borderRadius = '5px'; // Optional: Rounded corners
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1813,12 +1819,14 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Change the gradient color on error
-const progressBarValueStyle = document.styleSheets[0].insertRule(`
+// Change the gradient color on the progress bar fill
+const styleSheet = document.styleSheets[0]; // Select the first stylesheet
+styleSheet.insertRule(`
     #progressBar2::-webkit-progress-value {
         background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
-`, 0);
+`, styleSheet.cssRules.length);
+
 
 
 
@@ -1832,11 +1840,16 @@ const progressBarValueStyle = document.styleSheets[0].insertRule(`
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Update the inner HTML to show "Failed"
+// Create the percentage display element
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Set the background to the error gradient color for the percentage display
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
+percentageDisplay.style.color = '#fff'; // Optional: Set text color for better contrast
+percentageDisplay.style.padding = '5px 10px'; // Optional: Add some padding
+percentageDisplay.style.borderRadius = '5px'; // Optional: Rounded corners
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1847,16 +1860,13 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Change the gradient color on error
-const progressBarValueStyle = document.styleSheets[0].insertRule(`
+// Change the gradient color on the progress bar fill
+const styleSheet = document.styleSheets[0]; // Select the first stylesheet
+styleSheet.insertRule(`
     #progressBar2::-webkit-progress-value {
         background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
-`, 0);
-
-
-
-
+`, styleSheet.cssRules.length);
 
         }
     };
@@ -1868,11 +1878,16 @@ const progressBarValueStyle = document.styleSheets[0].insertRule(`
 // Handle error condition
 progressBar.value = 100; // Reset the progress bar value
 
-// Update the inner HTML to show "Failed"
+// Create the percentage display element
 const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
+
+// Set the background to the error gradient color for the percentage display
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
+percentageDisplay.style.color = '#fff'; // Optional: Set text color for better contrast
+percentageDisplay.style.padding = '5px 10px'; // Optional: Add some padding
+percentageDisplay.style.borderRadius = '5px'; // Optional: Rounded corners
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1883,12 +1898,14 @@ if (existingPercentageDisplay) {
 // Append the "Failed" text to the progress bar
 progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 
-// Change the gradient color on error
-const progressBarValueStyle = document.styleSheets[0].insertRule(`
+// Change the gradient color on the progress bar fill
+const styleSheet = document.styleSheets[0]; // Select the first stylesheet
+styleSheet.insertRule(`
     #progressBar2::-webkit-progress-value {
         background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
-`, 0);
+`, styleSheet.cssRules.length);
+
 
 
     };
