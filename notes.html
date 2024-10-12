@@ -1815,9 +1815,10 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Change the gradient color on error
 const progressBarValueStyle = document.styleSheets[0].insertRule(`
     #progressBar2::-webkit-progress-value {
-        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+        background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
 `, 0);
+
 
 
 
@@ -1847,7 +1848,7 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Change the gradient color on error
 const progressBarValueStyle = document.styleSheets[0].insertRule(`
     #progressBar2::-webkit-progress-value {
-        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+        background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
 `, 0);
 
@@ -1882,12 +1883,9 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Change the gradient color on error
 const progressBarValueStyle = document.styleSheets[0].insertRule(`
     #progressBar2::-webkit-progress-value {
-        background: linear-gradient(90deg, #c9302c, #c9302c); /* Error color */
+        background: linear-gradient(90deg, #c9302c, #c9302c) !important; /* Error color with !important */
     }
 `, 0);
-
-
-
 
 
     };
