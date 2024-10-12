@@ -1313,6 +1313,7 @@ textarea::placeholder {
 
 /* Progress percentage styling (inside the bar) */
 .progress-percentage {
+    content: attr(data-percentage) "%"; /* Display percentage */
     position: absolute;
     left: 50%;
     top: 50%;
@@ -1739,7 +1740,7 @@ async function handleFileUpload(file) {
     
     // Show progress bar
     progressContainer.style.display = 'block';
-    progressBar.value = ;
+    progressBar.value = 0;
 
     // Read PDF file
     const reader = new FileReader();
