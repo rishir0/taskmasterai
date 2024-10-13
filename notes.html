@@ -1840,13 +1840,13 @@ const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
 errorMessage.style.color = '#dc3545'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
-errorMessage.style.marginTop = '8px'; // Adjust margin as needed
 errorMessage.style.display = 'block'; // Ensure it's displayed underneath
 
 // Apply absolute positioning to the error message
 errorMessage.style.position = 'absolute'; // Make it absolute so it doesn't interfere with layout
-errorMessage.style.left = '0'; // Align with the left side of the progress bar container
-errorMessage.style.top = '110%'; // Slightly below the progress bar
+errorMessage.style.left = '50%'; // Center it horizontally
+errorMessage.style.transform = 'translateX(-50%)'; // Adjust for proper centering
+errorMessage.style.top = '95%'; // Adjust the top position to move it closer to the "Failed" text
 
 // Ensure the parent element has relative positioning to anchor the absolute position correctly
 progressBar.parentNode.style.position = 'relative';
@@ -1860,6 +1860,7 @@ errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.appendChild(errorMessage);
+
 
 
 
@@ -1899,13 +1900,13 @@ const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
 errorMessage.style.color = '#dc3545'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
-errorMessage.style.marginTop = '8px'; // Adjust margin as needed
 errorMessage.style.display = 'block'; // Ensure it's displayed underneath
 
 // Apply absolute positioning to the error message
 errorMessage.style.position = 'absolute'; // Make it absolute so it doesn't interfere with layout
-errorMessage.style.left = '0'; // Align with the left side of the progress bar container
-errorMessage.style.top = '110%'; // Slightly below the progress bar
+errorMessage.style.left = '50%'; // Center it horizontally
+errorMessage.style.transform = 'translateX(-50%)'; // Adjust for proper centering
+errorMessage.style.top = '95%'; // Adjust the top position to move it closer to the "Failed" text
 
 // Ensure the parent element has relative positioning to anchor the absolute position correctly
 progressBar.parentNode.style.position = 'relative';
@@ -1919,6 +1920,7 @@ errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.appendChild(errorMessage);
+
 
 
         }
@@ -1957,13 +1959,13 @@ const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
 errorMessage.style.color = '#dc3545'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
-errorMessage.style.marginTop = '8px'; // Adjust margin as needed
 errorMessage.style.display = 'block'; // Ensure it's displayed underneath
 
 // Apply absolute positioning to the error message
 errorMessage.style.position = 'absolute'; // Make it absolute so it doesn't interfere with layout
-errorMessage.style.left = '0'; // Align with the left side of the progress bar container
-errorMessage.style.top = '110%'; // Slightly below the progress bar
+errorMessage.style.left = '50%'; // Center it horizontally
+errorMessage.style.transform = 'translateX(-50%)'; // Adjust for proper centering
+errorMessage.style.top = '95%'; // Adjust the top position to move it closer to the "Failed" text
 
 // Ensure the parent element has relative positioning to anchor the absolute position correctly
 progressBar.parentNode.style.position = 'relative';
@@ -1977,6 +1979,7 @@ errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.appendChild(errorMessage);
+
 
 
     };
