@@ -1739,24 +1739,20 @@ document.addEventListener('DOMContentLoaded', function() {
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
-const progressBar = document.getElementById('progressBar2');
-const percentageDisplay = document.createElement('span');
-const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
-    // Clear the error message specifically by targeting the right element
+    const progressBar = document.getElementById('progressBar2');
+    const percentageDisplay = document.createElement('span');
+    const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
     const errorMessage = document.querySelector('.error-message2'); // Get the existing error message
     if (errorMessage) {
         errorMessage.innerText = ''; // Clear the error message text
         errorMessage.style = ''; // Clear inline styles
     }
+
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
-    // Directly clear inline styles and class from percentage display
     percentageDisplay.innerText = ''; // Clear text
     percentageDisplay.style = ''; // Clear inline styles
-
-
-
 
     // Read PDF file
     const reader = new FileReader();
@@ -1785,30 +1781,25 @@ const uploadingText = document.getElementById('uploading-text'); // Get the "Upl
 
             console.log('PDF text extraction complete.');
 
-
             // Simulate or use real-time upload progress
             await simulateRealTimeUploadProgress();
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis"></span>';
 
-
-
-            // Once upload is "done", generate the summary
-            console.log('Upload complete, generating summary...');
+            // Once upload is "done", generate the overview and key points
+            console.log('Upload complete, generating overview and key points...');
             try {
-                const summary = await generateSummary(textContent);
+                const { overview, keyPoints } = await generateSummary(textContent);
                 
-
-                console.log('Summary generation complete.');
+                console.log('Overview and key points generation complete.');
 
                 // Save to Firestore
-                await saveToFirestore2(file.name, summary);
-                console.log('PDF summary saved to Firestore.');
+                await saveToFirestore2(file.name, overview, keyPoints);
+                console.log('PDF overview and key points saved to Firestore.');
 
                 closePdfUploadModal();
-
-                loadAllNotes()
+                loadAllNotes();
 
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
