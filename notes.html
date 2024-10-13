@@ -2107,49 +2107,76 @@ function splitTextIntoChunks(text, chunkSize = 4000) {
     return text.match(regex) || [];
 }
 
-// Function to generate a summary, title, overview, and key points from text
+// Helper function to call the Hugging Face API
+async function callModel(prompt) {
+    try {
+        const response = await fetch(modelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingFaceApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                inputs: prompt,
+                parameters: {
+                    max_new_tokens: 150, // Adjust as needed
+                    temperature: 0.7
+                }
+            })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            return result.generated_text || "No text generated."; // Adjust based on the actual response structure
+        } else {
+            const errorDetails = await response.json();
+            console.error(`Error from Hugging Face API: ${errorDetails.error}`);
+            throw new Error(`Error generating response: ${errorDetails.error}`);
+        }
+    } catch (error) {
+        console.error(`Failed to call model: ${error.message}`);
+        throw error;
+    }
+}
+
+// Function to generate summary with title, overview, and key points
 async function generateSummary(text) {
-    console.log('Generating summary, title, overview, and key points...');
+    console.log('Generating title, overview, and key points...');
+
     const chunks = splitTextIntoChunks(text);
-    const summaries = [];
-    
+    const results = [];
+
     for (let chunk of chunks) {
         try {
-            console.log('Sending chunk to Hugging Face API...');
-            const response = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    inputs: `Please provide a title, an overview, and key points from the following text:\n\n${chunk}`,
-                    parameters: {
-                        max_new_tokens: 300,
-                        temperature: 0.7
-                    }
-                })
-            });
+            console.log('Generating title...');
+            const titlePrompt = `Generate a title for the following text:\n\n${chunk}`;
+            const title = await callModel(titlePrompt);
+            console.log('Generated Title:', title);
 
-            if (response.ok) {
-                const result = await response.json();
-                summaries.push(result.generated_text);  // Assuming the model outputs all desired components in one go
-                console.log('Received summary for chunk.');
-            } else {
-                const errorDetails = await response.json();
-                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating summary: ${errorDetails.error}`);
-            }
+            console.log('Generating overview...');
+            const overviewPrompt = `Provide an overview for the following text:\n\n${chunk}`;
+            const overview = await callModel(overviewPrompt);
+            console.log('Generated Overview:', overview);
+
+            console.log('Generating key points...');
+            const keyPointsPrompt = `List key points from the following text in bullet points:\n\n${chunk}`;
+            const keyPoints = await callModel(keyPointsPrompt);
+            console.log('Generated Key Points:', keyPoints);
+
+            // Combine results for the current chunk
+            results.push({
+                title: title,
+                overview: overview,
+                keyPoints: keyPoints
+            });
         } catch (error) {
-            console.error(`Failed to generate summary: ${error.message}`);
-            throw error;
+            console.error(`Failed to process chunk: ${error.message}`);
         }
     }
 
     console.log('Summary generation complete.');
-    return summaries.join("\n\n---\n\n");  // Separate summaries of different chunks
+    return results; // Return the array of results for all chunks
 }
-
 
 
 // Function to save summary to Firestore
