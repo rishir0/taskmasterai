@@ -1138,6 +1138,22 @@ textarea::placeholder {
     color: white; /* Make the ellipsis prominent */
 }
 
+/* Ellipsis animation for "Generating Note..." */
+@keyframes ellipsis2 {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+    100% { content: ""; }
+}
+
+#ellipsis2::after {
+    content: "";
+    animation: ellipsis 1.5s infinite;
+    font-size: 20px; /* Match ellipsis size with the text */
+    color: white; /* Make the ellipsis prominent */
+}
+
 /* Error Message Styling */
 .error-message {
     color: #dc3545; /* Use a red color for the error message */
@@ -1641,7 +1657,7 @@ textarea::placeholder {
 <!-- Progress bar -->
 <div class="upload-progress" style="display: none;">
     <p id="uploading-text">
-        Uploading<span id="ellipsis"></span> <!-- Ellipsis added here -->
+        Uploading<span id="ellipsis2"></span> <!-- Ellipsis added here -->
     </p>
     <p style="color: gray; font-size: 0.9em;">
         Please wait a few moments to process large PDFs. If the file is too large, the operation may fail. Consider trying a smaller file if you encounter issues.
