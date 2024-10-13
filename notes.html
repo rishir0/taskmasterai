@@ -2024,7 +2024,7 @@ async function simulateRealTimeUploadProgress() {
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+const modelEndpoint = "https://api-inference.huggingface.co/models/Xenova/gpt-4o";
 
 // File input and progress bar elements
 const pdfFileInput = document.getElementById('pdfFileInput');
@@ -2101,22 +2101,15 @@ pdfDragArea.addEventListener('drop', (e) => {
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
 // Helper function to split text into chunks by character limit
-function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to avoid API issues
-    console.log('Splitting text into chunks...');
-    const chunks = [];
-    let start = 0;
-    while (start < text.length) {
-        const end = start + maxLength;
-        chunks.push(text.slice(start, end));
-        start = end;
-    }
-    console.log(`Text split into ${chunks.length} chunk(s).`);
-    return chunks;
+// Function to split text into chunks
+function splitTextIntoChunks(text, chunkSize = 4000) {
+    const regex = new RegExp(`.{1,${chunkSize}}`, 'g');
+    return text.match(regex) || [];
 }
 
-// Function to generate a summary using Hugging Face API
+// Function to generate a summary, title, overview, and key points from text
 async function generateSummary(text) {
-    console.log('Generating summary...');
+    console.log('Generating summary, title, overview, and key points...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     
@@ -2129,12 +2122,18 @@ async function generateSummary(text) {
                     'Authorization': `Bearer ${huggingFaceApiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ inputs: chunk })
+                body: JSON.stringify({
+                    inputs: `Please provide a title, an overview, and key points from the following text:\n\n${chunk}`,
+                    parameters: {
+                        max_new_tokens: 300,
+                        temperature: 0.7
+                    }
+                })
             });
 
             if (response.ok) {
                 const result = await response.json();
-                summaries.push(result[0].summary_text);
+                summaries.push(result.generated_text);  // Assuming the model outputs all desired components in one go
                 console.log('Received summary for chunk.');
             } else {
                 const errorDetails = await response.json();
@@ -2148,9 +2147,8 @@ async function generateSummary(text) {
     }
 
     console.log('Summary generation complete.');
-    return summaries.join(" ");
+    return summaries.join("\n\n---\n\n");  // Separate summaries of different chunks
 }
-
 
 
 
