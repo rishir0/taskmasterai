@@ -1741,6 +1741,7 @@ async function handleFileUpload(file) {
     
 const progressBar = document.getElementById('progressBar2');
 const percentageDisplay = document.createElement('span');
+const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
@@ -1779,6 +1780,9 @@ const percentageDisplay = document.createElement('span');
 
             // Simulate or use real-time upload progress
             await simulateRealTimeUploadProgress();
+
+            // Change "Uploading" to "Generating Note"
+            uploadingText.innerText = 'Generating Note';
 
 
 
