@@ -1816,15 +1816,18 @@ const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
 
+
+
 // Set the background to match the progress bar fill
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
 percentageDisplay.style.color = '#fff'; // Set text color for better contrast
 percentageDisplay.style.padding = '5px 10px'; // Add padding
 percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progress bar
-percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
+percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient (rgba version of #c9302c)
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
-percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition
+percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
 percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
+
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1838,22 +1841,20 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
-errorMessage.style.color = '#dc3545'; // Set the text color to red
+errorMessage.style.color = '#c9302c'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
 errorMessage.style.marginTop = '8px'; // Add some margin for spacing
 errorMessage.style.display = 'block'; // Make it a block element to ensure it's underneath
 
 // Clear existing error message, if any, before adding
-const existingErrorMessage = document.querySelector('.error-message');
+const existingErrorMessage = document.querySelector('.error-message2');
 if (existingErrorMessage) {
     existingErrorMessage.remove();
 }
-errorMessage.className = 'error-message'; // Add class for future reference
+errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.insertBefore(errorMessage, percentageDisplay.nextSibling);
-
-
 
 
 
@@ -1868,15 +1869,17 @@ const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
 
+
 // Set the background to match the progress bar fill
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
 percentageDisplay.style.color = '#fff'; // Set text color for better contrast
 percentageDisplay.style.padding = '5px 10px'; // Add padding
 percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progress bar
-percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
+percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient (rgba version of #c9302c)
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
-percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition
+percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
 percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
+
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1890,17 +1893,17 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
-errorMessage.style.color = '#dc3545'; // Set the text color to red
+errorMessage.style.color = '#c9302c'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
 errorMessage.style.marginTop = '8px'; // Add some margin for spacing
 errorMessage.style.display = 'block'; // Make it a block element to ensure it's underneath
 
 // Clear existing error message, if any, before adding
-const existingErrorMessage = document.querySelector('.error-message');
+const existingErrorMessage = document.querySelector('.error-message2');
 if (existingErrorMessage) {
     existingErrorMessage.remove();
 }
-errorMessage.className = 'error-message'; // Add class for future reference
+errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.insertBefore(errorMessage, percentageDisplay.nextSibling);
@@ -1918,15 +1921,17 @@ const percentageDisplay = document.createElement('span');
 percentageDisplay.className = 'progress-percentage'; // Ensure it has the same styling
 percentageDisplay.innerText = 'Failed'; // Set the text to "Failed"
 
+
 // Set the background to match the progress bar fill
 percentageDisplay.style.background = 'linear-gradient(90deg, #c9302c, #c9302c)'; // Error color gradient
 percentageDisplay.style.color = '#fff'; // Set text color for better contrast
 percentageDisplay.style.padding = '5px 10px'; // Add padding
 percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progress bar
-percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
+percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient (rgba version of #c9302c)
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
-percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition
+percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
 percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
+
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1940,22 +1945,20 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
-errorMessage.style.color = '#dc3545'; // Set the text color to red
+errorMessage.style.color = '#c9302c'; // Set the text color to red
 errorMessage.style.fontSize = '14px'; // Set a suitable font size
 errorMessage.style.marginTop = '8px'; // Add some margin for spacing
 errorMessage.style.display = 'block'; // Make it a block element to ensure it's underneath
 
 // Clear existing error message, if any, before adding
-const existingErrorMessage = document.querySelector('.error-message');
+const existingErrorMessage = document.querySelector('.error-message2');
 if (existingErrorMessage) {
     existingErrorMessage.remove();
 }
-errorMessage.className = 'error-message'; // Add class for future reference
+errorMessage.className = 'error-message2'; // Add class for future reference
 
 // Append the "Please try again" message below the progress bar
 progressBar.parentNode.insertBefore(errorMessage, percentageDisplay.nextSibling);
-
-
 
     };
 }
