@@ -915,6 +915,14 @@ input[type="text"]:focus, input[type="date"]:focus {
     margin-right: 10px; /* Space between title and date */
 }
 
+/* Title styling */
+.note-item strong2 {
+    font-size: 1rem; /* Title size */
+    color: var(--text-color, #fffff); /* Title color */
+    display: inline; /* Keep title inline */
+    margin-right: 10px; /* Space between title and date */
+}
+
 /* Date styling */
 .note-item span.date {
     font-size: 0.9rem; /* Date size */
@@ -2274,8 +2282,8 @@ function loadGeneratedNotes() {
                     // Set the innerHTML including the title, overview, key points, and date (questions section removed)
                     noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <p><span class="overview-label"><strong>Overview:</strong></span> ${overview}</p> <!-- Display PDF Overview -->
-                        <p><span class="key-points-label"><strong>Key Points:</strong></span></p> <!-- Display PDF Key Points -->
+                        <p><span class="overview-label"><strong2>Overview:</strong2></span> ${overview}</p> <!-- Display PDF Overview -->
+                        <p><span class="key-points-label"><strong2>Key Points:</strong2></span></p> <!-- Display PDF Key Points -->
                         <ul>${formattedKeyPoints}</ul> <!-- Display PDF Key Points as a list -->
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
@@ -2354,8 +2362,8 @@ function loadGeneratedPDFs() {
                     // Set the innerHTML including the title (without .pdf), date, overview, and key points
                     noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <p><span class="overview-label"><strong>Overview:</strong></span> ${overview}</p> <!-- Display PDF Overview -->
-                        <p><span class="key-points-label"><strong>Key Points:</strong></span></p> <!-- Display PDF Key Points -->
+                        <p><span class="overview-label"><strong2>Overview:</strong2></span> ${overview}</p> <!-- Display PDF Overview -->
+                        <p><span class="key-points-label"><strong2>Key Points:</strong2></span></p> <!-- Display PDF Key Points -->
                         <ul>${formattedKeyPoints}</ul> <!-- Display PDF Key Points as a list -->
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
