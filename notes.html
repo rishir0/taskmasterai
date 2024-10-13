@@ -2101,7 +2101,7 @@ pdfDragArea.addEventListener('drop', (e) => {
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
 // Helper function to split text into chunks by character limit
-function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to avoid API issues
+function splitTextIntoChunks(text, maxLength = 2000) {
     console.log('Splitting text into chunks...');
     const chunks = [];
     let start = 0;
@@ -2114,15 +2114,13 @@ function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to 
     return chunks;
 }
 
-// Function to generate a summary, key points, and questions using Hugging Face API
+// Function to generate a summary using Hugging Face API (without questions)
 async function generateSummary(text) {
-    console.log('Generating summary, key points, and questions...');
+    console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     const keyPoints = [];
-    const questions = [];
 
-    // Loop through each chunk of text
     for (let chunk of chunks) {
         try {
             console.log('Sending chunk to Hugging Face API...');
@@ -2138,20 +2136,12 @@ async function generateSummary(text) {
             if (response.ok) {
                 const result = await response.json();
                 const summary = result[0].summary_text;
-                
-                summaries.push(summary); // Store summary text
 
-                // Generate key points from summary
-                const summarySentences = summary.split('. ');
-                const extractedKeyPoints = summarySentences.map(sentence => sentence.trim() + '.'); // Extract key points
-                keyPoints.push(...extractedKeyPoints);
+                summaries.push(summary);
 
-                // Generate questions from key points or summary
-                summarySentences.forEach(sentence => {
-                    if (sentence.trim()) {
-                        questions.push(`What is the significance of: "${sentence.trim()}"?`);
-                    }
-                });
+                // Generate key points based on the summary
+                const sentences = summary.split('. ');
+                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
 
                 console.log('Received summary for chunk.');
             } else {
@@ -2166,22 +2156,17 @@ async function generateSummary(text) {
     }
 
     console.log('Summary generation complete.');
-
-    // Return distinct overview, keyPoints, and questions
+    
     return {
-        overview: summaries.join(' '), // Combine all summaries for the overview
-        keyPoints: keyPoints.slice(0, 5), // Limit to 5 key points for better readability
-        questions: questions.slice(0, 3) // Limit to 3 questions
+        overview: summaries.join(' '), // Combine summaries for the overview
+        keyPoints
     };
 }
 
 
 
-
-
-
-// Function to save summary to Firestore
-async function saveToFirestore2(fileName, summary) {
+// Function to save overview and key points to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2189,18 +2174,20 @@ async function saveToFirestore2(fileName, summary) {
     }
 
     try {
-        // Add the PDF summary to Firestore in the 'generatedpdfs' collection
+        // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
             fileName: fileName,           // Store the file name
-            summary: summary,             // Store the generated summary
+            overview: overview,           // Store the generated overview
+            keyPoints: keyPoints,         // Store the array of key points
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`Summary for ${fileName} saved successfully.`);
+        console.log(`Overview and key points for ${fileName} saved successfully.`);
     } catch (error) {
-        console.error("Error saving summary to Firestore: ", error);
+        console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
@@ -2270,11 +2257,10 @@ function loadGeneratedNotes() {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
 
-                // Extract title, overview, key points, questions, and timestamp
+                // Extract title, overview, key points, and timestamp (questions section removed)
                 const title = noteData.title || "Untitled"; // Fallback to 'Untitled' if no title is present
                 const overview = noteData.overview || "No overview available.";
                 const keyPoints = noteData.keyPoints || [];
-                const questions = noteData.questions || [];
                 const timestamp = noteData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
                 const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
 
@@ -2289,21 +2275,16 @@ function loadGeneratedNotes() {
                         noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
-                    // Format the key points and questions as lists
+                    // Format the key points as a list (questions section removed)
                     const formattedKeyPoints = keyPoints.length > 0 
                         ? keyPoints.map(point => `<li>${point.trim()}</li>`).join('')
                         : "<li>No key points available.</li>";
 
-                    const formattedQuestions = questions.length > 0 
-                        ? questions.map(question => `<li>${question.trim()}</li>`).join('')
-                        : "<li>No questions generated.</li>";
-
-                    // Set the innerHTML including the title, overview, key points, questions, and date
+                    // Set the innerHTML including the title, overview, key points, and date (questions section removed)
                     noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
                         <p><strong>Overview:</strong> ${overview}</p>
                         <p><strong>Key Points:</strong><ul>${formattedKeyPoints}</ul></p>
-                        <p><strong>Questions:</strong><ul>${formattedQuestions}</ul></p>
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
                             <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
@@ -2334,6 +2315,7 @@ function loadGeneratedNotes() {
 }
 
 
+
 function loadGeneratedPDFs() {
     const userId = firebase.auth().currentUser?.uid;
 
@@ -2342,69 +2324,75 @@ function loadGeneratedPDFs() {
         return;
     }
 
-db.collection('generatedpdfs')
-    .where('userId', '==', userId)
-    .orderBy('timestamp', 'desc')
-    .onSnapshot(snapshot => {
-        console.log("PDF data snapshot received"); // Log to verify the function is running
-        const notesList = document.getElementById('notes-list');
+    db.collection('generatedpdfs')
+        .where('userId', '==', userId)
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot => {
+            console.log("PDF data snapshot received"); // Log to verify the function is running
+            const notesList = document.getElementById('notes-list');
 
-        snapshot.docChanges().forEach(change => {
-            const pdfData = change.doc.data();
-            const pdfId = change.doc.id;
+            snapshot.docChanges().forEach(change => {
+                const pdfData = change.doc.data();
+                const pdfId = change.doc.id;
 
-            // Extract the filename and remove the .pdf extension (if it exists)
-            let fileName = pdfData.fileName || "Untitled PDF"; // Fallback if no filename
-            const title = fileName.replace(/\.pdf$/i, ""); // Remove .pdf extension, case-insensitive
-            const timestamp = pdfData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
-            const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
+                // Extract the filename and remove the .pdf extension (if it exists)
+                let fileName = pdfData.fileName || "Untitled PDF"; // Fallback if no filename
+                const title = fileName.replace(/\.pdf$/i, ""); // Remove .pdf extension, case-insensitive
+                const overview = pdfData.overview || "No overview available.";
+                const keyPoints = pdfData.keyPoints || [];
+                const timestamp = pdfData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
+                const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
 
-            if (change.type === "added" || change.type === "modified") {
-                let noteDiv = document.querySelector(`[data-id='${pdfId}']`);
-                if (!noteDiv) {
-                    noteDiv = document.createElement('div');
-                    noteDiv.className = 'note-item'; // Use the same class as notes for consistent styling
-                    noteDiv.setAttribute('data-id', pdfId);
-                    noteDiv.setAttribute('data-type', 'generatedpdf');
-                } else {
-                    noteDiv.innerHTML = ''; // Clear existing content to update
+                if (change.type === "added" || change.type === "modified") {
+                    let noteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (!noteDiv) {
+                        noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item'; // Use the same class as notes for consistent styling
+                        noteDiv.setAttribute('data-id', pdfId);
+                        noteDiv.setAttribute('data-type', 'generatedpdf');
+                    } else {
+                        noteDiv.innerHTML = ''; // Clear existing content to update
+                    }
+
+                    // Format the key points as a list of bullet points
+                    const formattedKeyPoints = keyPoints.length > 0 
+                        ? keyPoints.map(point => `<li>${point.trim()}</li>`).join('')
+                        : "<li>No key points available.</li>";
+
+                    // Set the innerHTML including the title (without .pdf), date, overview, and key points
+                    noteDiv.innerHTML = `
+                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
+                        <p><strong>Overview:</strong> ${overview}</p> <!-- Display PDF Overview -->
+                        <p><strong>Key Points:</strong><ul>${formattedKeyPoints}</ul></p> <!-- Display PDF Key Points -->
+                        <div class="button-container">
+                            <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
+                            <button class="delete" onclick="deleteItem('${pdfId}', 'generatedpdfs')">Delete</button>
+                        </div>
+                        <div class="ai-generated-tag">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+                            </svg>
+                            <span>AI Generated</span>
+                        </div>
+                    `;
+
+                    // Append the noteDiv if it doesn't already exist in the DOM
+                    if (!notesList.contains(noteDiv)) {
+                        notesList.appendChild(noteDiv);
+                    }
+                } else if (change.type === "removed") {
+                    const noteDiv = document.querySelector(`[data-id='${pdfId}']`);
+                    if (noteDiv) {
+                        notesList.removeChild(noteDiv);
+                    }
                 }
-
-                // Format the summary as a list of bullet points
-                const formattedSummary = pdfData.summary?.split('. ').map(point => `<li>${point.trim()}</li>`).join('') || "No summary available.";
-
-                // Set the innerHTML including the title (without .pdf), date, and summary
-                noteDiv.innerHTML = `
-                    <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                    <ul>${formattedSummary}</ul> <!-- Display PDF summary as bullet points -->
-                    <div class="button-container">
-                        <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
-                        <button class="delete" onclick="deleteItem('${pdfId}', 'generatedpdfs')">Delete</button>
-                    </div>
-                    <div class="ai-generated-tag">
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
-                            <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-                            <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-                        </svg>
-                        <span>AI Generated</span>
-                    </div>
-                `;
-
-                // Append the noteDiv if it doesn't already exist in the DOM
-                if (!notesList.contains(noteDiv)) {
-                    notesList.appendChild(noteDiv);
-                }
-            } else if (change.type === "removed") {
-                const noteDiv = document.querySelector(`[data-id='${pdfId}']`);
-                if (noteDiv) {
-                    notesList.removeChild(noteDiv);
-                }
-            }
+            });
+        }, error => {
+            console.error('Error loading PDFs: ', error);
         });
-    }, error => {
-        console.error('Error loading PDFs: ', error);
-    });
 }
+
 
 
 
@@ -2516,19 +2504,11 @@ function handleError() {
 
 // Helper function to generate a title from the text
 function generateTitle(text) {
-    const words = text.split(' ');
-    const wordFrequency = {};
-    
-    words.forEach(word => {
-        wordFrequency[word] = (wordFrequency[word] || 0) + 1;
-    });
-
-    // Sort words by frequency and choose the most common words for the title
-    const sortedWords = Object.entries(wordFrequency).sort((a, b) => b[1] - a[1]);
-    const title = sortedWords.slice(0, 5).map(entry => entry[0]).join(' '); // Limit to top 5 words
-    
-    return title.charAt(0).toUpperCase() + title.slice(1); // Capitalize the first letter
+    const maxTitleLength = 50; // Limit title length
+    const firstSentence = text.split('.')[0]; // Use the first sentence for the title
+    return firstSentence.length > maxTitleLength ? firstSentence.slice(0, maxTitleLength) + '...' : firstSentence;
 }
+
 
 // Helper function to format the current date
 function formatDate() {
@@ -2553,16 +2533,16 @@ function createNote() {
 
     setTimeout(() => {
         generateSummary(noteText)
-            .then(({ overview, keyPoints, questions }) => {
+            .then(({ overview, keyPoints }) => {
                 const notesList = document.getElementById('notes-list');
                 const existingNotes = Array.from(notesList.children);
-                
+
                 // Generate a title dynamically from the note text
                 const title = generateTitle(noteText);
                 
-                // Ensure title is defined
-                if (!title || !overview || !keyPoints || !questions) {
-                    console.error('Missing data for title, overview, keyPoints, or questions.');
+                // Ensure title, overview, and keyPoints are defined
+                if (!title || !overview || !keyPoints) {
+                    console.error('Missing data for title, overview, or keyPoints.');
                     hideProgressBar();
                     return;
                 }
@@ -2580,7 +2560,7 @@ function createNote() {
 
                 const dateCreated = formatDate(); // Get the current date
 
-                saveNoteToFirestore(noteText, overview, keyPoints, questions, title, dateCreated)
+                saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated)
                     .then(docId => {
                         noteDiv.setAttribute('data-id', docId);
                         hideProgressBar();
@@ -2600,15 +2580,8 @@ function createNote() {
     }, 2000); // Simulate a 2-second delay for the note generation process
 }
 
-
-
-
-
-
-
-
 // Function to save the generated note, title, and date to Firestore
-function saveNoteToFirestore(noteText, overview, keyPoints, questions, title, dateCreated) {
+function saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated) {
     const userId = firebase.auth().currentUser.uid; // Get current user's ID
 
     // Add the note to Firestore
@@ -2617,7 +2590,6 @@ function saveNoteToFirestore(noteText, overview, keyPoints, questions, title, da
         note: noteText,        // Original note text
         overview: overview,    // Overview of the note
         keyPoints: keyPoints,  // Key points as an array
-        questions: questions,  // Questions as an array
         title: title,          // Add title to the Firestore document
         dateCreated: dateCreated,  // Add dateCreated to the Firestore document
         timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
@@ -2633,7 +2605,14 @@ function saveNoteToFirestore(noteText, overview, keyPoints, questions, title, da
 }
 
 
-
+// Add CSS styles to make text size smaller
+const style = document.createElement('style');
+style.innerHTML = `
+    .note-item .overview, .note-item .keyPoints {
+        font-size: 0.85em; /* Adjust font size for smaller text */
+    }
+`;
+document.head.appendChild(style);
 
 
 // Function to create a manual note from Modal 3
