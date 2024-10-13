@@ -2530,10 +2530,14 @@ function createNote() {
 
     setTimeout(() => {
         generateSummary(noteText)
-            .then(summary => {
+            .then(summaries => {
                 const notesList = document.getElementById('notes-list');
                 const existingNotes = Array.from(notesList.children);
-                const isDuplicate = existingNotes.some(noteDiv => noteDiv.innerText.includes(summary));
+                
+                // Check for duplicate notes based on title
+                const isDuplicate = summaries.some(summary => 
+                    existingNotes.some(noteDiv => noteDiv.innerText.includes(summary.title))
+                );
 
                 if (isDuplicate) {
                     console.error('Duplicate note detected.');
@@ -2541,20 +2545,31 @@ function createNote() {
                     return;
                 }
 
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-item';
+                // Create a note for each summary generated
+                summaries.forEach(summary => {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'note-item';
 
-                const title = generateTitle(noteText); // Generate the title from the text
-                const dateCreated = formatDate(); // Get the current date
+                    // Using the title and overview generated from the summary
+                    const title = summary.title || generateTitle(noteText); // Use generated title or fallback to function
+                    const dateCreated = formatDate(); // Get the current date
 
-                const formattedSummary = summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+                    // Format the summary and key points for display
+                    const formattedSummary = `
+                        <h3>${title}</h3>
+                        <p>${summary.overview}</p>
+                        <ul>
+                            ${summary.keyPoints.split('\n').map(point => `<li>${point.trim()}</li>`).join('')}
+                        </ul>
+                    `;
 
+                    noteDiv.innerHTML = formattedSummary; // Set the inner HTML of the note
+                    saveNoteToFirestore(noteText, summary, title, dateCreated).then(docId => {
+                        noteDiv.setAttribute('data-id', docId);
 
-                saveNoteToFirestore(noteText, summary, title, dateCreated).then(docId => {
-                    noteDiv.setAttribute('data-id', docId);
-
-                    hideProgressBar();
-                    loadAllNotes(); //Reload the notes after the new one is saved
+                        notesList.appendChild(noteDiv); // Append the new note to the list
+                        hideProgressBar();
+                    });
                 });
             })
             .catch(error => {
@@ -2565,6 +2580,7 @@ function createNote() {
         noteInput.value = ''; // Clear the textarea after note creation
     }, 2000); // Simulate a 2-second delay for the note generation process
 }
+
 
 
 
