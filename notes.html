@@ -2402,10 +2402,9 @@ function loadGeneratedPDFs() {
                         </div>
                     `;
 
-                    // Append the noteDiv if it doesn't already exist in the DOM
-                    if (!notesList.contains(noteDiv)) {
-                        notesList.appendChild(noteDiv);
-                    }
+                    // Insert the new noteDiv at the top of the notesList
+                    notesList.insertBefore(noteDiv, notesList.firstChild);
+
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${pdfId}']`);
                     if (noteDiv) {
