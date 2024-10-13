@@ -2353,8 +2353,8 @@ function loadGeneratedPDFs() {
                     // Set the innerHTML including the title (without .pdf), date, overview, and key points
                     noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <p><strong>Overview:</strong> ${overview}</p> <!-- Display PDF Overview -->
-                        <p><strong>Key Points:</strong><ul>${formattedKeyPoints}</ul></p> <!-- Display PDF Key Points -->
+                        <p class="overview"><strong>Overview:</strong> ${overview}</p> <!-- Display PDF Overview -->
+                        <p class="key-points"><strong>Key Points:</strong></p> <!-- Display PDF Key Points -->
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${pdfId}', 'generatedpdfs')">Edit</button>
                             <button class="delete" onclick="deleteItem('${pdfId}', 'generatedpdfs')">Delete</button>
@@ -2599,11 +2599,15 @@ function saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated) 
 // Add CSS styles to make text size smaller
 const style = document.createElement('style');
 style.innerHTML = `
-    .note-item .overview, .note-item .keyPoints {
-        font-size: 0.35em; /* Adjust font size for smaller text */
+    .note-item .overview {
+        font-size: 0.55em; /* Adjust font size for Overview text */
+    }
+    .note-item .key-points {
+        font-size: 0.55em; /* Adjust font size for Key Points text */
     }
 `;
 document.head.appendChild(style);
+
 
 
 // Function to create a manual note from Modal 3
