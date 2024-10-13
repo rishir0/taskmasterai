@@ -2212,7 +2212,7 @@ async function saveToFirestore2(fileName, overview, keyPoints) {
 }
 
 
-function loadAllNotes() {
+async function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
     const notesList = document.getElementById('notes-list');
     notesList.innerHTML = ''; // Clear the list before adding notes
@@ -2222,12 +2222,26 @@ function loadAllNotes() {
         return;
     }
 
-    // Load manual and generated notes together
-    loadManualNotes();
-    loadGeneratedNotes();
-    loadGeneratedPDFs();
-    
+    try {
+        // Load notes from all collections
+        const manualNotes = await loadManualNotes(userId);
+        const generatedNotes = await loadGeneratedNotes(userId);
+        const generatedPDFs = await loadGeneratedPDFs(userId);
+
+        // Combine all notes into a single array
+        const allNotes = [...manualNotes, ...generatedNotes, ...generatedPDFs];
+
+        // Sort notes by timestamp (latest first)
+        allNotes.sort((a, b) => b.timestamp - a.timestamp);
+
+        // At this point, allNotes is sorted but not displayed.
+        console.log(allNotes); // You can log the sorted notes if needed.
+
+    } catch (error) {
+        console.error('Error loading notes:', error);
+    }
 }
+
 
 
 function loadManualNotes() {
@@ -2322,10 +2336,9 @@ function loadGeneratedNotes() {
                         </div>
                     `;
 
-                    // Append the noteDiv if it doesn't already exist in the DOM
-                    if (!notesList.contains(noteDiv)) {
-                        notesList.appendChild(noteDiv);
-                    }
+                    // Insert the new noteDiv at the top of the notesList
+                    notesList.insertBefore(noteDiv, notesList.firstChild);
+
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (noteDiv) {
