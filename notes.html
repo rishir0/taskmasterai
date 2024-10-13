@@ -2552,6 +2552,17 @@ function createNote() {
             .then(({ overview, keyPoints, questions }) => {
                 const notesList = document.getElementById('notes-list');
                 const existingNotes = Array.from(notesList.children);
+                
+                // Generate a title dynamically from the note text
+                const title = generateTitle(noteText);
+                
+                // Ensure title is defined
+                if (!title || !overview || !keyPoints || !questions) {
+                    console.error('Missing data for title, overview, keyPoints, or questions.');
+                    hideProgressBar();
+                    return;
+                }
+
                 const isDuplicate = existingNotes.some(noteDiv => noteDiv.innerText.includes(overview));
 
                 if (isDuplicate) {
@@ -2563,29 +2574,18 @@ function createNote() {
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note-item';
 
-                const title = generateTitle(noteText); // Generate dynamic title
                 const dateCreated = formatDate(); // Get the current date
 
-                // Create formatted sections
-                const formattedOverview = `<p><strong>Overview:</strong> ${overview}</p>`;
-                const formattedKeyPoints = `<p><strong>Key Points:</strong><ul>${keyPoints.map(point => `<li>${point}</li>`).join('')}</ul></p>`;
-                const formattedQuestions = `<p><strong>Questions:</strong><ul>${questions.map(question => `<li>${question}</li>`).join('')}</ul></p>`;
-
-                saveNoteToFirestore(noteText, overview, title, dateCreated).then(docId => {
-                    noteDiv.setAttribute('data-id', docId);
-                    noteDiv.innerHTML = `
-                        <h3>${title}</h3>
-                        ${formattedOverview}
-                        ${formattedKeyPoints}
-                        ${formattedQuestions}
-                        <small>Created on ${dateCreated}</small>
-                    `;
-
-                    notesList.appendChild(noteDiv); // Append new note to the list
-
-                    hideProgressBar();
-                    loadAllNotes(); //Reload the notes after the new one is saved
-                });
+                saveNoteToFirestore(noteText, overview, keyPoints, questions, title, dateCreated)
+                    .then(docId => {
+                        noteDiv.setAttribute('data-id', docId);
+                        hideProgressBar();
+                        loadAllNotes(); // Reload the notes after the new one is saved
+                    })
+                    .catch(error => {
+                        console.error('Error generating note:', error);
+                        showError(); // Trigger the error handling function
+                    });
             })
             .catch(error => {
                 console.error('Error generating note:', error);
@@ -2595,6 +2595,7 @@ function createNote() {
         noteInput.value = ''; // Clear the textarea after note creation
     }, 2000); // Simulate a 2-second delay for the note generation process
 }
+
 
 
 
