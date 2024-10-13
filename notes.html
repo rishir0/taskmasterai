@@ -1811,7 +1811,7 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress();
 
             // Change "Uploading" to "Generating Note"
-            uploadingText.innerHTML = 'Generating Note<span id="ellipsis"></span>';
+            uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
             // Once upload is "done", generate the overview and key points
             console.log('Upload complete, generating overview and key points...');
@@ -2173,12 +2173,18 @@ async function generateSummary(text) {
     }
 
     console.log('Summary generation complete.');
-    
+
+    // Combine summaries and limit overview to a maximum of 4 sentences
+    const combinedOverview = summaries.join(' ');
+    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
+
     return {
-        overview: summaries.join(' '), // Combine summaries for the overview
+        overview: overviewSentences, // Final overview limited to 4 sentences
         keyPoints
     };
 }
+
+
 
 
 
