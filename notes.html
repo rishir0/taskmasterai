@@ -2266,8 +2266,11 @@ function loadGeneratedNotes() {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
 
-                // Extract title and timestamp (converted to a readable date)
+                // Extract title, overview, key points, questions, and timestamp
                 const title = noteData.title || "Untitled"; // Fallback to 'Untitled' if no title is present
+                const overview = noteData.overview || "No overview available.";
+                const keyPoints = noteData.keyPoints || [];
+                const questions = noteData.questions || [];
                 const timestamp = noteData.timestamp?.toDate(); // Convert Firestore timestamp to Date object
                 const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
 
@@ -2282,13 +2285,21 @@ function loadGeneratedNotes() {
                         noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
-                    // Format the summary as a list of bullet points
-                    const formattedSummary = noteData.summary.split('. ').map(point => `<li>${point.trim()}</li>`).join('');
+                    // Format the key points and questions as lists
+                    const formattedKeyPoints = keyPoints.length > 0 
+                        ? keyPoints.map(point => `<li>${point.trim()}</li>`).join('')
+                        : "<li>No key points available.</li>";
 
-                    // Set the innerHTML including the title, date, and summary
+                    const formattedQuestions = questions.length > 0 
+                        ? questions.map(question => `<li>${question.trim()}</li>`).join('')
+                        : "<li>No questions generated.</li>";
+
+                    // Set the innerHTML including the title, overview, key points, questions, and date
                     noteDiv.innerHTML = `
                         <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <ul>${formattedSummary}</ul>
+                        <p><strong>Overview:</strong> ${overview}</p>
+                        <p><strong>Key Points:</strong><ul>${formattedKeyPoints}</ul></p>
+                        <p><strong>Questions:</strong><ul>${formattedQuestions}</ul></p>
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
                             <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
@@ -2317,6 +2328,7 @@ function loadGeneratedNotes() {
             console.error('Error loading notes: ', error);
         });
 }
+
 
 function loadGeneratedPDFs() {
     const userId = firebase.auth().currentUser?.uid;
@@ -2590,16 +2602,18 @@ function createNote() {
 
 
 // Function to save the generated note, title, and date to Firestore
-function saveNoteToFirestore(noteText, summary, title, dateCreated) {
+function saveNoteToFirestore(noteText, overview, keyPoints, questions, title, dateCreated) {
     const userId = firebase.auth().currentUser.uid; // Get current user's ID
 
     // Add the note to Firestore
     return db.collection('generatednotes').add({
         userId: userId,
-        note: noteText,
-        summary: summary,
-        title: title, // Add title to the Firestore document
-        dateCreated: dateCreated, // Add dateCreated to the Firestore document
+        note: noteText,        // Original note text
+        overview: overview,    // Overview of the note
+        keyPoints: keyPoints,  // Key points as an array
+        questions: questions,  // Questions as an array
+        title: title,          // Add title to the Firestore document
+        dateCreated: dateCreated,  // Add dateCreated to the Firestore document
         timestamp: firebase.firestore.FieldValue.serverTimestamp() // Save the time the note was created
     })
     .then(docRef => {
@@ -2611,6 +2625,7 @@ function saveNoteToFirestore(noteText, summary, title, dateCreated) {
         throw error; // Re-throw the error for further handling if needed
     });
 }
+
 
 
 
