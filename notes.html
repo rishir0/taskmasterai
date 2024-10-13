@@ -1634,7 +1634,7 @@ textarea::placeholder {
         Uploading<span id="ellipsis"></span> <!-- Ellipsis added here -->
     </p>
     <div class="progress-container" style="position: relative;">
-        <progress id="progressBar2" value="" max="100" data-percentage=""></progress> <!-- Progress bar -->
+        <progress id="progressBar2" value="0" max="100" data-percentage=""></progress> <!-- Progress bar -->
         <span class="progress-percentage">0%</span> <!-- Percentage display inside progress bar -->
     </div>
 </div>
@@ -1920,6 +1920,7 @@ async function simulateRealTimeUploadProgress() {
             progressBar.value = progress; // Update progress bar fill
             percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
+            progressBar.value = 0;
             
             
 
