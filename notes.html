@@ -2234,14 +2234,28 @@ async function loadAllNotes() {
         // Sort notes by timestamp (latest first)
         allNotes.sort((a, b) => b.timestamp - a.timestamp);
 
-        // At this point, allNotes is sorted but not displayed.
-        console.log(allNotes); // You can log the sorted notes if needed.
+        // Display the sorted notes
+        allNotes.forEach(note => {
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'note-item';
+            noteDiv.setAttribute('data-id', note.id);
 
+            // Set innerHTML for the note
+            noteDiv.innerHTML = `
+                <strong>${note.title}</strong> <span class="date">${note.dateCreated}</span>
+                <p>${note.content}</p>
+                <div class="button-container">
+                    <button class="edit" onclick="editItem('${note.id}', '${note.collection}')">Edit</button>
+                    <button class="delete" onclick="deleteItem('${note.id}', '${note.collection}')">Delete</button>
+                </div>
+            `;
+
+            notesList.appendChild(noteDiv);
+        });
     } catch (error) {
         console.error('Error loading notes:', error);
     }
 }
-
 
 
 function loadManualNotes() {
