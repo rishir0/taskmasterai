@@ -1736,19 +1736,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// Function to animate ellipsis
+function animateEllipsis() {
+    const ellipsis = document.getElementById('ellipsis');
+    let dots = 0;
+    const intervalId = setInterval(() => {
+        dots = (dots + 1) % 4; // Cycle through 0, 1, 2, 3 dots
+        ellipsis.innerText = '.'.repeat(dots); // Display dots after text
+    }, 500); // Adjust the speed (500ms interval)
+
+    return intervalId;
+}
+
 async function handleFileUpload(file) {
     console.log('File upload started...');
-    
-const progressBar = document.getElementById('progressBar2');
-const percentageDisplay = document.createElement('span');
-const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
+
+    const progressBar = document.getElementById('progressBar2');
+    const percentageDisplay = document.createElement('span');
+    const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
+    const ellipsis = document.getElementById('ellipsis');
+    const progressContainer = document.querySelector('.progress-container'); // Assuming progressContainer is a class element
+
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
-    // Directly clear inline styles and class from percentage display
-        percentageDisplay.innerText = ''; // Clear text
-        percentageDisplay.style = ''; // Clear inline styles
 
+    // Start ellipsis animation
+    const ellipsisInterval = animateEllipsis();
+
+    // Clear the percentage display
+    percentageDisplay.innerText = '';
+    percentageDisplay.style = '';
 
     // Read PDF file
     const reader = new FileReader();
@@ -1759,7 +1777,7 @@ const uploadingText = document.getElementById('uploading-text'); // Get the "Upl
             console.log('PDF file read successfully, processing PDF...');
             const pdfData = new Uint8Array(reader.result);
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-            
+
             let textContent = '';
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
@@ -1768,40 +1786,42 @@ const uploadingText = document.getElementById('uploading-text'); // Get the "Upl
                 textContent += text.items.map(item => item.str).join(' ');
             }
 
-            console.log('Extracted text:', textContent); // Log extracted text
+            console.log('Extracted text:', textContent);
 
-            // Check if the text is successfully extracted before proceeding
+            // Check if text was successfully extracted
             if (!textContent) {
                 throw new Error('No text extracted from PDF.');
             }
 
             console.log('PDF text extraction complete.');
 
-
             // Simulate or use real-time upload progress
             await simulateRealTimeUploadProgress();
 
-            // Change "Uploading" to "Generating Note"
+            // Change "Uploading" to "Generating Note", keep ellipsis
             uploadingText.innerText = 'Generating Note';
 
-
-
-            // Once upload is "done", generate the summary
+            // Generate summary after upload is "done"
             console.log('Upload complete, generating summary...');
             try {
                 const summary = await generateSummary(textContent);
-                
-
                 console.log('Summary generation complete.');
+
+                // Stop ellipsis animation after processing is done
+                clearInterval(ellipsisInterval);
+                ellipsis.innerText = ''; // Clear ellipsis after finishing
 
                 // Save to Firestore
                 await saveToFirestore2(file.name, summary);
                 console.log('PDF summary saved to Firestore.');
 
+                // Hide progress bar and reset value after everything is done
+                progressContainer.style.display = 'none';
+                progressBar.value = 0;
+
                 closePdfUploadModal();
-
-                loadAllNotes()
-
+                loadAllNotes();
+                
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
