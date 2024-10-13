@@ -2114,7 +2114,7 @@ function splitTextIntoChunks(text, maxLength = 2000) { // Reduced chunk size to 
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API
+// Function to generate a summary, key points, and questions using Hugging Face API
 async function generateSummary(text) {
     console.log('Generating summary, key points, and questions...');
     const chunks = splitTextIntoChunks(text);
@@ -2122,6 +2122,7 @@ async function generateSummary(text) {
     const keyPoints = [];
     const questions = [];
 
+    // Loop through each chunk of text
     for (let chunk of chunks) {
         try {
             console.log('Sending chunk to Hugging Face API...');
@@ -2137,15 +2138,16 @@ async function generateSummary(text) {
             if (response.ok) {
                 const result = await response.json();
                 const summary = result[0].summary_text;
+                
+                summaries.push(summary); // Store summary text
 
-                summaries.push(summary);
+                // Generate key points from summary
+                const summarySentences = summary.split('. ');
+                const extractedKeyPoints = summarySentences.map(sentence => sentence.trim() + '.'); // Extract key points
+                keyPoints.push(...extractedKeyPoints);
 
-                // Generate key points and questions based on the summary
-                const sentences = summary.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
-
-                // Simple question generation based on key points
-                sentences.forEach(sentence => {
+                // Generate questions from key points or summary
+                summarySentences.forEach(sentence => {
                     if (sentence.trim()) {
                         questions.push(`What is the significance of: "${sentence.trim()}"?`);
                     }
@@ -2164,13 +2166,15 @@ async function generateSummary(text) {
     }
 
     console.log('Summary generation complete.');
-    
+
+    // Return distinct overview, keyPoints, and questions
     return {
-        overview: summaries.join(' '), // Combine summaries for the overview
-        keyPoints,
-        questions
+        overview: summaries.join(' '), // Combine all summaries for the overview
+        keyPoints: keyPoints.slice(0, 5), // Limit to 5 key points for better readability
+        questions: questions.slice(0, 3) // Limit to 3 questions
     };
 }
+
 
 
 
@@ -2595,6 +2599,7 @@ function createNote() {
         noteInput.value = ''; // Clear the textarea after note creation
     }, 2000); // Simulate a 2-second delay for the note generation process
 }
+
 
 
 
