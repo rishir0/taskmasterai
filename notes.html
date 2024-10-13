@@ -2212,7 +2212,7 @@ async function saveToFirestore2(fileName, overview, keyPoints) {
 }
 
 
-async function loadAllNotes() {
+function loadAllNotes() {
     const userId = firebase.auth().currentUser?.uid; // Get current user's ID
     const notesList = document.getElementById('notes-list');
     notesList.innerHTML = ''; // Clear the list before adding notes
@@ -2222,39 +2222,11 @@ async function loadAllNotes() {
         return;
     }
 
-    try {
-        // Load notes from all collections
-        const manualNotes = await loadManualNotes(userId);
-        const generatedNotes = await loadGeneratedNotes(userId);
-        const generatedPDFs = await loadGeneratedPDFs(userId);
-
-        // Combine all notes into a single array
-        const allNotes = [...manualNotes, ...generatedNotes, ...generatedPDFs];
-
-        // Sort notes by timestamp (latest first)
-        allNotes.sort((a, b) => b.timestamp - a.timestamp);
-
-        // Display the sorted notes
-        allNotes.forEach(note => {
-            const noteDiv = document.createElement('div');
-            noteDiv.className = 'note-item';
-            noteDiv.setAttribute('data-id', note.id);
-
-            // Set innerHTML for the note
-            noteDiv.innerHTML = `
-                <strong>${note.title}</strong> <span class="date">${note.dateCreated}</span>
-                <p>${note.content}</p>
-                <div class="button-container">
-                    <button class="edit" onclick="editItem('${note.id}', '${note.collection}')">Edit</button>
-                    <button class="delete" onclick="deleteItem('${note.id}', '${note.collection}')">Delete</button>
-                </div>
-            `;
-
-            notesList.appendChild(noteDiv);
-        });
-    } catch (error) {
-        console.error('Error loading notes:', error);
-    }
+    // Load manual and generated notes together
+    loadManualNotes();
+    loadGeneratedNotes();
+    loadGeneratedPDFs();
+    
 }
 
 
@@ -2350,9 +2322,10 @@ function loadGeneratedNotes() {
                         </div>
                     `;
 
-                    // Insert the new noteDiv at the top of the notesList
-                    notesList.insertBefore(noteDiv, notesList.firstChild);
-
+                    // Append the noteDiv if it doesn't already exist in the DOM
+                    if (!notesList.contains(noteDiv)) {
+                        notesList.appendChild(noteDiv);
+                    }
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (noteDiv) {
