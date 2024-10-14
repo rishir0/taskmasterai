@@ -1871,7 +1871,7 @@ async function handleFileUpload(file) {
                 const { overview, keyPoints } = await generateSummary(textContent);
 
                 // Update the estimated time for summary generation
-                estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, currentProgress, totalChunks) 
 
                 console.log('Overview and key points generation complete.');
 
