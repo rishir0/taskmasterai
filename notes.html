@@ -2041,7 +2041,7 @@ async function simulateRealTimeUploadProgress() {
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
+const modelEndpoint = "https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-2.7B";
 
 // File input and progress bar elements
 const pdfFileInput = document.getElementById('pdfFileInput');
@@ -2131,56 +2131,90 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API (without questions)
+// Function to generate an overview using GPT-Neo
 async function generateSummary(text) {
-    console.log('Generating summary and key points...');
+    console.log('Generating overview and key points...');
     const chunks = splitTextIntoChunks(text);
-    const summaries = [];
-    const keyPoints = [];
+    const overviews = [];
+    const allKeyPoints = [];
 
     for (let chunk of chunks) {
         try {
-            console.log('Sending chunk to Hugging Face API...');
-            const response = await fetch(modelEndpoint, {
+            // Prompt GPT-Neo to summarize and list key points
+            const overviewPrompt = `Summarize the following text in a concise manner:\n\n${chunk}\n\nOverview:`;
+            const keyPointsPrompt = `List the key points for the following text:\n\n${chunk}\n\nKey Points:`;
+
+            // Fetch overview
+            console.log('Sending overview request to Hugging Face API...');
+            const overviewResponse = await fetch(modelEndpoint, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${huggingFaceApiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ inputs: chunk })
+                body: JSON.stringify({
+                    inputs: overviewPrompt,
+                    parameters: {
+                        max_new_tokens: 150, // Adjust to control length
+                        temperature: 0.5,
+                        top_p: 0.9
+                    }
+                })
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                const summary = result[0].summary_text;
-
-                summaries.push(summary);
-
-                // Generate key points based on the summary
-                const sentences = summary.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
-
-                console.log('Received summary for chunk.');
+            if (overviewResponse.ok) {
+                const overviewResult = await overviewResponse.json();
+                const overviewText = overviewResult.generated_text;
+                overviews.push(overviewText);
+                console.log('Received overview for chunk.');
             } else {
-                const errorDetails = await response.json();
+                const errorDetails = await overviewResponse.json();
                 console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating summary: ${errorDetails.error}`);
+                throw new Error(`Error generating overview: ${errorDetails.error}`);
             }
+
+            // Fetch key points
+            console.log('Sending key points request to Hugging Face API...');
+            const keyPointsResponse = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inputs: keyPointsPrompt,
+                    parameters: {
+                        max_new_tokens: 100,
+                        temperature: 0.5,
+                        top_p: 0.9
+                    }
+                })
+            });
+
+            if (keyPointsResponse.ok) {
+                const keyPointsResult = await keyPointsResponse.json();
+                const keyPointsText = keyPointsResult.generated_text;
+                allKeyPoints.push(...keyPointsText.split('\n').map(point => point.trim()).filter(Boolean));
+                console.log('Received key points for chunk.');
+            } else {
+                const errorDetails = await keyPointsResponse.json();
+                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
+                throw new Error(`Error generating key points: ${errorDetails.error}`);
+            }
+
         } catch (error) {
-            console.error(`Failed to generate summary: ${error.message}`);
+            console.error(`Failed to generate overview and key points: ${error.message}`);
             throw error;
         }
     }
 
-    console.log('Summary generation complete.');
+    console.log('Overview and key points generation complete.');
 
-    // Combine summaries and limit overview to a maximum of 4 sentences
-    const combinedOverview = summaries.join(' ');
-    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
-
+    // Combine the overviews and key points from all chunks
+    const combinedOverview = overviews.join(' ');
     return {
-        overview: overviewSentences, // Final overview limited to 4 sentences
-        keyPoints
+        overview: combinedOverview,
+        keyPoints: allKeyPoints
     };
 }
 
