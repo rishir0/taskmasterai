@@ -2131,90 +2131,72 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Function to generate an overview using GPT-Neo
 async function generateSummary(text) {
-    console.log('Generating overview and key points...');
+    console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
-    const overviews = [];
-    const allKeyPoints = [];
+    const summaries = [];
+    const keyPoints = [];
 
     for (let chunk of chunks) {
         try {
-            // Prompt GPT-Neo to summarize and list key points
-            const overviewPrompt = `Summarize the following text in a concise manner:\n\n${chunk}\n\nOverview:`;
-            const keyPointsPrompt = `List the key points for the following text:\n\n${chunk}\n\nKey Points:`;
-
-            // Fetch overview
-            console.log('Sending overview request to Hugging Face API...');
-            const overviewResponse = await fetch(modelEndpoint, {
+            // Prompting for summary
+            console.log('Sending chunk to Hugging Face API...');
+            const response = await fetch(modelEndpoint, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${huggingFaceApiKey}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    inputs: overviewPrompt,
+                    inputs: `Summarize the following text:\n\n${chunk}`,
                     parameters: {
-                        max_new_tokens: 150, // Adjust to control length
-                        temperature: 0.5,
-                        top_p: 0.9
+                        max_new_tokens: 150,  // Control length of the summary
+                        temperature: 0.5,    // Control creativity
+                        top_p: 0.9           // Control diversity
                     }
                 })
             });
 
-            if (overviewResponse.ok) {
-                const overviewResult = await overviewResponse.json();
-                const overviewText = overviewResult.generated_text;
-                overviews.push(overviewText);
-                console.log('Received overview for chunk.');
-            } else {
-                const errorDetails = await overviewResponse.json();
+            if (!response.ok) {
+                const errorDetails = await response.json();
                 console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating overview: ${errorDetails.error}`);
+                throw new Error(`Error generating summary: ${errorDetails.error}`);
             }
 
-            // Fetch key points
-            console.log('Sending key points request to Hugging Face API...');
-            const keyPointsResponse = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    inputs: keyPointsPrompt,
-                    parameters: {
-                        max_new_tokens: 100,
-                        temperature: 0.5,
-                        top_p: 0.9
-                    }
-                })
-            });
+            const result = await response.json();
+            const summaryText = result?.generated_text;
 
-            if (keyPointsResponse.ok) {
-                const keyPointsResult = await keyPointsResponse.json();
-                const keyPointsText = keyPointsResult.generated_text;
-                allKeyPoints.push(...keyPointsText.split('\n').map(point => point.trim()).filter(Boolean));
-                console.log('Received key points for chunk.');
+            if (summaryText) {
+                summaries.push(summaryText);
+
+                // Extract key points from the summary
+                const sentences = summaryText.split('. ');
+                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.').filter(Boolean));
+
+                console.log('Received summary for chunk.');
             } else {
-                const errorDetails = await keyPointsResponse.json();
-                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating key points: ${errorDetails.error}`);
+                console.error('Summary text is undefined.');
             }
 
         } catch (error) {
-            console.error(`Failed to generate overview and key points: ${error.message}`);
+            console.error(`Failed to generate summary: ${error.message}`);
             throw error;
         }
     }
 
-    console.log('Overview and key points generation complete.');
+    if (summaries.length === 0 || keyPoints.length === 0) {
+        throw new Error('No summary or key points were generated.');
+    }
 
-    // Combine the overviews and key points from all chunks
-    const combinedOverview = overviews.join(' ');
+    console.log('Summary generation complete.');
+
+    // Combine all summaries into one
+    const combinedOverview = summaries.join(' ');
+    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
+
     return {
-        overview: combinedOverview,
-        keyPoints: allKeyPoints
+        overview: overviewSentences,
+        keyPoints
     };
 }
 
