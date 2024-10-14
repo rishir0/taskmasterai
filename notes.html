@@ -1835,6 +1835,7 @@ async function handleFileUpload(file) {
             let textContent = '';
             const totalPages = pdf.numPages; // Total number of pages for progress tracking
 
+            // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
                 const page = await pdf.getPage(pageNum);
@@ -1862,12 +1863,15 @@ async function handleFileUpload(file) {
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
+            // Start timer for summary generation
+            const summaryStartTime = Date.now(); // Capture the start time for summary generation
+
             // Generate overview and key points
             try {
                 const { overview, keyPoints } = await generateSummary(textContent);
 
-                // During summary generation, we can update the estimated time again
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, totalPages, totalPages + 1); // Assuming an extra "step" for summary generation
+                // Update the estimated time for summary generation
+                estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
 
                 console.log('Overview and key points generation complete.');
 
@@ -1877,10 +1881,12 @@ async function handleFileUpload(file) {
 
                 closePdfUploadModal();
                 loadAllNotes();
-
+                
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
+                estimatedTimeDisplay.style.display = 'none'; // Hide estimated time after completion
+
             } catch (error) {
 
                 summaryContainer.style.display = 'block';
