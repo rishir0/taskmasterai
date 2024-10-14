@@ -1770,15 +1770,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Helper function to calculate and display the estimated time remaining
-function updateEstimatedTime(startTime, totalProgress, currentProgress = 1) {
+function updateEstimatedTime(startTime, currentProgress, totalProgress) {
     const elapsedTime = Date.now() - startTime; // Time passed in milliseconds
-    const progressRatio = currentProgress / totalProgress; // Progress as a percentage (0 to 1)
 
-    if (progressRatio <= 0) {
+    if (currentProgress === 0) {
         return 'Calculating...'; // If no progress is made yet
     }
 
-    const estimatedTotalTime = elapsedTime / progressRatio; // Estimated total time based on current progress
+    // Calculate the estimated total time
+    const estimatedTotalTime = (elapsedTime / currentProgress) * totalProgress; // total time = elapsed time / progress made * total progress
     const remainingTime = estimatedTotalTime - elapsedTime; // Time remaining
 
     const secondsRemaining = Math.max(Math.floor(remainingTime / 1000), 1); // Ensure at least 1 second
@@ -1793,6 +1793,7 @@ function updateEstimatedTime(startTime, totalProgress, currentProgress = 1) {
         return `Estimated time remaining: ${seconds}s`;
     }
 }
+
 
 
 async function handleFileUpload(file) {
@@ -1914,6 +1915,10 @@ const uploadingText = document.getElementById('uploading-text'); // Get the "Upl
 // Change "Uploading" to "Generating Note"
 uploadingText.innerHTML = 'Error';
 
+const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+
+estimatedTimeDisplay.style.display = 'none'; // Make sure it's not visible
+
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
@@ -1978,6 +1983,10 @@ const uploadingText = document.getElementById('uploading-text'); // Get the "Upl
 // Change "Uploading" to "Generating Note"
 uploadingText.innerHTML = 'Error';
 
+const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+
+estimatedTimeDisplay.style.display = 'none'; // Make sure it's not visible
+
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
 errorMessage.innerText = 'Please try again.'; // Set the error text
@@ -2040,6 +2049,10 @@ progressBar.parentNode.insertBefore(percentageDisplay, progressBar.nextSibling);
 const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
 // Change "Uploading" to "Generating Note"
 uploadingText.innerHTML = 'Error';
+
+const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+
+estimatedTimeDisplay.style.display = 'none'; // Make sure it's not visible
 
 // Create the "Please try again" error message
 const errorMessage = document.createElement('span');
@@ -2235,7 +2248,8 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     console.log('Received summary for chunk.');
 
                     // Update the estimated time after processing each chunk
-                    console.log(updateEstimatedTime(startTime, totalChunks, i + 1)); // Update for each chunk processed
+                    const currentProgress = i + 1; // Increment for the current chunk processed
+                    console.log(updateEstimatedTime(startTime, currentProgress, totalChunks)); // Update for each chunk processed
 
                     break; // Exit retry loop after successful response
                 } else {
