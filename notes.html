@@ -1854,18 +1854,14 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
-            // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress();
-
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
+            const summaryStartTime = Date.now(); // Start time for summary generation
+
             // Generate overview and key points
             try {
-                const { overview, keyPoints } = await generateSummary(textContent);
-
-                // During summary generation, we can update the estimated time again
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, totalPages, totalPages + 1); // Assuming an extra "step" for summary generation
+                const { overview, keyPoints } = await generateSummary(textContent, summaryStartTime, estimatedTimeDisplay);
 
                 console.log('Overview and key points generation complete.');
 
@@ -1879,6 +1875,7 @@ async function handleFileUpload(file) {
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
+                estimatedTimeDisplay.style.display = 'none'; // Hide estimated time after completion
             } catch (error) {
 
                 summaryContainer.style.display = 'block';
@@ -2197,18 +2194,22 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API with model loading checks
-async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
+// Function to generate a summary using Hugging Face API with model loading checks and estimated time updates
+async function generateSummary(text, maxRetries = 5, delayInterval = 5000, estimatedTimeDisplay, startTime) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     const keyPoints = [];
+    const totalChunks = chunks.length;
 
-    for (let chunk of chunks) {
+    for (let i = 0; i < totalChunks; i++) {
+        const chunk = chunks[i];
         let attempt = 0;
-        while (attempt < maxRetries) {
+        let success = false;
+
+        while (attempt < maxRetries && !success) {
             try {
-                console.log('Sending chunk to Hugging Face API...');
+                console.log(`Sending chunk ${i + 1}/${totalChunks} to Hugging Face API...`);
                 const response = await fetch(modelEndpoint, {
                     method: 'POST',
                     headers: {
@@ -2228,13 +2229,17 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
 
                     console.log('Received summary for chunk.');
+                    success = true; // Mark as successful
+
+                    // Update the estimated time for summary generation
+                    const summaryProgress = (i + 1) / totalChunks;
+                    estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, summaryProgress, 1);
                     break; // Exit retry loop after successful response
                 } else {
                     const errorDetails = await response.json();
-                    
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
                         console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval); // Wait and retry
+                        await delay(delayInterval); // Wait before retrying
                         attempt++;
                     } else {
                         console.error(`Error from Hugging Face API: ${errorDetails.error}`);
@@ -2252,6 +2257,10 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 }
             }
         }
+
+        if (!success) {
+            throw new Error(`Failed to generate summary for chunk ${i + 1} after ${maxRetries} attempts.`);
+        }
     }
 
     console.log('Summary generation complete.');
@@ -2265,7 +2274,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         keyPoints
     };
 }
-
 
 
 
