@@ -1868,10 +1868,14 @@ async function handleFileUpload(file) {
 
             // Generate overview and key points
             try {
+                const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the DOM element for estimated time
                 const { overview, keyPoints } = await generateSummary(textContent);
 
-                // Update the estimated time for summary generation
-                estimatedTimeDisplay.innerText = (updateEstimatedTime(startTime, currentProgress, totalChunks)); 
+                 // Update estimated time in the display
+                const estimatedTimeText = updateEstimatedTime(startTime, currentProgress, totalChunks);
+                console.log(estimatedTimeText); // Log for debugging
+                estimatedTimeDisplay.innerText = estimatedTimeText; // Update the display with the estimated time
+                
 
                 console.log('Overview and key points generation complete.');
 
@@ -2218,7 +2222,7 @@ function splitTextIntoChunks(text, maxLength = 2000) {
 }
 
 // Function to generate a summary using Hugging Face API with model loading checks
-async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
+async function generateSummary(text, estimatedTimeDisplay, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
@@ -2255,9 +2259,11 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                     // Update the estimated time after processing each chunk
                     const currentProgress = i + 1; // Increment for the current chunk processed
-                    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
-                    console.log(updateEstimatedTime(startTime, currentProgress, totalChunks)); // Update for each chunk processed
-                    estimatedTimeDisplay.innerText = (updateEstimatedTime(startTime, currentProgress, totalChunks)); 
+                    
+                    // Update estimated time in the display
+                    const estimatedTimeText = updateEstimatedTime(startTime, currentProgress, totalChunks);
+                    console.log(estimatedTimeText); // Log for debugging
+                    estimatedTimeDisplay.innerText = estimatedTimeText; // Update the display with the estimated time
 
                     break; // Exit retry loop after successful response
                 } else {
