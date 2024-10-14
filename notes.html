@@ -1713,8 +1713,8 @@ textarea::placeholder {
                     const username = user.displayName || user.email;
                     document.getElementById('username').textContent = username;
                     document.getElementById('displayName').textContent = username;
-                    loadNotes();        // Load AI notes
-                    loadManualNotes();  // Load manual notes
+                    loadNotes();        // Load AI note
+                    loadManualNotes();  // Load manual note
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
