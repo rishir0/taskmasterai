@@ -2217,7 +2217,6 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API with model loading checks
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
@@ -2225,43 +2224,48 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const keyPoints = [];
     const totalChunks = chunks.length; // Total number of chunks
     const startTime = Date.now(); // Capture the start time
+    
+    // Ensure this is defined before the loop
+    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
 
     for (let i = 0; i < totalChunks; i++) {
-    let chunk = chunks[i];
-    let attempt = 0;
+        let chunk = chunks[i];
+        let attempt = 0;
 
-    while (attempt < maxRetries) {
-        try {
-            console.log('Sending chunk to Hugging Face API...');
-            const response = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: chunk })
-            });
+        while (attempt < maxRetries) {
+            try {
+                console.log('Sending chunk to Hugging Face API...');
+                const response = await fetch(modelEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ inputs: chunk })
+                });
 
-            if (response.ok) {
-                const result = await response.json();
-                const summary = result[0].summary_text;
-                summaries.push(summary);
+                if (response.ok) {
+                    const result = await response.json();
+                    const summary = result[0].summary_text;
+                    summaries.push(summary);
 
-                // Generate key points based on the summary
-                const sentences = summary.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
+                    // Generate key points based on the summary
+                    const sentences = summary.split('. ');
+                    keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
 
-                console.log('Received summary for chunk.');
+                    console.log('Received summary for chunk.');
 
-                // Update the estimated time after processing each chunk
-                const currentProgress = i + 1; // Increment for the current chunk processed
-                const estimatedTime = updateEstimatedTime(startTime, currentProgress, totalChunks); // Get estimated time
-                console.log(estimatedTime);
+                    // Update the estimated time after processing each chunk
+                    const currentProgress = i + 1; // Increment for the current chunk processed
+                    const estimatedTime = updateEstimatedTime(startTime, currentProgress, totalChunks); // Get estimated time
+                    console.log(estimatedTime);
 
-                // Update the display
-                estimatedTimeDisplay.innerText = estimatedTime;
+                    // Update the display
+                    if (estimatedTimeDisplay) {
+                        estimatedTimeDisplay.innerText = estimatedTime;
+                    }
 
-                break; // Exit retry loop after successful response
+                    break; // Exit retry loop after successful response
 
                 } else {
                     const errorDetails = await response.json();
