@@ -1762,7 +1762,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-// PDF handling function with error handling for PDFs with little or no text
+// Helper function to calculate and display the estimated time remaining
+function updateEstimatedTime(startTime, currentProgress, totalProgress) {
+    const elapsedTime = Date.now() - startTime; // Time passed in milliseconds
+    const progressRatio = currentProgress / totalProgress; // Progress as a percentage (0 to 1)
+
+    if (progressRatio === 0) {
+        return 'Calculating...'; // If no progress is made yet
+    }
+
+    const estimatedTotalTime = elapsedTime / progressRatio; // Estimated total time based on current progress
+    const remainingTime = estimatedTotalTime - elapsedTime; // Time remaining
+
+    const secondsRemaining = Math.max(Math.floor(remainingTime / 1000), 1); // Ensure at least 1 second
+
+    // Format as minutes and seconds (if applicable)
+    const minutes = Math.floor(secondsRemaining / 60);
+    const seconds = secondsRemaining % 60;
+
+    if (minutes > 0) {
+        return `Estimated time remaining: ${minutes}m ${seconds}s`;
+    } else {
+        return `Estimated time remaining: ${seconds}s`;
+    }
+}
+
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
@@ -1770,20 +1794,24 @@ async function handleFileUpload(file) {
     const percentageDisplay = document.createElement('span');
     const uploadingText = document.getElementById('uploading-text');
     const errorMessage = document.querySelector('.error-message2');
+    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
 
     if (errorMessage) {
         errorMessage.innerText = ''; // Clear any existing error message
         errorMessage.style = ''; // Clear inline styles
     }
 
-    // Show progress bar
+    // Show progress bar and estimated time display
     progressContainer.style.display = 'block';
     progressBar.value = 0;
     percentageDisplay.innerText = '';
     percentageDisplay.style = '';
+    estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
     // Change "Uploading" to "Generating Note"
     uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
+
+    const startTime = Date.now(); // Capture the start time
 
     // Read PDF file
     const reader = new FileReader();
@@ -1794,13 +1822,21 @@ async function handleFileUpload(file) {
             console.log('PDF file read successfully, processing PDF...');
             const pdfData = new Uint8Array(reader.result);
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-            
+
             let textContent = '';
-            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const totalPages = pdf.numPages; // Total number of pages for progress tracking
+
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
                 const page = await pdf.getPage(pageNum);
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
+
+                // Update progress bar and estimated time after each page is processed
+                const progress = (pageNum / totalPages) * 100;
+                progressBar.value = progress;
+                percentageDisplay.innerText = `${Math.round(progress)}%`;
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -1820,6 +1856,10 @@ async function handleFileUpload(file) {
             // Generate overview and key points
             try {
                 const { overview, keyPoints } = await generateSummary(textContent);
+
+                // During summary generation, we can update the estimated time again
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, totalPages, totalPages + 1); // Assuming an extra "step" for summary generation
+
                 console.log('Overview and key points generation complete.');
 
                 // Save to Firestore
@@ -1828,7 +1868,6 @@ async function handleFileUpload(file) {
 
                 closePdfUploadModal();
                 loadAllNotes();
-
 
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
