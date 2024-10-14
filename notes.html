@@ -1662,11 +1662,18 @@ textarea::placeholder {
     <p style="color: gray; font-size: 0.9em;">
         Please wait a few moments to process large PDFs. If the file is too large, the operation may fail. Consider trying a smaller file if you encounter issues.
     </p>
-    <div class="progress-container" style="position: relative;">
-        <progress id="progressBar2" value="" max="100" data-percentage=""></progress> <!-- Progress bar -->
-        <span class="progress-percentage">0%</span> <!-- Percentage display inside progress bar -->
+    
+    <div class="progress-container" style="position: relative; width: 100%; max-width: 500px;">
+        <progress id="progressBar2" value="0" max="100"></progress> <!-- Progress bar element -->
+        <span class="progress-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000;">0%</span> <!-- Centered percentage display -->
     </div>
+    
+    <!-- Estimated time remaining display -->
+    <p id="estimated-time" style="color: gray; font-size: 0.9em; margin-top: 10px; display: none;">
+        Estimated time remaining: <span id="time-remaining">Calculating...</span>
+    </p>
 </div>
+
 
 
 
