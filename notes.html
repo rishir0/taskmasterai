@@ -2041,7 +2041,7 @@ async function simulateRealTimeUploadProgress() {
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-2.7B";
+const modelEndpoint = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
 // File input and progress bar elements
 const pdfFileInput = document.getElementById('pdfFileInput');
@@ -2131,6 +2131,7 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
+// Function to generate a summary using Hugging Face API (without questions)
 async function generateSummary(text) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
@@ -2139,7 +2140,6 @@ async function generateSummary(text) {
 
     for (let chunk of chunks) {
         try {
-            // Prompting for summary
             console.log('Sending chunk to Hugging Face API...');
             const response = await fetch(modelEndpoint, {
                 method: 'POST',
@@ -2147,55 +2147,39 @@ async function generateSummary(text) {
                     'Authorization': `Bearer ${huggingFaceApiKey}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    inputs: `Summarize the following text:\n\n${chunk}`,
-                    parameters: {
-                        max_new_tokens: 150,  // Control length of the summary
-                        temperature: 0.5,    // Control creativity
-                        top_p: 0.9           // Control diversity
-                    }
-                })
+                body: JSON.stringify({ inputs: chunk })
             });
 
-            if (!response.ok) {
+            if (response.ok) {
+                const result = await response.json();
+                const summary = result[0].summary_text;
+
+                summaries.push(summary);
+
+                // Generate key points based on the summary
+                const sentences = summary.split('. ');
+                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
+
+                console.log('Received summary for chunk.');
+            } else {
                 const errorDetails = await response.json();
                 console.error(`Error from Hugging Face API: ${errorDetails.error}`);
                 throw new Error(`Error generating summary: ${errorDetails.error}`);
             }
-
-            const result = await response.json();
-            const summaryText = result?.generated_text;
-
-            if (summaryText) {
-                summaries.push(summaryText);
-
-                // Extract key points from the summary
-                const sentences = summaryText.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.').filter(Boolean));
-
-                console.log('Received summary for chunk.');
-            } else {
-                console.error('Summary text is undefined.');
-            }
-
         } catch (error) {
             console.error(`Failed to generate summary: ${error.message}`);
             throw error;
         }
     }
 
-    if (summaries.length === 0 || keyPoints.length === 0) {
-        throw new Error('No summary or key points were generated.');
-    }
-
     console.log('Summary generation complete.');
 
-    // Combine all summaries into one
+    // Combine summaries and limit overview to a maximum of 4 sentences
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
 
     return {
-        overview: overviewSentences,
+        overview: overviewSentences, // Final overview limited to 4 sentences
         keyPoints
     };
 }
@@ -2560,6 +2544,7 @@ function formatDate() {
     });
 }
 
+// Updated createNote function
 function createNote() {
     const noteInput = document.querySelector('#noteModal2 textarea'); // Select textarea from Modal 2
     const noteText = noteInput.value.trim();
@@ -2580,8 +2565,8 @@ function createNote() {
                 const title = generateTitle(noteText);
                 
                 // Ensure title, overview, and keyPoints are defined
-                if (!title || !overview || keyPoints.length === 0) {
-                    console.error('Missing or incomplete data for title, overview, or keyPoints.');
+                if (!title || !overview || !keyPoints) {
+                    console.error('Missing data for title, overview, or keyPoints.');
                     hideProgressBar();
                     return;
                 }
