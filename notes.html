@@ -1762,23 +1762,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+// PDF handling function with error handling for PDFs with little or no text
 async function handleFileUpload(file) {
     console.log('File upload started...');
     
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.createElement('span');
-    const uploadingText = document.getElementById('uploading-text'); // Get the "Uploading" text element
-    const errorMessage = document.querySelector('.error-message2'); // Get the existing error message
+    const uploadingText = document.getElementById('uploading-text');
+    const errorMessage = document.querySelector('.error-message2');
+
     if (errorMessage) {
-        errorMessage.innerText = ''; // Clear the error message text
+        errorMessage.innerText = ''; // Clear any existing error message
         errorMessage.style = ''; // Clear inline styles
     }
 
     // Show progress bar
     progressContainer.style.display = 'block';
     progressBar.value = 0;
-    percentageDisplay.innerText = ''; // Clear text
-    percentageDisplay.style = ''; // Clear inline styles
+    percentageDisplay.innerText = '';
+    percentageDisplay.style = '';
 
     // Change "Uploading" to "Generating Note"
     uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
@@ -1803,24 +1805,21 @@ async function handleFileUpload(file) {
 
             console.log('Extracted text:', textContent); // Log extracted text
 
-            // Check if the text is successfully extracted before proceeding
             if (!textContent) {
                 throw new Error('No text extracted from PDF.');
             }
 
             console.log('PDF text extraction complete.');
 
-            // Simulate or use real-time upload progress
+            // Simulate real-time upload progress
             await simulateRealTimeUploadProgress();
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-            // Once upload is "done", generate the overview and key points
-            console.log('Upload complete, generating overview and key points...');
+            // Generate overview and key points
             try {
                 const { overview, keyPoints } = await generateSummary(textContent);
-                
                 console.log('Overview and key points generation complete.');
 
                 // Save to Firestore
@@ -1829,6 +1828,7 @@ async function handleFileUpload(file) {
 
                 closePdfUploadModal();
                 loadAllNotes();
+
 
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
@@ -2132,6 +2132,11 @@ pdfDragArea.addEventListener('drop', (e) => {
 // Set PDF.js worker source
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
+// Helper function to wait for a certain amount of time (in ms)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Helper function to split text into chunks by character limit
 function splitTextIntoChunks(text, maxLength = 2000) {
     console.log('Splitting text into chunks...');
@@ -2146,44 +2151,60 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Function to generate a summary using Hugging Face API (without questions)
-async function generateSummary(text) {
+// Function to generate a summary using Hugging Face API with model loading checks
+async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     const keyPoints = [];
 
     for (let chunk of chunks) {
-        try {
-            console.log('Sending chunk to Hugging Face API...');
-            const response = await fetch(modelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: chunk })
-            });
+        let attempt = 0;
+        while (attempt < maxRetries) {
+            try {
+                console.log('Sending chunk to Hugging Face API...');
+                const response = await fetch(modelEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ inputs: chunk })
+                });
 
-            if (response.ok) {
-                const result = await response.json();
-                const summary = result[0].summary_text;
+                if (response.ok) {
+                    const result = await response.json();
+                    const summary = result[0].summary_text;
+                    summaries.push(summary);
 
-                summaries.push(summary);
+                    // Generate key points based on the summary
+                    const sentences = summary.split('. ');
+                    keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
 
-                // Generate key points based on the summary
-                const sentences = summary.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.')); // Ensure full sentences
-
-                console.log('Received summary for chunk.');
-            } else {
-                const errorDetails = await response.json();
-                console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                throw new Error(`Error generating summary: ${errorDetails.error}`);
+                    console.log('Received summary for chunk.');
+                    break; // Exit retry loop after successful response
+                } else {
+                    const errorDetails = await response.json();
+                    
+                    if (errorDetails.error && errorDetails.error.includes('loading')) {
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        await delay(delayInterval); // Wait and retry
+                        attempt++;
+                    } else {
+                        console.error(`Error from Hugging Face API: ${errorDetails.error}`);
+                        throw new Error(`Error generating summary: ${errorDetails.error}`);
+                    }
+                }
+            } catch (error) {
+                console.error(`Failed to generate summary: ${error.message}`);
+                if (attempt < maxRetries - 1) {
+                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
+                    await delay(delayInterval);
+                    attempt++;
+                } else {
+                    throw error;
+                }
             }
-        } catch (error) {
-            console.error(`Failed to generate summary: ${error.message}`);
-            throw error;
         }
     }
 
@@ -2198,6 +2219,7 @@ async function generateSummary(text) {
         keyPoints
     };
 }
+
 
 
 
