@@ -1871,7 +1871,7 @@ async function handleFileUpload(file) {
                 const { overview, keyPoints } = await generateSummary(textContent);
 
                 // Update the estimated time for summary generation
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, currentProgress, totalChunks) 
+                estimatedTimeDisplay.innerText = (updateEstimatedTime(startTime, currentProgress, totalChunks)); 
 
                 console.log('Overview and key points generation complete.');
 
@@ -2255,7 +2255,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                     // Update the estimated time after processing each chunk
                     const currentProgress = i + 1; // Increment for the current chunk processed
+                    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
                     console.log(updateEstimatedTime(startTime, currentProgress, totalChunks)); // Update for each chunk processed
+                    estimatedTimeDisplay.innerText = (updateEstimatedTime(startTime, currentProgress, totalChunks)); 
 
                     break; // Exit retry loop after successful response
                 } else {
