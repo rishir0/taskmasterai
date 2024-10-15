@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1664,7 +1665,7 @@ textarea::placeholder {
     </p>
     
     <div class="progress-container" style="position: relative; width: 100%; max-width: 500px;">
-        <progress id="progressBar2" value="0" max="0"></progress> <!-- Progress bar element -->
+        <progress id="progressBar2" value="0" max="100"></progress> <!-- Progress bar element -->
         <span class="progress-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000;">0%</span> <!-- Centered percentage display -->
     </div>
     
@@ -1872,7 +1873,6 @@ async function handleFileUpload(file) {
 
                 // Update the estimated time for summary generation
                 estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
-                progressBar.value = 0;
 
                 console.log('Overview and key points generation complete.');
 
