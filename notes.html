@@ -1857,8 +1857,8 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
-            // Simulate real-time upload progress based on estimated total time
-            await simulateRealTimeUploadProgress(startTime, totalProgress);
+            // Simulate real-time upload progress
+            await simulateRealTimeUploadProgress();
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
@@ -1872,6 +1872,7 @@ async function handleFileUpload(file) {
 
                 // Update the estimated time for summary generation
                 estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
+                progressBar.value = 0;
 
                 console.log('Overview and key points generation complete.');
 
@@ -2091,36 +2092,34 @@ progressBar.parentNode.appendChild(errorMessage);
     };
 }
 
-// Helper function for real-time upload progress based on estimated time
-async function simulateRealTimeUploadProgress(startTime, totalProgress) {
+// Helper function for real-time upload progress
+async function simulateRealTimeUploadProgress() {
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
-    const estimatedTimeDisplay = document.getElementById('estimated-time'); // For displaying estimated time
+    let startTime = Date.now(); // Record the start time
 
+    const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
     let progress = 0;
 
     return new Promise((resolve) => {
         const uploadInterval = setInterval(() => {
-            const elapsedTime = Date.now() - startTime; // Calculate elapsed time
-            progress = Math.min((elapsedTime / totalProgress) * 100, 100); // Calculate percentage based on time
+            const elapsedTime = Date.now() - startTime;
+            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
 
-            // Update progress bar and percentage display
-            progressBar.value = progress;
-            percentageDisplay.innerText = `${Math.floor(progress)}%`;
+            progressBar.value = progress; // Update progress bar fill
+            percentageDisplay.style = ''; // Clear inline styles
+            percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
 
-            // Use updateEstimatedTime to calculate remaining time dynamically
-            const estimatedTimeText = updateEstimatedTime(startTime, progress, totalProgress);
-            estimatedTimeDisplay.innerText = estimatedTimeText;
+            
+            
 
-            // Stop updating once progress reaches 100%
             if (progress >= 100) {
-                clearInterval(uploadInterval); // Stop the interval
-                resolve(); // Resolve the promise when complete
+                clearInterval(uploadInterval); // Stop updating once 100% is reached
+                resolve();
             }
-        }, 100); // Update every 100ms for smoother transitions
+        }, 100); // Update progress every 100ms for smoother transitions
     });
 }
-
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
