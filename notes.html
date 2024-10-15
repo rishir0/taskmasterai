@@ -1873,6 +1873,8 @@ async function handleFileUpload(file) {
                 // Update the estimated time for summary generation
                 estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
 
+                await simulateRealTimeEstimationProgress();
+
                 console.log('Overview and key points generation complete.');
 
                 // Save to Firestore
@@ -2117,6 +2119,41 @@ async function simulateRealTimeUploadProgress() {
                 resolve();
             }
         }, 100); // Update progress every 100ms for smoother transitions
+    });
+}
+
+
+// Helper function for real-time estimation progress
+async function simulateRealTimeEstimationProgress() {
+    const progressBar = document.getElementById('progressBar2');
+    const percentageDisplay = document.querySelector('.progress-percentage');
+    const estimatedTimeDisplay = document.getElementById('estimated-time'); // The element for estimated time
+    const startTime = Date.now(); // Record the start time
+
+    let progress = 0;
+    const totalProgress = 100; // Assume total progress is 100% for a smooth transition
+
+    return new Promise((resolve) => {
+        const estimationInterval = setInterval(() => {
+            const elapsedTime = Date.now() - startTime; // Calculate elapsed time
+
+            // Simulate progress based on time (e.g., 1% progress every 80ms)
+            progress = Math.min((elapsedTime / 8000) * 100, 100); // 8000ms is 8 seconds total duration
+
+            // Update progress bar
+            progressBar.value = progress;
+            percentageDisplay.innerText = `${Math.floor(progress)}%`;
+
+            // Use updateEstimatedTime function to calculate and display the remaining time
+            const estimatedTime = updateEstimatedTime(startTime, progress, totalProgress);
+            estimatedTimeDisplay.innerText = estimatedTime; // Update the estimated time display
+
+            // Stop updating once progress reaches 100%
+            if (progress >= 100) {
+                clearInterval(estimationInterval); // Clear the interval
+                resolve(); // Resolve the promise once the simulation completes
+            }
+        }, 100); // Update every 100ms for smooth transitions
     });
 }
 
