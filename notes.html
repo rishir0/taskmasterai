@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1842,10 +1841,6 @@ async function handleFileUpload(file) {
                 const page = await pdf.getPage(pageNum);
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
-
-
-                // Simulate real-time upload progress
-                await simulateRealTimeUploadProgress();
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
