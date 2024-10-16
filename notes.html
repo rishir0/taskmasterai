@@ -1857,8 +1857,15 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
+    const totalChunks = chunks.length; // Total number of chunks
+    const startTime = Date.now(); // Capture the start time
+
+                    // Update the estimated time after processing each chunk
+                    const currentProgress = i + 1; // Increment for the current chunk processed
+                    const estimatedTime = updateEstimatedTime(startTime, currentProgress, totalChunks); // Get estimated time
+
             // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress();
+            await simulateRealTimeUploadProgress(startTime, currentProgress, totalChunks); // Assuming total progress time is 8000 ms (8 seconds)
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
@@ -2092,31 +2099,29 @@ progressBar.parentNode.appendChild(errorMessage);
 }
 
 // Helper function for real-time upload progress
-async function simulateRealTimeUploadProgress() {
+async function simulateRealTimeUploadProgress(startTime, totalProgress) {
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
-    let startTime = Date.now(); // Record the start time
-
-    const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
-    let progress = 0;
+    const estimatedTimeDisplay = document.getElementById('estimated-time');
+    
+    let currentProgress = 0; // Start from 0%
 
     return new Promise((resolve) => {
-        const uploadInterval = setInterval(() => {
+        const estimationInterval = setInterval(() => {
             const elapsedTime = Date.now() - startTime;
-            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
+            currentProgress = Math.min((elapsedTime / totalProgress) * 100, 100); // Calculate progress percentage
 
-            progressBar.value = progress; // Update progress bar fill
-            percentageDisplay.style = ''; // Clear inline styles
-            percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
+            progressBar.value = currentProgress; // Update progress bar
+            percentageDisplay.innerText = `${Math.floor(currentProgress)}%`; // Update percentage display
 
-            
-            
+            // Update estimated time remaining
+            estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, currentProgress, 100);
 
-            if (progress >= 100) {
-                clearInterval(uploadInterval); // Stop updating once 100% is reached
+            if (currentProgress >= 100) {
+                clearInterval(estimationInterval); // Stop updating once 100% is reached
                 resolve();
             }
-        }, 100); // Update progress every 100ms for smoother transitions
+        }, 100); // Update every 100ms for smoother transitions
     });
 }
 
