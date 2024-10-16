@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1795,6 +1794,37 @@ function updateEstimatedTime(startTime, currentProgress, totalProgress) {
     }
 }
 
+const questionModelEndpoint = "https://api-inference.huggingface.co/models/distilbert-base-uncased-mnli"; // Example model for question generation
+
+// Function to generate questions
+async function questionGeneration(text) {
+    console.log('Generating questions from text...');
+
+    const response = await fetch(questionModelEndpoint, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${huggingFaceApiKey}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            inputs: text,
+            parameters: {
+                num_questions: 15, // Limit to 15 questions
+                max_choices: 4     // Max 4 choices per question
+            }
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to generate questions.");
+    }
+
+    const result = await response.json();
+    console.log('Generated Questions:', result);
+    
+    return result;  // Return the generated questions
+}
+
 
 
 async function handleFileUpload(file) {
@@ -1844,6 +1874,8 @@ async function handleFileUpload(file) {
                 textContent += text.items.map(item => item.str).join(' ');
 
                 // Update progress bar and estimated time after each page is processed
+                await simulateRealTimeUploadProgress();
+                
                 const progress = (pageNum / totalPages) * 100;
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
@@ -1864,21 +1896,24 @@ async function handleFileUpload(file) {
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-            // Start timer for summary generation
+            // Call question generation function
+            const questions = await questionGeneration(textContent);
+            console.log('Generated Questions:', questions);
+
+            // Now proceed with summary generation
             const summaryStartTime = Date.now(); // Capture the start time for summary generation
 
             // Generate overview and key points
-            try {
-                const { overview, keyPoints } = await generateSummary(textContent);
+            const { overview, keyPoints } = await generateSummary(textContent);
 
-                // Update the estimated time for summary generation
-                estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
+            // Update the estimated time for summary generation
+            estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
 
-                console.log('Overview and key points generation complete.');
+            console.log('Overview and key points generation complete.');
 
-                // Save to Firestore
-                await saveToFirestore2(file.name, overview, keyPoints);
-                console.log('PDF overview and key points saved to Firestore.');
+            // Save to Firestore
+            await saveToFirestore2(file.name, overview, keyPoints, questions); // Save questions as well
+            console.log('PDF overview, key points, and questions saved to Firestore.');
 
                 closePdfUploadModal();
                 loadAllNotes();
