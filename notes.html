@@ -407,44 +407,50 @@ body.night-mode {
     align-items: center;
 }
 
-
-
 /* Mobile styles */
 @media (max-width: 768px) {
-    /* Adjusting .svg-icon */
-    .svg-icon {
-        width: 2.5rem; /* Decrease size for smaller screens */
-        height: 2.5rem;
-        margin: 0 auto; /* Center horizontally */
-        display: block; /* Make it a block element for centering */
-        margin-bottom: 10px; /* Adjust margin for better spacing below */
+    .main-heading-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
     }
 
-    /* Adjusting .main-heading */
     .main-heading {
         font-size: 1.8rem; /* Decrease font size for smaller screens */
-        text-align: center; /* Center the main heading */
-        flex-direction: column; /* Stack items vertically if needed */
         word-wrap: break-word; /* Allow text to wrap */
-        margin-left: 0; /* Reset margin for consistency */
-        margin-right: 0; /* Reset margin for consistency */
+        text-align: center; /* Center align text */
+        display: inline-block;
+        position: relative;
+    }
+
+    /* Centering the beta-tag with the main-heading */
+    .beta-tag {
+        font-size: 0.65rem; /* Slightly smaller font size for mobile */
+        padding: 2px 6px; /* Adjust padding for better fit */
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 5px;
     }
 
     /* Adjusting .sub-heading */
     .sub-heading {
         font-size: 1.2rem; /* Reduce font size for mobile */
-        margin-bottom: 10px; /* Give some space below */
-        margin-left: 0; /* Reset margin-left to align properly */
         text-align: center; /* Center align text */
+        margin-top: 10px;
+        word-wrap: break-word; /* Wrap long text to avoid overflow */
+        width: 100%; /* Ensure it doesn’t overflow */
+        max-width: 100%; /* Prevents horizontal overflow */
     }
 
-    /* Adjusting .beta-tag */
-    .beta-tag {
-        font-size: 0.65rem; /* Slightly smaller font size for mobile */
-        padding: 2px 6px; /* Adjust padding for better fit */
-        margin: 0 auto; /* Center horizontally */
-        display: inline-block; /* Keep it inline for centering */
-        text-align: center; /* Center align text */
+    /* Adjusting .svg-icon */
+    .svg-icon {
+        width: 2.5rem; /* Decrease size for smaller screens */
+        height: 2.5rem;
+        margin-bottom: -10px; /* Adjust margin for better alignment */
     }
 }
 
