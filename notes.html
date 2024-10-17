@@ -407,6 +407,16 @@ body.night-mode {
     align-items: center;
 }
 
+/* Add mobile styles */
+@media (max-width: 768px) {
+    .main-heading {
+        font-size: 1.8rem; /* Decrease font size for smaller screens */
+        flex-direction: column; /* Stack items vertically if needed */
+        word-wrap: break-word; /* Allow text to wrap */
+        text-align: center; /* Center align text for better appearance */
+    }
+}
+
 /* SVG icon */
 .svg-icon {
     width: 3.3rem; /* Match the font size of the heading */
@@ -520,6 +530,33 @@ body.night-mode {
 .note-option-card p {
     font-size: 1rem;
     color: var(--sub-text-color, #777);
+}
+
+/* Add mobile styles */
+@media (max-width: 768px) {
+    .note-options-container {
+        flex-direction: column; /* Stack cards vertically */
+        gap: 10px; /* Reduced gap between cards */
+    }
+
+    .note-option-card {
+        width: 100%; /* Full width for cards */
+        margin-top: 0; /* Remove top margin for stacked layout */
+    }
+    
+    .unavailable-tag {
+        bottom: 5px; /* Adjust position */
+        right: 5px; /* Adjust position */
+        font-size: 0.7rem; /* Smaller font size */
+    }
+
+    .note-option-card h4 {
+        font-size: 1.1rem; /* Adjust heading size */
+    }
+
+    .note-option-card p {
+        font-size: 0.9rem; /* Adjust paragraph size */
+    }
 }
 
 .all-notes-section {
@@ -1906,7 +1943,7 @@ percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progr
 percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
 percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
-percentageDisplay.style.width = '400px'; // Set a longer width, adjust as needed
+percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -1974,7 +2011,7 @@ percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progr
 percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
 percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
-percentageDisplay.style.width = '400px'; // Set a longer width, adjust as needed
+percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
@@ -2041,7 +2078,7 @@ percentageDisplay.style.borderRadius = '18px'; // Match rounded corners of progr
 percentageDisplay.style.boxShadow = '0 3px 10px rgba(201, 48, 44, 0.3)'; // Match shadow to error gradient
 percentageDisplay.style.display = 'inline-block'; // Ensure it's inline to fit the flow
 percentageDisplay.style.transition = 'width 1.5s ease-out'; // Smooth transition, just like the progress bar
-percentageDisplay.style.width = '400px'; // Set a longer width, adjust as needed
+percentageDisplay.style.width = '410px'; // Set a longer width, adjust as needed
 
 // Clear existing percentage display, if any, before adding
 const existingPercentageDisplay = document.querySelector('.progress-percentage');
