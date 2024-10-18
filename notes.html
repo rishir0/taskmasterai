@@ -1956,6 +1956,7 @@ async function handleFileUpload(file) {
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
+                const percentageDisplay = document.createElement('span');
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
                 estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
