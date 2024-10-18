@@ -1994,7 +1994,7 @@ try {
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
                 progressBar.value = 0;
-                estimatedTimeDisplay.style.display = 'none'; // Hide estimated time after completion
+
 
             } catch (error) {
 
@@ -2407,11 +2407,15 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                    // Update the display for estimated time remaining
-                    if (estimatedTimeDisplay) {
-                        const formattedRemainingTime = new Date(remainingTime).toISOString().substr(11, 8); // Format remaining time as HH:MM:SS
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
-                    }
+// Update the display for estimated time remaining
+if (estimatedTimeDisplay) {
+    const minutes = Math.floor(remainingTime / 60000); // Get minutes
+    const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
+
+    const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
+    estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
+}
+
 
                     break; // Exit retry loop after successful response
 
