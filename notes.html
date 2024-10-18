@@ -2587,11 +2587,12 @@ function toggleNoteView(noteId) {
         keyPoints.style.display = 'none'; // Hide the key points list
         aiGeneratedTag.style.display = 'none';
         buttonContainer.style.display = 'none';
-        // Show the date below the title
-        dateSpan.style.display = 'block';
-        dateSpan.style.marginLeft = '0'; // Ensure date starts where title starts
-        noteTitle.style.display = 'inline'; // Keep title inline with the SVG
 
+        // Make sure the title and date are on the same line with the SVG icon
+        dateSpan.style.display = 'inline'; // Ensure date is inline
+        dateSpan.style.marginLeft = '8px'; // Add some space between title and date
+        noteTitle.style.display = 'inline'; // Keep the title inline with the SVG
+        
         // Add the SVG in front of the title and date
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
 
