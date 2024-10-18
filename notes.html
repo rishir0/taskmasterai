@@ -2580,6 +2580,9 @@ function toggleNoteView(noteId) {
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
+        // Save expanded state to localStorage
+        localStorage.setItem(`note-${noteId}`, 'expanded');
+
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -2596,8 +2599,34 @@ function toggleNoteView(noteId) {
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
 
         noteDiv.classList.add('collapsed');
+
+        // Save collapsed state to localStorage
+        localStorage.setItem(`note-${noteId}`, 'collapsed');
     }
 }
+
+// Function to restore note state from localStorage
+function restoreNoteState(noteId) {
+    const noteDiv = document.querySelector(`[data-id='${noteId}']`);
+    const state = localStorage.getItem(`note-${noteId}`);
+    
+    if (state === 'collapsed') {
+        // Initially collapsed
+        toggleNoteView(noteId);
+    }
+}
+
+// Call this function when the page loads to restore all notes' states
+function restoreAllNotes() {
+    const notes = document.querySelectorAll('.note'); // Assuming .note class on each note element
+    notes.forEach(note => {
+        const noteId = note.getAttribute('data-id');
+        restoreNoteState(noteId);
+    });
+}
+
+// Example: Call restoreAllNotes when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', restoreAllNotes);
 
 
 
