@@ -1912,32 +1912,22 @@ async function handleFileUpload(file) {
     const percentageDisplay = document.createElement('span');
     const uploadingText = document.getElementById('uploading-text');
     const errorMessage = document.querySelector('.error-message2');
-    const estimatedTimeDisplay = document.getElementById('estimated-time');
-    const progressContainer = document.getElementById('progressContainer'); // Ensure this is defined
+    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
 
     if (errorMessage) {
         errorMessage.innerText = ''; // Clear any existing error message
         errorMessage.style = ''; // Clear inline styles
     }
 
-    // Check if elements exist before using their styles
-    if (progressContainer) {
-        progressContainer.style.display = 'block';
-    }
-    if (progressBar) {
-        progressBar.value = 0;
-    }
-    if (estimatedTimeDisplay) {
-        estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
-    }
-
+    // Show progress bar and estimated time display
+    progressContainer.style.display = 'block';
+    progressBar.value = 0;
     percentageDisplay.innerText = '';
     percentageDisplay.style = '';
+    estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
     // Change "Uploading" to "Generating Note"
-    if (uploadingText) {
-        uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
-    }
+    uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
 
     const startTime = Date.now(); // Capture the start time
 
@@ -1954,6 +1944,9 @@ async function handleFileUpload(file) {
             let textContent = '';
             const totalPages = pdf.numPages; // Total number of pages for progress tracking
 
+            const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+
+
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
@@ -1963,13 +1956,9 @@ async function handleFileUpload(file) {
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
-                if (progressBar) {
-                    progressBar.value = progress;
-                }
+                progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
-                if (estimatedTimeDisplay) {
-                    estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                }
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -1984,25 +1973,22 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress2();
 
             // Change "Uploading" to "Generating Note"
-            if (uploadingText) {
-                uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
-            }
+            uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-            // Generate overview and key points with real-time progress bar update
-            try {
-                const { overview, keyPoints } = await generateSummary(textContent);
 
-                console.log('Overview and key points generation complete.');
+// Generate overview and key points with real-time progress bar update
+try {
+    // Call generateSummary (simulating work being done in the background)
+    const { overview, keyPoints } = await generateSummary(textContent);
 
-                // Wait for progress bar to complete (simulate real-time completion)
-                await progressPromise;
+    console.log('Overview and key points generation complete.');
 
-                // Save to Firestore after the progress completes
-                await saveToFirestore2(file.name, overview, keyPoints);
-                console.log('PDF overview and key points saved to Firestore.');
+    // Save to Firestore after the progress completes
+    await saveToFirestore2(file.name, overview, keyPoints);
+    console.log('PDF overview and key points saved to Firestore.');
 
-                closePdfUploadModal();
-                loadAllNotes();
+    closePdfUploadModal();
+    loadAllNotes();
 
                 
                 // Hide progress bar after everything is done
