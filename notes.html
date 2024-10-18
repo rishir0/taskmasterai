@@ -1428,6 +1428,20 @@ textarea::placeholder {
     }
 
 
+.ellipsis-container {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 48px;
+    height: 48px;
+}
+.note-item {
+    position: relative; /* Ensure the note div is relatively positioned for absolute child */
+    padding-bottom: 20px; /* Add padding so the ellipsis doesn't overlap content */
+}
+
+
+
     </style>
 </head>
 <body>
@@ -2571,6 +2585,14 @@ function toggleNoteView(noteId) {
             <path d="M16 17.75H8C7.59 17.75 7.25 17.41 7.25 17C7.25 16.59 7.59 16.25 8 16.25H16C16.41 16.25 16.75 16.59 16.75 17C16.75 17.41 16.41 17.75 16 17.75Z" fill="#FFFFFF"></path>
         </svg>`;
 
+    // Define the vertical ellipsis SVG
+    const verticalEllipsisIcon = `
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+            <circle cx="12" cy="5" r="2" fill="var(--primary-color)"/>
+            <circle cx="12" cy="12" r="2" fill="var(--primary-color)"/>
+            <circle cx="12" cy="19" r="2" fill="var(--primary-color)"/>
+        </svg>`;
+
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
         overview.style.display = 'block';
@@ -2604,6 +2626,12 @@ function toggleNoteView(noteId) {
 
         // Add the SVG in front of the title and date
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
+
+        // Add the vertical ellipsis at the bottom right of the noteDiv
+        const ellipsisContainer = document.createElement('div');
+        ellipsisContainer.classList.add('ellipsis-container');
+        ellipsisContainer.innerHTML = verticalEllipsisIcon;
+        noteDiv.appendChild(ellipsisContainer);
 
         noteDiv.classList.add('collapsed');
 
