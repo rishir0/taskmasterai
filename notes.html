@@ -1975,9 +1975,6 @@ async function handleFileUpload(file) {
 
 // Generate overview and key points with real-time progress bar update
 try {
-    // Start the progress bar using simulateRealTimeUploadProgress
-    const progressPromise = simulateRealTimeUploadProgress(); // Begin updating the progress bar
-
     // Call generateSummary (simulating work being done in the background)
     const { overview, keyPoints } = await generateSummary(textContent);
 
@@ -2221,13 +2218,7 @@ async function simulateRealTimeUploadProgress() {
             progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
             
             progressBar.value = progress; // Update progress bar fill
-            percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
-
-            // Adjust the estimatedUploadTime dynamically based on progress
-            if (remainingTime > 0 && remainingTime < estimatedUploadTime) {
-                estimatedUploadTime = remainingTime + elapsedTime; // Adjust estimated time based on real-time remaining progress
-            }
 
             if (progress >= 100) {
                 clearInterval(uploadInterval); // Stop updating once 100% is reached
@@ -2236,7 +2227,6 @@ async function simulateRealTimeUploadProgress() {
         }, 100); // Update progress every 100ms for smoother transitions
     });
 }
-
 
 // Helper function for real-time upload progress
 async function simulateRealTimeUploadProgress2() {
@@ -2371,9 +2361,14 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const keyPoints = [];
     const totalChunks = chunks.length; // Total number of chunks
     const startTime = Date.now(); // Capture the start time
-    
+
     // Ensure this is defined before the loop
     const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+    const progressBar = document.getElementById('progressBar2'); // Get the progress bar element
+    const percentageDisplay = document.querySelector('.progress-percentage'); // Get the percentage display element
+
+    // Start simulating progress
+    await simulateRealTimeUploadProgress();
 
     for (let i = 0; i < totalChunks; i++) {
         let chunk = chunks[i];
@@ -2402,21 +2397,27 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                     console.log('Received summary for chunk.');
 
-                    // Update the estimated time after processing each chunk
-                    const currentProgress = i + 1; // Increment for the current chunk processed
-                    const estimatedTime = updateEstimatedTime(startTime, currentProgress, totalChunks); // Get estimated time
-                    console.log(estimatedTime);
+                    // Update the estimated time and progress after processing each chunk
+                    const currentProgress = (i + 1) / totalChunks * 100; // Calculate percentage based on chunks processed
+                    const elapsedTime = Date.now() - startTime;
+                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks; // Recalculate estimated total time
+                    const remainingTime = estimatedTotalTime - elapsedTime;
 
-                    // Update the display
+                    // Update progress bar and percentage display
+                    progressBar.value = currentProgress;
+                    percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+
+                    // Update the display for estimated time remaining
                     if (estimatedTimeDisplay) {
-                        estimatedTimeDisplay.innerText = estimatedTime;
+                        const formattedRemainingTime = new Date(remainingTime).toISOString().substr(11, 8); // Format remaining time as HH:MM:SS
+                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
                     }
 
                     break; // Exit retry loop after successful response
 
                 } else {
                     const errorDetails = await response.json();
-                    
+
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
                         console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                         await delay(delayInterval); // Wait and retry
@@ -2450,9 +2451,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         keyPoints
     };
 }
-
-
-
 
 
 
