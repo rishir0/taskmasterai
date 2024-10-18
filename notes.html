@@ -1912,22 +1912,32 @@ async function handleFileUpload(file) {
     const percentageDisplay = document.createElement('span');
     const uploadingText = document.getElementById('uploading-text');
     const errorMessage = document.querySelector('.error-message2');
-    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+    const estimatedTimeDisplay = document.getElementById('estimated-time');
+    const progressContainer = document.getElementById('progressContainer'); // Ensure this is defined
 
     if (errorMessage) {
         errorMessage.innerText = ''; // Clear any existing error message
         errorMessage.style = ''; // Clear inline styles
     }
 
-    // Show progress bar and estimated time display
-    progressContainer.style.display = 'block';
-    progressBar.value = 0;
+    // Check if elements exist before using their styles
+    if (progressContainer) {
+        progressContainer.style.display = 'block';
+    }
+    if (progressBar) {
+        progressBar.value = 0;
+    }
+    if (estimatedTimeDisplay) {
+        estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
+    }
+
     percentageDisplay.innerText = '';
     percentageDisplay.style = '';
-    estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
     // Change "Uploading" to "Generating Note"
-    uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
+    if (uploadingText) {
+        uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
+    }
 
     const startTime = Date.now(); // Capture the start time
 
@@ -1953,9 +1963,13 @@ async function handleFileUpload(file) {
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
-                progressBar.value = progress;
+                if (progressBar) {
+                    progressBar.value = progress;
+                }
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
+                if (estimatedTimeDisplay) {
+                    estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
+                }
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -1970,25 +1984,25 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress2();
 
             // Change "Uploading" to "Generating Note"
-            uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
+            if (uploadingText) {
+                uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
+            }
 
+            // Generate overview and key points with real-time progress bar update
+            try {
+                const { overview, keyPoints } = await generateSummary(textContent);
 
-// Generate overview and key points with real-time progress bar update
-try {
-    // Call generateSummary (simulating work being done in the background)
-    const { overview, keyPoints } = await generateSummary(textContent);
+                console.log('Overview and key points generation complete.');
 
-    console.log('Overview and key points generation complete.');
+                // Wait for progress bar to complete (simulate real-time completion)
+                await progressPromise;
 
-    // Wait for progress bar to complete (simulate real-time completion)
-    await progressPromise;
+                // Save to Firestore after the progress completes
+                await saveToFirestore2(file.name, overview, keyPoints);
+                console.log('PDF overview and key points saved to Firestore.');
 
-    // Save to Firestore after the progress completes
-    await saveToFirestore2(file.name, overview, keyPoints);
-    console.log('PDF overview and key points saved to Firestore.');
-
-    closePdfUploadModal();
-    loadAllNotes();
+                closePdfUploadModal();
+                loadAllNotes();
 
                 
                 // Hide progress bar after everything is done
