@@ -1918,13 +1918,14 @@ async function handleFileUpload(file) {
         errorMessage.style = ''; // Clear inline styles
     }
 
+    // Get the progress container before using it
+    const progressContainer = progressBar.parentElement;
+
     // Show progress bar and estimated time display
     progressContainer.style.display = 'block';
     progressBar.value = 0;
     estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
-    // Change "Uploading" to "Generating Note"
-    uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
 
     const startTime = Date.now(); // Capture the start time
 
@@ -1942,7 +1943,6 @@ async function handleFileUpload(file) {
     percentageDisplay.style.fontWeight = 'bold'; // Bold for better visibility
 
     // Append the percentage display to the progress bar's container
-    const progressContainer = progressBar.parentElement;
     progressContainer.appendChild(percentageDisplay);
 
     reader.onload = async function () {
