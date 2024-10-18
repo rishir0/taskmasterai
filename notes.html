@@ -2710,13 +2710,14 @@ function loadGeneratedPDFs() {
         <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
     </g>
 </svg>
-
-
         </div>
                     `;
 
                     // Insert the new noteDiv at the top of the notesList
                     notesList.insertBefore(noteDiv, notesList.firstChild);
+
+                    // Apply the saved state from localStorage (collapsed or expanded)
+                    applyPDFViewState(pdfId);
 
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${pdfId}']`);
@@ -2761,6 +2762,9 @@ function togglePDFView(pdfId) {
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
+        // Save state to localStorage as expanded
+        localStorage.setItem(`pdf-${pdfId}`, 'expanded');
+
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -2777,6 +2781,17 @@ function togglePDFView(pdfId) {
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
 
         noteDiv.classList.add('collapsed');
+
+        // Save state to localStorage as collapsed
+        localStorage.setItem(`pdf-${pdfId}`, 'collapsed');
+    }
+}
+
+// Call this function when loading to apply the saved state
+function applyPDFViewState(pdfId) {
+    const savedState = localStorage.getItem(`pdf-${pdfId}`);
+    if (savedState === 'collapsed') {
+        togglePDFView(pdfId); // Apply collapsed state if saved as collapsed
     }
 }
 
