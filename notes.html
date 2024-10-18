@@ -2520,19 +2520,14 @@ function loadGeneratedNotes() {
                             </svg>
                             <span>AI Generated</span>
                         </div>
-                        <div class="top-right-svg">
+                        <div class="top-right-svg" onclick="toggleNoteView('${noteId}')">
                             <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet">
-    <g>
-        <!-- Circle background with primary color -->
-        <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
-        
-        <!-- Original icon with white color -->
-        <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-    </g>
-</svg>
-
-
-        </div>
+                                <g>
+                                    <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
+                                    <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+                                </g>
+                            </svg>
+                        </div>
                     `;
 
                     if (!notesList.contains(noteDiv)) {
