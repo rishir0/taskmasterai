@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2580,13 +2581,6 @@ function toggleNoteView(noteId) {
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
-        // Remove the wrapper div if it exists
-        const wrapperDiv = noteDiv.querySelector('.title-date-wrapper');
-        if (wrapperDiv) {
-            noteDiv.insertAdjacentElement('afterbegin', noteTitle);
-            wrapperDiv.remove();
-        }
-
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -2595,20 +2589,15 @@ function toggleNoteView(noteId) {
         aiGeneratedTag.style.display = 'none';
         buttonContainer.style.display = 'none';
 
-        // Create a wrapper div to center title, date, and SVG
-        let wrapperDiv = document.createElement('div');
-        wrapperDiv.classList.add('title-date-wrapper');
-        wrapperDiv.style.display = 'flex';
-        wrapperDiv.style.alignItems = 'center'; // Center vertically
-        wrapperDiv.style.justifyContent = 'center'; // Center horizontally
+        // Ensure the title and SVG are on the same line
+        noteTitle.style.display = 'inline'; // Title inline with SVG
 
-        // Append the SVG and move the title and date inside the wrapper
-        wrapperDiv.innerHTML = svgIcon;
-        wrapperDiv.appendChild(noteTitle);
-        wrapperDiv.appendChild(dateSpan);
+        // Add the SVG in front of the title
+        noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
 
-        // Insert the wrapper at the top of the noteDiv
-        noteDiv.insertAdjacentElement('afterbegin', wrapperDiv);
+        // Position the date below the title
+        dateSpan.style.display = 'block'; // Display the date below the title
+        dateSpan.style.marginTop = '4px'; // Add some spacing between title and date
 
         noteDiv.classList.add('collapsed');
     }
