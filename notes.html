@@ -1972,15 +1972,13 @@ async function handleFileUpload(file) {
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-            // Start timer for summary generation
-            const summaryStartTime = Date.now(); // Capture the start time for summary generation
 
             // Generate overview and key points
             try {
                 const { overview, keyPoints } = await generateSummary(textContent);
 
-                // Update the estimated time for summary generation
-                estimatedTimeDisplay.innerText = updateEstimatedTime(summaryStartTime, 1, 1); // Assuming 1 step for summary generation
+             // Simulate real-time upload progress
+            await simulateRealTimeUploadProgress();
 
                 console.log('Overview and key points generation complete.');
 
