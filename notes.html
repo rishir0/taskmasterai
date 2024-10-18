@@ -2520,15 +2520,14 @@ function loadGeneratedNotes() {
                             </svg>
                             <span>AI Generated</span>
                         </div>
-<div class="top-right-svg" onclick="toggleNoteView('${noteId}'); flipSvg('${noteId}')">
-    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet">
-        <g>
-            <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
-            <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-        </g>
-    </svg>
-</div>
-
+                        <div class="top-right-svg" onclick="toggleNoteView('${noteId}')">
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet">
+                                <g>
+                                    <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
+                                    <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+                                </g>
+                            </svg>
+                        </div>
                     `;
 
                     if (!notesList.contains(noteDiv)) {
@@ -2581,9 +2580,6 @@ function toggleNoteView(noteId) {
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
-        // Save state to localStorage
-        localStorage.setItem(noteId, 'expanded');
-
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -2600,36 +2596,8 @@ function toggleNoteView(noteId) {
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
 
         noteDiv.classList.add('collapsed');
-
-        // Save state to localStorage
-        localStorage.setItem(noteId, 'collapsed');
     }
 }
-
-
-function flipSvg(noteId) {
-    const noteDiv = document.querySelector(`[data-id='${noteId}']`);
-    const svgElement = noteDiv.querySelector('.top-right-svg svg path');
-
-    // Check the current state in localStorage
-    const state = localStorage.getItem(noteId);
-
-    if (state === 'collapsed') {
-        svgElement.setAttribute('transform', 'rotate(180)');
-    } else {
-        svgElement.removeAttribute('transform');
-    }
-}
-
-// Call this function after page load to set the initial state
-function applyInitialView(noteId) {
-    const state = localStorage.getItem(noteId);
-    if (state === 'collapsed') {
-        toggleNoteView(noteId); // Collapse the note if it's saved as collapsed
-    }
-    flipSvg(noteId); // Ensure the SVG is in the correct orientation
-}
-
 
 
 
