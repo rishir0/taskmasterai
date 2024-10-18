@@ -1907,9 +1907,8 @@ function updateEstimatedTime(startTime, currentProgress, totalProgress) {
 
 async function handleFileUpload(file) {
     console.log('File upload started...');
-    
+
     const progressBar = document.getElementById('progressBar2');
-    const percentageDisplay = document.createElement('span');
     const uploadingText = document.getElementById('uploading-text');
     const errorMessage = document.querySelector('.error-message2');
     const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
@@ -1922,8 +1921,6 @@ async function handleFileUpload(file) {
     // Show progress bar and estimated time display
     progressContainer.style.display = 'block';
     progressBar.value = 0;
-    percentageDisplay.innerText = '';
-    percentageDisplay.style = '';
     estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
     // Change "Uploading" to "Generating Note"
@@ -1935,6 +1932,19 @@ async function handleFileUpload(file) {
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
 
+    // Create percentage display outside the loop and append it only once
+    const percentageDisplay = document.createElement('span');
+    percentageDisplay.style.color = 'white'; // Ensure the text color is white
+    percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
+    percentageDisplay.style.top = '65%'; // Adjusted to move it slightly down
+    percentageDisplay.style.left = '50%'; // Center horizontally
+    percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Centered correctly
+    percentageDisplay.style.fontWeight = 'bold'; // Bold for better visibility
+
+    // Append the percentage display to the progress bar's container
+    const progressContainer = progressBar.parentElement;
+    progressContainer.appendChild(percentageDisplay);
+
     reader.onload = async function () {
         try {
             console.log('PDF file read successfully, processing PDF...');
@@ -1944,9 +1954,6 @@ async function handleFileUpload(file) {
             let textContent = '';
             const totalPages = pdf.numPages; // Total number of pages for progress tracking
 
-            const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
-
-
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
@@ -1954,19 +1961,13 @@ async function handleFileUpload(file) {
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
 
-                // Update progress bar and estimated time after each page is processed
+                // Update progress bar and percentage text after each page is processed
                 const progress = (pageNum / totalPages) * 100;
-                const percentageDisplay = document.createElement('span');
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
-                // Ensure the percentage display is positioned at the center of the progress bar
-                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
-                percentageDisplay.style.top = '50%'; // Center vertically
-                percentageDisplay.style.left = '50%'; // Center horizontally
-                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
 
+                // Update estimated time
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -1978,7 +1979,7 @@ async function handleFileUpload(file) {
             console.log('PDF text extraction complete.');
 
             // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress2();
+            await simulateRealTimeUploadProgress();
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
