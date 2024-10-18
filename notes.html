@@ -2591,7 +2591,7 @@ function toggleNoteView(noteId) {
         // Show the date below the title
         dateSpan.style.display = 'block';
         dateSpan.style.marginLeft = '0'; // Ensure date starts where title starts
-        noteTitle.style.display = 'inline'; // Keep title inline with the SVG
+        noteTitle.style.display = 'block'; // Title on its own line when collapsed
 
         // Add the SVG in front of the title and date
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
@@ -2599,7 +2599,6 @@ function toggleNoteView(noteId) {
         noteDiv.classList.add('collapsed');
     }
 }
-
 
 
 
