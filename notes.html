@@ -1959,6 +1959,13 @@ async function handleFileUpload(file) {
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
                 estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
+                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
+                // Ensure the percentage display is positioned at the center of the progress bar
+                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
+                percentageDisplay.style.top = '50%'; // Center vertically
+                percentageDisplay.style.left = '50%'; // Center horizontally
+                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
+
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
