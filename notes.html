@@ -1977,8 +1977,6 @@ async function handleFileUpload(file) {
             try {
                 const { overview, keyPoints } = await generateSummary(textContent);
 
-             // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress();
 
                 console.log('Overview and key points generation complete.');
 
@@ -2204,20 +2202,25 @@ async function simulateRealTimeUploadProgress() {
     const percentageDisplay = document.querySelector('.progress-percentage');
     let startTime = Date.now(); // Record the start time
 
-    const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
     let progress = 0;
+    let estimatedUploadTime = 8000; // Initial estimated time for the entire process (e.g., 8 seconds)
 
     return new Promise((resolve) => {
         const uploadInterval = setInterval(() => {
-            const elapsedTime = Date.now() - startTime;
-            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
+            const elapsedTime = Date.now() - startTime; // Time elapsed since start
+            const estimatedTotalTime = (elapsedTime / progress) * 100 || estimatedUploadTime; // Recalculate estimated total time
+            const remainingTime = estimatedTotalTime - elapsedTime; // Time remaining
 
+            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
+            
             progressBar.value = progress; // Update progress bar fill
             percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
 
-            
-            
+            // Adjust the estimatedUploadTime dynamically based on progress
+            if (remainingTime > 0 && remainingTime < estimatedUploadTime) {
+                estimatedUploadTime = remainingTime + elapsedTime; // Adjust estimated time based on real-time remaining progress
+            }
 
             if (progress >= 100) {
                 clearInterval(uploadInterval); // Stop updating once 100% is reached
@@ -2226,6 +2229,7 @@ async function simulateRealTimeUploadProgress() {
         }, 100); // Update progress every 100ms for smoother transitions
     });
 }
+
 
 // Hugging Face API setup
 const huggingFaceApiKey = "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";
