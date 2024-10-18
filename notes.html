@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2480,7 +2481,7 @@ function loadGeneratedNotes() {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
 
-                // Extract title, overview, key points, and timestamp
+                // Extract title, overview, key points, and timestamp (questions section removed)
                 const title = noteData.title || "Untitled"; // Fallback to 'Untitled' if no title is present
                 const overview = noteData.overview || "No overview available.";
                 const keyPoints = noteData.keyPoints || [];
@@ -2498,69 +2499,56 @@ function loadGeneratedNotes() {
                         noteDiv.innerHTML = ''; // Clear existing content to update
                     }
 
-                    // Format the key points as a list
+                    // Format the key points as a list (questions section removed)
                     const formattedKeyPoints = keyPoints.length > 0 
                         ? keyPoints.map(point => `<li>${point.trim()}</li>`).join('')
                         : "<li>No key points available.</li>";
 
-                    // Structure the note content, separating title/date from the details
+                    // Set the innerHTML including the title, overview, key points, and date (questions section removed)
                     noteDiv.innerHTML = `
-                        <div class="note-header">
-                            <!-- SVG in front of title -->
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="note-icon">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path opacity="0.4" d="M20 8.25V18C20 21 18.21 22 16 22H8C5.79 22 4 21 4 18V8.25C4 5 5.79 4.25 8 4.25C8 4.87 8.24997 5.43 8.65997 5.84C9.06997 6.25 9.63 6.5 10.25 6.5H13.75C14.99 6.5 16 5.49 16 4.25C18.21 4.25 20 5 20 8.25Z" fill="#292D32"></path>
-                                    <path d="M16 4.25C16 5.49 14.99 6.5 13.75 6.5H10.25C9.63 6.5 9.06997 6.25 8.65997 5.84C8.24997 5.43 8 4.87 8 4.25C8 3.01 9.01 2 10.25 2H13.75C14.37 2 14.93 2.25 15.34 2.66C15.75 3.07 16 3.63 16 4.25Z" fill="#292D32"></path>
-                                    <path d="M12 13.75H8C7.59 13.75 7.25 13.41 7.25 13C7.25 12.59 7.59 12.25 8 12.25H12C12.41 12.25 12.75 12.59 12.75 13C12.75 13.41 12.41 13.75 12 13.75Z" fill="#292D32"></path>
-                                    <path d="M16 17.75H8C7.59 17.75 7.25 17.41 7.25 17C7.25 16.59 7.59 16.25 8 16.25H16C16.41 16.25 16.75 16.59 16.75 17C16.75 17.41 16.41 17.75 16 17.75Z" fill="#292D32"></path>
-                                </g>
-                            </svg>
-                            <!-- Title and Date -->
-                            <strong class="note-title">${title}</strong>
-                            <span class="note-date">${dateCreated}</span>
+                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
+                        <p><span class="overview-label"><strong2>Overview:</strong2></span> ${overview}</p> <!-- Display PDF Overview -->
+                        <p><span class="key-points-label"><strong2>Key Points:</strong2></span></p> <!-- Display PDF Key Points -->
+                        <ul>${formattedKeyPoints}</ul> <!-- Display PDF Key Points as a list -->
+                        <div class="button-container">
+                            <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
+                            <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
                         </div>
-                        <div class="note-details" style="display:none;"> <!-- Hidden initially -->
-                            <p><span class="overview-label"><strong>Overview:</strong></span> ${overview}</p>
-                            <p><span class="key-points-label"><strong>Key Points:</strong></span></p>
-                            <ul>${formattedKeyPoints}</ul>
-                            <div class="button-container">
-                                <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
-                                <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
-                            </div>
-                            <div class="ai-generated-tag">
-                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
-                                    <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-                                    <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-                                </svg>
-                                <span>AI Generated</span>
-                            </div>
+                        <div class="ai-generated-tag">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+                            </svg>
+                            <span>AI Generated</span>
                         </div>
                         <div class="top-right-svg">
-                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet" class="toggle-svg">
-                                <g>
-                                    <!-- Circle background with primary color -->
-                                    <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
-                                    <!-- Original icon with white color -->
-                                    <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-                                </g>
-                            </svg>
-                        </div>
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet">
+    <g>
+        <!-- Circle background with primary color -->
+        <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
+        
+        <!-- Original icon with white color -->
+        <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+    </g>
+</svg>
+
+
+        </div>
                     `;
 
-                    notesList.appendChild(noteDiv);
-
-                    const toggleSvg = noteDiv.querySelector('.toggle-svg');
-                    const detailsDiv = noteDiv.querySelector('.note-details');
-
-                    // Add event listener for toggling
-                    toggleSvg.addEventListener('click', () => {
-                        const isHidden = detailsDiv.style.display === 'none';
-                        detailsDiv.style.display = isHidden ? 'block' : 'none';
-                    });
+                    // Append the noteDiv if it doesn't already exist in the DOM
+                    if (!notesList.contains(noteDiv)) {
+                        notesList.appendChild(noteDiv);
+                    }
+                } else if (change.type === "removed") {
+                    const noteDiv = document.querySelector(`[data-id='${noteId}']`);
+                    if (noteDiv) {
+                        notesList.removeChild(noteDiv);
+                    }
                 }
             });
+        }, error => {
+            console.error('Error loading notes: ', error);
         });
 }
 
