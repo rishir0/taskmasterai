@@ -1430,15 +1430,36 @@ textarea::placeholder {
 
 .ellipsis-container {
     position: absolute;
-    bottom: 20px; /* Move it up from the bottom */
+    bottom: 20px; /* Adjust to move up slightly */
     right: 8px;
     width: 48px;
     height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.note-item {
-    position: relative; /* Ensure the note div is relatively positioned for absolute child */
-    padding-bottom: 20px; /* Add padding to prevent content overlap */
+
+.ellipsis-button {
+    background-color: var(--primary-color); /* Button background color */
+    border-radius: 50%; /* Make the button circular */
+    width: 48px; /* Button width */
+    height: 48px; /* Button height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
 }
+
+.ellipsis-button:hover {
+    background-color: var(--accent-color); /* Change background on hover */
+}
+
+svg {
+    fill: var(--text-color); /* Ensure the ellipsis dots are the color specified */
+}
+
+
 
 
 
@@ -2588,13 +2609,18 @@ function toggleNoteView(noteId) {
             <path d="M16 17.75H8C7.59 17.75 7.25 17.41 7.25 17C7.25 16.59 7.59 16.25 8 16.25H16C16.41 16.25 16.75 16.59 16.75 17C16.75 17.41 16.41 17.75 16 17.75Z" fill="#FFFFFF"></path>
         </svg>`;
 
-    // Define the vertical ellipsis SVG
-    const verticalEllipsisIcon = `
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
-            <circle cx="12" cy="5" r="2" fill="var(--text-color)"/>
-            <circle cx="12" cy="12" r="2" fill="var(--text-color)"/>
-            <circle cx="12" cy="19" r="2" fill="var(--text-color)"/>
-        </svg>`;
+// Define the vertical ellipsis SVG within a circular button
+const verticalEllipsisIcon = `
+    <div class="ellipsis-container">
+        <div class="ellipsis-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                <circle cx="12" cy="5" r="2" fill="var(--text-color)"/>
+                <circle cx="12" cy="12" r="2" fill="var(--text-color)"/>
+                <circle cx="12" cy="19" r="2" fill="var(--text-color)"/>
+            </svg>
+        </div>
+    </div>
+`;
 
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
