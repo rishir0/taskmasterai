@@ -1430,10 +1430,8 @@ textarea::placeholder {
 
 .ellipsis-container {
     position: absolute;
-    bottom: 20px; /* Adjust to move up slightly */
+    bottom: 30px; /* Adjust to move up slightly */
     right: 8px;
-    width: 48px;
-    height: 48px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1441,9 +1439,9 @@ textarea::placeholder {
 
 .ellipsis-button {
     background-color: var(--primary-color); /* Button background color */
-    border-radius: 50%; /* Make the button circular */
+    border-radius: 24px; /* Oval shape */
     width: 48px; /* Button width */
-    height: 48px; /* Button height */
+    height: 64px; /* Increase height for oval effect */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2613,7 +2611,7 @@ function toggleNoteView(noteId) {
 const verticalEllipsisIcon = `
     <div class="ellipsis-container">
         <div class="ellipsis-button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
                 <circle cx="12" cy="5" r="2" fill="var(--text-color)"/>
                 <circle cx="12" cy="12" r="2" fill="var(--text-color)"/>
                 <circle cx="12" cy="19" r="2" fill="var(--text-color)"/>
@@ -2621,6 +2619,7 @@ const verticalEllipsisIcon = `
         </div>
     </div>
 `;
+
 
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
