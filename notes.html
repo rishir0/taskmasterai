@@ -2530,16 +2530,15 @@ function loadGeneratedNotes() {
                         </div>
                     `;
 
-                    // Check localStorage to see if this note should be collapsed or expanded
-                    const savedState = localStorage.getItem(`note-${noteId}`);
-                    if (savedState === 'collapsed') {
-                        // If saved state is 'collapsed', collapse the note
-                        toggleNoteView(noteId); // Ensure it's collapsed
-                    }
-
                     // Append the note to the list if it's new
                     if (!notesList.contains(noteDiv)) {
                         notesList.appendChild(noteDiv);
+                    }
+
+                    // Check localStorage to see if this note should be collapsed or expanded
+                    const savedState = localStorage.getItem(`note-${noteId}`);
+                    if (savedState === 'collapsed') {
+                        toggleNoteView(noteId); // Ensure it's collapsed
                     }
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
