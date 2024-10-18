@@ -2503,12 +2503,12 @@ function loadGeneratedNotes() {
                         ? keyPoints.map(point => `<li>${point.trim()}</li>`).join('')
                         : "<li>No key points available.</li>";
 
-                    // Set the innerHTML including the title, overview, key points, and date
+                    // Set the innerHTML including the title, overview, key points, and date (questions section removed)
                     noteDiv.innerHTML = `
-                        <strong class="note-title">${title}</strong> <span class="date">${dateCreated}</span>
-                        <p><span class="overview-label"><strong>Overview:</strong></span> ${overview}</p>
-                        <p><span class="key-points-label"><strong>Key Points:</strong></span></p>
-                        <ul>${formattedKeyPoints}</ul>
+                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
+                        <p><span class="overview-label"><strong2>Overview:</strong2></span> ${overview}</p> <!-- Display PDF Overview -->
+                        <p><span class="key-points-label"><strong2>Key Points:</strong2></span></p> <!-- Display PDF Key Points -->
+                        <ul>${formattedKeyPoints}</ul> <!-- Display PDF Key Points as a list -->
                         <div class="button-container">
                             <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
                             <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
@@ -2520,14 +2520,19 @@ function loadGeneratedNotes() {
                             </svg>
                             <span>AI Generated</span>
                         </div>
-                        <div class="top-right-svg" onclick="toggleNoteView('${noteId}')">
+                        <div class="top-right-svg">
                             <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet">
-                                <g>
-                                    <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
-                                    <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-                                </g>
-                            </svg>
-                        </div>
+    <g>
+        <!-- Circle background with primary color -->
+        <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
+        
+        <!-- Original icon with white color -->
+        <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
+    </g>
+</svg>
+
+
+        </div>
                     `;
 
                     if (!notesList.contains(noteDiv)) {
