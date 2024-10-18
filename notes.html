@@ -1967,25 +1967,40 @@ async function handleFileUpload(file) {
             console.log('PDF text extraction complete.');
 
             // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress();
+            await simulateRealTimeUploadProgress2();
 
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
 
-            // Generate overview and key points
-            try {
-                const { overview, keyPoints } = await generateSummary(textContent);
+// Generate overview and key points with real-time progress bar update
+try {
+    // Show progress bar and initialize
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar2');
+    const estimatedTimeDisplay = document.querySelector('.estimated-time-display');
 
+    progressContainer.style.display = 'block'; // Show the progress bar container
+    progressBar.value = 0; // Start progress at 0%
+    estimatedTimeDisplay.style.display = 'block'; // Show estimated time display
 
-                console.log('Overview and key points generation complete.');
+    // Start the progress bar using simulateRealTimeUploadProgress
+    const progressPromise = simulateRealTimeUploadProgress(); // Begin updating the progress bar
 
-                // Save to Firestore
-                await saveToFirestore2(file.name, overview, keyPoints);
-                console.log('PDF overview and key points saved to Firestore.');
+    // Call generateSummary (simulating work being done in the background)
+    const { overview, keyPoints } = await generateSummary(textContent);
 
-                closePdfUploadModal();
-                loadAllNotes();
+    console.log('Overview and key points generation complete.');
+
+    // Wait for progress bar to complete (simulate real-time completion)
+    await progressPromise;
+
+    // Save to Firestore after the progress completes
+    await saveToFirestore2(file.name, overview, keyPoints);
+    console.log('PDF overview and key points saved to Firestore.');
+
+    closePdfUploadModal();
+    loadAllNotes();
                 
                 // Hide progress bar after everything is done
                 progressContainer.style.display = 'none';
@@ -2221,6 +2236,35 @@ async function simulateRealTimeUploadProgress() {
             if (remainingTime > 0 && remainingTime < estimatedUploadTime) {
                 estimatedUploadTime = remainingTime + elapsedTime; // Adjust estimated time based on real-time remaining progress
             }
+
+            if (progress >= 100) {
+                clearInterval(uploadInterval); // Stop updating once 100% is reached
+                resolve();
+            }
+        }, 100); // Update progress every 100ms for smoother transitions
+    });
+}
+
+// Helper function for real-time upload progress
+async function simulateRealTimeUploadProgress2() {
+    const progressBar = document.getElementById('progressBar2');
+    const percentageDisplay = document.querySelector('.progress-percentage');
+    let startTime = Date.now(); // Record the start time
+
+    const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
+    let progress = 0;
+
+    return new Promise((resolve) => {
+        const uploadInterval = setInterval(() => {
+            const elapsedTime = Date.now() - startTime;
+            progress = Math.min((elapsedTime / estimatedUploadTime) * 100, 100); // Calculate percentage based on time
+
+            progressBar.value = progress; // Update progress bar fill
+            percentageDisplay.style = ''; // Clear inline styles
+            percentageDisplay.innerText = ${Math.floor(progress)}%; // Update percentage display
+
+            
+            
 
             if (progress >= 100) {
                 clearInterval(uploadInterval); // Stop updating once 100% is reached
