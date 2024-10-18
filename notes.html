@@ -2512,34 +2512,23 @@ function loadGeneratedNotes() {
                         </svg>
                     `;
 
-                    // Structure the note content, separating title/date from the details
+                    // Set the innerHTML for the hidden view
                     noteDiv.innerHTML = `
-                        <strong>${title}</strong> <span class="date">${dateCreated}</span> <!-- Title and Date -->
-                        <div class="note-details">
-                            <p><span class="overview-label"><strong>Overview:</strong></span> ${overview}</p>
-                            <p><span class="key-points-label"><strong>Key Points:</strong></span></p>
-                            <ul>${formattedKeyPoints}</ul>
-                            <div class="button-container">
-                                <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
-                                <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
-                            </div>
-                            <div class="ai-generated-tag">
-                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
-                                    <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-                                    <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-                                </svg>
-                                <span>AI Generated</span>
+                        <div class="note-header">
+                            ${svgIcon} <!-- New SVG before title and date -->
+                            <div class="note-title">
+                                <strong>${title}</strong> <!-- Title -->
+                                <div class="note-date">${dateCreated}</div> <!-- Date below title -->
                             </div>
                         </div>
-                        <div class="top-right-svg">
-                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" preserveAspectRatio="xMidYMid meet" class="toggle-svg">
-                                <g>
-                                    <!-- Circle background with primary color -->
-                                    <circle cx="10" cy="10" r="10" fill="var(--primary-color)"/> 
-                                    <!-- Original icon with white color -->
-                                    <path fill="white" d="M13.098 8H6.902c-.751 0-1.172.754-.708 1.268L9.292 12.7c.36.399 1.055.399 1.416 0l3.098-3.433C14.27 8.754 13.849 8 13.098 8Z"></path>
-                                </g>
-                            </svg>
+                        <div class="note-content">
+                            <p><span class="overview-label"><strong2>Overview:</strong2></span> ${overview}</p> <!-- Display PDF Overview -->
+                            <p><span class="key-points-label"><strong2>Key Points:</strong2></span></p> <!-- Display PDF Key Points -->
+                            <ul>${formattedKeyPoints}</ul> <!-- Display PDF Key Points as a list -->
+                        </div>
+                        <div class="button-container">
+                            <button class="edit" onclick="editItem('${noteId}', 'generatednotes')">Edit</button>
+                            <button class="delete" onclick="deleteItem('${noteId}', 'generatednotes')">Delete</button>
                         </div>
                     `;
 
@@ -2547,13 +2536,6 @@ function loadGeneratedNotes() {
                     if (!notesList.contains(noteDiv)) {
                         notesList.appendChild(noteDiv);
                     }
-
-                    // Add event listener to the SVG for toggling details
-                    const toggleSvg = noteDiv.querySelector('.toggle-svg');
-                    const noteDetails = noteDiv.querySelector('.note-details');
-                    toggleSvg.addEventListener('click', () => {
-                        noteDetails.style.display = noteDetails.style.display === 'none' ? 'block' : 'none';
-                    });
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (noteDiv) {
