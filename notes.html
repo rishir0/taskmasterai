@@ -2633,14 +2633,15 @@ function loadGeneratedNotes() {
 
 function toggleNoteView(noteId) {
     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
-    const noteTitle = noteDiv.querySelector('strong');
+    const noteTitle = noteDiv.querySelector('strong'); // The note title is within a <strong> tag
     const dateSpan = noteDiv.querySelector('.date');
-    const overview = noteDiv.querySelector('p:nth-of-type(1)');
-    const keyPointsLabel = noteDiv.querySelector('.key-points-label');
-    const keyPoints = noteDiv.querySelector('ul');
+    const overview = noteDiv.querySelector('p:nth-of-type(1)'); // Assuming first <p> is the overview
+    const keyPointsLabel = noteDiv.querySelector('.key-points-label'); // "Key Points" label
+    const keyPoints = noteDiv.querySelector('ul'); // The list of key points
     const aiGeneratedTag = noteDiv.querySelector('.ai-generated-tag');
-    const buttonContainer = noteDiv.querySelector('.button-container');
-    let ellipsisContainer = noteDiv.querySelector('.ellipsis-container');
+    const buttonContainer = noteDiv.querySelector('.button-container'); // Edit/Delete buttons
+    let ellipsisContainer = noteDiv.querySelector('.ellipsis-container'); // Ellipsis container
+
 
     // Define the SVG code
     const svgIcon = `
@@ -2651,7 +2652,9 @@ function toggleNoteView(noteId) {
             <path d="M16 17.75H8C7.59 17.75 7.25 17.41 7.25 17C7.25 16.59 7.59 16.25 8 16.25H16C16.41 16.25 16.75 16.59 16.75 17C16.75 17.41 16.41 17.75 16 17.75Z" fill="#FFFFFF"></path>
         </svg>`;
 
-    const verticalEllipsisIcon = `
+// Define the vertical ellipsis SVG within a circular button
+const verticalEllipsisIcon = `
+    <div class="ellipsis-container">
         <div class="ellipsis-button">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
                 <circle cx="12" cy="5" r="2" fill="var(--text-color)"/>
@@ -2659,7 +2662,9 @@ function toggleNoteView(noteId) {
                 <circle cx="12" cy="19" r="2" fill="var(--text-color)"/>
             </svg>
         </div>
-    `;
+    </div>
+`;
+
 
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
