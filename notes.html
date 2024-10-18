@@ -2873,50 +2873,55 @@ const verticalEllipsisIcon = `
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
         overview.style.display = 'block';
-        keyPointsLabel.style.display = 'block'; // Show the "Key Points" label
-        keyPoints.style.display = 'block'; // Show the key points list
+        keyPointsLabel.style.display = 'block';
+        keyPoints.style.display = 'block';
         aiGeneratedTag.style.display = 'block';
         buttonContainer.style.display = 'block';
-        dateSpan.style.display = 'inline'; // Keep date inline when expanded
-        dateSpan.style.marginLeft = '8px'; // Align the date with the title in inline mode
-        noteTitle.style.display = 'inline'; // Title in the same line
+        dateSpan.style.display = 'inline';
+        dateSpan.style.marginLeft = '8px';
+        noteTitle.style.display = 'inline';
         noteDiv.classList.remove('collapsed');
         
+        // Hide the ellipsis container if it exists
+        if (ellipsisContainer) {
+            ellipsisContainer.style.display = 'none';
+        }
+
         // Remove the SVG icon if already present
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
-        // Save state to localStorage as expanded
-        localStorage.setItem(`pdf-${pdfId}`, 'expanded');
-
-        // Hide the ellipsis container
-        ellipsisContainer.style.display = 'none';
+        // Save expanded state to localStorage
+        localStorage.setItem(`note-${noteId}`, 'expanded');
 
     } else {
         // Hide the content
         overview.style.display = 'none';
-        keyPointsLabel.style.display = 'none'; // Hide the "Key Points" label
-        keyPoints.style.display = 'none'; // Hide the key points list
+        keyPointsLabel.style.display = 'none';
+        keyPoints.style.display = 'none';
         aiGeneratedTag.style.display = 'none';
         buttonContainer.style.display = 'none';
-        // Show the date below the title
         dateSpan.style.display = 'block';
-        dateSpan.style.marginLeft = '0'; // Ensure date starts where title starts
-        noteTitle.style.display = 'block'; // Title on its own line when collapsed
+        dateSpan.style.marginLeft = '0';
+        noteTitle.style.display = 'block';
 
-        // Add the SVG in front of the title and date
+        // Add the SVG icon in front of the title and date
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
+
+        // Add or show the ellipsis container
+        if (!ellipsisContainer) {
+            ellipsisContainer = document.createElement('div');
+            ellipsisContainer.classList.add('ellipsis-container');
+            ellipsisContainer.innerHTML = verticalEllipsisIcon;
+            noteDiv.appendChild(ellipsisContainer);
+        } else {
+            ellipsisContainer.style.display = 'block';
+        }
 
         noteDiv.classList.add('collapsed');
 
-        // Add the vertical ellipsis at the bottom right of the noteDiv
-        const ellipsisContainer = document.createElement('div');
-        ellipsisContainer.classList.add('ellipsis-container');
-        ellipsisContainer.innerHTML = verticalEllipsisIcon;
-        noteDiv.appendChild(ellipsisContainer);
-
-        // Save state to localStorage as collapsed
-        localStorage.setItem(`pdf-${pdfId}`, 'collapsed');
+        // Save collapsed state to localStorage
+        localStorage.setItem(`note-${noteId}`, 'collapsed');
     }
 }
 
