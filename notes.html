@@ -2956,8 +2956,8 @@ const verticalEllipsisIcon = `
         const svgElement = noteDiv.querySelector('svg');
         if (svgElement) svgElement.remove();
 
-        // Save expanded state to localStorage
-        localStorage.setItem(`note-${pdfId}`, 'expanded');
+        // Save state to localStorage as expanded
+        localStorage.setItem(`pdf-${pdfId}`, 'expanded');
 
     } else {
         // Hide the content
@@ -2986,7 +2986,7 @@ const verticalEllipsisIcon = `
         noteDiv.classList.add('collapsed');
 
         // Save collapsed state to localStorage
-        localStorage.setItem(`note-${pdfId}`, 'collapsed');
+        localStorage.setItem(`pdf-${pdfId}`, 'collapsed');
     }
 }
 
