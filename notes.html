@@ -1977,12 +1977,15 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress2();
 
             // Change "Uploading" to "Generating Note"
-            uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
+            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
 
 // Generate overview and key points with real-time progress bar update
 try {
     // Call generateSummary (simulating work being done in the background)
+    // Change "Uploading" to "Generating Note"
+    uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
+
     const { overview, keyPoints } = await generateSummary(textContent);
 
     console.log('Overview and key points generation complete.');
