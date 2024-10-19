@@ -2576,11 +2576,6 @@ function alterKeyPointForDistractor(keyPoint, index) {
     }
 }
 
-// Example usage within the generateSummary function
-const { overview, keyPoints } = await generateSummary(text);
-await generateQuestions(keyPoints);
-
-
 
 // Function to save overview and key points to Firestore
 async function saveToFirestore2(fileName, overview, keyPoints) {
