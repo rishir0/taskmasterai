@@ -1979,7 +1979,7 @@ async function handleFileUpload(file) {
             // Simulate real-time upload progress
             await simulateRealTimeUploadProgress2();
 
-
+            
             uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
 
@@ -2243,6 +2243,7 @@ async function simulateRealTimeUploadProgress2() {
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
     let startTime = Date.now(); // Record the start time
+    const uploadingText = document.getElementById('uploading-text');
 
     const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
     let progress = 0;
@@ -2255,6 +2256,8 @@ async function simulateRealTimeUploadProgress2() {
             progressBar.value = progress; // Update progress bar fill
             percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
+
+            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
             
             
