@@ -1984,9 +1984,6 @@ async function handleFileUpload(file) {
 // Generate overview and key points with real-time progress bar update
 try {
     // Call generateSummary (simulating work being done in the background)
-    // Change "Uploading" to "Generating Note"
-    uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
-
     const { overview, keyPoints } = await generateSummary(textContent);
 
     console.log('Overview and key points generation complete.');
@@ -2374,6 +2371,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
     const progressBar = document.getElementById('progressBar2'); // Get the progress bar element
     const percentageDisplay = document.querySelector('.progress-percentage'); // Get the percentage display element
+
+    const uploadingText = document.getElementById('uploading-text');
+    uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
     // Start simulating progress
     await simulateRealTimeUploadProgress();
