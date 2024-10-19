@@ -2438,15 +2438,14 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-// Update the display for estimated time remaining
-if (estimatedTimeDisplay) {
-    const minutes = Math.floor(remainingTime / 60000); // Get minutes
-    const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
+                    // Update the display for estimated time remaining
+                    if (estimatedTimeDisplay) {
+                        const minutes = Math.floor(remainingTime / 60000); // Get minutes
+                        const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
 
-    const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
-    estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
-}
-
+                        const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
+                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
+                    }
 
                     break; // Exit retry loop after successful response
 
@@ -2481,12 +2480,105 @@ if (estimatedTimeDisplay) {
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
 
-    return {
+    // Generate the final summary object
+    const finalSummary = {
         overview: overviewSentences, // Final overview limited to 4 sentences
         keyPoints
     };
+
+    // Call the generateQuestions function after generating the summary and key points
+    await generateQuestions(finalSummary.keyPoints);
+
+    return finalSummary;
 }
 
+
+async function generateQuestions(keyPoints) {
+    const numQuestions = 10;
+    const maxChoices = 4;
+    const generatedQuestions = [];
+
+    // Ensure we don't generate more questions than key points
+    const limitedKeyPoints = keyPoints.slice(0, numQuestions);
+
+    for (let i = 0; i < limitedKeyPoints.length; i++) {
+        const keyPoint = limitedKeyPoints[i];
+
+        // Step 1: Transform the key point into an insightful question
+        const question = transformKeyPointToQuestion(keyPoint);
+
+        // Step 2: Generate plausible distractors (incorrect choices)
+        const incorrectChoices = generateDistractors(keyPoint, maxChoices - 1);
+
+        // Step 3: Add the correct answer
+        const correctAnswer = keyPoint;
+        const allChoices = [...incorrectChoices, correctAnswer];
+
+        // Step 4: Shuffle the choices to randomize their order
+        allChoices.sort(() => Math.random() - 0.5);
+
+        // Store the question, correct answer, and choices
+        generatedQuestions.push({
+            question,
+            choices: allChoices,
+            correctAnswer
+        });
+    }
+
+    // Log the questions and answers
+    generatedQuestions.forEach((q, index) => {
+        console.log(`\n${q.question}`);
+        q.choices.forEach((choice, i) => console.log(`Choice ${i + 1}: ${choice}`));
+        console.log(`Correct Answer: ${q.correctAnswer}`);
+    });
+}
+
+// Helper function to transform key points into insightful questions
+function transformKeyPointToQuestion(keyPoint) {
+    // Basic logic to create a question. You can make this more sophisticated.
+    if (keyPoint.includes("is")) {
+        return keyPoint.replace("is", "What is") + "?";
+    } else if (keyPoint.includes("are")) {
+        return keyPoint.replace("are", "What are") + "?";
+    } else if (keyPoint.includes("was")) {
+        return keyPoint.replace("was", "What was") + "?";
+    } else {
+        // Default to turning it into a general question
+        return `What can be inferred about this: "${keyPoint}"?`;
+    }
+}
+
+// Helper function to generate distractors (incorrect answers)
+function generateDistractors(keyPoint, numChoices) {
+    const distractors = [];
+
+    // Create simple incorrect choices by modifying the key point slightly
+    for (let i = 0; i < numChoices; i++) {
+        const alteredKeyPoint = alterKeyPointForDistractor(keyPoint, i);
+        distractors.push(alteredKeyPoint);
+    }
+
+    return distractors;
+}
+
+// Alter the key point to create distractors
+function alterKeyPointForDistractor(keyPoint, index) {
+    // A basic method to create a plausible incorrect answer by modifying the key point slightly
+    switch (index) {
+        case 0:
+            return keyPoint.replace("is", "is not");
+        case 1:
+            return keyPoint.replace(/(\d+)/, (match) => parseInt(match) + 1); // Alter a number if present
+        case 2:
+            return keyPoint.replace("can", "cannot");
+        default:
+            return `Opposite of: ${keyPoint}`; // Fallback distractor
+    }
+}
+
+// Example usage within the generateSummary function
+const { overview, keyPoints } = await generateSummary(text);
+await generateQuestions(keyPoints);
 
 
 
