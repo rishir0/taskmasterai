@@ -1973,21 +1973,16 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
-            // Change "Uploading" to "Processing Note"
+            // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
             // Simulate real-time upload progress
             await simulateRealTimeUploadProgress2();
 
-            
-            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
-
 
 
 // Generate overview and key points with real-time progress bar update
 try {
-
-    uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
     // Call generateSummary (simulating work being done in the background)
     const { overview, keyPoints } = await generateSummary(textContent);
 
@@ -2243,7 +2238,6 @@ async function simulateRealTimeUploadProgress2() {
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
     let startTime = Date.now(); // Record the start time
-    const uploadingText = document.getElementById('uploading-text');
 
     const estimatedUploadTime = 8000; // Estimated time for the entire process (8 seconds)
     let progress = 0;
@@ -2256,8 +2250,6 @@ async function simulateRealTimeUploadProgress2() {
             progressBar.value = progress; // Update progress bar fill
             percentageDisplay.style = ''; // Clear inline styles
             percentageDisplay.innerText = `${Math.floor(progress)}%`; // Update percentage display
-
-            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
             
             
