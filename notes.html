@@ -979,6 +979,14 @@ input[type="text"]:focus, input[type="date"]:focus {
     margin-top: 20px;
 }
 
+/* Flexbox to vertically align the SVG, title, and date when hidden */
+.title-date-container {
+    display: flex;
+    flex-direction: column; /* Vertical layout */
+    align-items: flex-start; /* Align items to the left */
+    gap: 8px; /* Space between the SVG, title, and date */
+}
+
 /* Title styling */
 .note-item strong {
     font-size: 1.5rem; /* Title size */
@@ -2706,12 +2714,23 @@ const verticalEllipsisIcon = `
         keyPoints.style.display = 'none';
         aiGeneratedTag.style.display = 'none';
         buttonContainer.style.display = 'none';
-        dateSpan.style.display = 'block';
-        dateSpan.style.marginLeft = '0';
-        noteTitle.style.display = 'block';
 
         // Add the SVG icon in front of the title and date
         noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
+
+        // Create a container for SVG, title, and date in a vertical layout
+        const titleContainer = document.createElement('div');
+        titleContainer.classList.add('title-date-container');
+        titleContainer.innerHTML = svgIcon;
+        noteTitle.before(titleContainer);
+        
+        titleContainer.append(noteTitle);
+        titleContainer.append(dateSpan);
+        
+        // Apply vertical layout styles
+        noteTitle.style.display = 'block';
+        dateSpan.style.display = 'block';
+        dateSpan.style.marginLeft = '0';
 
         // Add or show the ellipsis container
         if (!ellipsisContainer) {
