@@ -2715,22 +2715,20 @@ const verticalEllipsisIcon = `
         aiGeneratedTag.style.display = 'none';
         buttonContainer.style.display = 'none';
 
-        // Add the SVG icon in front of the title and date
-        noteTitle.insertAdjacentHTML('beforebegin', svgIcon);
-
-        // Create a container for SVG, title, and date in a vertical layout
+        // Create a container for SVG, title, and date in a horizontal layout
         const titleContainer = document.createElement('div');
         titleContainer.classList.add('title-date-container');
         titleContainer.innerHTML = svgIcon;
         noteTitle.before(titleContainer);
-        
+
+        // Append the title and date inside the container
         titleContainer.append(noteTitle);
         titleContainer.append(dateSpan);
-        
-        // Apply vertical layout styles
-        noteTitle.style.display = 'block';
-        dateSpan.style.display = 'block';
-        dateSpan.style.marginLeft = '0';
+
+        // Apply horizontal layout styles
+        noteTitle.style.display = 'inline'; // Keep it inline
+        dateSpan.style.display = 'inline';
+        dateSpan.style.marginLeft = '10px';
 
         // Add or show the ellipsis container
         if (!ellipsisContainer) {
