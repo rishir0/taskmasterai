@@ -1162,7 +1162,7 @@ textarea::placeholder {
 .progress-bar {
     width: 100%;
     height: 40px; /* Increase the height for a more prominent look */
-    background-color: var(--secondary-color, #f0f0f0); /* Use a secondary, soft background color */
+    background-color: #8D8AAF;
     border-radius: 20px; /* Make the progress bar rounder */
     overflow: hidden;
     margin-top: 20px; /* Increase the spacing for a cleaner look */
@@ -1453,7 +1453,62 @@ textarea::placeholder {
     background-color: #3b7bce; /* Change background on hover */
 }
 
+/* Modal container */
+#modal11 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    z-index: 1000;
+}
 
+#modal11.hidden {
+    display: none;
+}
+
+/* Modal content */
+#modal11 .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#modal11 .button-container button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Edit button style */
+#modal11 button.edit {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Delete button style */
+#modal11 button.delete {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+/* Hover effect for buttons */
+#modal11 button.edit:hover, 
+#modal11 button.delete:hover {
+    opacity: 0.8;
+}
 
 
 
@@ -1783,6 +1838,16 @@ textarea::placeholder {
     </p>
 </div>
 
+
+
+<div id="modal11" class="modal hidden">
+    <div class="modal-content">
+        <div class="button-container">
+            <button class="edit" onclick="editItem(noteId, 'generatednotes')">Edit</button>
+            <button class="delete" onclick="deleteItem(noteId, 'generatednotes')">Delete</button>
+        </div>
+    </div>
+</div>
 
 
 
@@ -2654,7 +2719,7 @@ function toggleNoteView(noteId) {
 
 // Define the vertical ellipsis SVG within a circular button
 const verticalEllipsisIcon = `
-    <div class="ellipsis-container">
+    <div class="ellipsis-container" onclick="showModal('modal11', '${noteId}')">
         <div class="ellipsis-button">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
                 <circle cx="12" cy="5" r="2" fill="var(--text-color)"/>
@@ -3481,6 +3546,29 @@ function showError() {
             progressPercent.textContent = 'Failed';
             errorMessage.style.display = 'block';
         }, 5000); // 5000 milliseconds = 5 seconds
+    }
+}
+
+
+function showModal(modalId, noteId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('hidden');
+    
+    // Ensure that the noteId is available for edit and delete
+    modal.querySelector('.edit').setAttribute('onclick', `editItem('${noteId}', 'generatednotes')`);
+    modal.querySelector('.delete').setAttribute('onclick', `deleteItem('${noteId}', 'generatednotes')`);
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.add('hidden');
+}
+
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal11');
+    if (event.target === modal) {
+        closeModal('modal11');
     }
 }
 
