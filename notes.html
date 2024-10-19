@@ -1973,11 +1973,12 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
+            // Change "Uploading" to "Generating Note"
+            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
+
             // Simulate real-time upload progress
             await simulateRealTimeUploadProgress2();
 
-            // Change "Uploading" to "Generating Note"
-            uploadingText.innerHTML = 'Processing Note<span id="ellipsis2"></span>';
 
 
 // Generate overview and key points with real-time progress bar update
