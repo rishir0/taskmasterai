@@ -1,0 +1,2 @@
+cd api # or your chosen backend folder name
+npm init -y
