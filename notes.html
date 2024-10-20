@@ -2482,16 +2482,20 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
 
-    // Generate the final summary object
-    const finalSummary = {
-        overview: overviewSentences, // Final overview limited to 4 sentences
-        keyPoints
-    };
+// Generate the final summary object
+const finalSummary = {
+    overview: overviewSentences, // Final overview limited to 4 sentences
+    keyPoints
+};
 
-    // Call the generateQuestions function after generating the summary and key points
-    await generateQuestions(finalSummary.keyPoints);
+// Call the generateQuestions function after generating the summary and key points
+const generatedQuestions = await generateQuestions(finalSummary.keyPoints);
 
-    return finalSummary;
+// Log the generated questions and summary
+console.log("Generated Questions:", generatedQuestions);
+
+return finalSummary;
+
 }
 
 
@@ -2578,13 +2582,15 @@ async function transformKeyPointToQuestionAI(keyPoint) {
         body: JSON.stringify(payload)
     };
 
-    // Use retry logic for API call
     const response = await retryFetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, options, 3, 5000);
     
     const data = await response.json();
-    // Extract the generated question from the output
-    return data.generated_text || `Generated question from context: "${keyPoint}"`;
+    
+    // Extract a meaningful question
+    const generatedQuestion = data.generated_text;
+    return generatedQuestion && generatedQuestion.trim() !== keyPoint ? generatedQuestion : `What can be inferred from: "${keyPoint}"?`;
 }
+
 
 // Helper function to generate plausible distractors using GPT-Neo
 async function generateDistractorsAI(question, correctAnswer, numChoices) {
@@ -2603,17 +2609,18 @@ async function generateDistractorsAI(question, correctAnswer, numChoices) {
         body: JSON.stringify(payload)
     };
 
-    // Use retry logic for API call
     const response = await retryFetch(`https://api-inference.huggingface.co/models/${distractorGenerationModel}`, options, 3, 5000);
 
     const data = await response.json();
     
-    // Extract the generated distractors
+    // Extract plausible distractors
     const generatedText = data.generated_text || "";
-    const distractors = generatedText.split("\n").filter(line => line.trim()).slice(0, numChoices);
+    const distractors = generatedText.split("\n").filter(line => line.trim() && line !== correctAnswer).slice(0, numChoices);
 
     return distractors;
 }
+
+
 
 
 
