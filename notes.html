@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2496,13 +2495,13 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 }
 
 
-// Model Endpoints
+
 const questionGenerationModel = "deepset/roberta-base-squad2";
 const distractorGenerationModel = "openai-community/gpt2";
 
 async function generateQuestions(keyPoints) {
-    const numQuestions = 10;
-    const maxChoices = 4;
+    const numQuestions = 5; // Generate only 5 questions
+    const maxChoices = 4; // 4 answer choices, including the correct one
     const generatedQuestions = [];
 
     // Limit the number of key points to the number of questions
@@ -2516,8 +2515,8 @@ async function generateQuestions(keyPoints) {
             const question = await transformKeyPointToQuestionAI(keyPoint);
 
             // Step 2: Use AI to generate plausible distractors
-            const correctAnswer = keyPoint;
-            const incorrectChoices = await generateDistractorsAI(keyPoint, maxChoices - 1);
+            const correctAnswer = keyPoint; // Assuming the key point is the correct answer context
+            const incorrectChoices = await generateDistractorsAI(question, correctAnswer, maxChoices - 1);
 
             // Step 3: Combine correct and incorrect answers
             const allChoices = [...incorrectChoices, correctAnswer];
@@ -2534,7 +2533,6 @@ async function generateQuestions(keyPoints) {
 
         } catch (error) {
             console.error(`Error processing key point "${keyPoint}":`, error);
-            return; // Stop further processing if there's an issue
         }
     }
 
@@ -2552,7 +2550,7 @@ async function generateQuestions(keyPoints) {
 async function transformKeyPointToQuestionAI(keyPoint) {
     const payload = {
         inputs: {
-            question: "What is this about?",
+            question: "Generate a relevant question based on the context.",
             context: keyPoint
         }
     };
@@ -2572,12 +2570,14 @@ async function transformKeyPointToQuestionAI(keyPoint) {
     }
 
     const data = await response.json();
-    return data.answers && data.answers.length > 0 ? `What is ${data.answers[0].answer}?` : `What can be inferred from: "${keyPoint}"?`;
+    return data.answers && data.answers.length > 0 
+        ? `What is ${data.answers[0].answer}?` 
+        : `What can be inferred from: "${keyPoint}"?`;
 }
 
 // Helper function to use AI to generate plausible distractors (GPT-2 style text generation)
-async function generateDistractorsAI(keyPoint, numChoices) {
-    const prompt = `Generate ${numChoices} incorrect but plausible distractors for the statement: "${keyPoint}"`;
+async function generateDistractorsAI(question, correctAnswer, numChoices) {
+    const prompt = `Generate ${numChoices} incorrect but plausible answer choices for the question: "${question}" with the correct answer: "${correctAnswer}".`;
 
     const payload = {
         inputs: prompt
@@ -2598,7 +2598,7 @@ async function generateDistractorsAI(keyPoint, numChoices) {
     }
 
     const data = await response.json();
-    
+
     // Extract the generated distractors
     const generatedText = data.generated_text || "";
     const distractors = generatedText.split("\n").filter(line => line.trim()).slice(0, numChoices);
