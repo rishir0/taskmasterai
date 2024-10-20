@@ -2540,26 +2540,43 @@ async function generateQuestions(keyPoints) {
     return generatedQuestions;
 }
 
-// Helper function to use AI to transform key points into questions
+// Helper function to use AI to transform key points into questions (QA style)
 async function transformKeyPointToQuestionAI(keyPoint) {
+    const payload = {
+        inputs: {
+            question: "What is this about?",
+            context: keyPoint
+        }
+    };
+
     const response = await fetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${huggingFaceApiKey}` },
-        body: JSON.stringify({ inputs: keyPoint })
+        headers: { 
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
     });
 
     const data = await response.json();
     return data.length && data[0].answer ? `What is ${data[0].answer}?` : `What can be inferred from: "${keyPoint}"?`; // Fallback if model fails
 }
 
-// Helper function to use AI to generate plausible distractors (incorrect answers)
+// Helper function to use AI to generate plausible distractors (GPT-2 style text generation)
 async function generateDistractorsAI(keyPoint, numChoices) {
     const prompt = `Generate ${numChoices} incorrect but plausible distractors for the statement: "${keyPoint}"`;
-    
+
+    const payload = {
+        inputs: prompt
+    };
+
     const response = await fetch(`https://api-inference.huggingface.co/models/${distractorGenerationModel}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${huggingFaceApiKey}` },
-        body: JSON.stringify({ inputs: prompt })
+        headers: { 
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
     });
 
     const data = await response.json();
@@ -2579,6 +2596,7 @@ function generateFallbackDistractors(keyPoint, numChoices) {
     }
     return distractors;
 }
+
 
 
 // Function to save overview and key points to Firestore
