@@ -2497,8 +2497,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
-const questionGenerationModel = "deepset/roberta-base-squad2";
-const distractorGenerationModel = "openai-community/gpt2";
+// Optimized models for question and distractor generation
+const questionGenerationModel = "valhalla/t5-base-qg-hl";
+const distractorGenerationModel = "vinceg/bert-distractor-generation";
 
 async function generateQuestions(keyPoints) {
     const numQuestions = 5; // Limit to 5 questions
@@ -2511,10 +2512,10 @@ async function generateQuestions(keyPoints) {
         const keyPoint = limitedKeyPoints[i];
 
         try {
-            // Step 1: Use the AI to generate a question based on the key point
+            // Step 1: Use the new AI model to generate a question based on the key point
             const question = await transformKeyPointToQuestionAI(keyPoint);
             
-            // Step 2: Use the AI to generate plausible distractors
+            // Step 2: Use the new AI model to generate plausible distractors
             const correctAnswer = keyPoint;
             const incorrectChoices = await generateDistractorsAI(question, correctAnswer, maxChoices - 1);
 
@@ -2546,13 +2547,10 @@ async function generateQuestions(keyPoints) {
     return generatedQuestions;
 }
 
-// Helper function to use AI to transform key points into questions (using the specified model)
+// Helper function to use AI to transform key points into questions (using the new optimized model)
 async function transformKeyPointToQuestionAI(keyPoint) {
     const payload = {
-        inputs: {
-            question: "Generate a question from this key point.",
-            context: keyPoint
-        }
+        inputs: keyPoint
     };
 
     const response = await fetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, {
@@ -2571,13 +2569,11 @@ async function transformKeyPointToQuestionAI(keyPoint) {
     }
 
     const data = await response.json();
-    // Extract the generated question
-    return data.answers && data.answers.length > 0 
-        ? data.answers[0].answer 
-        : `Generated question from context: "${keyPoint}"`;
+    // Extract the generated question from the output
+    return data.generated_text || `Generated question from context: "${keyPoint}"`;
 }
 
-// Helper function to generate plausible distractors (using GPT-2 or similar text generation)
+// Helper function to generate plausible distractors (using the new optimized model)
 async function generateDistractorsAI(question, correctAnswer, numChoices) {
     const prompt = `Generate ${numChoices} plausible but incorrect answers for the question: "${question}" where the correct answer is: "${correctAnswer}".`;
 
