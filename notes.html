@@ -2505,29 +2505,34 @@ async function generateQuestions(keyPoints) {
     // Limit the number of key points to the number of questions
     const limitedKeyPoints = keyPoints.slice(0, numQuestions);
 
-    // Loop through each key point and generate questions using AI
     for (let i = 0; i < limitedKeyPoints.length; i++) {
         const keyPoint = limitedKeyPoints[i];
 
-        // Step 1: Use AI to transform the key point into a question
-        const question = await transformKeyPointToQuestionAI(keyPoint);
+        try {
+            // Step 1: Use AI to transform the key point into a question
+            const question = await transformKeyPointToQuestionAI(keyPoint);
 
-        // Step 2: Use AI to generate plausible distractors
-        const correctAnswer = keyPoint;
-        const incorrectChoices = await generateDistractorsAI(keyPoint, maxChoices - 1);
+            // Step 2: Use AI to generate plausible distractors
+            const correctAnswer = keyPoint;
+            const incorrectChoices = await generateDistractorsAI(keyPoint, maxChoices - 1);
 
-        // Step 3: Combine correct and incorrect answers
-        const allChoices = [...incorrectChoices, correctAnswer];
+            // Step 3: Combine correct and incorrect answers
+            const allChoices = [...incorrectChoices, correctAnswer];
 
-        // Step 4: Shuffle the choices to randomize their order
-        allChoices.sort(() => Math.random() - 0.5);
+            // Step 4: Shuffle the choices to randomize their order
+            allChoices.sort(() => Math.random() - 0.5);
 
-        // Step 5: Store the question, correct answer, and choices
-        generatedQuestions.push({
-            question,
-            choices: allChoices,
-            correctAnswer
-        });
+            // Step 5: Store the question, correct answer, and choices
+            generatedQuestions.push({
+                question,
+                choices: allChoices,
+                correctAnswer
+            });
+
+        } catch (error) {
+            console.error(`Error processing key point "${keyPoint}":`, error);
+            return; // Stop further processing if there's an issue
+        }
     }
 
     // Log the questions and answers
@@ -2558,8 +2563,13 @@ async function transformKeyPointToQuestionAI(keyPoint) {
         body: JSON.stringify(payload)
     });
 
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to generate question: ${error.error || response.statusText}`);
+    }
+
     const data = await response.json();
-    return data.length && data[0].answer ? `What is ${data[0].answer}?` : `What can be inferred from: "${keyPoint}"?`; // Fallback if model fails
+    return data.answers && data.answers.length > 0 ? `What is ${data.answers[0].answer}?` : `What can be inferred from: "${keyPoint}"?`;
 }
 
 // Helper function to use AI to generate plausible distractors (GPT-2 style text generation)
@@ -2579,23 +2589,20 @@ async function generateDistractorsAI(keyPoint, numChoices) {
         body: JSON.stringify(payload)
     });
 
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to generate distractors: ${error.error || response.statusText}`);
+    }
+
     const data = await response.json();
     
-    // Parse GPT-2 style response and extract distractors
+    // Extract the generated distractors
     const generatedText = data.generated_text || "";
     const distractors = generatedText.split("\n").filter(line => line.trim()).slice(0, numChoices);
 
-    return distractors.length ? distractors : generateFallbackDistractors(keyPoint, numChoices); // Fallback if model fails
-}
-
-// Fallback function to generate simple distractors if AI fails
-function generateFallbackDistractors(keyPoint, numChoices) {
-    const distractors = [];
-    for (let i = 0; i < numChoices; i++) {
-        distractors.push(`Distractor ${i + 1} for: ${keyPoint}`); // Simple placeholder distractors
-    }
     return distractors;
 }
+
 
 
 
