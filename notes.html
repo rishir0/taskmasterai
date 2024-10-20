@@ -2497,9 +2497,25 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
-// Optimized models for question and distractor generation
-const questionGenerationModel = "valhalla/t5-base-qg-hl";
-const distractorGenerationModel = "vinceg/bert-distractor-generation";
+const questionGenerationModel = "valhalla/t5-base-qg-hl"; // Question generation model
+const distractorGenerationModel = "vinceg/bert-distractor-generation"; // Distractor generation model
+
+// Helper function to retry API calls with a delay
+async function retryFetch(url, options, retries = 3, delay = 3000) {
+    for (let i = 0; i < retries; i++) {
+        const response = await fetch(url, options);
+        if (response.ok) {
+            return response;
+        } else {
+            console.warn(`Attempt ${i + 1} failed: ${response.statusText}`);
+        }
+
+        // Wait for a delay before retrying
+        await new Promise(res => setTimeout(res, delay));
+    }
+    
+    throw new Error(`Failed after ${retries} retries`);
+}
 
 async function generateQuestions(keyPoints) {
     const numQuestions = 5; // Limit to 5 questions
@@ -2512,10 +2528,10 @@ async function generateQuestions(keyPoints) {
         const keyPoint = limitedKeyPoints[i];
 
         try {
-            // Step 1: Use the new AI model to generate a question based on the key point
+            // Step 1: Use AI to transform the key point into a question
             const question = await transformKeyPointToQuestionAI(keyPoint);
-            
-            // Step 2: Use the new AI model to generate plausible distractors
+
+            // Step 2: Use AI to generate plausible distractors
             const correctAnswer = keyPoint;
             const incorrectChoices = await generateDistractorsAI(question, correctAnswer, maxChoices - 1);
 
@@ -2547,27 +2563,24 @@ async function generateQuestions(keyPoints) {
     return generatedQuestions;
 }
 
-// Helper function to use AI to transform key points into questions (using the new optimized model)
+// Helper function to use AI to transform key points into questions
 async function transformKeyPointToQuestionAI(keyPoint) {
     const payload = {
         inputs: keyPoint
     };
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, {
+    const options = {
         method: 'POST',
         headers: { 
             'Authorization': `Bearer ${huggingFaceApiKey}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-    });
+    };
 
-    if (!response.ok) {
-        const error = await response.json();
-        console.error(`Failed to generate question: ${error.error || response.statusText}`);
-        throw new Error(`Question generation failed for key point: "${keyPoint}"`);
-    }
-
+    // Use retry logic for API call
+    const response = await retryFetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, options, 3, 5000);
+    
     const data = await response.json();
     // Extract the generated question from the output
     return data.generated_text || `Generated question from context: "${keyPoint}"`;
@@ -2581,29 +2594,27 @@ async function generateDistractorsAI(question, correctAnswer, numChoices) {
         inputs: prompt
     };
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${distractorGenerationModel}`, {
+    const options = {
         method: 'POST',
         headers: { 
             'Authorization': `Bearer ${huggingFaceApiKey}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-    });
+    };
 
-    if (!response.ok) {
-        const error = await response.json();
-        console.error(`Failed to generate distractors: ${error.error || response.statusText}`);
-        throw new Error(`Distractor generation failed for question: "${question}"`);
-    }
+    // Use retry logic for API call
+    const response = await retryFetch(`https://api-inference.huggingface.co/models/${distractorGenerationModel}`, options, 3, 5000);
 
     const data = await response.json();
-
+    
     // Extract the generated distractors
     const generatedText = data.generated_text || "";
     const distractors = generatedText.split("\n").filter(line => line.trim()).slice(0, numChoices);
 
     return distractors;
 }
+
 
 
 
