@@ -2498,7 +2498,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 const questionGenerationModel = "valhalla/t5-base-qg-hl"; // Question generation model
-const distractorGenerationModel = "vinceg/bert-distractor-generation"; // Distractor generation model
+const distractorGenerationModel = "EleutherAI/gpt-neo-2.7B"; // More reliable distractor generation model
 
 // Helper function to retry API calls with a delay
 async function retryFetch(url, options, retries = 3, delay = 3000) {
@@ -2586,7 +2586,7 @@ async function transformKeyPointToQuestionAI(keyPoint) {
     return data.generated_text || `Generated question from context: "${keyPoint}"`;
 }
 
-// Helper function to generate plausible distractors (using the new optimized model)
+// Helper function to generate plausible distractors using GPT-Neo
 async function generateDistractorsAI(question, correctAnswer, numChoices) {
     const prompt = `Generate ${numChoices} plausible but incorrect answers for the question: "${question}" where the correct answer is: "${correctAnswer}".`;
 
@@ -2614,6 +2614,7 @@ async function generateDistractorsAI(question, correctAnswer, numChoices) {
 
     return distractors;
 }
+
 
 
 
