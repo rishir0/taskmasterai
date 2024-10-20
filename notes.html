@@ -2496,26 +2496,26 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
+
 const questionGenerationModel = "deepset/roberta-base-squad2";
 const distractorGenerationModel = "openai-community/gpt2";
 
 async function generateQuestions(keyPoints) {
-    const numQuestions = 5; // Generate only 5 questions
-    const maxChoices = 4; // 4 answer choices, including the correct one
+    const numQuestions = 5; // Limit to 5 questions
+    const maxChoices = 4; // 4 answer choices (1 correct + 3 distractors)
     const generatedQuestions = [];
 
-    // Limit the number of key points to the number of questions
     const limitedKeyPoints = keyPoints.slice(0, numQuestions);
 
     for (let i = 0; i < limitedKeyPoints.length; i++) {
         const keyPoint = limitedKeyPoints[i];
 
         try {
-            // Step 1: Use AI to transform the key point into a question
+            // Step 1: Use the AI to generate a question based on the key point
             const question = await transformKeyPointToQuestionAI(keyPoint);
-
-            // Step 2: Use AI to generate plausible distractors
-            const correctAnswer = keyPoint; // Assuming the key point is the correct answer context
+            
+            // Step 2: Use the AI to generate plausible distractors
+            const correctAnswer = keyPoint;
             const incorrectChoices = await generateDistractorsAI(question, correctAnswer, maxChoices - 1);
 
             // Step 3: Combine correct and incorrect answers
@@ -2524,7 +2524,7 @@ async function generateQuestions(keyPoints) {
             // Step 4: Shuffle the choices to randomize their order
             allChoices.sort(() => Math.random() - 0.5);
 
-            // Step 5: Store the question, correct answer, and choices
+            // Step 5: Store the question, choices, and correct answer
             generatedQuestions.push({
                 question,
                 choices: allChoices,
@@ -2536,7 +2536,7 @@ async function generateQuestions(keyPoints) {
         }
     }
 
-    // Log the questions and answers
+    // Log the generated questions and answers
     generatedQuestions.forEach((q, index) => {
         console.log(`\nQuestion ${index + 1}: ${q.question}`);
         q.choices.forEach((choice, i) => console.log(`Choice ${i + 1}: ${choice}`));
@@ -2546,11 +2546,11 @@ async function generateQuestions(keyPoints) {
     return generatedQuestions;
 }
 
-// Helper function to use AI to transform key points into questions (QA style)
+// Helper function to use AI to transform key points into questions (using the specified model)
 async function transformKeyPointToQuestionAI(keyPoint) {
     const payload = {
         inputs: {
-            question: "Generate a relevant question based on the context.",
+            question: "Generate a question from this key point.",
             context: keyPoint
         }
     };
@@ -2566,18 +2566,20 @@ async function transformKeyPointToQuestionAI(keyPoint) {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(`Failed to generate question: ${error.error || response.statusText}`);
+        console.error(`Failed to generate question: ${error.error || response.statusText}`);
+        throw new Error(`Question generation failed for key point: "${keyPoint}"`);
     }
 
     const data = await response.json();
+    // Extract the generated question
     return data.answers && data.answers.length > 0 
-        ? `What is ${data.answers[0].answer}?` 
-        : `What can be inferred from: "${keyPoint}"?`;
+        ? data.answers[0].answer 
+        : `Generated question from context: "${keyPoint}"`;
 }
 
-// Helper function to use AI to generate plausible distractors (GPT-2 style text generation)
+// Helper function to generate plausible distractors (using GPT-2 or similar text generation)
 async function generateDistractorsAI(question, correctAnswer, numChoices) {
-    const prompt = `Generate ${numChoices} incorrect but plausible answer choices for the question: "${question}" with the correct answer: "${correctAnswer}".`;
+    const prompt = `Generate ${numChoices} plausible but incorrect answers for the question: "${question}" where the correct answer is: "${correctAnswer}".`;
 
     const payload = {
         inputs: prompt
@@ -2594,7 +2596,8 @@ async function generateDistractorsAI(question, correctAnswer, numChoices) {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(`Failed to generate distractors: ${error.error || response.statusText}`);
+        console.error(`Failed to generate distractors: ${error.error || response.statusText}`);
+        throw new Error(`Distractor generation failed for question: "${question}"`);
     }
 
     const data = await response.json();
@@ -2605,6 +2608,7 @@ async function generateDistractorsAI(question, correctAnswer, numChoices) {
 
     return distractors;
 }
+
 
 
 
