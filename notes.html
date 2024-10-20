@@ -2493,31 +2493,36 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 }
 
 
+// Model Endpoints
+const questionGenerationModel = "deepset/roberta-base-squad2";
+const distractorGenerationModel = "openai-community/gpt2";
+
 async function generateQuestions(keyPoints) {
     const numQuestions = 10;
     const maxChoices = 4;
     const generatedQuestions = [];
 
-    // Ensure we don't generate more questions than key points
+    // Limit the number of key points to the number of questions
     const limitedKeyPoints = keyPoints.slice(0, numQuestions);
 
+    // Loop through each key point and generate questions using AI
     for (let i = 0; i < limitedKeyPoints.length; i++) {
         const keyPoint = limitedKeyPoints[i];
 
-        // Step 1: Transform the key point into an insightful question
-        const question = transformKeyPointToQuestion(keyPoint);
+        // Step 1: Use AI to transform the key point into a question
+        const question = await transformKeyPointToQuestionAI(keyPoint);
 
-        // Step 2: Generate plausible distractors (incorrect choices)
-        const incorrectChoices = generateDistractors(keyPoint, maxChoices - 1);
-
-        // Step 3: Add the correct answer
+        // Step 2: Use AI to generate plausible distractors
         const correctAnswer = keyPoint;
+        const incorrectChoices = await generateDistractorsAI(keyPoint, maxChoices - 1);
+
+        // Step 3: Combine correct and incorrect answers
         const allChoices = [...incorrectChoices, correctAnswer];
 
         // Step 4: Shuffle the choices to randomize their order
         allChoices.sort(() => Math.random() - 0.5);
 
-        // Store the question, correct answer, and choices
+        // Step 5: Store the question, correct answer, and choices
         generatedQuestions.push({
             question,
             choices: allChoices,
@@ -2527,53 +2532,52 @@ async function generateQuestions(keyPoints) {
 
     // Log the questions and answers
     generatedQuestions.forEach((q, index) => {
-        console.log(`\n${q.question}`);
+        console.log(`\nQuestion ${index + 1}: ${q.question}`);
         q.choices.forEach((choice, i) => console.log(`Choice ${i + 1}: ${choice}`));
         console.log(`Correct Answer: ${q.correctAnswer}`);
     });
+
+    return generatedQuestions;
 }
 
-// Helper function to transform key points into insightful questions
-function transformKeyPointToQuestion(keyPoint) {
-    // Basic logic to create a question. You can make this more sophisticated.
-    if (keyPoint.includes("is")) {
-        return keyPoint.replace("is", "What is") + "?";
-    } else if (keyPoint.includes("are")) {
-        return keyPoint.replace("are", "What are") + "?";
-    } else if (keyPoint.includes("was")) {
-        return keyPoint.replace("was", "What was") + "?";
-    } else {
-        // Default to turning it into a general question
-        return `What can be inferred about this: "${keyPoint}"?`;
-    }
+// Helper function to use AI to transform key points into questions
+async function transformKeyPointToQuestionAI(keyPoint) {
+    const response = await fetch(`https://api-inference.huggingface.co/models/${questionGenerationModel}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${huggingFaceApiKey}` },
+        body: JSON.stringify({ inputs: keyPoint })
+    });
+
+    const data = await response.json();
+    return data.length && data[0].answer ? `What is ${data[0].answer}?` : `What can be inferred from: "${keyPoint}"?`; // Fallback if model fails
 }
 
-// Helper function to generate distractors (incorrect answers)
-function generateDistractors(keyPoint, numChoices) {
+// Helper function to use AI to generate plausible distractors (incorrect answers)
+async function generateDistractorsAI(keyPoint, numChoices) {
+    const prompt = `Generate ${numChoices} incorrect but plausible distractors for the statement: "${keyPoint}"`;
+    
+    const response = await fetch(`https://api-inference.huggingface.co/models/${distractorGenerationModel}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${huggingFaceApiKey}` },
+        body: JSON.stringify({ inputs: prompt })
+    });
+
+    const data = await response.json();
+    
+    // Parse GPT-2 style response and extract distractors
+    const generatedText = data.generated_text || "";
+    const distractors = generatedText.split("\n").filter(line => line.trim()).slice(0, numChoices);
+
+    return distractors.length ? distractors : generateFallbackDistractors(keyPoint, numChoices); // Fallback if model fails
+}
+
+// Fallback function to generate simple distractors if AI fails
+function generateFallbackDistractors(keyPoint, numChoices) {
     const distractors = [];
-
-    // Create simple incorrect choices by modifying the key point slightly
     for (let i = 0; i < numChoices; i++) {
-        const alteredKeyPoint = alterKeyPointForDistractor(keyPoint, i);
-        distractors.push(alteredKeyPoint);
+        distractors.push(`Distractor ${i + 1} for: ${keyPoint}`); // Simple placeholder distractors
     }
-
     return distractors;
-}
-
-// Alter the key point to create distractors
-function alterKeyPointForDistractor(keyPoint, index) {
-    // A basic method to create a plausible incorrect answer by modifying the key point slightly
-    switch (index) {
-        case 0:
-            return keyPoint.replace("is", "is not");
-        case 1:
-            return keyPoint.replace(/(\d+)/, (match) => parseInt(match) + 1); // Alter a number if present
-        case 2:
-            return keyPoint.replace("can", "cannot");
-        default:
-            return `Opposite of: ${keyPoint}`; // Fallback distractor
-    }
 }
 
 
