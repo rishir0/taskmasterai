@@ -1973,19 +1973,6 @@ async function handleFileUpload(file) {
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
 
-                // Update progress bar and estimated time after each page is processed
-                const progress = (pageNum / totalPages) * 100;
-                const percentageDisplay = document.createElement('span');
-                progressBar.value = progress;
-                percentageDisplay.innerText = `${Math.round(progress)}%`;
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
-                // Ensure the percentage display is positioned at the center of the progress bar
-                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
-                percentageDisplay.style.top = '50%'; // Center vertically
-                percentageDisplay.style.left = '50%'; // Center horizontally
-                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
-
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -1999,6 +1986,8 @@ async function handleFileUpload(file) {
             // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Processing PDF<span id="ellipsis2"></span>';
 
+            // Simulate real-time upload progress
+            await simulateRealTimeUploadProgress2();
 
             let progress = 0;
 
