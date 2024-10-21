@@ -2783,6 +2783,13 @@ const verticalEllipsisIcon = `
         // Save expanded state to localStorage
         localStorage.setItem(`note-${noteId}`, 'expanded');
 
+        // Save expanded state to Firestore
+    db.collection('generatednotes').doc(noteId).update({
+        expanded: true
+    }).catch(error => {
+        console.error('Error updating document:', error);
+    });
+
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -2811,7 +2818,14 @@ const verticalEllipsisIcon = `
 
         // Save collapsed state to localStorage
         localStorage.setItem(`note-${noteId}`, 'collapsed');
-    }
+
+    // Save collapsed state to Firestore
+    db.collection('generatednotes').doc(noteId).update({
+        expanded: false
+    }).catch(error => {
+        console.error('Error updating document:', error);
+    });
+    
 }
 
 // Function to restore note state from localStorage
@@ -2986,6 +3000,13 @@ const verticalEllipsisIcon = `
         // Save state to localStorage as expanded
         localStorage.setItem(`pdf-${pdfId}`, 'expanded');
 
+    // Save expanded state to Firestore
+    db.collection('generatedpdfs').doc(pdfId).update({
+        expanded: true
+    }).catch(error => {
+        console.error('Error updating document:', error);
+    });
+
     } else {
         // Hide the content
         overview.style.display = 'none';
@@ -3014,6 +3035,14 @@ const verticalEllipsisIcon = `
 
         // Save collapsed state to localStorage
         localStorage.setItem(`pdf-${pdfId}`, 'collapsed');
+
+    // Save collapsed state to Firestore
+    db.collection('generatedpdfs').doc(pdfId).update({
+        expanded: false
+    }).catch(error => {
+        console.error('Error updating document:', error);
+    });
+
     }
 }
 
