@@ -2440,14 +2440,15 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                    // Update the display for estimated time remaining
-                    if (estimatedTimeDisplay) {
-                        const minutes = Math.floor(remainingTime / 60000); // Get minutes
-                        const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
+// Update the display for estimated time remaining
+if (estimatedTimeDisplay) {
+    const minutes = Math.floor(remainingTime / 60000); // Get minutes
+    const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
 
-                        const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
-                    }
+    const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
+    estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
+}
+
 
                     break; // Exit retry loop after successful response
 
@@ -2482,26 +2483,16 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
 
-// Generate the final summary object
-const finalSummary = {
-    overview: overviewSentences, // Final overview limited to 4 sentences
-    keyPoints
-};
-
-// Call the generateQuestions function after generating the summary and key points
-const generatedQuestions = await generateQuestions(finalSummary.keyPoints);
-
-// Log the generated questions and summary
-console.log("Generated Questions:", generatedQuestions);
-
-return finalSummary;
-
+    return {
+        overview: overviewSentences, // Final overview limited to 4 sentences
+        keyPoints
+    };
 }
 
 
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
-    const model = "gpt-4"; // OpenAI GPT-4 model
+    const model = "gpt-3.5-turbo"; // OpenAI GPT-4 model
     const openAIKey = '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';
 
     for (let i = 0; i < maxQuestions; i++) {
