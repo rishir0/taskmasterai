@@ -2649,7 +2649,7 @@ function loadGeneratedNotes() {
                 const keyPoints = noteData.keyPoints || [];
                 const timestamp = noteData.timestamp?.toDate();
                 const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
-                const isCollapsed = noteData.isCollapsed || false; // New field to track collapse state
+                const isCollapsed = noteData.isCollapsed !== undefined ? noteData.isCollapsed : false;
 
                 if (change.type === "added" || change.type === "modified") {
                     let noteDiv = document.querySelector(`[data-id='${noteId}']`);
