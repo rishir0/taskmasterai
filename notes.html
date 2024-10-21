@@ -2765,7 +2765,6 @@ const verticalEllipsisIcon = `
 `;
 
     const userId = firebase.auth().currentUser?.uid;
-
     if (!userId) {
         console.error("User not authenticated yet");
         return;
@@ -2773,9 +2772,12 @@ const verticalEllipsisIcon = `
 
     const noteRef = db.collection('generatednotes').doc(noteId);
 
+    // Get current collapsed state
+    const isCollapsed = noteDiv.classList.contains('collapsed');
 
-    if (noteDiv.classList.contains('collapsed')) {
-        // Show all hidden content
+    // Show or hide content based on the collapsed state
+    if (isCollapsed) {
+        // Expand the note
         overview.style.display = 'block';
         keyPointsLabel.style.display = 'block';
         keyPoints.style.display = 'block';
@@ -2784,7 +2786,7 @@ const verticalEllipsisIcon = `
         dateSpan.style.display = 'inline';
         noteTitle.style.display = 'inline';
         noteDiv.classList.remove('collapsed');
-        
+
         // Hide the ellipsis container if it exists
         if (ellipsisContainer) {
             ellipsisContainer.style.display = 'none';
@@ -2796,16 +2798,14 @@ const verticalEllipsisIcon = `
 
         // Save expanded state to localStorage
         localStorage.setItem(`note-${noteId}`, 'expanded');
-
-        // Update the note state in Firestore
-        noteRef.update({
-            isCollapsed: false
-        }).catch(error => {
-            console.error('Error updating note state:', error);
-        });
+        
+        // Only update Firestore if it was previously collapsed
+        if (isCollapsed) {
+            updateFirestoreCollapseState(noteRef, false);
+        }
 
     } else {
-        // Hide the content
+        // Collapse the note
         overview.style.display = 'none';
         keyPointsLabel.style.display = 'none';
         keyPoints.style.display = 'none';
@@ -2832,14 +2832,21 @@ const verticalEllipsisIcon = `
 
         // Save collapsed state to localStorage
         localStorage.setItem(`note-${noteId}`, 'collapsed');
-
-        // Update the note state in Firestore
-        noteRef.update({
-            isCollapsed: true
-        }).catch(error => {
-            console.error('Error updating note state:', error);
-        });
+        
+        // Only update Firestore if it was previously expanded
+        if (!isCollapsed) {
+            updateFirestoreCollapseState(noteRef, true);
+        }
     }
+}
+
+// Update Firestore state
+function updateFirestoreCollapseState(noteRef, isCollapsed) {
+    noteRef.update({
+        isCollapsed: isCollapsed
+    }).catch(error => {
+        console.error('Error updating note state:', error);
+    });
 }
 
 // Function to restore note state from localStorage
@@ -2847,8 +2854,11 @@ function restoreNoteState(noteId) {
     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
     const state = localStorage.getItem(`note-${noteId}`);
     
-    if (state === 'collapsed') {
+    if (state === 'collapsed' && !noteDiv.classList.contains('collapsed')) {
         // Initially collapsed
+        toggleNoteView(noteId);
+    } else if (state === 'expanded' && noteDiv.classList.contains('collapsed')) {
+        // Initially expanded
         toggleNoteView(noteId);
     }
 }
