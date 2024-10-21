@@ -2759,6 +2759,15 @@ const verticalEllipsisIcon = `
     </div>
 `;
 
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    const noteRef = db.collection('generatednotes').doc(noteId);
+
 
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
@@ -2783,12 +2792,12 @@ const verticalEllipsisIcon = `
         // Save expanded state to localStorage
         localStorage.setItem(`note-${noteId}`, 'expanded');
 
-        // Save expanded state to Firestore
-    db.collection('generatednotes').doc(noteId).update({
-        expanded: true
-    }).catch(error => {
-        console.error('Error updating document:', error);
-    });
+        // Update the note state in Firestore
+        noteRef.update({
+            isCollapsed: false
+        }).catch(error => {
+            console.error('Error updating note state:', error);
+        });
 
     } else {
         // Hide the content
@@ -2819,13 +2828,13 @@ const verticalEllipsisIcon = `
         // Save collapsed state to localStorage
         localStorage.setItem(`note-${noteId}`, 'collapsed');
 
-    // Save collapsed state to Firestore
-    db.collection('generatednotes').doc(noteId).update({
-        expanded: false
-    }).catch(error => {
-        console.error('Error updating document:', error);
-    });
-    
+        // Update the note state in Firestore
+        noteRef.update({
+            isCollapsed: true
+        }).catch(error => {
+            console.error('Error updating note state:', error);
+        });
+    }
 }
 
 // Function to restore note state from localStorage
@@ -2977,6 +2986,15 @@ const verticalEllipsisIcon = `
     </div>
 `;
 
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    const noteRef = db.collection('generatedpdfs').doc(noteId);
+
     if (noteDiv.classList.contains('collapsed')) {
         // Show all hidden content
         overview.style.display = 'block';
@@ -3000,12 +3018,12 @@ const verticalEllipsisIcon = `
         // Save state to localStorage as expanded
         localStorage.setItem(`pdf-${pdfId}`, 'expanded');
 
-    // Save expanded state to Firestore
-    db.collection('generatedpdfs').doc(pdfId).update({
-        expanded: true
-    }).catch(error => {
-        console.error('Error updating document:', error);
-    });
+        // Update the note state in Firestore
+        noteRef.update({
+            isCollapsed: false
+        }).catch(error => {
+            console.error('Error updating note state:', error);
+        });
 
     } else {
         // Hide the content
@@ -3036,13 +3054,13 @@ const verticalEllipsisIcon = `
         // Save collapsed state to localStorage
         localStorage.setItem(`pdf-${pdfId}`, 'collapsed');
 
-    // Save collapsed state to Firestore
-    db.collection('generatedpdfs').doc(pdfId).update({
-        expanded: false
-    }).catch(error => {
-        console.error('Error updating document:', error);
-    });
-
+        // Update the note state in Firestore
+        noteRef.update({
+            isCollapsed: true
+        }).catch(error => {
+            console.error('Error updating note state:', error);
+        });
+    }
 }
 
 // Call this function when loading to apply the saved state
