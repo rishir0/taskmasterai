@@ -2701,8 +2701,12 @@ function loadGeneratedNotes() {
 
                     // Check localStorage to see if this note should be collapsed or expanded
                     const savedState = localStorage.getItem(`note-${noteId}`);
-                    if (savedState === 'collapsed') {
-                        toggleNoteView(noteId); // Ensure it's collapsed
+
+                    // Use localStorage or Firestore's isCollapsed field to determine note state
+                    if (savedState === 'collapsed' || (savedState === null && isCollapsed)) {
+                        toggleNoteView(noteId); // Collapse the note if saved in localStorage or Firestore
+                    } else if (savedState === 'expanded') {
+                        // Note is already expanded, no need to toggle
                     }
                 } else if (change.type === "removed") {
                     const noteDiv = document.querySelector(`[data-id='${noteId}']`);
