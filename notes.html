@@ -1497,14 +1497,15 @@ textarea::placeholder {
 
 
 .modal-quiz {
-  display: none; /* Temporarily set to flex for testing */
+  display: none; /* Hidden by default */
   position: fixed;
   z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay for better contrast */
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -1517,8 +1518,11 @@ textarea::placeholder {
   width: 80%;
   max-width: 500px;
   text-align: center;
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3); /* Stronger shadow for depth */
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+  max-height: 90vh; /* Allow scrolling */
+  overflow-y: auto;
 }
+
 
 .quiz-icon2 {
   margin-bottom: 20px;
@@ -3767,25 +3771,35 @@ function showError() {
 // Get modal elements by ID
 const modal = document.getElementById("quiz-modal");
 const modalContent = document.getElementById("quiz-modal-content");
+const quizTitle = document.getElementById("quiz-title");
+const quizContent = document.getElementById("quiz-content");
+const quizOptions = document.getElementById("quiz-options");
+const submitButton = document.getElementById("submit-answer");
 
 // Function to open the quiz modal
 function openQuizModal() {
-  modal.style.display = "block";
+  // Ensure all elements are displayed when opening the modal
+  quizTitle.style.display = "block";
+  quizContent.style.display = "block";
+  quizOptions.style.display = "block";
+  submitButton.style.display = "block";
+  
+  modal.style.display = "flex"; // Set modal to flex to center content
 }
 
 // Function to close the quiz modal
 function closeQuizModal() {
-  modal.style.display = "none";
+  modal.style.display = "none"; // Hide the modal
 }
 
-// Close the modal when clicking outside the modal content
+// Event listener to close modal when clicking outside of modal content
 window.addEventListener("click", function(event) {
   if (event.target === modal) {
     closeQuizModal();
   }
 });
 
-// Close the modal when pressing the 'Escape' key
+// Event listener to close modal when pressing the 'Escape' key
 window.addEventListener("keydown", function(event) {
   if (event.key === "Escape") {
     closeQuizModal();
