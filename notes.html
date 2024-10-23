@@ -2664,19 +2664,20 @@ Format:
 
 
 
-// Flatten and clean up questions array
+// Clean up and flatten questions array
 function flattenQuestions(questions) {
-    return questions.map(q => ({
-        question: q.Question,      // The generated question
-        choices: [                 // Ensure choices are an array of strings
-            q.Choices[0],
-            q.Choices[1],
-            q.Choices[2],
-            q.Choices[3]
-        ],
-        correctAnswer: q['Correct Answer'] // Correct answer number
-    }));
+    return questions.map(q => {
+        // Ensure the structure exists and default to empty values if undefined
+        const choices = Array.isArray(q.Choices) ? q.Choices.slice(0, 4) : ["", "", "", ""]; // Get only the first 4 options
+
+        return {
+            question: q.Question?.trim() || "No question provided",  // Ensure question exists and remove extra spaces
+            choices: choices.map(choice => choice?.trim() || "No option").filter(choice => choice), // Ensure choices are clean and remove empty options
+            correctAnswer: q['Correct Answer'] || 1  // Ensure a correct answer is provided (default to 1)
+        };
+    });
 }
+
 
 // Function to save overview, key points, and questions to Firestore
 async function saveToFirestore2(fileName, overview, keyPoints, questions) {
