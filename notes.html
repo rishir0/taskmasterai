@@ -1497,15 +1497,16 @@ textarea::placeholder {
 
 
 .modal-quiz {
-  display: none;
+  display: flex; /* Temporarily set to flex for testing */
   position: fixed;
-  z-index: 1;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 
 .modal-content-quiz {
   background-color: #f9f9f9;
@@ -3735,8 +3736,10 @@ function showError() {
 
     // Function to open the quiz modal
     function openQuizModal() {
-      modal.style.display = 'flex';
-    }
+  modal.style.display = 'flex';
+  console.log('Modal should be displayed now');
+}
+
 
     // Function to close the quiz modal
     function closeQuizModal() {
