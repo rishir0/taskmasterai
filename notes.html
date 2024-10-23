@@ -1758,6 +1758,12 @@ textarea::placeholder {
     </div>
 </div>
 
+<!-- Modal: Quiz Modal -->
+<div class="modal" id="QuizModal">
+    <div class="modal-content">
+        <h6>Quiz</h6>
+    </div>
+</div>
 
 
 <!-- Modal 3: Personal Note Modal -->
@@ -2958,7 +2964,7 @@ function loadGeneratedPDFs() {
                             <span>AI Generated</span>
                         </div>
 
-<div class="quiz-btn" onclick="openModal2()">
+<div class="quiz-btn" onclick="openQuizModal()">
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3374,6 +3380,7 @@ function openModal2() {
     modal.style.display = "block"; // Show modal
 }
 
+
 // Function to close Modal 2
 function closeModal2() {
     const modal = document.getElementById("noteModal2");
@@ -3385,6 +3392,27 @@ window.onclick = function(event) {
     const modal2 = document.getElementById("noteModal2");
     if (event.target === modal2) {
         modal2.style.display = "none"; // Close if clicking outside modal content
+    }
+}
+
+// Function to open Modal 2
+function openQuizModal() {
+    const modal = document.getElementById("QuizModal");
+    modal.style.display = "block"; // Show modal
+}
+
+
+// Function to close Modal 2
+function closeQuizModal() {
+    const modal = document.getElementById("QuizModal");
+    modal.style.display = "none"; // Hide modal
+}
+
+// Close modal if clicking outside the modal content for Modal 2
+window.onclick = function(event) {
+    const modal5 = document.getElementById("QuizModal");
+    if (event.target === modal5) {
+        modal5.style.display = "none"; // Close if clicking outside modal content
     }
 }
 
