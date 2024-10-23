@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1497,7 +1496,8 @@ textarea::placeholder {
 }
 
 
-.modal-quiz {
+/* Modal styling */
+.modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -1505,53 +1505,30 @@ textarea::placeholder {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content-quiz {
-  background-color: #f9f9f9;
+.modal-content {
+  background-color: #fff;
   margin: 15% auto;
   padding: 20px;
-  border-radius: 8px;
+  border: 1px solid #888;
   width: 80%;
-  max-width: 500px;
-  text-align: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.quiz-icon2 {
-  margin-bottom: 20px;
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.quiz-title {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-#quiz-question {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.answer-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.answer-card {
-  background-color: #fff;
-  padding: 15px;
-  border: 2px solid #ccc;
-  border-radius: 10px;
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
   cursor: pointer;
-  transition: 0.3s;
-}
-
-.answer-card:hover {
-  background-color: #e9e9e9;
-  transform: scale(1.02);
 }
 
 
@@ -1890,33 +1867,25 @@ textarea::placeholder {
 </div>
 
 
-<!-- Modal Structure -->
-<div id="quiz-modal" class="modal-quiz">
-  <div class="modal-content-quiz">
-    <!-- SVG Icon -->
-    <div class="quiz-icon2">
-      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 99.39 122.88" style="enable-background:new 0 0 99.39 122.88" xml:space="preserve">
-        <g>
-          <path d="M65.72,12.72c-0.31,0-0.58-0.04-0.85-0.13c-1.38,0-2.54-1.12-2.54-2.54v-5H37.7v5c0,1.29-1.03,2.41-2.28,2.5 c-0.27,0.09-0.58,0.13-0.89,0.13h-9.28v10.35h48.59V12.67h-8.21L65.72,12.72L65.72,12.72z M22.85,75.03c2.76,0,5,2.24,5,5 s-2.24,5-5,5s-5-2.24-5-5S20.09,75.03,22.85,75.03L22.85,75.03z M17.07,62.7c-0.69-1.03-0.42-2.43,0.62-3.12 c1.03-0.69,2.43-0.42,3.12,0.62l1.23,1.82l4.87-5.92c0.79-0.96,2.21-1.1,3.17-0.31c0.96,0.79,1.1,2.21,0.31,3.17l-6.74,8.2 c-0.15,0.19-0.33,0.36-0.54,0.51c-1.03,0.69-2.43,0.42-3.12-0.62L17.07,62.7L17.07,62.7z M17.07,45.38 c-0.69-1.03-0.42-2.43,0.62-3.12c1.03-0.69,2.43-0.42,3.12,0.62l1.23,1.82l4.87-5.93c0.79-0.96,2.21-1.1,3.17-0.31 c0.96,0.79,1.1,2.21,0.31,3.17l-6.74,8.2c-0.15,0.19-0.33,0.36-0.54,0.51c-1.03,0.69-2.43,0.42-3.12-0.62L17.07,45.38L17.07,45.38z M69.2,122.21c-0.45,0.4-1.07,0.67-1.7,0.67c-0.13,0-0.27,0-0.4-0.04H5.62c-1.52,0-2.94-0.62-3.97-1.65 C0.62,120.16,0,118.78,0,117.21l0-97.36c0-1.56,0.62-2.94,1.65-3.97c1.03-1.03,2.41-1.65,3.97-1.65h14.63v-2.77 c0-1.03,0.4-1.96,1.12-2.68c0.67-0.67,1.61-1.12,2.68-1.12h8.66V4.19c0-1.16,0.49-2.19,1.25-2.94C34.71,0.49,35.74,0,36.9,0h26.37 c1.16,0,2.19,0.49,2.94,1.25c0.76,0.76,1.25,1.78,1.25,2.94v3.48h7.81c1.03,0,1.96,0.45,2.68,1.12c0.67,0.67,1.12,1.65,1.12,2.68 v2.77h14.63c1.56,0,2.94,0.62,3.97,1.65c1.03,1.03,1.65,2.41,1.65,3.97v70.23c0.2,1.01-0.01,1.79-0.76,2.54l-29.05,29.4 c-0.09,0.09-0.13,0.13-0.22,0.18H69.2L69.2,122.21z M64.96,117.79c0-33.62-4.24-29.63,29.22-29.63V19.85c0-0.13-0.04-0.31-0.18-0.4 c-0.09-0.09-0.22-0.18-0.4-0.18l-14.63,0v5.09c0,1.03-0.4,1.96-1.12,2.68c-0.67,0.67-1.61,1.12-2.68,1.12H24 c-1.03,0-2.01-0.45-2.68-1.12c-0.09-0.09-0.13-0.18-0.22-0.27c-0.54-0.67-0.89-1.52-0.89-2.41v-5.09H5.58 c-0.13,0-0.31,0.04-0.4,0.18C5.09,19.54,5,19.72,5,19.85v97.36c0,0.18,0.04,0.31,0.18,0.4c0.09,0.09,0.22,0.18,0.4,0.18h59.34 H64.96L64.96,117.79z M41.23,81.8c-1.38,0-2.54-1.12-2.54-2.54c0-1.38,1.12-2.54,2.54-2.54h24.13c1.38,0,2.54,1.12,2.54,2.54 c0,1.38-1.12,2.54-2.54,2.54H41.23L41.23,81.8z M41.23,45.52c-1.38,0-2.54-1.12-2.54-2.54c0-1.38,1.12-2.54,2.54-2.54h37.16 c1.38,0,2.54,1.12,2.54,2.54c0,1.38-1.12,2.54-2.54,2.54L41.23,45.52L41.23,45.52z M41.23,63.66c-1.38,0-2.54-1.12-2.54-2.54 c0-1.38,1.12-2.54,2.54-2.54h37.16c1.38,0,2.54,1.12,2.54,2.54c0,1.38-1.12,2.54-2.54,2.54H41.23L41.23,63.66z"/>
-        </g>
-      </svg>
-    </div>
 
-    <!-- Quiz Question Title -->
-    <h2 class="quiz-title">Quiz Question</h2>
-
-    <!-- Quiz Question Content (To Be Dynamically Inserted) -->
-    <p id="quiz-question">What is the capital of France?</p>
-
-    <!-- Answer Options -->
-    <div class="answer-options">
-      <div class="answer-card">A) Paris</div>
-      <div class="answer-card">B) London</div>
-      <div class="answer-card">C) Rome</div>
-      <div class="answer-card">D) Berlin</div>
-    </div>
+ <!-- Modal Structure -->
+<div id="questionModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="questionTitle"></h2>
+    <p id="questionText"></p>
+    <ul id="answerChoices">
+      <li>A) <span id="choiceA"></span></li>
+      <li>B) <span id="choiceB"></span></li>
+      <li>C) <span id="choiceC"></span></li>
+      <li>D) <span id="choiceD"></span></li>
+    </ul>
+    <p id="correctAnswer" style="display:none;">Correct Answer: <span id="correctAnswerText"></span></p>
   </div>
 </div>
+
+
+
 
 
 
@@ -2611,13 +2580,13 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
+// Call this function inside your generateQuestions to display each question
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
 
-        // Prepare the prompt to generate a multiple-choice question
         const prompt = `
 Create a multiple-choice question based on the following key point:
 
@@ -2639,7 +2608,6 @@ Format:
 `;
 
         try {
-            // Call Hugging Face API using the Llama model
             const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                 method: 'POST',
                 headers: {
@@ -2654,8 +2622,23 @@ Format:
             if (response.ok) {
                 const data = await response.json();
                 
-                // Log the entire response to inspect its structure
-                console.log(`Question ${i + 1}:\n`, data);
+                // Extract the question, choices, and correct answer from the API response
+                const generatedText = data[0].generated_text.split('\n');
+                const question = generatedText[0].replace('Question: ', '').trim();
+                const choices = [
+                    generatedText[1].replace('1. ', '').trim(),
+                    generatedText[2].replace('2. ', '').trim(),
+                    generatedText[3].replace('3. ', '').trim(),
+                    generatedText[4].replace('4. ', '').trim(),
+                ];
+                const correctAnswer = generatedText[5].replace('Correct Answer: ', '').trim();
+
+                // Log the data (optional)
+                console.log(`Question ${i + 1}:\n`, question, choices, correctAnswer);
+                
+                // Display the question in the modal
+                openQuizModal(question, choices, correctAnswer);
+
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2665,7 +2648,6 @@ Format:
         }
     }
 }
-
 
 
 
@@ -2812,7 +2794,7 @@ function loadGeneratedNotes() {
                             </svg>
                             <span>AI Generated</span>
                         </div>
-<div class="quiz-btn" onclick="openQuizModal()">
+<div class="quiz-btn" onclick="toggleNewAction()">
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3726,33 +3708,43 @@ function showError() {
 }
 
 
-// Get the modal element
-const modal = document.getElementById('quiz-modal');
+// Function to open the modal
+function openQuizModal(question, choices, correctAnswer) {
+    const modal = document.getElementById("questionModal");
+    const questionTitle = document.getElementById("questionTitle");
+    const questionText = document.getElementById("questionText");
+    const choiceA = document.getElementById("choiceA");
+    const choiceB = document.getElementById("choiceB");
+    const choiceC = document.getElementById("choiceC");
+    const choiceD = document.getElementById("choiceD");
+    const correctAnswerText = document.getElementById("correctAnswerText");
+    const correctAnswerElem = document.getElementById("correctAnswer");
 
-// Function to open the quiz modal
-function openQuizModal() {
-  modal.style.display = 'block';
+    // Set question and choices
+    questionText.innerText = question;
+    choiceA.innerText = choices[0];
+    choiceB.innerText = choices[1];
+    choiceC.innerText = choices[2];
+    choiceD.innerText = choices[3];
+
+    // Store correct answer (hidden initially)
+    correctAnswerText.innerText = correctAnswer;
+
+    // Display the modal
+    modal.style.display = "block";
+
+    // Close modal when the user clicks the close button
+    document.querySelector(".close").onclick = function() {
+        modal.style.display = "none";
+    };
+    
+    // Close modal when clicking outside of the modal
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
 }
-
-// Function to close the quiz modal
-function closeQuizModal() {
-  modal.style.display = 'none';
-}
-
-// Close the modal if the user clicks anywhere outside the modal content
-window.onclick = function(event) {
-  if (event.target === modal) {
-    closeQuizModal();
-  }
-};
-
-// Optional: You can also close the modal using the 'Esc' key
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') {
-    closeQuizModal();
-  }
-});
-
 
 
 
