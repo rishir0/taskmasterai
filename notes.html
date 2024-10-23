@@ -2643,8 +2643,23 @@ Format:
                 const data = await response.json();
                 console.log(`Generated Question ${i + 1}:\n`, data);
 
-                // Extract the question and choices from the response
-                questions.push(data); // Push the generated question to the array
+                // Extract the relevant fields consistently
+                const questionText = (data.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1] || "No question provided";
+                const choicesText = (data.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
+                const correctAnswerText = (data.match(/- Correct Answer:\s*(\d+)/) || [])[1] || "1"; // Default to 1 if not found
+
+                // Parse the choices
+                const choices = choicesText.split('\n').map(choice => {
+                    const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
+                    return cleanChoice || "No option"; // Fallback if choice is empty
+                }).slice(0, 4); // Get only the first 4 choices
+
+                // Push only the necessary details to the questions array
+                questions.push({
+                    question: questionText.trim(),
+                    choices: choices,
+                    correctAnswer: parseInt(correctAnswerText)
+                });
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2667,10 +2682,15 @@ Format:
 // Clean up and flatten questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
+        // Initialize empty strings for safety
+        const questionText = q.Question || "";
+        const choicesText = q.Choices || "";
+        const correctAnswerText = q['Correct Answer'] || "";
+
         // Regular expressions to extract the required data
-        const questionMatch = q.Question.match(/Question:\s*(.*)/);
-        const choicesMatch = q.Choices.match(/Choices:\s*((?:\d+\.\s.*\n?)+)/);
-        const correctAnswerMatch = q['Correct Answer'].match(/Correct Answer:\s*(\d+)/);
+        const questionMatch = questionText.match(/Question:\s*(.*)/);
+        const choicesMatch = choicesText.match(/Choices:\s*((?:\d+\.\s.*\n?)+)/);
+        const correctAnswerMatch = correctAnswerText.match(/Correct Answer:\s*(\d+)/);
 
         // Extract and clean the question
         const question = questionMatch ? questionMatch[1].trim() : "No question provided";
@@ -2694,6 +2714,7 @@ function flattenQuestions(questions) {
         };
     });
 }
+
 
 
 
