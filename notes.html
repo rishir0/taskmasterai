@@ -3735,7 +3735,7 @@ const modal = document.getElementById('quiz-modal');
 
 // Function to open the quiz modal
 function openQuizModal() {
-  modal.style.display = 'block';
+  modal.style.display = 'flex';
 }
 
 // Function to close the quiz modal
@@ -3750,12 +3750,7 @@ window.onclick = function(event) {
   }
 };
 
-// Optional: You can also close the modal using the 'Esc' key
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') {
-    closeQuizModal();
-  }
-});
+
 
 </script>
 
