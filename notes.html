@@ -2645,17 +2645,33 @@ Format:
                 const data = await response.json();
                 console.log(`Generated Question ${i + 1}:\n`, data);
 
-                // Assuming 'data' is structured correctly, we will extract necessary info
-                const questionMatch = data.match(/Question:\s*(.*)/);
-                const choicesMatch = data.match(/Choices:\s*((?:\d+\.\s.*\n?)+)/);
-                const correctAnswerMatch = data.match(/Correct Answer:\s*(\d+)/);
+                // Ensure data is a string; if not, convert it to string
+                const responseText = typeof data === 'string' ? data : JSON.stringify(data);
 
-                // Extract question, choices, and correct answer
-                const question = questionMatch ? questionMatch[1].trim() : "No question provided";
-                const choices = choicesMatch ? choicesMatch[1].split('\n').map(choice => choice.trim()) : ["No option", "No option", "No option", "No option"];
-                const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1; // Default to 1 if not found
+                // Extract the relevant fields consistently
+                const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1] || "No question provided";
+                const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
+                const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1] || "1"; // Default to 1 if not found
 
-                questions.push({ question, choices, correctAnswer });
+                // Parse the choices and ensure proper extraction
+                const choices = choicesText.split('\n').map(choice => {
+                    const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
+                    return cleanChoice || "No option"; // Fallback if choice is empty
+                }).slice(0, 4); // Get only the first 4 choices
+
+                // Ensure the correct answer is a single number
+                const correctAnswer = parseInt(correctAnswerText);
+                if (isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
+                    console.error('Invalid correct answer:', correctAnswerText);
+                    continue; // Skip this question if the correct answer is invalid
+                }
+
+                // Push only the necessary details to the questions array
+                questions.push({
+                    question: questionText.trim(),
+                    choices: choices,
+                    correctAnswer: correctAnswer
+                });
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2679,18 +2695,27 @@ Format:
 // Clean up and flatten questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
-        // Access the properties directly from the generated question
-        const question = q.question || "No question provided";
-        const choices = q.choices || ["No option", "No option", "No option", "No option"];
-        const correctAnswer = q.correctAnswer || 1; // Default to 1 if not valid
+        // Clean and extract the question text
+        const questionText = (q.question || "").trim(); // Ensure it's a string and trim whitespace
+        const cleanedQuestion = questionText || "No question provided"; // Fallback if empty
 
-        // Clean the choices
-        const cleanedChoices = choices.slice(0, 4).map(choice => choice.trim());
+        // Clean and extract the choices
+        const choicesText = Array.isArray(q.choices) ? q.choices : []; // Ensure it's an array
+        const cleanedChoices = choicesText.map(choice => (choice || "No option").trim()); // Clean and fallback for each choice
 
+        // Get only the first 4 choices (if more than 4 exist)
+        const finalChoices = cleanedChoices.slice(0, 4).map(choice => choice || "No option"); // Ensure every choice is valid
+
+        // Ensure the correct answer is an integer between 1 and 4
+        const correctAnswer = Number.isInteger(q.correctAnswer) && q.correctAnswer >= 1 && q.correctAnswer <= 4
+            ? q.correctAnswer
+            : 1; // Default to 1 if invalid
+
+        // Return the cleaned up and flattened question object
         return {
-            question: question,
-            choices: cleanedChoices,
-            correctAnswer: correctAnswer
+            question: cleanedQuestion,      // Cleaned question text
+            choices: finalChoices,          // Cleaned and limited to 4 choices
+            correctAnswer: correctAnswer    // Correct answer is already handled correctly
         };
     });
 }
