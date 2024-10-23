@@ -2494,6 +2494,8 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 }
 
 
+
+
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
@@ -2536,9 +2538,12 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
+
+                // Assuming the API returns a single string with question and choices in one response
+                const fullText = data.inputs || "";  // Adjust 'inputs' based on actual API response field
                 
-                // Log the entire response to inspect its structure
-                console.log(`Question ${i + 1}:\n`, data);
+                // Log the entire response as it is
+                console.log(`Question ${i + 1}:\n${fullText}\n`);
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
