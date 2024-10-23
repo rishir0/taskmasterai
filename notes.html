@@ -2494,9 +2494,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 }
 
 
-
-
-
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
@@ -2539,19 +2536,9 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-
-                // Assuming 'generated_text' contains the entire response as an object or JSON
-                const questionParts = data.generated_text.trim().split("\n");
-
-                // Log the formatted question with choices and correct answer
-                console.log(`Question ${i + 1}:`);
-                console.log(questionParts[0]);  // Question
-                console.log(questionParts[1]);  // Choice 1
-                console.log(questionParts[2]);  // Choice 2
-                console.log(questionParts[3]);  // Choice 3
-                console.log(questionParts[4]);  // Choice 4
-                console.log(questionParts[5]);  // Correct answer
-                console.log('\n');  // Add spacing between questions
+                
+                // Log the entire response to inspect its structure
+                console.log(`Question ${i + 1}:\n`, data);
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2561,6 +2548,7 @@ Format:
         }
     }
 }
+
 
 
 
