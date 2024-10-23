@@ -2667,16 +2667,34 @@ Format:
 // Clean up and flatten questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
-        // Ensure the structure exists and default to empty values if undefined
-        const choices = Array.isArray(q.Choices) ? q.Choices.slice(0, 4) : ["", "", "", ""]; // Get only the first 4 options
+        // Regular expressions to extract the required data
+        const questionMatch = q.Question.match(/Question:\s*(.*)/);
+        const choicesMatch = q.Choices.match(/Choices:\s*((?:\d+\.\s.*\n?)+)/);
+        const correctAnswerMatch = q['Correct Answer'].match(/Correct Answer:\s*(\d+)/);
+
+        // Extract and clean the question
+        const question = questionMatch ? questionMatch[1].trim() : "No question provided";
+
+        // Extract and clean the choices
+        const choices = choicesMatch ? choicesMatch[1].split('\n').map(choice => choice.trim()) : ["No option", "No option", "No option", "No option"];
+        
+        // Get only the first 4 choices
+        const cleanedChoices = choices.slice(0, 4).map(choice => {
+            const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
+            return cleanChoice || "No option"; // Fallback if choice is empty
+        });
+
+        // Extract correct answer
+        const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1; // Default to 1 if not found
 
         return {
-            question: q.Question?.trim() || "No question provided",  // Ensure question exists and remove extra spaces
-            choices: choices.map(choice => choice?.trim() || "No option").filter(choice => choice), // Ensure choices are clean and remove empty options
-            correctAnswer: q['Correct Answer'] || 1  // Ensure a correct answer is provided (default to 1)
+            question: question,
+            choices: cleanedChoices,
+            correctAnswer: correctAnswer
         };
     });
 }
+
 
 
 // Function to save overview, key points, and questions to Firestore
