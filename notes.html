@@ -1496,14 +1496,15 @@ textarea::placeholder {
 }
 
 
-/* Modal Content with ID */
+/* Modal Content with ID, black background and white text */
 #QuizModalContent {
-    background-color: #fefefe;
+    background-color: #000; /* Set modal background to black */
+    color: #fff; /* Set text color to white */
     margin: 5% auto;
     padding: 40px;
     border-radius: 10px;
-    width: 70%; /* Increased modal width */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Increased modal width */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
     position: relative;
 }
 
@@ -1517,7 +1518,7 @@ textarea::placeholder {
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
-    color: #333;
+    color: #fff;
     transition: color 0.3s ease;
 }
 
@@ -1525,30 +1526,32 @@ textarea::placeholder {
     color: #999;
 }
 
-/* Quiz Options arranged vertically */
+/* Quiz Options aligned to the left */
 .quiz-options {
     display: flex;
     flex-direction: column;
     gap: 20px;
     margin-top: 30px;
+    align-items: flex-start; /* Align options to the left */
 }
 
 /* Card styling */
 .quiz-card {
     padding: 30px;
-    background-color: var(--card-bg, #e7f1ff); /* Default color is set here */
+    background-color: var(--card-bg, #1a1a1a); /* Darker card background */
     border-radius: 10px;
-    text-align: center;
+    text-align: left; /* Align text inside the card to the left */
     font-weight: bold;
     font-size: 24px; /* Increased font size */
     cursor: pointer;
     transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for card effect */
+    color: #fff; /* White text inside cards */
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); /* White shadow for contrast */
 }
 
 /* Hover effect for cards */
 .quiz-card:hover {
-    background-color: #d1e7ff;
+    background-color: #333; /* Darker hover effect */
 }
 
 
@@ -1825,6 +1828,7 @@ textarea::placeholder {
         </div>
     </div>
 </div>
+
 
 
 
