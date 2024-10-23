@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1497,6 +1496,102 @@ textarea::placeholder {
 }
 
 
+.modal-quiz {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content-quiz {
+  background-color: #ffffff;
+  margin: auto;
+  padding: 30px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+  max-height: 90vh; /* Allow scrolling */
+  overflow-y: auto;
+}
+
+
+.quiz-icon2 {
+  margin-bottom: 20px;
+}
+
+.quiz-title {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+#quiz-question {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #444;
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.answer-card {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.answer-card:hover {
+  background-color: #e9e9e9;
+  transform: scale(1.03);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+.quiz-options button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quiz-options button:hover {
+  background-color: #0056b3;
+}
+
+.quiz-submit {
+  margin-top: 25px;
+  background-color: #28a745;
+  color: white;
+  padding: 12px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quiz-submit:hover {
+  background-color: #218838;
+}
+
 
 
 
@@ -1777,6 +1872,30 @@ textarea::placeholder {
 </div>
 
 
+<!-- Modal Structure -->
+<div class="modal-quiz" id="quiz-modal">
+  <div class="modal-content-quiz" id="quiz-modal-content">
+
+    <!-- Quiz Question Title -->
+    <h2 class="quiz-title" id="quiz-title">Quiz Question</h2>
+
+    <!-- Quiz Question Content (To Be Dynamically Inserted) -->
+    <p id="quiz-content">What is the capital of France?</p>
+
+    <!-- Answer Options -->
+    <div class="quiz-options" id="quiz-options">
+      <button class="quiz-btn" id="option1">A. Paris</button>
+      <button class="quiz-btn" id="option2">B. Madrid</button>
+      <button class="quiz-btn" id="option3">C. Rome</button>
+      <button class="quiz-btn" id="option4">D. Berlin</button>
+    </div>
+
+    <!-- Submit Button -->
+    <button class="quiz-submit" id="submit-answer">Submit Answer</button>
+  </div>
+</div>
+
+
 <!-- Progress Bar Modal -->
 <div class="modal" id="progressModal" style="display: none;">
     <div class="modal-content">
@@ -1789,6 +1908,7 @@ textarea::placeholder {
         <p id="error-message" style="display: none; color: red; text-align: center;">Please try again.</p> <!-- Error message -->
     </div>
 </div>
+
 
 
 
@@ -1832,7 +1952,6 @@ textarea::placeholder {
         Estimated time remaining: <span id="time-remaining">Calculating...</span>
     </p>
 </div>
-
 
 
 
@@ -2729,7 +2848,7 @@ function loadGeneratedNotes() {
                             </svg>
                             <span>AI Generated</span>
                         </div>
-<div class="quiz-btn" onclick="toggleNewAction()">
+<div class="quiz-btn" onclick="openQuizModal()">
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3645,11 +3764,48 @@ function showError() {
 
 
 
-
-
-
-
 </script>
+
+  <script>
+// Get modal elements by ID
+const modal = document.getElementById("quiz-modal");
+const modalContent = document.getElementById("quiz-modal-content");
+const quizTitle = document.getElementById("quiz-title");
+const quizContent = document.getElementById("quiz-content");
+const quizOptions = document.getElementById("quiz-options");
+const submitButton = document.getElementById("submit-answer");
+
+// Function to open the quiz modal
+function openQuizModal() {
+  // Ensure all elements are displayed when opening the modal
+  quizTitle.style.display = "block";
+  quizContent.style.display = "block";
+  quizOptions.style.display = "block";
+  submitButton.style.display = "block";
+  
+  modal.style.display = "flex"; // Set modal to flex to center content
+}
+
+// Function to close the quiz modal
+function closeQuizModal() {
+  modal.style.display = "none"; // Hide the modal
+}
+
+// Event listener to close modal when clicking outside of modal content
+window.addEventListener("click", function(event) {
+  if (event.target === modal) {
+    closeQuizModal();
+  }
+});
+
+// Event listener to close modal when pressing the 'Escape' key
+window.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    closeQuizModal();
+  }
+});
+  </script>
+
 
 
     </body>
