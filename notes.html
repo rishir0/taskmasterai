@@ -2498,6 +2498,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
+
+
+
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
@@ -2541,17 +2544,18 @@ Format:
             if (response.ok) {
                 const data = await response.json();
 
-                // Assuming the API returns a well-structured JSON object, format it as desired
-                const question = data.question || "Question text not available";
-                const choices = data.choices || [];
-                const correctAnswer = data.correct_answer || "Correct answer not available";
+                // Assuming the response contains question, choices, and correct_answer fields
+                const question = data.generated_text.match(/- Question: (.+)/)[1]; // Extract question text
+                const choices = data.generated_text.match(/- Choices:[\s\S]*?(1\..+)[\s\S]*?(2\..+)[\s\S]*?(3\..+)[\s\S]*?(4\..+)/); // Extract choices
+                const correctAnswer = data.generated_text.match(/- Correct Answer: (.+)/)[1]; // Extract correct answer
 
-                // Log the formatted question
+                // Log the formatted question and answers
                 console.log(`Question ${i + 1} : ${question}\n`);
-                choices.forEach((choice, index) => {
-                    console.log(`${index + 1}. ${choice}`);
-                });
-                console.log(`\nCorrect Answer: ${correctAnswer}\n\n`);
+                console.log(choices[1]);
+                console.log(choices[2]);
+                console.log(choices[3]);
+                console.log(choices[4]);
+                console.log(`\nCorrect Answer: ${correctAnswer}\n`);
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2561,6 +2565,8 @@ Format:
         }
     }
 }
+
+
 
 
 
