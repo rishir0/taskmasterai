@@ -2120,11 +2120,10 @@ try {
             // Generate questions based on key points
             const questions = await generateQuestions(keyPoints);
             console.log('Generated Questions:', questions);
-            const flattenedQuestions = flattenQuestions(questions);
 
-
+            const rawGeneratedText = data.generated_text; // Assuming this is your raw text from the API
             // Save overview, key points, and questions to Firestore
-            await saveToFirestore2(file.name, overview, keyPoints, flattenedQuestions);
+            await saveToFirestore2(file.name, overview, keyPoints, rawGeneratedText);
             console.log('Overview, key points, and questions saved to Firestore.');
 
             closePdfUploadModal();
@@ -2703,8 +2702,8 @@ function flattenQuestions(questions) {
     });
 }
 
-// Function to save overview, key points, and questions to Firestore
-async function saveToFirestore2(fileName, overview, keyPoints, questions) {
+// Function to save overview, key points, and raw generated text to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints, generatedText) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2712,23 +2711,21 @@ async function saveToFirestore2(fileName, overview, keyPoints, questions) {
     }
 
     try {
-        // Flatten the questions array to avoid nested structures
-        const flatQuestions = flattenQuestions(questions);
-
         // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
             fileName: fileName,           // Store the file name
             overview: overview,           // Store the generated overview
             keyPoints: keyPoints,         // Store the array of key points
-            questions: flatQuestions,     // Store the flattened questions
+            generatedText: generatedText, // Save the raw generated text
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
+        console.log(`Overview, key points, and generated text for ${fileName} saved successfully.`);
     } catch (error) {
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 
