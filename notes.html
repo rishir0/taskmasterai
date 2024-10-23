@@ -2521,12 +2521,16 @@ Format:
 `;
 
         try {
-            const response = await fetch('http://localhost:3000/api/generate', {
+            // Call Hugging Face API using the Llama model
+            const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({
+                    inputs: prompt,
+                })
             });
 
             if (response.ok) {
@@ -2536,14 +2540,14 @@ Format:
                 console.log('API Response:', data);
 
                 // Ensure you're accessing the correct property for the generated output
-                const question = data.result.trim(); // Assuming 'result' contains the generated question
+                const question = data.generated_text.trim(); // Assuming 'generated_text' contains the generated question
                 console.log(`Question ${i + 1}:\n${question}\n`); // Log each question to the console
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
             }
         } catch (error) {
-            console.error('Error with AIML API:', error);
+            console.error('Error with Hugging Face API:', error);
         }
     }
 }
