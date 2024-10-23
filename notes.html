@@ -2601,22 +2601,22 @@ if (estimatedTimeDisplay) {
 
 
 
+// Improved generateQuestions function with better data parsing
 async function generateQuestions(keyPoints) {
-    const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
+    const maxQuestions = Math.min(keyPoints.length, 5);
     const questions = [];
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
-
         const prompt = `
-Create a multiple-choice question based on the following key point:
+Create a clear multiple-choice question based on the following key point:
 
 Key Point: "${keyPoint}"
 
 Please provide:
-1. A clear question.
-2. Four choices (one correct and three incorrect).
-3. The number of the correct answer.
+1. The question.
+2. Four answer choices (one correct, three incorrect).
+3. The correct answer number (1-4).
 
 Format:
 - Question: 
@@ -2627,6 +2627,7 @@ Format:
   4. 
 - Correct Answer: 
 `;
+
 
         try {
             const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
@@ -2642,34 +2643,24 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(`Generated Question ${i + 1}:\n`, data);
+                const responseText = typeof data === 'string' ? data : data.generated_text;
 
-                // Ensure data is a string; if not, convert it to string
-                const responseText = typeof data === 'string' ? data : JSON.stringify(data);
-
-                // Use regex to capture the different sections
                 const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1]?.trim() || "No question provided";
-
-                const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
-                const choices = choicesText.split('\n').map(choice => {
-                    return choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering and clean up
-                }).slice(0, 4); // Limit to 4 choices
-
+                const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1]?.trim() || "";
                 const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1]?.trim() || "1";
+
+                const choices = choicesText.split('\n').map(choice => choice.replace(/^\d+\.\s*/, '').trim()).slice(0, 4);
                 const correctAnswer = parseInt(correctAnswerText);
 
-                // Check if any part of the question or choices is invalid
-                if (!questionText || choices.length !== 4 || isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
+                if (choices.length === 4 && questionText && !isNaN(correctAnswer) && correctAnswer >= 1 && correctAnswer <= 4) {
+                    questions.push({
+                        question: questionText,
+                        choices: choices,
+                        correctAnswer: correctAnswer
+                    });
+                } else {
                     console.error('Invalid question/choices:', responseText);
-                    continue; // Skip invalid questions
                 }
-
-                // Push the valid question to the questions array
-                questions.push({
-                    question: questionText,
-                    choices: choices,
-                    correctAnswer: correctAnswer
-                });
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2679,8 +2670,9 @@ Format:
         }
     }
 
-    return questions; // Return the array of questions
+    return questions;
 }
+
 
 
 
