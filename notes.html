@@ -2500,7 +2500,25 @@ async function generateQuestions(keyPoints) {
         const keyPoint = keyPoints[i];
 
         // Prepare the prompt to generate a multiple-choice question
-        const prompt = `Create a multiple-choice question from the following key point:\n\nKey Point: "${keyPoint}"\n\nFormat:\n- Question:\n- Choices:\n  1. (correct answer)\n  2. (incorrect answer)\n  3. (incorrect answer)\n  4. (incorrect answer)\n- Correct Answer: (number of the correct answer)`;
+        const prompt = `
+Create a multiple-choice question based on the following key point:
+
+Key Point: "${keyPoint}"
+
+Please provide:
+1. A clear question.
+2. Four choices (one correct and three incorrect).
+3. The number of the correct answer.
+
+Format:
+- Question: 
+- Choices:
+  1. 
+  2. 
+  3. 
+  4. 
+- Correct Answer: 
+`;
 
         try {
             const response = await fetch('http://localhost:3000/api/generate', {
@@ -2508,17 +2526,21 @@ async function generateQuestions(keyPoints) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    prompt: prompt
-                })
+                body: JSON.stringify({ prompt })
             });
 
             if (response.ok) {
                 const data = await response.json();
+                
+                // Log the entire response to inspect its structure
+                console.log('API Response:', data);
+
+                // Ensure you're accessing the correct property for the generated output
                 const question = data.result.trim(); // Assuming 'result' contains the generated question
-                console.log(`Question ${i + 1}: ${question}`); // Log each question to the console
+                console.log(`Question ${i + 1}:\n${question}\n`); // Log each question to the console
             } else {
-                console.error('Error generating question:', response.statusText);
+                const errorDetails = await response.json();
+                console.error('Error generating question:', errorDetails);
             }
         } catch (error) {
             console.error('Error with AIML API:', error);
