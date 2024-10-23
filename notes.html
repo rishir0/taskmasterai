@@ -1496,7 +1496,31 @@ textarea::placeholder {
 }
 
 
+.quiz-question {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
 
+.quiz-options {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.quiz-option-card {
+    flex: 1;
+    background-color: var(--card0bg, #f0f0f0); /* Default color if not defined */
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quiz-option-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
 
 
@@ -1758,10 +1782,20 @@ textarea::placeholder {
     </div>
 </div>
 
-<!-- Modal: Quiz Modal -->
+<!-- Quiz Modal -->
 <div class="modal" id="QuizModal">
     <div class="modal-content">
-        <h6>Quiz</h6>
+        <h6>Quiz Question</h6>
+        <p id="quiz-question">What is the question?</p>
+
+        <div class="quiz-options">
+            <div class="quiz-card" id="optionA">A</div>
+            <div class="quiz-card" id="optionB">B</div>
+            <div class="quiz-card" id="optionC">C</div>
+            <div class="quiz-card" id="optionD">D</div>
+        </div>
+
+        <button onclick="closeQuizModal()">Close</button>
     </div>
 </div>
 
