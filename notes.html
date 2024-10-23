@@ -2647,9 +2647,9 @@ Format:
                 // Ensure data is a string; if not, convert it to string
                 const responseText = typeof data === 'string' ? data : JSON.stringify(data);
 
-                // Use the same method to parse question, choices, and correct answer
+                // Use regex to capture the different sections
                 const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1]?.trim() || "No question provided";
-                
+
                 const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
                 const choices = choicesText.split('\n').map(choice => {
                     return choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering and clean up
@@ -2658,10 +2658,10 @@ Format:
                 const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1]?.trim() || "1";
                 const correctAnswer = parseInt(correctAnswerText);
 
-                // Validate question, choices, and correct answer
-                if (isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4 || choices.length !== 4) {
+                // Check if any part of the question or choices is invalid
+                if (!questionText || choices.length !== 4 || isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
                     console.error('Invalid question/choices:', responseText);
-                    continue; // Skip this question if invalid
+                    continue; // Skip invalid questions
                 }
 
                 // Push the valid question to the questions array
@@ -2681,6 +2681,7 @@ Format:
 
     return questions; // Return the array of questions
 }
+
 
 
 
