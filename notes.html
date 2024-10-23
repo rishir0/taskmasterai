@@ -1496,32 +1496,44 @@ textarea::placeholder {
 }
 
 
-.quiz-question {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
-
+/* Quiz Options */
 .quiz-options {
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-.quiz-option-card {
-    flex: 1;
-    background-color: var(--card0bg, #f0f0f0); /* Default color if not defined */
-    padding: 15px;
-    border-radius: 5px;
+/* Card styling */
+.quiz-card {
+    padding: 20px;
+    background-color: var(--card0bg, #e7f1ff); /* Default color, change via --card0bg */
+    border-radius: 8px;
     text-align: center;
+    font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: background-color 0.3s ease;
 }
 
-.quiz-option-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Hover effect for cards */
+.quiz-card:hover {
+    background-color: #d1e7ff;
 }
 
+/* Button styling */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
 
 
 
