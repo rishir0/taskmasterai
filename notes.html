@@ -2058,18 +2058,21 @@ async function handleFileUpload(file) {
 
 // Generate overview and key points with real-time progress bar update
 try {
-    // Call generateSummary (simulating work being done in the background)
-    const { overview, keyPoints } = await generateSummary(textContent);
+        // Generate overview and key points
+        const { overview, keyPoints } = await generateSummary(textContent);
+        console.log('Overview and key points generation complete.');
 
-    console.log('Overview and key points generation complete.');
+        // Generate questions
+        const { questions } = await generateQuestions(keyPoints);
+        console.log('Questions generation complete.');
 
-    const questions = await generateQuestions(keyPoints); // Generate questions
+        // Save everything to Firestore
+        await saveToFirestore2(fileName, overview, keyPoints, questions);
+        console.log('PDF overview, key points, and questions saved to Firestore.');
 
-    await saveToFirestore2(fileName, overview, keyPoints, questions); // Save everything
-    console.log('PDF overview and key points saved to Firestore.');
-
-    closePdfUploadModal();
-    loadAllNotes();
+        // Hide progress bar and close the modal
+        closePdfUploadModal();
+        loadAllNotes();
 
                 
                 // Hide progress bar after everything is done
@@ -2543,7 +2546,7 @@ if (estimatedTimeDisplay) {
 
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
-    let generatedQuestions = [];
+    let questions = [];
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
@@ -2582,10 +2585,9 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                // Log the entire response to inspect its structure
                 console.log(`Question ${i + 1}:\n`, data);
                 // Store the generated question in the array
-                generatedQuestions.push(data[0]); // Assuming `data[0]` contains the question
+                questions.push(data[0]); // Assuming `data[0]` contains the question
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2595,7 +2597,7 @@ Format:
         }
     }
 
-    return generatedQuestions; // Return the array of generated questions
+    return { questions }; // Return an object with a `questions` property
 }
 
 
