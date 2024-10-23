@@ -2058,19 +2058,17 @@ async function handleFileUpload(file) {
 
 // Generate overview and key points with real-time progress bar update
 try {
-        // Generate overview and key points
-        const { overview, keyPoints } = await generateSummary(textContent);
-        console.log('Overview and key points generation complete.');
+    // Call generateSummary (simulating work being done in the background)
+    const { overview, keyPoints } = await generateSummary(textContent);
 
+    console.log('Overview and key points generation complete.');
 
+    // Save to Firestore after the progress completes
+    await saveToFirestore2(file.name, overview, keyPoints);
+    console.log('PDF overview and key points saved to Firestore.');
 
-        // Save everything to Firestore
-        await saveToFirestore2(fileName, overview, keyPoints, questions);
-        console.log('PDF overview, key points, and questions saved to Firestore.');
-
-        // Hide progress bar and close the modal
-        closePdfUploadModal();
-        loadAllNotes();
+    closePdfUploadModal();
+    loadAllNotes();
 
                 
                 // Hide progress bar after everything is done
