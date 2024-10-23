@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3615,6 +3614,35 @@ function showError() {
 
 
 
+</script>
+
+
+<script>
+    window.addEventListener('load', function() {
+        const chatbotIframe = document.querySelector('iframe.chatbot-iframe');
+        
+        if (chatbotIframe && chatbotIframe.contentWindow) {
+            console.log('Iframe loaded and ready. Sending test message to chatbot.');
+
+            // Send a test message as soon as the website is loaded
+            const testMessage = { message: "Hello, chatbot! This is a test message." };
+            chatbotIframe.contentWindow.postMessage(testMessage, 'https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU');
+            
+            // Log the message to confirm it's sent
+            console.log('Test message sent:', testMessage);
+        } else {
+            console.error("Chatbot iframe not found or contentWindow is not available.");
+        }
+
+        // Listen for any response from the chatbot
+        window.addEventListener('message', function(event) {
+            if (event.origin === 'https://www.chatbase.co') {
+                console.log('Chatbot response received:', event.data); // Log the response from the chatbot
+            } else {
+                console.error("Received message from an unknown origin:", event.origin);
+            }
+        });
+    });
 </script>
 
 
