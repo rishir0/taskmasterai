@@ -3624,9 +3624,12 @@ function showError() {
         if (chatbotIframe && chatbotIframe.contentWindow) {
             console.log('Iframe loaded and ready. Sending test message to chatbot.');
 
-            // Send a test message asking for multiple choice questions
+            // Send a test message with a structured prompt
             const testMessage = {
-                message: "Generate 5 multiple choice questions with 3 incorrect answers and 1 correct answer from the following text: 'The solar system consists of the Sun and the objects that orbit it, including eight planets, their moons, dwarf planets, and countless small bodies like asteroids and comets.'"
+                message: {
+                    prompt: "Create 5 multiple choice questions based on the following text: 'The solar system consists of the Sun and the objects that orbit it, including eight planets, their moons, dwarf planets, and countless small bodies like asteroids and comets.'",
+                    type: "generate_questions"
+                }
             };
             chatbotIframe.contentWindow.postMessage(testMessage, 'https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU');
             
