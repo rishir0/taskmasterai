@@ -2031,12 +2031,12 @@ function updateEstimatedTime(startTime, currentProgress, totalProgress) {
 
 async function handleFileUpload(file) {
     console.log('File upload started...');
-    
+
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.createElement('span');
     const uploadingText = document.getElementById('uploading-text');
     const errorMessage = document.querySelector('.error-message2');
-    const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
+    const estimatedTimeDisplay = document.getElementById('estimated-time');
 
     if (errorMessage) {
         errorMessage.innerText = ''; // Clear any existing error message
@@ -2066,10 +2066,7 @@ async function handleFileUpload(file) {
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
 
             let textContent = '';
-            const totalPages = pdf.numPages; // Total number of pages for progress tracking
-
-            const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
-
+            const totalPages = pdf.numPages;
 
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
@@ -2078,22 +2075,12 @@ async function handleFileUpload(file) {
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
 
-                // Update progress bar and estimated time after each page is processed
+                // Update progress bar and estimated time
                 const progress = (pageNum / totalPages) * 100;
-                const percentageDisplay = document.createElement('span');
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
                 estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
-                // Ensure the percentage display is positioned at the center of the progress bar
-                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
-                percentageDisplay.style.top = '50%'; // Center vertically
-                percentageDisplay.style.left = '50%'; // Center horizontally
-                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
-
             }
-
-            console.log('Extracted text:', textContent); // Log extracted text
 
             if (!textContent) {
                 throw new Error('No text extracted from PDF.');
@@ -2101,29 +2088,25 @@ async function handleFileUpload(file) {
 
             console.log('PDF text extraction complete.');
 
-            // Change "Uploading" to "Generating Note"
             uploadingText.innerHTML = 'Processing PDF<span id="ellipsis2"></span>';
 
             // Simulate real-time upload progress
             await simulateRealTimeUploadProgress2();
 
-            let progress = 0;
+            // Generate overview and key points
+            const { overview, keyPoints } = await generateSummary(textContent);
+            console.log('Overview and key points generation complete.');
 
+            // Generate questions based on key points
+            const questions = await generateQuestions(keyPoints);
+            console.log('Generated Questions:', questions);
 
+            // Save overview, key points, and questions to Firestore
+            await saveToFirestore2(file.name, overview, keyPoints, questions);
+            console.log('Overview, key points, and questions saved to Firestore.');
 
-// Generate overview and key points with real-time progress bar update
-try {
-    // Call generateSummary (simulating work being done in the background)
-    const { overview, keyPoints } = await generateSummary(textContent);
-
-    console.log('Overview and key points generation complete.');
-
-    // Save to Firestore after the progress completes
-    await saveToFirestore2(file.name, overview, keyPoints);
-    console.log('PDF overview and key points saved to Firestore.');
-
-    closePdfUploadModal();
-    loadAllNotes();
+            closePdfUploadModal();
+            loadAllNotes();
 
                 
                 // Hide progress bar after everything is done
@@ -2601,13 +2584,14 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
+// Updated generateQuestions to return questions array
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
+    const questions = [];
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
 
-        // Prepare the prompt to generate a multiple-choice question
         const prompt = `
 Create a multiple-choice question based on the following key point:
 
@@ -2629,7 +2613,6 @@ Format:
 `;
 
         try {
-            // Call Hugging Face API using the Llama model
             const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                 method: 'POST',
                 headers: {
@@ -2643,9 +2626,10 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                
-                // Log the entire response to inspect its structure
-                console.log(`Question ${i + 1}:\n`, data);
+                console.log(`Generated Question ${i + 1}:\n`, data);
+
+                // Extract the question and choices from the response
+                questions.push(data); // Push the generated question to the array
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2654,6 +2638,8 @@ Format:
             console.error('Error with Hugging Face API:', error);
         }
     }
+
+    return questions; // Return the array of questions
 }
 
 
@@ -2670,8 +2656,9 @@ Format:
 
 
 
-// Function to save overview and key points to Firestore
-async function saveToFirestore2(fileName, overview, keyPoints) {
+
+// Function to save overview, key points, and questions to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints, questions) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2685,13 +2672,15 @@ async function saveToFirestore2(fileName, overview, keyPoints) {
             fileName: fileName,           // Store the file name
             overview: overview,           // Store the generated overview
             keyPoints: keyPoints,         // Store the array of key points
+            questions: questions,         // Store the generated questions
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`Overview and key points for ${fileName} saved successfully.`);
+        console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
     } catch (error) {
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 function loadAllNotes() {
