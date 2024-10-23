@@ -2063,8 +2063,9 @@ try {
 
     console.log('Overview and key points generation complete.');
 
-    // Save to Firestore after the progress completes
-    await saveToFirestore2(file.name, overview, keyPoints);
+    const questions = await generateQuestions(keyPoints); // Generate questions
+
+    await saveToFirestore2(fileName, overview, keyPoints, questions); // Save everything
     console.log('PDF overview and key points saved to Firestore.');
 
     closePdfUploadModal();
@@ -2490,14 +2491,15 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                    // Update the display for estimated time remaining
-                    if (estimatedTimeDisplay) {
-                        const minutes = Math.floor(remainingTime / 60000); // Get minutes
-                        const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
+// Update the display for estimated time remaining
+if (estimatedTimeDisplay) {
+    const minutes = Math.floor(remainingTime / 60000); // Get minutes
+    const seconds = Math.floor((remainingTime % 60000) / 1000); // Get remaining seconds
 
-                        const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
-                    }
+    const formattedRemainingTime = `${minutes}m ${seconds}s`; // Format as "Xm Ys"
+    estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
+}
+
 
                     break; // Exit retry loop after successful response
 
@@ -2530,26 +2532,18 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
     // Combine summaries and limit overview to a maximum of 4 sentences
     const combinedOverview = summaries.join(' ');
-    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
+    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
 
-    const finalSummary = {
-        overview: overviewSentences,
+    return {
+        overview: overviewSentences, // Final overview limited to 4 sentences
         keyPoints
     };
-
-    // Call the generateQuestions function and log the questions to the console
-    await generateQuestions(finalSummary.keyPoints);
-
-    return finalSummary;
 }
 
 
-
-
-let generatedQuestions = []; // Store generated questions here
-
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
+    let generatedQuestions = [];
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
@@ -2588,13 +2582,10 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-
                 // Log the entire response to inspect its structure
                 console.log(`Question ${i + 1}:\n`, data);
-
-                // Store the question in the array
-                generatedQuestions.push(data[0]);
-
+                // Store the generated question in the array
+                generatedQuestions.push(data[0]); // Assuming `data[0]` contains the question
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2603,23 +2594,14 @@ Format:
             console.error('Error with Hugging Face API:', error);
         }
     }
+
+    return generatedQuestions; // Return the array of generated questions
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// Function to save overview and key points to Firestore
-async function saveToFirestore2(fileName, overview, keyPoints) {
+// Function to save overview, key points, and generated questions to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints, questions) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2633,13 +2615,15 @@ async function saveToFirestore2(fileName, overview, keyPoints) {
             fileName: fileName,           // Store the file name
             overview: overview,           // Store the generated overview
             keyPoints: keyPoints,         // Store the array of key points
+            questions: questions,         // Store the generated questions
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`Overview and key points for ${fileName} saved successfully.`);
+        console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
     } catch (error) {
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 function loadAllNotes() {
