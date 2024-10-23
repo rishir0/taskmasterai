@@ -2120,9 +2120,11 @@ try {
             // Generate questions based on key points
             const questions = await generateQuestions(keyPoints);
             console.log('Generated Questions:', questions);
+            const flattenedQuestions = flattenQuestions(questionsGenerated);
+
 
             // Save overview, key points, and questions to Firestore
-            await saveToFirestore2(file.name, overview, keyPoints, questions);
+            await saveToFirestore2(file.name, overview, keyPoints, flattenedQuestions);
             console.log('Overview, key points, and questions saved to Firestore.');
 
             closePdfUploadModal();
@@ -2694,33 +2696,31 @@ Format:
 function flattenQuestions(questions) {
     return questions.map(q => {
         // Initialize empty strings for safety
-        const questionText = q.Question || "";
-        const choicesText = q.Choices || "";
-        const correctAnswerText = q['Correct Answer'] || "";
-
-        // Regular expressions to extract the required data
-        const questionMatch = questionText.match(/Question:\s*(.*)/);
-        const choicesMatch = choicesText.match(/Choices:\s*((?:\d+\.\s.*\n?)+)/);
-        const correctAnswerMatch = correctAnswerText.match(/Correct Answer:\s*(\d+)/);
+        const questionText = q.question || ""; // Updated to match the output from generateQuestions
+        const choicesText = q.choices || [];
+        const correctAnswerText = q.correctAnswer || "";
 
         // Extract and clean the question
-        const question = questionMatch ? questionMatch[1].trim() : "No question provided";
+        const question = questionText.trim() || "No question provided";
 
         // Extract and clean the choices
-        const choices = choicesMatch ? choicesMatch[1].split('\n').map(choice => choice.trim()) : ["No option", "No option", "No option", "No option"];
+        const cleanedChoices = Array.isArray(choicesText) && choicesText.length > 0
+            ? choicesText.map(choice => choice.trim())
+            : ["No option", "No option", "No option", "No option"];
         
-        // Get only the first 4 choices
-        const cleanedChoices = choices.slice(0, 4).map(choice => {
-            const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
-            return cleanChoice || "No option"; // Fallback if choice is empty
+        // Get only the first 4 choices if there are more than 4
+        const finalChoices = cleanedChoices.slice(0, 4).map(choice => {
+            return choice || "No option"; // Fallback if choice is empty
         });
 
-        // Extract correct answer
-        const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1; // Default to 1 if not found
+        // Ensure correct answer is an integer between 1 and 4
+        const correctAnswer = Number.isInteger(correctAnswerText) && correctAnswerText >= 1 && correctAnswerText <= 4
+            ? correctAnswerText
+            : 1; // Default to 1 if not valid
 
         return {
             question: question,
-            choices: cleanedChoices,
+            choices: finalChoices,
             correctAnswer: correctAnswer
         };
     });
