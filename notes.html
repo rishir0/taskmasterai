@@ -1496,43 +1496,59 @@ textarea::placeholder {
 }
 
 
-/* Quiz Options */
+/* Modal Content with ID */
+#QuizModalContent {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 40px;
+    border-radius: 10px;
+    width: 70%; /* Increased modal width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* Close button in the top-right corner */
+.quiz-button-close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.quiz-button-close:hover {
+    color: #999;
+}
+
+/* Quiz Options arranged vertically */
 .quiz-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
 }
 
 /* Card styling */
 .quiz-card {
-    padding: 20px;
-    background-color: var(--card0bg, #e7f1ff); /* Default color, change via --card0bg */
-    border-radius: 8px;
+    padding: 30px;
+    background-color: var(--card-bg, #e7f1ff); /* Default color is set here */
+    border-radius: 10px;
     text-align: center;
     font-weight: bold;
+    font-size: 24px; /* Increased font size */
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for card effect */
 }
 
 /* Hover effect for cards */
 .quiz-card:hover {
     background-color: #d1e7ff;
-}
-
-/* Button styling */
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #45a049;
 }
 
 
@@ -1796,7 +1812,8 @@ button:hover {
 
 <!-- Quiz Modal -->
 <div class="modal" id="QuizModal">
-    <div class="modal-content">
+    <div class="modal-content" id="QuizModalContent">
+        <button class="quiz-button-close" onclick="closeQuizModal()">X</button>
         <h6>Quiz Question</h6>
         <p id="quiz-question">What is the question?</p>
 
@@ -1806,10 +1823,9 @@ button:hover {
             <div class="quiz-card" id="optionC">C</div>
             <div class="quiz-card" id="optionD">D</div>
         </div>
-
-        <button onclick="closeQuizModal()">Close</button>
     </div>
 </div>
+
 
 
 <!-- Modal 3: Personal Note Modal -->
