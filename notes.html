@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2601,6 +2602,7 @@ if (estimatedTimeDisplay) {
 
 
 
+// Updated generateQuestions to return questions array
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
     const questions = [];
@@ -2640,43 +2642,37 @@ Format:
                 })
             });
 
-            // Check if the response is valid
             if (response.ok) {
                 const data = await response.json();
+                console.log(`Generated Question ${i + 1}:\n`, data);
 
-                // Ensure the response contains a valid 'generated_text' property
-                const responseText = data && data.generated_text ? data.generated_text : null;
+                // Ensure data is a string; if not, convert it to string
+                const responseText = typeof data === 'string' ? data : JSON.stringify(data);
 
-                if (responseText) {
-                    console.log(`Generated Question ${i + 1}:\n`, responseText);
+                // Extract the relevant fields consistently
+                const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1] || "No question provided";
+                const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
+                const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1] || "1"; // Default to 1 if not found
 
-                    // Extract the relevant fields consistently using regex
-                    const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1] || "No question provided";
-                    const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
-                    const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1] || "1"; // Default to 1 if not found
+                // Parse the choices and ensure proper extraction
+                const choices = choicesText.split('\n').map(choice => {
+                    const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
+                    return cleanChoice || "No option"; // Fallback if choice is empty
+                }).slice(0, 4); // Get only the first 4 choices
 
-                    // Parse the choices and ensure proper extraction
-                    const choices = choicesText.split('\n').map(choice => {
-                        const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
-                        return cleanChoice || "No option"; // Fallback if choice is empty
-                    }).slice(0, 4); // Get only the first 4 choices
-
-                    // Ensure the correct answer is a valid number
-                    const correctAnswer = parseInt(correctAnswerText);
-                    if (isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
-                        console.error('Invalid correct answer:', correctAnswerText);
-                        continue; // Skip this question if the correct answer is invalid
-                    }
-
-                    // Push the question to the questions array
-                    questions.push({
-                        question: questionText.trim(),
-                        choices: choices,
-                        correctAnswer: correctAnswer
-                    });
-                } else {
-                    console.error('Invalid response format from API:', data);
+                // Ensure the correct answer is a single number
+                const correctAnswer = parseInt(correctAnswerText);
+                if (isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
+                    console.error('Invalid correct answer:', correctAnswerText);
+                    continue; // Skip this question if the correct answer is invalid
                 }
+
+                // Push only the necessary details to the questions array
+                questions.push({
+                    question: questionText.trim(),
+                    choices: choices,
+                    correctAnswer: correctAnswer
+                });
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2697,39 +2693,39 @@ Format:
 
 
 
-
-
-
-
-
 // Clean up and flatten questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
-        // Clean and extract the question text
-        const questionText = (q.question || "").trim(); // Ensure it's a string and trim whitespace
-        const cleanedQuestion = questionText || "No question provided"; // Fallback if empty
+        // Initialize empty strings for safety
+        const questionText = q.question || ""; // Updated to match the output from generateQuestions
+        const choicesText = q.choices || [];
+        const correctAnswerText = q.correctAnswer || "";
 
-        // Clean and extract the choices
-        const choicesText = Array.isArray(q.choices) ? q.choices : []; // Ensure it's an array
-        const cleanedChoices = choicesText.map(choice => (choice || "No option").trim()); // Clean and fallback for each choice
+        // Extract and clean the question
+        const question = questionText.trim() || "No question provided";
 
-        // Get only the first 4 choices (if more than 4 exist)
-        const finalChoices = cleanedChoices.slice(0, 4).map(choice => choice || "No option"); // Ensure every choice is valid
+        // Extract and clean the choices
+        const cleanedChoices = Array.isArray(choicesText) && choicesText.length > 0
+            ? choicesText.map(choice => choice.trim())
+            : ["No option", "No option", "No option", "No option"];
+        
+        // Get only the first 4 choices if there are more than 4
+        const finalChoices = cleanedChoices.slice(0, 4).map(choice => {
+            return choice || "No option"; // Fallback if choice is empty
+        });
 
-        // Ensure the correct answer is an integer between 1 and 4
-        const correctAnswer = Number.isInteger(q.correctAnswer) && q.correctAnswer >= 1 && q.correctAnswer <= 4
-            ? q.correctAnswer
-            : 1; // Default to 1 if invalid
+        // Ensure correct answer is an integer between 1 and 4
+        const correctAnswer = Number.isInteger(correctAnswerText) && correctAnswerText >= 1 && correctAnswerText <= 4
+            ? correctAnswerText
+            : 1; // Default to 1 if not valid
 
-        // Return the cleaned up and flattened question object
         return {
-            question: cleanedQuestion,      // Cleaned question text
-            choices: finalChoices,          // Cleaned and limited to 4 choices
-            correctAnswer: correctAnswer    // Correct answer is already handled correctly
+            question: question,
+            choices: finalChoices,
+            correctAnswer: correctAnswer
         };
     });
 }
-
 
 
 
