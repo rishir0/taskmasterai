@@ -2485,9 +2485,10 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
     // Now pass the key points to the hidden chatbot
     const keyPointsText = keyPoints.join(' ');
-    
-    console.log('Generated Key Points:', keyPointsText); // Log the key points
-    askChatbotToGenerateQuestions(keyPointsText); // Pass key points to the chatbot
+    console.log('Key Points generated:', keyPointsText);
+
+    // Send the key points to the chatbot to generate questions
+    askChatbotToGenerateQuestions(keyPointsText);
 
     return {
         overview: overviewSentences,
@@ -2495,12 +2496,11 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     };
 }
 
-
 function askChatbotToGenerateQuestions(keyPoints) {
     const chatbotIframe = document.querySelector('.chatbot-iframe');
     const prompt = `Generate 5 multiple choice questions with 3 incorrect answers and 1 correct answer from the following text: ${keyPoints}`;
     
-    console.log('Sending prompt to chatbot:', prompt); // Log the prompt
+    console.log('Sending prompt to chatbot:', prompt);
 
     if (chatbotIframe && chatbotIframe.contentWindow) {
         chatbotIframe.contentWindow.postMessage({ prompt }, 'https://www.chatbase.co/chatbot-iframe/vW6F6qkbplgn0Y-JOy8qU');
@@ -2510,12 +2510,13 @@ function askChatbotToGenerateQuestions(keyPoints) {
 
     window.addEventListener('message', function(event) {
         if (event.origin === 'https://www.chatbase.co') {
-            console.log('Chatbot response:', event.data); // Log the response
+            console.log('Chatbot response:', event.data); // Log the response from the chatbot
         } else {
             console.error("Received message from an unknown origin:", event.origin);
         }
     });
 }
+
 
 
 
