@@ -2480,68 +2480,43 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
     // Combine summaries and limit overview to a maximum of 4 sentences
     const combinedOverview = summaries.join(' ');
-    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. '); // Limit to 4 sentences
+    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
 
-// Generate the final summary object
-const finalSummary = {
-    overview: overviewSentences, // Final overview limited to 4 sentences
-    keyPoints
-};
+    const finalSummary = {
+        overview: overviewSentences,
+        keyPoints
+    };
 
-// Call the generateQuestions function after generating the summary and key points
-const generatedQuestions = await generateQuestions(finalSummary.keyPoints);
+    // Call the generateQuestions function and log the questions to the console
+    await generateQuestions(finalSummary.keyPoints);
 
-// Log the generated questions and summary
-console.log("Generated Questions:", generatedQuestions);
-
-return finalSummary;
-
+    return finalSummary;
 }
-
 
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
-    const aimlApiKey = '18bf6c73fd634e52842993e2db6b6499';
 
     for (let i = 0; i < maxQuestions; i++) {
         const keyPoint = keyPoints[i];
 
         // Prepare the prompt to generate a multiple-choice question
-        const prompt = `
-        Create a multiple-choice question from the following key point:
-
-        Key Point: "${keyPoint}"
-
-        Format:
-        - Question:
-        - Choices:
-          1. (correct answer)
-          2. (incorrect answer)
-          3. (incorrect answer)
-          4. (incorrect answer)
-        - Correct Answer: (number of the correct answer)
-        `;
+        const prompt = `Create a multiple-choice question from the following key point:\n\nKey Point: "${keyPoint}"\n\nFormat:\n- Question:\n- Choices:\n  1. (correct answer)\n  2. (incorrect answer)\n  3. (incorrect answer)\n  4. (incorrect answer)\n- Correct Answer: (number of the correct answer)`;
 
         try {
-            // Call the AIML API
-            const response = await fetch('https://aimlapi.com/api/generate', {
+            const response = await fetch('http://localhost:3000/api/generate', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${aimlApiKey}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    prompt: prompt,
-                    max_tokens: 150,
-                    temperature: 0.7,
-                    n: 1
+                    prompt: prompt
                 })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                const question = data.result.trim(); // Assuming 'result' is where the question is returned
-                console.log(`Question ${i + 1}:\n${question}\n`); // Log the question to the console
+                const question = data.result.trim(); // Assuming 'result' contains the generated question
+                console.log(`Question ${i + 1}: ${question}`); // Log each question to the console
             } else {
                 console.error('Error generating question:', response.statusText);
             }
@@ -2550,6 +2525,7 @@ async function generateQuestions(keyPoints) {
         }
     }
 }
+
 
 
 
