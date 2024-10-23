@@ -2120,7 +2120,7 @@ try {
             // Generate questions based on key points
             const questions = await generateQuestions(keyPoints);
             console.log('Generated Questions:', questions);
-            const flattenedQuestions = flattenQuestions(questionsGenerated);
+            const flattenedQuestions = flattenQuestions(questions);
 
 
             // Save overview, key points, and questions to Firestore
