@@ -2546,7 +2546,8 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 
 
-// Call this function inside your generateQuestions to display each question
+let generatedQuestions = []; // Store generated questions here
+
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
@@ -2587,23 +2588,12 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                
-                // Extract the question, choices, and correct answer from the API response
-                const generatedText = data[0].generated_text.split('\n');
-                const question = generatedText[0].replace('Question: ', '').trim();
-                const choices = [
-                    generatedText[1].replace('1. ', '').trim(),
-                    generatedText[2].replace('2. ', '').trim(),
-                    generatedText[3].replace('3. ', '').trim(),
-                    generatedText[4].replace('4. ', '').trim(),
-                ];
-                const correctAnswer = generatedText[5].replace('Correct Answer: ', '').trim();
 
-                // Log the data (optional)
-                console.log(`Question ${i + 1}:\n`, question, choices, correctAnswer);
-                
-                // Display the question in the modal
-                openQuizModal(question, choices, correctAnswer);
+                // Log the entire response to inspect its structure
+                console.log(`Question ${i + 1}:\n`, data);
+
+                // Store the question in the array
+                generatedQuestions.push(data[0]);
 
             } else {
                 const errorDetails = await response.json();
@@ -2990,7 +2980,7 @@ function loadGeneratedPDFs() {
                             <span>AI Generated</span>
                         </div>
 
-<div class="quiz-btn" onclick="openQuizModal()">
+<div class="quiz-btn" onclick="openQuizModal(generatedQuestions[0])"
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3675,26 +3665,26 @@ function showError() {
 
 
 // Function to open the modal
-function openQuizModal(question, choices, correctAnswer) {
+function openQuizModal(questionData) {
+    if (!questionData) {
+        console.error('No question data provided');
+        return;
+    }
+
     const modal = document.getElementById("questionModal");
-    const questionTitle = document.getElementById("questionTitle");
     const questionText = document.getElementById("questionText");
     const choiceA = document.getElementById("choiceA");
     const choiceB = document.getElementById("choiceB");
     const choiceC = document.getElementById("choiceC");
     const choiceD = document.getElementById("choiceD");
     const correctAnswerText = document.getElementById("correctAnswerText");
-    const correctAnswerElem = document.getElementById("correctAnswer");
 
-    // Set question and choices
-    questionText.innerText = question;
-    choiceA.innerText = choices[0];
-    choiceB.innerText = choices[1];
-    choiceC.innerText = choices[2];
-    choiceD.innerText = choices[3];
-
-    // Store correct answer (hidden initially)
-    correctAnswerText.innerText = correctAnswer;
+    questionText.innerText = questionData.Question;
+    choiceA.innerText = questionData.Choices[0];
+    choiceB.innerText = questionData.Choices[1];
+    choiceC.innerText = questionData.Choices[2];
+    choiceD.innerText = questionData.Choices[3];
+    correctAnswerText.innerText = questionData.CorrectAnswer;
 
     // Display the modal
     modal.style.display = "block";
@@ -3711,6 +3701,7 @@ function openQuizModal(question, choices, correctAnswer) {
         }
     };
 }
+
 
 
 
