@@ -2062,9 +2062,7 @@ try {
         const { overview, keyPoints } = await generateSummary(textContent);
         console.log('Overview and key points generation complete.');
 
-        // Generate questions
-        const { questions } = await generateQuestions(keyPoints);
-        console.log('Questions generation complete.');
+
 
         // Save everything to Firestore
         await saveToFirestore2(fileName, overview, keyPoints, questions);
