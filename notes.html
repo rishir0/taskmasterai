@@ -2645,23 +2645,30 @@ Format:
 
                 // Ensure data is a string; if not, convert it to string
                 const responseText = typeof data === 'string' ? data : JSON.stringify(data);
-                
+
                 // Extract the relevant fields consistently
                 const questionText = (responseText.match(/- Question:\s*(.*?)(?=\n- Choices:)/s) || [])[1] || "No question provided";
                 const choicesText = (responseText.match(/- Choices:\s*((?:\d+\.\s.*\n?)+)/s) || [])[1] || "";
                 const correctAnswerText = (responseText.match(/- Correct Answer:\s*(\d+)/) || [])[1] || "1"; // Default to 1 if not found
 
-                // Parse the choices
+                // Parse the choices and ensure proper extraction
                 const choices = choicesText.split('\n').map(choice => {
                     const cleanChoice = choice.replace(/^\d+\.\s*/, '').trim(); // Remove numbering
                     return cleanChoice || "No option"; // Fallback if choice is empty
                 }).slice(0, 4); // Get only the first 4 choices
 
+                // Ensure the correct answer is a single number
+                const correctAnswer = parseInt(correctAnswerText);
+                if (isNaN(correctAnswer) || correctAnswer < 1 || correctAnswer > 4) {
+                    console.error('Invalid correct answer:', correctAnswerText);
+                    continue; // Skip this question if the correct answer is invalid
+                }
+
                 // Push only the necessary details to the questions array
                 questions.push({
                     question: questionText.trim(),
                     choices: choices,
-                    correctAnswer: parseInt(correctAnswerText)
+                    correctAnswer: correctAnswer
                 });
             } else {
                 const errorDetails = await response.json();
@@ -2674,6 +2681,7 @@ Format:
 
     return questions; // Return the array of questions
 }
+
 
 
 
