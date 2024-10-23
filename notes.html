@@ -3730,29 +3730,25 @@ function showError() {
 </script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const modal = document.getElementById('quiz-modal');
-      
-      // Function to open the quiz modal
-      function openQuizModal() {
-        modal.style.display = 'flex';
+    // Get the modal element
+    const modal = document.getElementById('quiz-modal');
+
+    // Function to open the quiz modal
+    function openQuizModal() {
+      modal.style.display = 'flex';
+    }
+
+    // Function to close the quiz modal
+    function closeQuizModal() {
+      modal.style.display = 'none';
+    }
+
+    // Close the modal if the user clicks anywhere outside the modal content
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeQuizModal();
       }
-
-      // Function to close the quiz modal
-      function closeQuizModal() {
-        modal.style.display = 'none';
-      }
-
-      // Assign openQuizModal to the button click
-      document.querySelector('.quiz-btn').onclick = openQuizModal;
-
-      // Close the modal if the user clicks outside the modal content
-      window.onclick = function(event) {
-        if (event.target === modal) {
-          closeQuizModal();
-        }
-      };
-    });
+    };
   </script>
 
 
