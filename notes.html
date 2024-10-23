@@ -2493,6 +2493,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     return finalSummary;
 }
 
+// Hugging Face API setup
+const huggingFaceApiKey = "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";
+
 async function generateQuestions(keyPoints) {
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
 
@@ -2536,12 +2539,8 @@ Format:
             if (response.ok) {
                 const data = await response.json();
                 
-                // Log the entire response to inspect its structure
-                console.log('API Response:', data);
-
-                // Ensure you're accessing the correct property for the generated output
-                const question = data.generated_text.trim(); // Assuming 'generated_text' contains the generated question
-                console.log(`Question ${i + 1}:\n${question}\n`); // Log each question to the console
+                // Log the entire API response for each question
+                console.log(`Question ${i + 1}:\n`, data); // Log the full response to the console
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2551,6 +2550,7 @@ Format:
         }
     }
 }
+
 
 
 
