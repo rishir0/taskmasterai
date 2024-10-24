@@ -2669,40 +2669,18 @@ Format:
 
 
 
-// Clean up and flatten questions array
+// Function to flatten the questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
-        const generatedText = q.generatedText || ""; // Access raw generated text
-
-        // Extracting question and choices from generatedText
-        const questionMatch = generatedText.match(/Question:\s*(.*?)\n\s*- Choices:/);
-        const choicesMatch = generatedText.match(/- Choices:\s*((?:\s*\d+\.\s.*?)+)/);
-        const correctAnswerMatch = generatedText.match(/The required format of the answer is:\s*(\d)/);
-
-        // Clean and assign values
-        const question = questionMatch ? questionMatch[1].trim() : "No question provided";
-
-        const choicesText = choicesMatch ? choicesMatch[1].trim() : "";
-        const choicesArray = choicesText.split('\n').map(choice => choice.trim()).slice(0, 4);
-
-        // Ensure choices array has exactly 4 elements
-        const finalChoices = choicesArray.length >= 4 ? choicesArray : Array(4).fill("No option");
-
-        // Get the correct answer
-        const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1; // Default to 1 if not found
-
-        // Ensure correct answer is between 1 and 4
-        const validCorrectAnswer = (correctAnswer >= 1 && correctAnswer <= 4) ? correctAnswer : 1;
-
+        // Return the entire question object without nested arrays
         return {
-            question: question,
-            choices: finalChoices,
-            correctAnswer: validCorrectAnswer
+            generatedText: q.generatedText, // Assuming this is the full response
+            // Add any other properties you need, but avoid nested arrays
         };
     });
 }
 
-// Function to save overview, key points, and raw questions to Firestore
+// Update saveToFirestore2 to use the flattened questions
 async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
@@ -2711,13 +2689,16 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
     }
 
     try {
+        // Flatten the rawGeneratedTexts to avoid nested arrays
+        const flattenedQuestions = flattenQuestions(rawGeneratedTexts);
+
         // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
-            fileName: fileName,             // Store the file name
-            overview: overview,             // Store the generated overview
-            keyPoints: keyPoints,           // Store the array of key points
-            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts (full responses)
+            fileName: fileName,              // Store the file name
+            overview: overview,              // Store the generated overview
+            keyPoints: keyPoints,            // Store the array of key points
+            rawQuestions: flattenedQuestions, // Store the flattened questions
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
         console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
@@ -2725,6 +2706,7 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 
