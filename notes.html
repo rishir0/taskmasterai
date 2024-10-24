@@ -2113,18 +2113,20 @@ async function handleFileUpload(file) {
 
 // Generate overview and key points with real-time progress bar update
 try {
-            // Generate overview and key points
-            const { overview, keyPoints } = await generateSummary(textContent);
-            console.log('Overview and key points generation complete.');
+    // Generate overview and key points
+    const { overview, keyPoints } = await generateSummary(textContent);
+    console.log('Overview and key points generation complete.');
 
-            // Generate questions based on key points
-            const questions = await generateQuestions(keyPoints);
-            console.log('Generated Questions:', questions);
+    // Generate questions based on key points
+    const questions = await generateQuestions(keyPoints);
+    console.log('Generated Questions:', questions);
 
-            const rawGeneratedText = data.generated_text; // Assuming this is your raw text from the API
-            // Save overview, key points, and questions to Firestore
-            await saveToFirestore2(file.name, overview, keyPoints, rawGeneratedText);
-            console.log('Overview, key points, and questions saved to Firestore.');
+    // Extract the raw generated texts from each question
+    const rawGeneratedTexts = questions.map(q => q.generatedText);
+
+    // Save overview, key points, and raw generated questions to Firestore
+    await saveToFirestore2(file.name, overview, keyPoints, rawGeneratedTexts);
+    console.log('Overview, key points, and questions saved to Firestore.');
 
             closePdfUploadModal();
             loadAllNotes();
@@ -2643,10 +2645,9 @@ Format:
                 const data = await response.json();
                 console.log(`Generated Question ${i + 1}:\n`, data);
 
-                // Directly push the generated text without formatting
-                const generatedText = data.generated_text || ""; // Use empty string if undefined
+                // Directly push the raw generated text without modification
                 questions.push({
-                    generatedText: generatedText.trim() // Trim any excess whitespace
+                    generatedText: data.generated_text
                 });
             } else {
                 const errorDetails = await response.json();
@@ -2659,6 +2660,7 @@ Format:
 
     return questions; // Return the array of questions
 }
+
 
 
 
@@ -2702,8 +2704,8 @@ function flattenQuestions(questions) {
     });
 }
 
-// Function to save overview, key points, and raw generated text to Firestore
-async function saveToFirestore2(fileName, overview, keyPoints, generatedText) {
+// Function to save overview, key points, and raw questions to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2714,17 +2716,18 @@ async function saveToFirestore2(fileName, overview, keyPoints, generatedText) {
         // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
-            fileName: fileName,           // Store the file name
-            overview: overview,           // Store the generated overview
-            keyPoints: keyPoints,         // Store the array of key points
-            generatedText: generatedText, // Save the raw generated text
+            fileName: fileName,             // Store the file name
+            overview: overview,             // Store the generated overview
+            keyPoints: keyPoints,           // Store the array of key points
+            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`Overview, key points, and generated text for ${fileName} saved successfully.`);
+        console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
     } catch (error) {
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 
