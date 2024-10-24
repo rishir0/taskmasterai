@@ -2606,9 +2606,6 @@ async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000
     const questions = []; // To store the final questions
     const rawResponses = []; // To store the full raw API responses
 
-    const totalKeyPoints = keyPoints.length; // Total number of key points
-    const startTime = Date.now(); // Capture the start time
-
     for (let i = 0; i < maxQuestions; i++) {
         let keyPoint = keyPoints[i];
         let attempt = 0;
@@ -2647,14 +2644,30 @@ Format:
 
                 if (response.ok) {
                     const result = await response.json();
+
+                    // Log the full raw response to inspect the structure
+                    console.log(`Full response for key point ${i + 1}:`, JSON.stringify(result, null, 2));
+                    
                     rawResponses.push(result); // Save the raw response
 
-                    // Assuming the response contains the formatted question, parse and save the question
+                    // Assume response has a "generated_text" field containing the question, choices, and answer.
+                    const generatedText = result.generated_text || "";
+
+                    // Extract question, choices, and correct answer
+                    const [questionPart, choicesPart] = generatedText.split("Choices:");
+                    const question = questionPart.replace("Question: ", "").trim();
+
+                    const choicesArray = choicesPart.split(/(\d+)\./).slice(1) // Splits into [1, 'Paris', 2, 'London', ...]
+                        .filter((_, idx) => idx % 2 !== 0) // Removes indices, leaving just options
+
+                    const correctAnswerMatch = /Correct Answer: (\d+)/.exec(generatedText);
+                    const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1;
+
                     const generatedQuestion = {
                         keyPoint: keyPoint,
-                        question: result.question,  // Adapt this based on the structure of the response
-                        choices: result.choices,
-                        correctAnswer: result.correctAnswer
+                        question: question,
+                        choices: choicesArray,
+                        correctAnswer: correctAnswer
                     };
 
                     questions.push(generatedQuestion); // Save the generated question
@@ -2693,6 +2706,7 @@ Format:
         rawResponses  // Raw API responses
     };
 }
+
 
 
 
