@@ -2643,12 +2643,21 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(`Generated Question ${i + 1}:\n`, data);
+                
+                // Log the full response to check its structure
+                console.log(`Full response for Question ${i + 1}:`, data);
 
-                // Directly push the raw generated text without modification
-                questions.push({
-                    generatedText: data.generated_text
-                });
+                // Safely access generated_text from the response
+                const generatedText = data?.generated_text;
+
+                if (generatedText) {
+                    // Directly push the raw generated text without modification
+                    questions.push({
+                        generatedText: generatedText
+                    });
+                } else {
+                    console.error(`No generated_text found for Question ${i + 1}`);
+                }
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2660,6 +2669,7 @@ Format:
 
     return questions; // Return the array of questions
 }
+
 
 
 
