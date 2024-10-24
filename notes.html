@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2111,19 +2112,19 @@ async function handleFileUpload(file) {
 
 
 
-// Generate overview and key points with real-time progress bar update
 try {
     // Generate overview and key points
     const { overview, keyPoints } = await generateSummary(textContent);
     console.log('Overview and key points generation complete.');
 
     // Generate questions based on key points
-    const questions = await generateQuestions(keyPoints);
+    const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
     console.log('Generated Questions:', questions);
 
     // Save overview, key points, and raw questions to Firestore
-    await saveToFirestore2(file.name, overview, keyPoints, questions); // Pass questions directly
+   await saveToFirestore2(file.name, overview, keyPoints, questions);
     console.log('Overview, key points, and questions saved to Firestore.');
+    
 
             closePdfUploadModal();
             loadAllNotes();
@@ -2599,12 +2600,18 @@ if (estimatedTimeDisplay) {
 
 
 
-async function generateQuestions(keyPoints) {
+async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000) {
+    console.log('Generating questions...');
     const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
-    const questions = [];
+    const questions = []; // To store the final questions
+    const rawResponses = []; // To store the full raw API responses
+
+    const totalKeyPoints = keyPoints.length; // Total number of key points
+    const startTime = Date.now(); // Capture the start time
 
     for (let i = 0; i < maxQuestions; i++) {
-        const keyPoint = keyPoints[i];
+        let keyPoint = keyPoints[i];
+        let attempt = 0;
 
         const prompt = `
 Create a multiple-choice question based on the following key point:
@@ -2626,36 +2633,65 @@ Format:
 - Correct Answer: 
 `;
 
-        try {
-            const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    inputs: prompt,
-                })
-            });
+        while (attempt < maxRetries) {
+            try {
+                console.log('Sending prompt to Hugging Face API...');
+                const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ inputs: prompt })
+                });
 
-            if (response.ok) {
-                const data = await response.json();
+                if (response.ok) {
+                    const result = await response.json();
+                    rawResponses.push(result); // Save the raw response
 
-                // Log the full response to check its structure
-                console.log(`Full response for Question ${i + 1}:`, data);
+                    // Assuming the response contains the formatted question, parse and save the question
+                    const generatedQuestion = {
+                        keyPoint: keyPoint,
+                        question: result.question,  // Adapt this based on the structure of the response
+                        choices: result.choices,
+                        correctAnswer: result.correctAnswer
+                    };
 
-                // Directly push the full response into the questions array
-                questions.push(data); // Save the entire response object
-            } else {
-                const errorDetails = await response.json();
-                console.error('Error generating question:', errorDetails);
+                    questions.push(generatedQuestion); // Save the generated question
+                    console.log(`Received question for key point ${i + 1}.`);
+                    break; // Exit retry loop after successful response
+
+                } else {
+                    const errorDetails = await response.json();
+                    console.error(`Error generating question for key point ${i + 1}:`, errorDetails);
+
+                    if (errorDetails.error && errorDetails.error.includes('loading')) {
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        await delay(delayInterval); // Wait and retry
+                        attempt++;
+                    } else {
+                        throw new Error(`Error generating question: ${errorDetails.error}`);
+                    }
+                }
+            } catch (error) {
+                console.error(`Failed to generate question for key point ${i + 1}: ${error.message}`);
+                if (attempt < maxRetries - 1) {
+                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
+                    await delay(delayInterval);
+                    attempt++;
+                } else {
+                    throw error;
+                }
             }
-        } catch (error) {
-            console.error('Error with Hugging Face API:', error);
         }
     }
 
-    return questions; // Return the array of questions
+    // Return the questions and the raw API responses
+    console.log('Question generation complete.');
+    return {
+        questions,    // List of questions in structured format
+        rawResponses  // Raw API responses
+    };
 }
 
 
@@ -2669,13 +2705,35 @@ Format:
 
 
 
-// Function to flatten the questions array
+// Clean up and flatten questions array
 function flattenQuestions(questions) {
     return questions.map(q => {
-        // Return the entire question object without nested arrays
+        const generatedText = q.generatedText || ""; // Access raw generated text
+
+        // Extracting question and choices from generatedText
+        const questionMatch = generatedText.match(/Question:\s*(.*?)\n\s*- Choices:/);
+        const choicesMatch = generatedText.match(/- Choices:\s*((?:\s*\d+\.\s.*?)+)/);
+        const correctAnswerMatch = generatedText.match(/The required format of the answer is:\s*(\d)/);
+
+        // Clean and assign values
+        const question = questionMatch ? questionMatch[1].trim() : "No question provided";
+
+        const choicesText = choicesMatch ? choicesMatch[1].trim() : "";
+        const choicesArray = choicesText.split('\n').map(choice => choice.trim()).slice(0, 4);
+
+        // Ensure choices array has exactly 4 elements
+        const finalChoices = choicesArray.length >= 4 ? choicesArray : Array(4).fill("No option");
+
+        // Get the correct answer
+        const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : 1; // Default to 1 if not found
+
+        // Ensure correct answer is between 1 and 4
+        const validCorrectAnswer = (correctAnswer >= 1 && correctAnswer <= 4) ? correctAnswer : 1;
+
         return {
-            generatedText: q.generatedText, // Assuming this is the full response
-            // Add any other properties you need, but avoid nested arrays
+            question: question,
+            choices: finalChoices,
+            correctAnswer: validCorrectAnswer
         };
     });
 }
@@ -2689,16 +2747,13 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
     }
 
     try {
-        // Extract just the generatedText from each question object
-        const questionTexts = rawGeneratedTexts.map(q => q.generatedText);
-
         // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
-            fileName: fileName,              // Store the file name
-            overview: overview,              // Store the generated overview
-            keyPoints: keyPoints,            // Store the array of key points
-            rawQuestions: questionTexts,      // Store the array of generated texts
+            fileName: fileName,             // Store the file name
+            overview: overview,             // Store the generated overview
+            keyPoints: keyPoints,           // Store the array of key points
+            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts (full responses)
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
         console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
@@ -2706,8 +2761,6 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
         console.error("Error saving to Firestore: ", error);
     }
 }
-
-
 
 
 
