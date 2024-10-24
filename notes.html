@@ -2609,6 +2609,7 @@ async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000
     for (let i = 0; i < maxQuestions; i++) {
         let keyPoint = keyPoints[i];
         let attempt = 0;
+        let successful = false; // Track if we successfully parsed the question
 
         const prompt = `
 Create a multiple-choice question based on the following key point:
@@ -2630,9 +2631,9 @@ Format:
 - Correct Answer: 
 `;
 
-        while (attempt < maxRetries) {
+        while (attempt < maxRetries && !successful) {
             try {
-                console.log('Sending prompt to Hugging Face API...');
+                console.log(`Sending prompt to Hugging Face API for key point ${i + 1}...`);
                 const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                     method: 'POST',
                     headers: {
@@ -2651,7 +2652,7 @@ Format:
                     // Handle the case where the response is incomplete or incorrectly formatted
                     if (!generatedText.includes('Question:') || !generatedText.includes('Choices:')) {
                         console.error(`Malformed response for key point ${i + 1}:`, generatedText);
-                        throw new Error(`Incomplete question generation for key point ${i + 1}`);
+                        break; // Skip this key point if it's malformed
                     }
 
                     // Extract question, choices, and correct answer
@@ -2659,7 +2660,7 @@ Format:
 
                     if (!choicesPart) {
                         console.error(`Choices part missing for key point ${i + 1}:`, generatedText);
-                        throw new Error(`Choices missing for key point ${i + 1}`);
+                        break; // Skip this key point if choices are missing
                     }
 
                     const question = questionPart.replace("Question:", "").trim();
@@ -2673,9 +2674,10 @@ Format:
 
                     if (!correctAnswer || choicesArray.length < 4) {
                         console.error(`Failed to parse choices or correct answer for key point ${i + 1}`);
-                        throw new Error(`Failed to parse choices or correct answer for key point ${i + 1}`);
+                        break; // Skip this key point if choices or the correct answer is malformed
                     }
 
+                    // Save the successfully generated question
                     const generatedQuestion = {
                         keyPoint: keyPoint,
                         question: question,
@@ -2683,9 +2685,9 @@ Format:
                         correctAnswer: correctAnswer
                     };
 
-                    questions.push(generatedQuestion); // Save the generated question
-                    console.log(`Received question for key point ${i + 1}.`);
-                    break; // Exit retry loop after successful response
+                    questions.push(generatedQuestion); // Add the generated question to the list
+                    console.log(`Successfully generated question for key point ${i + 1}.`);
+                    successful = true; // Mark this key point as successfully processed
 
                 } else {
                     const errorDetails = await response.json();
@@ -2706,19 +2708,20 @@ Format:
                     await delay(delayInterval);
                     attempt++;
                 } else {
-                    throw error;
+                    break; // Skip this key point if all retries fail
                 }
             }
         }
     }
 
-    // Return the questions and the raw API responses
+    // Return the successfully generated questions and the raw API responses
     console.log('Question generation complete.');
     return {
-        questions,    // List of questions in structured format
-        rawResponses  // Raw API responses
+        questions,    // List of successfully generated questions
+        rawResponses  // Raw API responses (including failed ones)
     };
 }
+
 
 
 
