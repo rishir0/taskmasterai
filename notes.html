@@ -2121,11 +2121,8 @@ try {
     const questions = await generateQuestions(keyPoints);
     console.log('Generated Questions:', questions);
 
-    // Extract the raw generated texts from each question
-    const rawGeneratedTexts = questions.map(q => q.generatedText);
-
-    // Save overview, key points, and raw generated questions to Firestore
-    await saveToFirestore2(file.name, overview, keyPoints, rawGeneratedTexts);
+    // Save overview, key points, and raw questions to Firestore
+    await saveToFirestore2(file.name, overview, keyPoints, questions); // Pass questions directly
     console.log('Overview, key points, and questions saved to Firestore.');
 
             closePdfUploadModal();
@@ -2643,21 +2640,12 @@ Format:
 
             if (response.ok) {
                 const data = await response.json();
-                
+
                 // Log the full response to check its structure
                 console.log(`Full response for Question ${i + 1}:`, data);
 
-                // Safely access generated_text from the response
-                const generatedText = data?.generated_text;
-
-                if (generatedText) {
-                    // Directly push the raw generated text without modification
-                    questions.push({
-                        generatedText: generatedText
-                    });
-                } else {
-                    console.error(`No generated_text found for Question ${i + 1}`);
-                }
+                // Directly push the full response into the questions array
+                questions.push(data); // Save the entire response object
             } else {
                 const errorDetails = await response.json();
                 console.error('Error generating question:', errorDetails);
@@ -2729,7 +2717,7 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
             fileName: fileName,             // Store the file name
             overview: overview,             // Store the generated overview
             keyPoints: keyPoints,           // Store the array of key points
-            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts
+            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts (full responses)
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
         console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
@@ -2737,6 +2725,7 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 
