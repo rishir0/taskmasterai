@@ -2680,7 +2680,7 @@ function flattenQuestions(questions) {
     });
 }
 
-// Update saveToFirestore2 to use the flattened questions
+// Function to save overview, key points, and raw questions to Firestore
 async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
@@ -2689,8 +2689,8 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
     }
 
     try {
-        // Flatten the rawGeneratedTexts to avoid nested arrays
-        const flattenedQuestions = flattenQuestions(rawGeneratedTexts);
+        // Extract just the generatedText from each question object
+        const questionTexts = rawGeneratedTexts.map(q => q.generatedText);
 
         // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
@@ -2698,7 +2698,7 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
             fileName: fileName,              // Store the file name
             overview: overview,              // Store the generated overview
             keyPoints: keyPoints,            // Store the array of key points
-            rawQuestions: flattenedQuestions, // Store the flattened questions
+            rawQuestions: questionTexts,      // Store the array of generated texts
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
         console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
@@ -2706,6 +2706,7 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
         console.error("Error saving to Firestore: ", error);
     }
 }
+
 
 
 
