@@ -2645,7 +2645,7 @@ if (estimatedTimeDisplay) {
 
 async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating questions...');
-    const maxQuestions = Math.min(keyPoints.length, 5); // Limit to max 5 questions
+    const maxQuestions = Math.min(keyPoints.length, 15); // Limit to max 5 questions
     const questions = []; // To store the final questions
     const rawResponses = []; // To store the full raw API responses
 
