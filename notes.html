@@ -2630,6 +2630,7 @@ Correct Answer: (Indicate the correct answer by its letter: A, B, C, or D)
 Important:
 - Ensure there is exactly one correct answer.
 - The question and answer choices should be clearly written and directly related to the key point.
+- Each choice should be on its own line with a newline separating "Answer Choices" and "Correct Answer".
 - Avoid any incomplete or malformed responses. Do not include any additional text or explanations outside the specified format.
 `;
 
@@ -2652,31 +2653,34 @@ Important:
                     const generatedText = result[0]?.generated_text || ""; // Ensure result[0] exists
 
                     // Handle the case where the response is incomplete or incorrectly formatted
-                    if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:')) {
+                    if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:') || !generatedText.includes('Correct Answer:')) {
                         console.error(`Malformed response for key point ${i + 1}:`, generatedText);
                         break; // Skip this key point if it's malformed
                     }
 
-                    // Extract question, choices, and correct answer
-                    const [questionPart, choicesPart] = generatedText.split("Answer Choices:");
+                    // Extract question and answer choices parts
+                    const questionPart = generatedText.split("Answer Choices:")[0].replace("Question:", "").trim();
+                    const choicesPart = generatedText.split("Answer Choices:")[1].split("Correct Answer:")[0].trim();
+                    const correctAnswerText = generatedText.split("Correct Answer:")[1]?.trim();
 
-                    if (!choicesPart) {
-                        console.error(`Choices part missing for key point ${i + 1}:`, generatedText);
-                        break; // Skip this key point if choices are missing
+                    // Parse the question
+                    const question = questionPart.trim();
+
+                    // Split and clean up choices, ensuring no extra text
+                    const choicesArray = choicesPart.split(/^[A-D]\./m).slice(1).map(choice => choice.trim());
+
+                    // Ensure choices array has exactly 4 options
+                    if (choicesArray.length !== 4) {
+                        console.error(`Failed to parse exactly 4 choices for key point ${i + 1}`);
+                        break; // Skip if we do not have exactly 4 choices
                     }
 
-                    const question = questionPart.replace("Question:", "").trim();
+                    // Parse the correct answer letter
+                    const correctAnswer = correctAnswerText && /^[A-D]$/.test(correctAnswerText) ? correctAnswerText : null;
 
-                    const choicesArray = choicesPart.split(/([A-D])\./).slice(1) // Splits into ['A', 'Choice A', 'B', 'Choice B', ...]
-                        .filter((_, idx) => idx % 2 !== 0) // Removes indices, leaving just options
-
-                    // Find correct answer from the generated text
-                    const correctAnswerMatch = /Correct Answer: ([A-D])/.exec(generatedText);
-                    const correctAnswer = correctAnswerMatch ? correctAnswerMatch[1] : null;
-
-                    if (!correctAnswer || choicesArray.length < 4) {
-                        console.error(`Failed to parse choices or correct answer for key point ${i + 1}`);
-                        break; // Skip this key point if choices or the correct answer is malformed
+                    if (!correctAnswer) {
+                        console.error(`Failed to parse correct answer for key point ${i + 1}`);
+                        break; // Skip this key point if the correct answer is malformed
                     }
 
                     // Save the successfully generated question
@@ -2723,6 +2727,7 @@ Important:
         rawResponses  // Raw API responses (including failed ones)
     };
 }
+
 
 
 
