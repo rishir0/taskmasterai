@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1496,14 +1497,14 @@ textarea::placeholder {
 }
 
 
-/* Modal Content with ID, black background and white text */
+/* Modal Content with ID, black background, wider and white text */
 #QuizModalContent {
     background-color: #000; /* Set modal background to black */
     color: #fff; /* Set text color to white */
     margin: 5% auto;
     padding: 40px;
     border-radius: 10px;
-    width: 90%; /* Increase modal width */
+    width: 250%; /* Increase modal width to 90% */
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
     position: relative;
 }
@@ -1543,23 +1544,18 @@ textarea::placeholder {
     align-items: flex-start; /* Align options to the left */
 }
 
-/* Card styling - Wider cards, default font size */
+/* Card styling - Wider cards */
 .quiz-card {
     padding: 30px;
     background-color: var(--card-bg, #1a1a1a); /* Darker card background */
     border-radius: 10px;
     text-align: left; /* Align text inside the card to the left */
-    font-size: 24px; /* Initial font size for the options */
+    font-size: 24px; /* Increased font size for options */
     cursor: pointer;
-    transition: background-color 0.3s ease, font-size 0.3s ease;
+    transition: background-color 0.3s ease;
     color: #fff; /* White text inside cards */
     box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); /* White shadow for contrast */
-    width: 100%; /* Set the card to take full width */
-}
-
-/* Hover effect for cards */
-.quiz-card:hover {
-    background-color: #333; /* Darker hover effect */
+    width: 200%; /* Set the card to take full width */
 }
 
 /* Styling for the Choice Letter (A, B, C, D) */
@@ -1569,23 +1565,16 @@ textarea::placeholder {
     margin-right: 10px; /* Add space between the letter and text */
 }
 
-/* Styling for the Text after A, B, C, D (initially smaller, and can dynamically change) */
+/* Styling for the Text after A, B, C, D (non-bold, smaller) */
 .quiz-option-text {
     font-weight: normal; /* Non-bold text after the letter */
-    font-size: 18px; /* Initial font size for options description */
-    display: inline-block;
-    word-wrap: break-word; /* Break long words */
-    transition: font-size 0.3s ease;
+    font-size: 18px; /* Smaller text for options description */
 }
 
-/* Ensure all options align and wrap when necessary */
-.quiz-card {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
+/* Hover effect for cards */
+.quiz-card:hover {
+    background-color: #333; /* Darker hover effect */
 }
-
 
 
 
@@ -3928,30 +3917,6 @@ function showError() {
     }
 }
 
-function adjustFontSizeForQuizCards() {
-    const cards = document.querySelectorAll('.quiz-card .quiz-option-text');
-    let maxLength = 0;
-
-    // Calculate the longest text length among the options
-    cards.forEach(card => {
-        const textLength = card.textContent.length;
-        if (textLength > maxLength) {
-            maxLength = textLength;
-        }
-    });
-
-    // Adjust font size for all cards based on the longest text
-    cards.forEach(card => {
-        if (maxLength > 50) {
-            card.style.fontSize = '16px'; // Smaller font size for long text
-        } else {
-            card.style.fontSize = '18px'; // Normal font size for shorter text
-        }
-    });
-}
-
-// Call the function after the content is loaded
-window.addEventListener('load', adjustFontSizeForQuizCards);
 
 
 
