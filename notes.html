@@ -1852,8 +1852,12 @@ textarea::placeholder {
             <div class="quiz-card" id="optionC">C</div>
             <div class="quiz-card" id="optionD">D</div>
         </div>
+
+        <!-- Next button, hidden initially -->
+        <button id="next-button" onclick="nextQuestion()" style="display: none; margin-top: 20px;">Next</button>
     </div>
 </div>
+
 
 
 
@@ -3602,6 +3606,9 @@ window.onclick = function(event) {
     }
 }
 
+let currentQuestionIndex = 0; // Track the current question index
+let rawQuestions = []; // Store questions for the current session
+
 // Function to open the Quiz Modal and load questions from Firestore
 async function openQuizModal(pdfId) {
     const userId = firebase.auth().currentUser?.uid;
@@ -3617,52 +3624,12 @@ async function openQuizModal(pdfId) {
         
         if (pdfDoc.exists) {
             const quizData = pdfDoc.data();
-
-            // Assuming rawQuestions contains an array of questions
-            const rawQuestions = quizData.rawQuestions || [];
+            rawQuestions = quizData.rawQuestions || [];
+            currentQuestionIndex = 0; // Reset to the first question
 
             if (rawQuestions.length > 0) {
-                // Parse the first question for display
-                const questionData = rawQuestions[0]; // Get the first question object
-
-                // Extract the question, choices, and correct answer
-                const question = questionData.question;
-                const choices = questionData.choices;
-                const correctAnswer = questionData.correctAnswer; // Correct answer letter (e.g., "B")
-
-                // Populate the modal with the question and choices
-                document.getElementById('quiz-question').textContent = question;
-                document.getElementById('optionA').textContent = "A. " + choices[0];
-                document.getElementById('optionB').textContent = "B. " + choices[1];
-                document.getElementById('optionC').textContent = "C. " + choices[2];
-                document.getElementById('optionD').textContent = "D. " + choices[3];
-
-                // Function to handle option click
-                function handleOptionClick(selectedOption, selectedLetter) {
-                    if (selectedLetter === correctAnswer) {
-                        selectedOption.style.backgroundColor = 'green';
-                    } else {
-                        selectedOption.style.backgroundColor = 'red';
-                    }
-                }
-
-                // Add event listeners for each option
-                document.getElementById('optionA').onclick = function() {
-                    handleOptionClick(this, "A");
-                };
-                document.getElementById('optionB').onclick = function() {
-                    handleOptionClick(this, "B");
-                };
-                document.getElementById('optionC').onclick = function() {
-                    handleOptionClick(this, "C");
-                };
-                document.getElementById('optionD').onclick = function() {
-                    handleOptionClick(this, "D");
-                };
-
-                // Open the modal
-                const modal = document.getElementById("QuizModal");
-                modal.style.display = "block";
+                loadQuestion(currentQuestionIndex); // Load the first question
+                document.getElementById("QuizModal").style.display = "block"; // Show the modal
             } else {
                 console.error("No quiz questions found for this PDF.");
             }
@@ -3674,17 +3641,61 @@ async function openQuizModal(pdfId) {
     }
 }
 
-// Function to close the Quiz Modal
-function closeQuizModal() {
-    const modal = document.getElementById("QuizModal");
-    modal.style.display = "none";
-    
-    // Reset background colors of the quiz options
+// Function to load a question based on the current index
+function loadQuestion(index) {
+    const questionData = rawQuestions[index];
+    const question = questionData.question;
+    const choices = questionData.choices;
+    const correctAnswer = questionData.correctAnswer;
+
+    // Populate the modal with the question and choices
+    document.getElementById('quiz-question').textContent = question;
+    document.getElementById('optionA').textContent = "A. " + choices[0];
+    document.getElementById('optionB').textContent = "B. " + choices[1];
+    document.getElementById('optionC').textContent = "C. " + choices[2];
+    document.getElementById('optionD').textContent = "D. " + choices[3];
+
+    // Reset styles and Next button
     const options = document.querySelectorAll('.quiz-card');
     options.forEach(option => {
         option.style.backgroundColor = ''; // Reset background color
+        option.onclick = () => handleOptionClick(option, option.id.slice(-1)); // Slice to get 'A', 'B', 'C', 'D'
     });
+    document.getElementById('next-button').style.display = 'none';
 }
+
+// Function to handle option clicks and check the answer
+function handleOptionClick(selectedOption, selectedLetter) {
+    const questionData = rawQuestions[currentQuestionIndex];
+    const correctAnswer = questionData.correctAnswer;
+
+    if (selectedLetter === correctAnswer) {
+        selectedOption.style.backgroundColor = 'green';
+        document.getElementById('next-button').style.display = 'block'; // Show Next button on correct answer
+    } else {
+        selectedOption.style.backgroundColor = 'red';
+    }
+}
+
+// Function to handle moving to the next question
+function nextQuestion() {
+    currentQuestionIndex++; // Move to the next question
+
+    if (currentQuestionIndex < rawQuestions.length) {
+        loadQuestion(currentQuestionIndex); // Load the next question
+    } else {
+        closeQuizModal(); // Close the modal if all questions are done
+    }
+}
+
+// Function to close the Quiz Modal and reset
+function closeQuizModal() {
+    document.getElementById("QuizModal").style.display = "none";
+    currentQuestionIndex = 0; // Reset the question index
+}
+
+// Add a Next button in the HTML after quiz options
+
 
 
 
