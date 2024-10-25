@@ -3718,13 +3718,34 @@ function handleOptionClick(selectedOption, selectedLetter) {
     const questionData = rawQuestions[currentQuestionIndex];
     const correctAnswer = questionData.correctAnswer;
 
+    // If the selected answer is correct
     if (selectedLetter === correctAnswer) {
         selectedOption.style.backgroundColor = 'green';
         document.getElementById('next-button').style.display = 'block'; // Show Next button on correct answer
-    } else {
+    } 
+    // If the selected answer is wrong
+    else {
         selectedOption.style.backgroundColor = 'red';
+
+        // Replace the letter (A, B, C, or D) with the SVG, but keep the answer text intact
+        const answerText = selectedOption.textContent.slice(3); // Extract the answer text without 'A. ', 'B. ', etc.
+        
+        selectedOption.innerHTML = `
+        <span class="quiz-letter">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="20" height="20" x="0" y="0" viewBox="0 0 507.2 507.2" style="enable-background:new 0 0 512 512" xml:space="preserve">
+                <g>
+                    <circle cx="253.6" cy="253.6" r="253.6" fill="#f15249"></circle>
+                    <path d="M147.2 368 284 504.8c115.2-13.6 206.4-104 220.8-219.2L367.2 148l-220 220z" fill="#ad0e0e"></path>
+                    <path d="M373.6 309.6c11.2 11.2 11.2 30.4 0 41.6l-22.4 22.4c-11.2 11.2-30.4 11.2-41.6 0l-176-176c-11.2-11.2-11.2-30.4 0-41.6l23.2-23.2c11.2-11.2 30.4-11.2 41.6 0l175.2 176.8z" fill="#ffffff"></path>
+                    <path d="M280.8 216 216 280.8l93.6 92.8c11.2 11.2 30.4 11.2 41.6 0l23.2-23.2c11.2-11.2 11.2-30.4 0-41.6L280.8 216z" fill="#d6d6d6"></path>
+                    <path d="M309.6 133.6c11.2-11.2 30.4-11.2 41.6 0l23.2 23.2c11.2 11.2 11.2 30.4 0 41.6L197.6 373.6c-11.2 11.2-30.4 11.2-41.6 0l-22.4-22.4c-11.2-11.2-11.2-30.4 0-41.6l176-176z" fill="#ffffff"></path>
+                </g>
+            </svg>
+        </span> ${answerText}
+        `;
     }
 }
+
 
 // Function to handle moving to the next question
 function nextQuestion() {
