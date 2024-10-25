@@ -1527,10 +1527,33 @@ textarea::placeholder {
     color: #999;
 }
 
-/* Question text - Bigger and bold */
-.quiz-question {
-    font-size: 32px; /* Bigger font size for question */
-    font-weight: bold; /* Bold text for the question */
+/* Heading text - Quiz Question - Bigger and bolder */
+h6 {
+    font-size: 36px; /* Bigger font size for "Quiz Question" */
+    font-weight: bold; /* Bold text for heading */
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Quiz Question with SVG */
+h6 {
+    display: flex;
+    align-items: center;
+    font-size: 32px; /* Increase font size for the question heading */
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+h6 svg {
+    width: 40px; /* Adjust the width of the SVG */
+    height: 40px; /* Adjust the height of the SVG */
+    margin-right: 10px; /* Add space between the SVG and text */
+}
+
+/* Actual quiz question text - Bigger, but not as big as the heading */
+#quiz-question {
+    font-size: 28px; /* Bigger font size for quiz question */
+    font-weight: bold; /* Bold text for question */
     margin-bottom: 30px; /* Space between question and options */
     text-align: left; /* Align question to the left */
 }
@@ -1550,18 +1573,20 @@ textarea::placeholder {
     background-color: var(--card-bg, #1a1a1a); /* Darker card background */
     border-radius: 10px;
     text-align: left; /* Align text inside the card to the left */
-    font-size: 24px; /* Increased font size for options */
+    font-size: 24px; /* Increased font size for option letters */
     cursor: pointer;
     transition: background-color 0.3s ease;
     color: #fff; /* White text inside cards */
     box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); /* White shadow for contrast */
     width: 100%; /* Set the card to take full width */
+    display: flex; /* Flexbox for letter and text */
+    align-items: center; /* Vertically center letter and text */
 }
 
 /* Styling for the Choice Letter (A, B, C, D) */
 .quiz-option-letter {
     font-weight: bold; /* Bold letter */
-    font-size: 24px; /* Same size as options */
+    font-size: 28px; /* Bigger font size for letters */
     margin-right: 10px; /* Add space between the letter and text */
 }
 
@@ -1576,7 +1601,7 @@ textarea::placeholder {
     background-color: #333; /* Darker hover effect */
 }
 
-
+/* Styling for the Next button */
 #next-button {
     background-color: var(--primary-color, #007bff); /* Primary color or default blue */
     color: #fff; /* White text color */
@@ -1593,6 +1618,7 @@ textarea::placeholder {
 #next-button:hover {
     background-color: #0056b3; /* Darker shade on hover */
 }
+
 
 
 
@@ -1859,7 +1885,15 @@ textarea::placeholder {
 <div class="modal" id="QuizModal">
     <div class="modal-content" id="QuizModalContent">
         <button class="quiz-button-close" onclick="closeQuizModal()">X</button>
-        <h6>Quiz Question</h6>
+
+        <!-- Quiz Question with SVG Icon -->
+        <h6>
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+                <!-- SVG content here -->
+            </svg>
+            Quiz Question
+        </h6>
+
         <p id="quiz-question">What is the question?</p>
 
         <div class="quiz-options">
@@ -1873,6 +1907,7 @@ textarea::placeholder {
         <button id="next-button" onclick="nextQuestion()" style="display: none; margin-top: 20px;">Next</button>
     </div>
 </div>
+
 
 
 
