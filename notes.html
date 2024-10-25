@@ -3147,7 +3147,7 @@ function loadGeneratedPDFs() {
                             <span>AI Generated</span>
                         </div>
 
-<div class="quiz-btn" onclick="openQuizModal()">
+<div class="quiz-btn" onclick="openQuizModal('${pdfId}')">
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3578,18 +3578,61 @@ window.onclick = function(event) {
     }
 }
 
-// Function to open Modal 2
-function openQuizModal() {
-    const modal = document.getElementById("QuizModal");
-    modal.style.display = "block"; // Show modal
+// Function to open the Quiz Modal and load questions from Firestore
+async function openQuizModal(pdfId) {
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    try {
+        // Fetch the quiz data for the specific PDF using the provided pdfId
+        const pdfDoc = await db.collection('generatedpdfs').doc(pdfId).get();
+        
+        if (pdfDoc.exists) {
+            const quizData = pdfDoc.data();
+
+            // Assuming rawQuestions contains an array of questions like the example provided
+            const rawQuestions = quizData.rawQuestions || [];
+
+            if (rawQuestions.length > 0) {
+                // Parse the first question for display (extend logic for multiple questions if needed)
+                const questionData = rawQuestions[0]; // Get the first question object
+
+                // Extract the question and choices
+                const question = questionData.question;
+                const choices = questionData.choices;
+
+                // Populate the modal with the question and choices
+                document.getElementById('quiz-question').textContent = question;
+                document.getElementById('optionA').textContent = "A. " + choices[0];
+                document.getElementById('optionB').textContent = "B. " + choices[1];
+                document.getElementById('optionC').textContent = "C. " + choices[2];
+                document.getElementById('optionD').textContent = "D. " + choices[3];
+
+                // Open the modal
+                const modal = document.getElementById("QuizModal");
+                modal.style.display = "block";
+            } else {
+                console.error("No quiz questions found for this PDF.");
+            }
+        } else {
+            console.error("PDF document not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching quiz data from Firestore: ", error);
+    }
 }
 
-
-// Function to close Modal 2
+// Function to close the Quiz Modal
 function closeQuizModal() {
     const modal = document.getElementById("QuizModal");
-    modal.style.display = "none"; // Hide modal
+    modal.style.display = "none";
 }
+
+
 
 // Close modal if clicking outside the modal content for Modal 2
 window.onclick = function(event) {
