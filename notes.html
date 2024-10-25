@@ -3732,8 +3732,8 @@ function handleOptionClick(selectedOption, selectedLetter) {
 
         // Replace the letter (A, B, C, or D) with the correct answer SVG
         selectedOption.innerHTML = `
-        <div class="quiz-option-content">
-            <span class="quiz-letter">
+        <div class="quiz-option-content" style="display: flex; align-items: center;">
+            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px;">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="34" height="34" x="0" y="0" viewBox="0 0 507.2 507.2" style="enable-background:new 0 0 512 512" xml:space="preserve">
                     <g>
                         <circle cx="253.6" cy="253.6" r="253.6" fill="#32ba7c"></circle>
@@ -3743,7 +3743,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
                     </g>
                 </svg>
             </span>
-            <span class="quiz-option-text">${answerText}</span>
+            <span class="quiz-option-text" style="margin-left: 10px;">${answerText}</span>
         </div>
         `;
         document.getElementById('next-button').style.display = 'block'; // Show Next button on correct answer
@@ -3754,8 +3754,8 @@ function handleOptionClick(selectedOption, selectedLetter) {
 
         // Replace the letter (A, B, C, or D) with the wrong answer SVG
         selectedOption.innerHTML = `
-        <div class="quiz-option-content">
-            <span class="quiz-letter">
+        <div class="quiz-option-content" style="display: flex; align-items: center;">
+            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px;">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="34" height="34" x="0" y="0" viewBox="0 0 507.2 507.2" style="enable-background:new 0 0 512 512" xml:space="preserve">
                     <g>
                         <circle cx="253.6" cy="253.6" r="253.6" fill="#f15249"></circle>
@@ -3766,11 +3766,12 @@ function handleOptionClick(selectedOption, selectedLetter) {
                     </g>
                 </svg>
             </span>
-            <span class="quiz-option-text">${answerText}</span>
+            <span class="quiz-option-text" style="margin-left: 10px;">${answerText}</span>
         </div>
         `;
     }
 }
+
 
 
 
