@@ -2651,6 +2651,7 @@ Important:
                     rawResponses.push(result); // Save the raw response
 
                     const generatedText = result[0]?.generated_text || ""; // Ensure result[0] exists
+                    console.log(`Generated text for key point ${i + 1}:`, generatedText); // Log the generated text
 
                     // Handle the case where the response is incomplete or incorrectly formatted
                     if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:') || !generatedText.includes('Correct Answer:')) {
@@ -2675,11 +2676,12 @@ Important:
                         break; // Skip if we do not have exactly 4 choices
                     }
 
-                    // Parse the correct answer letter
-                    const correctAnswer = correctAnswerText && /^[A-D]$/.test(correctAnswerText) ? correctAnswerText : null;
+                    // Parse the correct answer letter, tolerate extra whitespace or unexpected text
+                    const correctAnswerMatch = correctAnswerText && /^[A-D]/.exec(correctAnswerText);
+                    const correctAnswer = correctAnswerMatch ? correctAnswerMatch[0] : null;
 
                     if (!correctAnswer) {
-                        console.error(`Failed to parse correct answer for key point ${i + 1}`);
+                        console.error(`Failed to parse correct answer for key point ${i + 1}:`, correctAnswerText);
                         break; // Skip this key point if the correct answer is malformed
                     }
 
@@ -2727,6 +2729,7 @@ Important:
         rawResponses  // Raw API responses (including failed ones)
     };
 }
+
 
 
 
