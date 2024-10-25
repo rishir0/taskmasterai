@@ -3618,17 +3618,17 @@ async function openQuizModal(pdfId) {
         if (pdfDoc.exists) {
             const quizData = pdfDoc.data();
 
-            // Assuming rawQuestions contains an array of questions like the example provided
+            // Assuming rawQuestions contains an array of questions
             const rawQuestions = quizData.rawQuestions || [];
 
             if (rawQuestions.length > 0) {
-                // Parse the first question for display (extend logic for multiple questions if needed)
+                // Parse the first question for display
                 const questionData = rawQuestions[0]; // Get the first question object
 
                 // Extract the question, choices, and correct answer
                 const question = questionData.question;
                 const choices = questionData.choices;
-                const correctAnswer = questionData.correctAnswer;
+                const correctAnswer = questionData.correctAnswer; // Correct answer letter (e.g., "B")
 
                 // Populate the modal with the question and choices
                 document.getElementById('quiz-question').textContent = question;
@@ -3638,8 +3638,8 @@ async function openQuizModal(pdfId) {
                 document.getElementById('optionD').textContent = "D. " + choices[3];
 
                 // Function to handle option click
-                function handleOptionClick(selectedOption, optionText) {
-                    if (optionText === correctAnswer) {
+                function handleOptionClick(selectedOption, selectedLetter) {
+                    if (selectedLetter === correctAnswer) {
                         selectedOption.style.backgroundColor = 'green';
                     } else {
                         selectedOption.style.backgroundColor = 'red';
@@ -3648,16 +3648,16 @@ async function openQuizModal(pdfId) {
 
                 // Add event listeners for each option
                 document.getElementById('optionA').onclick = function() {
-                    handleOptionClick(this, choices[0]);
+                    handleOptionClick(this, "A");
                 };
                 document.getElementById('optionB').onclick = function() {
-                    handleOptionClick(this, choices[1]);
+                    handleOptionClick(this, "B");
                 };
                 document.getElementById('optionC').onclick = function() {
-                    handleOptionClick(this, choices[2]);
+                    handleOptionClick(this, "C");
                 };
                 document.getElementById('optionD').onclick = function() {
-                    handleOptionClick(this, choices[3]);
+                    handleOptionClick(this, "D");
                 };
 
                 // Open the modal
@@ -3685,6 +3685,7 @@ function closeQuizModal() {
         option.style.backgroundColor = ''; // Reset background color
     });
 }
+
 
 
 
