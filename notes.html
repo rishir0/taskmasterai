@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2616,19 +2615,22 @@ Create a multiple-choice question based on the following key point:
 
 Key Point: "${keyPoint}"
 
-Please provide:
-1. A clear question.
-2. Four choices (one correct and three incorrect).
-3. The number of the correct answer.
+Please generate the output in this exact format:
 
-Format:
-- Question: 
-- Choices:
-  1. 
-  2. 
-  3. 
-  4. 
-- Correct Answer: 
+Question: (Provide a clear, complete question based on the key point)
+
+Answer Choices:
+A. (Provide the first answer choice)
+B. (Provide the second answer choice)
+C. (Provide the third answer choice)
+D. (Provide the fourth answer choice)
+
+Correct Answer: (Indicate the correct answer by its letter: A, B, C, or D)
+
+Important:
+- Ensure there is exactly one correct answer.
+- The question and answer choices should be clearly written and directly related to the key point.
+- Avoid any incomplete or malformed responses. Do not include any additional text or explanations outside the specified format.
 `;
 
         while (attempt < maxRetries && !successful) {
@@ -2650,13 +2652,13 @@ Format:
                     const generatedText = result[0]?.generated_text || ""; // Ensure result[0] exists
 
                     // Handle the case where the response is incomplete or incorrectly formatted
-                    if (!generatedText.includes('Question:') || !generatedText.includes('Choices:')) {
+                    if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:')) {
                         console.error(`Malformed response for key point ${i + 1}:`, generatedText);
                         break; // Skip this key point if it's malformed
                     }
 
                     // Extract question, choices, and correct answer
-                    const [questionPart, choicesPart] = generatedText.split("Choices:");
+                    const [questionPart, choicesPart] = generatedText.split("Answer Choices:");
 
                     if (!choicesPart) {
                         console.error(`Choices part missing for key point ${i + 1}:`, generatedText);
@@ -2665,12 +2667,12 @@ Format:
 
                     const question = questionPart.replace("Question:", "").trim();
 
-                    const choicesArray = choicesPart.split(/(\d+)\./).slice(1) // Splits into [1, 'Choice 1', 2, 'Choice 2', ...]
+                    const choicesArray = choicesPart.split(/([A-D])\./).slice(1) // Splits into ['A', 'Choice A', 'B', 'Choice B', ...]
                         .filter((_, idx) => idx % 2 !== 0) // Removes indices, leaving just options
 
                     // Find correct answer from the generated text
-                    const correctAnswerMatch = /Correct Answer: (\d+)/.exec(generatedText);
-                    const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1]) : null;
+                    const correctAnswerMatch = /Correct Answer: ([A-D])/.exec(generatedText);
+                    const correctAnswer = correctAnswerMatch ? correctAnswerMatch[1] : null;
 
                     if (!correctAnswer || choicesArray.length < 4) {
                         console.error(`Failed to parse choices or correct answer for key point ${i + 1}`);
@@ -2721,6 +2723,7 @@ Format:
         rawResponses  // Raw API responses (including failed ones)
     };
 }
+
 
 
 
