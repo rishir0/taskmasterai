@@ -3625,9 +3625,10 @@ async function openQuizModal(pdfId) {
                 // Parse the first question for display (extend logic for multiple questions if needed)
                 const questionData = rawQuestions[0]; // Get the first question object
 
-                // Extract the question and choices
+                // Extract the question, choices, and correct answer
                 const question = questionData.question;
                 const choices = questionData.choices;
+                const correctAnswer = questionData.correctAnswer;
 
                 // Populate the modal with the question and choices
                 document.getElementById('quiz-question').textContent = question;
@@ -3635,6 +3636,29 @@ async function openQuizModal(pdfId) {
                 document.getElementById('optionB').textContent = "B. " + choices[1];
                 document.getElementById('optionC').textContent = "C. " + choices[2];
                 document.getElementById('optionD').textContent = "D. " + choices[3];
+
+                // Function to handle option click
+                function handleOptionClick(selectedOption, optionText) {
+                    if (optionText === correctAnswer) {
+                        selectedOption.style.backgroundColor = 'green';
+                    } else {
+                        selectedOption.style.backgroundColor = 'red';
+                    }
+                }
+
+                // Add event listeners for each option
+                document.getElementById('optionA').onclick = function() {
+                    handleOptionClick(this, choices[0]);
+                };
+                document.getElementById('optionB').onclick = function() {
+                    handleOptionClick(this, choices[1]);
+                };
+                document.getElementById('optionC').onclick = function() {
+                    handleOptionClick(this, choices[2]);
+                };
+                document.getElementById('optionD').onclick = function() {
+                    handleOptionClick(this, choices[3]);
+                };
 
                 // Open the modal
                 const modal = document.getElementById("QuizModal");
@@ -3654,6 +3678,12 @@ async function openQuizModal(pdfId) {
 function closeQuizModal() {
     const modal = document.getElementById("QuizModal");
     modal.style.display = "none";
+    
+    // Reset background colors of the quiz options
+    const options = document.querySelectorAll('.quiz-card');
+    options.forEach(option => {
+        option.style.backgroundColor = ''; // Reset background color
+    });
 }
 
 
