@@ -1620,11 +1620,11 @@ h6 svg {
 }
 
 .quiz-letter svg {
-    width: 60px;  /* Increase the size of the SVG */
-    height: 60px; /* Make sure it's the same height */
+    width: 40px;  /* Increase the size of the SVG */
+    height: 40px; /* Make sure it's the same height */
 }
 
-.answer-text {
+.quiz-option-text {
     font-size: 18px; /* Ensure the text is a good size relative to the SVG */
     line-height: 1.5; /* For better vertical alignment with SVG */
 }
@@ -3752,7 +3752,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
                     </g>
                 </svg>
             </span>
-            <span class="answer-text">${answerText}</span>
+            <span class="quiz-option-text">${answerText}</span>
         </div>
         `;
     }
