@@ -1503,12 +1503,10 @@ textarea::placeholder {
     margin: 5% auto;
     padding: 40px;
     border-radius: 10px;
-    width: 200%; /* Make modal wider */
-    max-width: none; /* Remove default max-width restrictions */
+    width: 90vw; /* Set modal width to 90% of viewport width */
+    max-width: 1200px; /* Set a max width for large screens */
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
     position: relative;
-    transform: translateX(-50%); /* Center it horizontally */
-    left: 50%;
 }
 
 /* Close button in the top-right corner */
@@ -1557,7 +1555,7 @@ textarea::placeholder {
     transition: background-color 0.3s ease;
     color: #fff; /* White text inside cards */
     box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); /* White shadow for contrast */
-    width: 50%; /* Set the card to take full width */
+    width: 100%; /* Set the card to take full width */
 }
 
 /* Styling for the Choice Letter (A, B, C, D) */
@@ -1577,6 +1575,7 @@ textarea::placeholder {
 .quiz-card:hover {
     background-color: #333; /* Darker hover effect */
 }
+
 
 
 
