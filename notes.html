@@ -3787,7 +3787,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
     const correctAnswer = questionData.correctAnswer;
 
     // Extract the answer text without the letter (A., B., C., D. with space after)
-    const answerText = selectedOption.textContent.slice(4); 
+    const answerText = selectedOption.textContent.slice(2); 
 
     // If the selected answer is correct
     if (selectedLetter === correctAnswer) {
