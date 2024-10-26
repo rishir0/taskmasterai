@@ -2620,8 +2620,9 @@ function splitTextIntoChunks(text, maxLength = 2000) {
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     const chunks = splitTextIntoChunks(text);
-    const summaries = [];
-    const keyPoints = [];
+    const summaries = []; // Store final summaries
+    const rawResponses = []; // Store raw API responses for debugging
+    const keyPoints = []; // Store extracted key points
     const totalChunks = chunks.length;
     const startTime = Date.now();
 
@@ -2645,10 +2646,11 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     for (let i = 0; i < totalChunks; i++) {
         let chunk = chunks[i];
         let attempt = 0;
+        let successful = false; // Track if parsing is successful for this chunk
 
-        while (attempt < maxRetries) {
+        while (attempt < maxRetries && !successful) {
             try {
-                console.log('Sending chunk to Hugging Face API...');
+                console.log(`Sending prompt to Hugging Face API for chunk ${i + 1}...`);
                 const response = await fetch(modelEndpoint, {
                     method: 'POST',
                     headers: {
@@ -2660,56 +2662,57 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                 if (response.ok) {
                     const result = await response.json();
+                    rawResponses.push(result); // Save raw response
 
-                    // Check if 'summary_text' is present in the response
-                    if (result[0] && result[0].summary_text) {
-                        const summary = result[0].summary_text;
-                        summaries.push(summary);
+                    const summaryText = result[0]?.generated_text || ""; // Ensure result[0] exists
+                    console.log(`Generated text for chunk ${i + 1}:`, summaryText); // Log generated text
 
-                        const sentences = summary.split('. ');
-                        keyPoints.push(...sentences.map(sentence => `🔹 ${sentence.trim()}.`));
+                    // Handle incomplete or incorrectly formatted responses
+                    if (!summaryText.includes('Overview') || !summaryText.includes('Key Points') || !summaryText.includes('Context Sections')) {
+                        console.error(`Malformed response for chunk ${i + 1}:`, summaryText);
+                        break; // Skip this chunk if it’s malformed
+                    }
 
-                        console.log('Received summary for chunk.');
+                    summaries.push(summaryText);
+                    const sentences = summaryText.split('. ');
+                    keyPoints.push(...sentences.map(sentence => `🔹 ${sentence.trim()}.`));
+                    console.log(`Successfully processed chunk ${i + 1}.`);
+                    successful = true; // Mark this chunk as successfully processed
 
-                        const currentProgress = ((i + 1) / totalChunks) * 100;
-                        const elapsedTime = Date.now() - startTime;
-                        const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
-                        const remainingTime = estimatedTotalTime - elapsedTime;
+                    // Update progress display
+                    const currentProgress = ((i + 1) / totalChunks) * 100;
+                    const elapsedTime = Date.now() - startTime;
+                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
+                    const remainingTime = estimatedTotalTime - elapsedTime;
 
-                        progressBar.value = currentProgress;
-                        percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+                    progressBar.value = currentProgress;
+                    percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                        if (estimatedTimeDisplay) {
-                            const minutes = Math.floor(remainingTime / 60000);
-                            const seconds = Math.floor((remainingTime % 60000) / 1000);
-                            estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
-                        }
-
-                        break;
-                    } else {
-                        console.error('Unexpected API response format:', result);
-                        throw new Error('Invalid response format from Hugging Face API');
+                    if (estimatedTimeDisplay) {
+                        const minutes = Math.floor(remainingTime / 60000);
+                        const seconds = Math.floor((remainingTime % 60000) / 1000);
+                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
                     }
                 } else {
                     const errorDetails = await response.json();
+                    console.error(`Error generating summary for chunk ${i + 1}:`, errorDetails);
 
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
                         console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                         await delay(delayInterval);
                         attempt++;
                     } else {
-                        console.error(`Error from Hugging Face API: ${errorDetails.error}`);
                         throw new Error(`Error generating summary: ${errorDetails.error}`);
                     }
                 }
             } catch (error) {
-                console.error(`Failed to generate summary: ${error.message}`);
+                console.error(`Failed to process chunk ${i + 1}: ${error.message}`);
                 if (attempt < maxRetries - 1) {
                     console.log(`Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
                     attempt++;
                 } else {
-                    throw error;
+                    break; // Skip this chunk if all retries fail
                 }
             }
         }
@@ -2730,6 +2733,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         }
     };
 }
+
 
 
 
