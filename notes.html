@@ -3787,7 +3787,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
     const correctAnswer = questionData.correctAnswer;
 
     // Extract the answer text without the letter (A., B., C., D. with space after)
-    const answerText = selectedOption.textContent.slice(3); 
+    const answerText = selectedOption.textContent.slice(4); 
 
     // If the selected answer is correct
     if (selectedLetter === correctAnswer) {
@@ -3796,7 +3796,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
         // Replace the letter (A., B., C., or D.) with the correct answer SVG
         selectedOption.innerHTML = `
         <div class="quiz-option-content" style="display: flex; align-items: center;">
-            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px; margin-right: -4px;">
+            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 507.2 507.2">
                     <g>
                         <circle cx="253.6" cy="253.6" r="253.6" fill="#32ba7c"></circle>
@@ -3818,7 +3818,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
         // Replace the letter (A., B., C., or D.) with the wrong answer SVG
         selectedOption.innerHTML = `
         <div class="quiz-option-content" style="display: flex; align-items: center;">
-            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px; margin-right: -4px;">
+            <span class="quiz-letter" style="display: flex; justify-content: center; align-items: center; width: 34px; height: 34px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 507.2 507.2">
                     <g>
                         <circle cx="253.6" cy="253.6" r="253.6" fill="#f15249"></circle>
