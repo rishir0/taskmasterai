@@ -285,9 +285,11 @@ body.night-mode {
 }
 
 .main-content {
-    padding: 20px;
-    margin-left: 50px; /* Push content to the right */
-}
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0; /* Remove padding to let the chatbot take the full space */
+    overflow: hidden; /* Ensure the content fits within the container */
 }
 
         .dashboard-header {
@@ -415,7 +417,7 @@ body.night-mode {
 /* Overview styling */
 #pdf-overview {
     font-size: 1.8em;
-    color: white; /* Primary color */
+    color: var(--primary-color); /* Primary color */
     margin-top: 15px;
     display: block;
 }
