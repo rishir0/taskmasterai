@@ -2660,29 +2660,36 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                 if (response.ok) {
                     const result = await response.json();
-                    const summary = result[0].summary_text;
-                    summaries.push(summary);
 
-                    const sentences = summary.split('. ');
-                    keyPoints.push(...sentences.map(sentence => `🔹 ${sentence.trim()}.`)); 
+                    // Check if 'summary_text' is present in the response
+                    if (result[0] && result[0].summary_text) {
+                        const summary = result[0].summary_text;
+                        summaries.push(summary);
 
-                    console.log('Received summary for chunk.');
+                        const sentences = summary.split('. ');
+                        keyPoints.push(...sentences.map(sentence => `🔹 ${sentence.trim()}.`));
 
-                    const currentProgress = ((i + 1) / totalChunks) * 100;
-                    const elapsedTime = Date.now() - startTime;
-                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
-                    const remainingTime = estimatedTotalTime - elapsedTime;
+                        console.log('Received summary for chunk.');
 
-                    progressBar.value = currentProgress;
-                    percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+                        const currentProgress = ((i + 1) / totalChunks) * 100;
+                        const elapsedTime = Date.now() - startTime;
+                        const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
+                        const remainingTime = estimatedTotalTime - elapsedTime;
 
-                    if (estimatedTimeDisplay) {
-                        const minutes = Math.floor(remainingTime / 60000);
-                        const seconds = Math.floor((remainingTime % 60000) / 1000);
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
+                        progressBar.value = currentProgress;
+                        percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+
+                        if (estimatedTimeDisplay) {
+                            const minutes = Math.floor(remainingTime / 60000);
+                            const seconds = Math.floor((remainingTime % 60000) / 1000);
+                            estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
+                        }
+
+                        break;
+                    } else {
+                        console.error('Unexpected API response format:', result);
+                        throw new Error('Invalid response format from Hugging Face API');
                     }
-
-                    break;
                 } else {
                     const errorDetails = await response.json();
 
@@ -2723,6 +2730,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         }
     };
 }
+
 
 
 
