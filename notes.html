@@ -1631,14 +1631,14 @@ h9 svg {
     animation-timing-function: linear;
   }
 
-  /* Make each path rotate around its own center */
+  /* Offset the transform-origin for each arrow to make it "orbit" around the static center */
   .clockwise {
-    transform-origin: 50% 50%;
+    transform-origin: 40px 60px; /* Adjusted position to create circular path */
     animation: rotateClockwise 2s linear infinite;
   }
 
   .counterclockwise {
-    transform-origin: 50% 50%;
+    transform-origin: 60px 60px; /* Adjusted position for orbit effect */
     animation: rotateCounterclockwise 2s linear infinite;
   }
 
