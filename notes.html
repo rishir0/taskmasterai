@@ -3760,10 +3760,10 @@ function loadQuestion(index) {
             `; // Adds question number
 
     document.getElementById('quiz-question').textContent = question;
-    document.getElementById('optionA').innerHTML = "<span style='font-weight:bold'>A.</span> " + choices[0];
-    document.getElementById('optionB').innerHTML = "<span style='font-weight:bold'>B.</span> " + choices[1];
-    document.getElementById('optionC').innerHTML = "<span style='font-weight:bold'>C.</span> " + choices[2];
-    document.getElementById('optionD').innerHTML = "<span style='font-weight:bold'>D.</span> " + choices[3];
+    document.getElementById('optionA').innerHTML = "<span style='font-weight:bold'>A.</span> " + " " + choices[0];
+    document.getElementById('optionB').innerHTML = "<span style='font-weight:bold'>B.</span> " + " " + choices[1];
+    document.getElementById('optionC').innerHTML = "<span style='font-weight:bold'>C.</span> " + " " + choices[2];
+    document.getElementById('optionD').innerHTML = "<span style='font-weight:bold'>D.</span> " + " " + choices[3];
 
     // Reset styles and Next button
     const options = document.querySelectorAll('.quiz-card');
