@@ -1627,18 +1627,21 @@ h9 svg {
 }
 
 
+/* Round button styling */
 .round-button {
-    display: flex;          /* Use flexbox for centering */
+    background-color: #007BFF;
+    border-radius: 50%; /* Make it circular */
+    border: none; /* Remove border */
+    width: 40px;
+    height: 40px;
+    padding: 5px; /* Adjust padding as needed */
+    display: inline-block;
+    margin-left: 10px; /* Spacing after text */
+    vertical-align: middle; /* Align vertically with text */
+    cursor: pointer;       /* Pointer cursor on hover */
     justify-content: center; /* Center horizontally */
     align-items: center;    /* Center vertically */
-    width: 60px;           /* Set button width */
-    height: 60px;          /* Set button height */
-    border-radius: 50%;    /* Make it round */
-    background-color: #007bff; /* Example background color */
-    border: none;          /* Remove border */
-    cursor: pointer;       /* Pointer cursor on hover */
 }
-
 
 .round-button svg {
     width: 40px;  /* Adjust width here */
