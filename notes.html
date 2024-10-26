@@ -1635,7 +1635,7 @@ h9 svg {
     width: 40px;
     height: 40px;
     padding: 5px; /* Adjust padding as needed */
-    display: inline-block;
+    display: flex;          /* Use flexbox for centering */
     margin-left: 10px; /* Spacing after text */
     vertical-align: middle; /* Align vertically with text */
     cursor: pointer;       /* Pointer cursor on hover */
@@ -1646,7 +1646,8 @@ h9 svg {
 .round-button svg {
     width: 40px;  /* Adjust width here */
     height: 40px; /* Adjust height here */
-    fill: #ffffff; /* White color for SVG */    
+    fill: #ffffff; /* White color for SVG */
+    display: block; /* Ensures the SVG is treated as a block for proper centering */
 }
 
 
