@@ -1628,27 +1628,27 @@ h9 svg {
 
 
   .spin-arrow {
-    transform-origin: center;
     animation-timing-function: linear;
   }
 
-  /* First arrow spins clockwise */
+  /* Make each path rotate around its own center */
   .clockwise {
-    animation: rotateClockwise 2s infinite;
+    transform-origin: 50% 50%;
+    animation: rotateClockwise 2s linear infinite;
   }
 
-  /* Second arrow spins counterclockwise for an alternating effect */
   .counterclockwise {
-    animation: rotateCounterclockwise 2s infinite;
+    transform-origin: 50% 50%;
+    animation: rotateCounterclockwise 2s linear infinite;
   }
 
-  /* Define clockwise animation */
+  /* Clockwise animation */
   @keyframes rotateClockwise {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
 
-  /* Define counterclockwise animation */
+  /* Counterclockwise animation */
   @keyframes rotateCounterclockwise {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(-360deg); }
