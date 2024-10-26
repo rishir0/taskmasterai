@@ -3300,7 +3300,7 @@ function loadGeneratedPDFs() {
                             <span>AI Generated</span>
                         </div>
 
-<div class="open-in-new-tab">
+<div class="open-in-new-tab" onclick="openInNewTab('${pdfId}')">
     <svg width="35" height="35" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -4177,9 +4177,10 @@ function showError() {
     }
 }
 
-
-
-
+function openInNewTab(pdfId) {
+    // Redirect to dynamic.html with PDF ID as a query parameter
+    window.open(`dynamic.html?pdfId=${pdfId}`, '_blank');
+}
 
 
 
