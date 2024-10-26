@@ -406,22 +406,48 @@ body.night-mode {
     font-weight: 600; /* Semi-bold */
 }
 
+/* Main content styling */
+.main-content {
+    padding: 20px;
+    margin-left: 50px; /* Push content to the right */
+}
+
+/* Title and date container */
+#title-date-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Title styling */
+#pdf-title {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #333; /* Dark color for emphasis */
+    margin-right: 10px;
+}
+
 /* Date styling */
 #pdf-date {
     font-size: 1em;
     color: #888; /* Slightly gray color */
-    vertical-align: middle; /* Align date with title */
+    margin-top: 5px;
 }
 
-/* Overview styling */
-#pdf-overview {
+/* Overview label styling */
+#pdf-overview-label {
     font-size: 1.8em;
     color: var(--primary-color); /* Primary color */
     margin-top: 15px;
-    display: block;
 }
 
-/* Key Points section heading */
+/* Overview text styling */
+#pdf-overview-text {
+    font-size: 1.5em;
+    color: #fff; /* White color for the overview text */
+}
+
+/* Key Points label styling */
 #pdf-key-points-title {
     font-size: 1.8em;
     color: var(--primary-color); /* Primary color */
@@ -433,9 +459,10 @@ body.night-mode {
     list-style-type: disc;
     padding-left: 20px;
     font-size: 1.2em;
-    color: #555; /* Subtle color for readability */
+    color: #fff; /* White color for key points text */
     margin-top: 10px;
 }
+
 
     </style>
 </head>
