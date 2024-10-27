@@ -4228,7 +4228,7 @@ async function handleGenerateQuestionsClick(pdfId) {
 // Store the original SVG content to restore later
 const originalSVG = svgElement.innerHTML;
 
-// Add spinner SVG with animation applied only to the specific <path>
+// Add spinner SVG with animation applied only to the <path>
 svgElement.innerHTML = `
     <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="100" height="100" style="cursor: pointer; display: inline-block; margin-left: -20px;">
         <g fill-rule="evenodd" clip-rule="evenodd">
@@ -4255,7 +4255,7 @@ document.head.appendChild(style);
 
 
 
-    // Show a confirmation popup
+    // Sh
     const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
     if (!confirmRegenerate) {
         console.log("Question regeneration canceled by the user.");
