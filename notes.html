@@ -4216,49 +4216,43 @@ function openInNewTab(pdfId) {
 
 
 
+
 async function handleGenerateQuestionsClick(pdfId) {
     if (!pdfId) {
         console.error("PDF ID not provided.");
         return;
     }
 
-    // Get the SVG element
-    const svgElement = document.getElementById("unique-icon");
-
-    // Replace the SVG with a loading spinner
-    const originalSVG = svgElement.innerHTML;
-    svgElement.innerHTML = `
-        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" class="hds-flight-icon--animation-loading" style="animation: spin 1s linear infinite;">
-            <g fill="#000000" fill-rule="evenodd" clip-rule="evenodd">
+    // Reference to the original SVG
+    const originalIcon = document.getElementById('unique-icon');
+    
+    // Define the loading SVG with the same style
+    const loadingSvg = `
+        <svg id="loading-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: -20px; animation: spin 1s linear infinite;">
+            <g fill="#007bff" fill-rule="evenodd" clip-rule="evenodd">
                 <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" opacity=".2"></path>
                 <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
             </g>
         </svg>
     `;
 
-    // CSS for spinning animation
-    svgElement.style.cssText += `
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    `;
-
-    // Show a confirmation popup
-    const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
-    if (!confirmRegenerate) {
-        console.log("Question regeneration canceled by the user.");
-        svgElement.innerHTML = originalSVG; // Revert to original SVG if canceled
-        return;
-    }
+    // Replace the icon with the loading SVG
+    originalIcon.outerHTML = loadingSvg;
 
     try {
-        // Fetch the PDF document data for the specified pdfId
+        const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
+        if (!confirmRegenerate) {
+            console.log("Question regeneration canceled by the user.");
+            resetIcon(); // Restore the original icon
+            return;
+        }
+
+        // Fetch PDF document data
         const pdfDoc = await db.collection('generatedpdfs').doc(pdfId).get();
 
         if (!pdfDoc.exists) {
             console.error("PDF document does not exist.");
-            svgElement.innerHTML = originalSVG; // Revert to original SVG if error occurs
+            resetIcon(); // Restore the original icon
             return;
         }
 
@@ -4268,10 +4262,11 @@ async function handleGenerateQuestionsClick(pdfId) {
 
         if (keyPoints.length === 0) {
             console.warn("No key points available for this PDF.");
-            svgElement.innerHTML = originalSVG; // Revert to original SVG if no key points
+            resetIcon(); // Restore the original icon
             return;
         }
 
+        // Generate questions and save them to Firestore
         const { questions, rawResponses } = await generateQuestions(keyPoints);
         console.log('Generated Questions:', questions);
         console.log('Raw Responses:', rawResponses);
@@ -4286,9 +4281,37 @@ async function handleGenerateQuestionsClick(pdfId) {
     } catch (error) {
         console.error("Error generating questions:", error);
     } finally {
-        svgElement.innerHTML = originalSVG; // Revert to original SVG after completion
+        // Restore the original icon
+        resetIcon();
     }
 }
+
+// Restore original icon function
+function resetIcon() {
+    document.getElementById('loading-icon').outerHTML = `
+ <svg id="unique-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" fill="#007bff" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: -20px;" onclick="handleGenerateQuestionsClick('${pdfId}')">
+        <g>
+            <path d="m50.422 33.258 1.5703 4.3594c1.7422 4.8398 5.5547 8.6484 10.395 10.395l4.3594 1.5703c0.39453 0.14062 0.39453 0.69922 0 0.83984l-4.3594 1.5703c-4.8398 1.7422-8.6484 5.5547-10.395 10.395l-1.5703 4.3594c-0.14062 0.39453-0.69922 0.39453-0.83984 0l-1.5703-4.3594c-1.7422-4.8398-5.5547-8.6484-10.395-10.395l-4.3594-1.5703c-0.39453-0.14062-0.39453-0.69922 0-0.83984l4.3594-1.5703c4.8398-1.7422 8.6484-5.5547 10.395-10.395l1.5703-4.3594c0.14062-0.39453 0.69531-0.39453 0.83984 0z"/>
+            <path d="m85.629 28.539c-0.89453-1.4766-2.8125-1.9375-4.293-1.0547-1.4766 0.89453-1.9453 2.8164-1.0547 4.293 3.3203 5.4766 5.0703 11.777 5.0703 18.227 0 19.492-15.859 35.352-35.352 35.352-3.3398 0-6.5977-0.48828-9.7422-1.3906l3.1016-1.4922c1.5547-0.74609 2.2109-2.6172 1.4609-4.1719-0.74219-1.5547-2.6172-2.2109-4.1719-1.4609l-9.7656 4.6953c-0.78125 0.37891-1.3711 1.0625-1.6289 1.8906-0.25391 0.83203-0.15234 1.7266 0.27734 2.4805l5.3984 9.3984c0.57812 1.0078 1.6289 1.5703 2.7148 1.5703 0.52734 0 1.0625-0.13281 1.5547-0.41406 1.4961-0.85938 2.0156-2.7734 1.1523-4.2656l-1.1875-2.0703c3.5078 0.94922 7.1328 1.4766 10.84 1.4766 22.941 0 41.602-18.664 41.602-41.602-0.003907-7.5859-2.0664-15.012-5.9766-21.461z"/>
+            <path d="m49.996 14.648c3.3398 0 6.6016 0.48828 9.7422 1.3906l-3.1016 1.4922c-1.5547 0.74609-2.2109 2.6172-1.4609 4.1719 0.53906 1.1172 1.6523 1.7695 2.8203 1.7695 0.45703 0 0.91406-0.097656 1.3516-0.30859l9.7656-4.6953c0.78125-0.37891 1.3711-1.0625 1.6289-1.8906 0.25781-0.82812 0.16016-1.7266-0.27344-2.4805l-5.3984-9.3984c-0.85547-1.4961-2.7656-2.0117-4.2656-1.1523-1.4961 0.85938-2.0156 2.7734-1.1523 4.2656l1.1875 2.0703c-3.5078-0.94922-7.1328-1.4766-10.84-1.4766-22.941 0-41.602 18.664-41.602 41.602 0 7.5898 2.0664 15.016 5.9766 21.465 0.58594 0.96875 1.6211 1.5039 2.6758 1.5039 0.55469 0 1.1094-0.14844 1.6172-0.45312 1.4766-0.89453 1.9453-2.8164 1.0547-4.293-3.3203-5.4766-5.0703-11.777-5.0703-18.227-0.003906-19.496 15.855-35.355 35.344-35.355z"/>
+        </g>
+        <style>
+            #unique-icon:hover {
+                transform: scale(1.2);
+            }
+        </style>
+    </svg>
+
+    `;
+}
+
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
 
 // Function to reset the quiz UI to its default state
 function resetQuizUI() {
