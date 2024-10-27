@@ -4213,6 +4213,7 @@ async function handleGenerateQuestionsClick(pdfId) {
         // Retrieve the key points and ensure they're correctly parsed
         const pdfData = pdfDoc.data();
         const keyPoints = Array.isArray(pdfData.keyPoints) ? pdfData.keyPoints : [];
+        const overview = pdfData.overview || "No overview available.";
 
         if (keyPoints.length === 0) {
             console.warn("No key points available for this PDF.");
@@ -4225,7 +4226,7 @@ async function handleGenerateQuestionsClick(pdfId) {
         console.log('Raw Responses:', rawResponses);
 
         // Save only the updated questions to Firestore
-        await saveToFirestore2(pdfData.fileName, keyPoints, questions);
+        await saveToFirestore2(pdfData.fileName, overview, keyPoints, questions);
         console.log('Questions updated and saved to Firestore.');
     } catch (error) {
         console.error("Error generating questions:", error);
