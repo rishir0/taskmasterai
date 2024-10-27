@@ -4216,43 +4216,50 @@ function openInNewTab(pdfId) {
 
 
 
-
 async function handleGenerateQuestionsClick(pdfId) {
     if (!pdfId) {
         console.error("PDF ID not provided.");
         return;
     }
 
-    // Reference to the original SVG
-    const originalIcon = document.getElementById('unique-icon');
-    
-    // Define the loading SVG with the same style
-    const loadingSvg = `
-        <svg id="loading-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: -20px; animation: spin 1s linear infinite;">
-            <g fill="#007bff" fill-rule="evenodd" clip-rule="evenodd">
-                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" opacity=".2"></path>
-                <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
-            </g>
-        </svg>
+    // Get the SVG element
+    const svgElement = document.getElementById("unique-icon");
+
+    // Replace the SVG with a loading spinner
+    const originalSVG = svgElement.innerHTML;
+    svgElement.innerHTML = `
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: -20px; animation: spin 1s linear infinite;">
+    <g fill="#007bff" fill-rule="evenodd" clip-rule="evenodd">
+        <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z"></path>
+        <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
+    </g>
+</svg>
+
     `;
 
-    // Replace the icon with the loading SVG
-    originalIcon.outerHTML = loadingSvg;
+    // CSS for spinning animation
+    svgElement.style.cssText += `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `;
+
+    // Show a confirmation popup
+    const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
+    if (!confirmRegenerate) {
+        console.log("Question regeneration canceled by the user.");
+        svgElement.innerHTML = originalSVG; // Revert to original SVG if canceled
+        return;
+    }
 
     try {
-        const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
-        if (!confirmRegenerate) {
-            console.log("Question regeneration canceled by the user.");
-            resetIcon(); // Restore the original icon
-            return;
-        }
-
-        // Fetch PDF document data
+        // Fetch the PDF document data for the specified pdfId
         const pdfDoc = await db.collection('generatedpdfs').doc(pdfId).get();
 
         if (!pdfDoc.exists) {
             console.error("PDF document does not exist.");
-            resetIcon(); // Restore the original icon
+            svgElement.innerHTML = originalSVG; // Revert to original SVG if error occurs
             return;
         }
 
@@ -4262,11 +4269,10 @@ async function handleGenerateQuestionsClick(pdfId) {
 
         if (keyPoints.length === 0) {
             console.warn("No key points available for this PDF.");
-            resetIcon(); // Restore the original icon
+            svgElement.innerHTML = originalSVG; // Revert to original SVG if no key points
             return;
         }
 
-        // Generate questions and save them to Firestore
         const { questions, rawResponses } = await generateQuestions(keyPoints);
         console.log('Generated Questions:', questions);
         console.log('Raw Responses:', rawResponses);
@@ -4281,19 +4287,9 @@ async function handleGenerateQuestionsClick(pdfId) {
     } catch (error) {
         console.error("Error generating questions:", error);
     } finally {
-
+        svgElement.innerHTML = originalSVG; // Revert to original SVG after completion
     }
 }
-
-
-
-
-<style>
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-</style>
 
 // Function to reset the quiz UI to its default state
 function resetQuizUI() {
