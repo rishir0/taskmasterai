@@ -4256,10 +4256,37 @@ async function handleGenerateQuestionsClick(pdfId) {
         // Save only the updated questions to Firestore
         await saveToFirestore3(pdfId, questions);
         console.log('Questions updated and saved to Firestore.');
+
+        // Reset everything to default
+        resetQuizUI();
+
+        // Load the first question after resetting
+        loadQuestion(0, pdfId);
+
     } catch (error) {
         console.error("Error generating questions:", error);
     }
 }
+
+// Function to reset the quiz UI to its default state
+function resetQuizUI() {
+    document.getElementById('quiz-question').textContent = "";
+    document.getElementById('optionA').innerHTML = "";
+    document.getElementById('optionB').innerHTML = "";
+    document.getElementById('optionC').innerHTML = "";
+    document.getElementById('optionD').innerHTML = "";
+
+    // Reset styles of options
+    const options = document.querySelectorAll('.quiz-card');
+    options.forEach(option => {
+        option.style.backgroundColor = ''; // Reset background color
+        option.onclick = () => handleOptionClick(option, option.id.slice(-1)); // Slice to get 'A', 'B', 'C', 'D'
+    });
+
+    // Hide the Next button
+    document.getElementById('next-button').style.display = 'none';
+}
+
 
 
 
