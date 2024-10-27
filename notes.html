@@ -3775,7 +3775,7 @@ async function openQuizModal(pdfId) {
             currentQuestionIndex = 0; // Reset to the first question
 
             if (rawQuestions.length > 0) {
-                loadQuestion(currentQuestionIndex); // Load the first question
+                loadQuestion(currentQuestionIndex, pdfId); // Load the first question
                 document.getElementById("QuizModal").style.display = "block"; // Show the modal
             } else {
                 console.error("No quiz questions found for this PDF.");
@@ -3788,7 +3788,7 @@ async function openQuizModal(pdfId) {
     }
 }
 
-// Function to load a question based on the current index
+// Function to load a question based on the current index and pdfId
 function loadQuestion(index, pdfId) {
     const questionData = rawQuestions[index];
     const question = questionData.question;
