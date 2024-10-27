@@ -2743,17 +2743,27 @@ if (estimatedTimeDisplay) {
 
 
 
-async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000) {
+async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000, apiTimeout = 10000) {
     console.log('Generating questions...');
     const maxQuestions = Math.min(keyPoints.length, 15);
     const questions = [];
     const rawResponses = [];
     const usedIndices = new Set();
-    let failedAttempts = 0;  // Track failed attempts for main loop control
+    const fetchWithTimeout = (url, options, timeout = apiTimeout) => 
+        new Promise((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error("Timeout")), timeout);
+            fetch(url, options)
+                .then(response => {
+                    clearTimeout(timer);
+                    resolve(response);
+                })
+                .catch(error => {
+                    clearTimeout(timer);
+                    reject(error);
+                });
+        });
 
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    while (questions.length < maxQuestions && failedAttempts < maxQuestions * maxRetries) {
+    while (questions.length < maxQuestions) {
         let index;
         do {
             index = Math.floor(Math.random() * keyPoints.length);
@@ -2789,32 +2799,27 @@ Important:
 
         while (attempt < maxRetries && !successful) {
             try {
-                console.log(`Sending prompt to Hugging Face API for key point...`);
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 15000); // 15-second timeout per API call
+                console.log(`Sending prompt to API for key point...`);
 
-                const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
+                const response = await fetchWithTimeout("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${huggingFaceApiKey}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ inputs: prompt }),
-                    signal: controller.signal
+                    body: JSON.stringify({ inputs: prompt })
                 });
-
-                clearTimeout(timeout);
 
                 if (response.ok) {
                     const result = await response.json();
                     rawResponses.push(result);
 
                     const generatedText = result[0]?.generated_text || "";
-                    console.log(`Generated text:`, generatedText);
+                    console.log(`Generated text for key point:`, generatedText);
 
                     if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:') || !generatedText.includes('Correct Answer:')) {
-                        console.error(`Malformed response:`, generatedText);
-                        failedAttempts++;
+                        console.error(`Malformed response, skipping key point:`, generatedText);
+                        attempt = maxRetries; // Break if the format is invalid
                         break;
                     }
 
@@ -2824,61 +2829,51 @@ Important:
 
                     const question = questionPart.trim();
                     const choicesArray = choicesPart.split(/^[A-D]\./m).slice(1).map(choice => choice.trim());
-
-                    if (choicesArray.length !== 4) {
-                        console.error(`Incorrect number of choices`);
-                        failedAttempts++;
-                        break;
-                    }
-
                     const correctAnswerMatch = correctAnswerText && /^[A-D]/.exec(correctAnswerText);
                     const correctAnswer = correctAnswerMatch ? correctAnswerMatch[0] : null;
 
-                    if (!correctAnswer) {
-                        console.error(`Failed to parse correct answer`);
-                        failedAttempts++;
-                        break;
+                    if (choicesArray.length === 4 && correctAnswer) {
+                        const generatedQuestion = {
+                            keyPoint: keyPoint,
+                            question: question,
+                            choices: choicesArray,
+                            correctAnswer: correctAnswer
+                        };
+                        questions.push(generatedQuestion);
+                        console.log(`Successfully generated question for key point.`);
+                        successful = true;
+                    } else {
+                        console.error(`Incorrect format or incomplete choices for key point`);
+                        attempt = maxRetries; // End attempts for this key point if format is invalid
                     }
-
-                    const generatedQuestion = {
-                        keyPoint: keyPoint,
-                        question: question,
-                        choices: choicesArray,
-                        correctAnswer: correctAnswer
-                    };
-
-                    questions.push(generatedQuestion);
-                    successful = true;
-                    console.log(`Successfully generated question.`);
 
                 } else {
                     const errorDetails = await response.json();
-                    console.error(`API Error:`, errorDetails);
-
+                    console.error(`Error generating question for key point:`, errorDetails);
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model loading. Retrying...`);
-                        await delay(delayInterval);
+                        console.log(`Attempt ${attempt + 1}: Model still loading. Retrying...`);
+                        await new Promise(resolve => setTimeout(resolve, delayInterval));
                         attempt++;
                     } else {
-                        failedAttempts++;
-                        break;
+                        throw new Error(`Error generating question: ${errorDetails.error}`);
                     }
                 }
             } catch (error) {
-                console.error(`Error: ${error.message}`);
+                console.error(`Error on key point attempt: ${error.message}`);
                 if (attempt < maxRetries - 1) {
-                    await delay(delayInterval);
+                    await new Promise(resolve => setTimeout(resolve, delayInterval));
                     attempt++;
                 } else {
-                    failedAttempts++;
                     break;
                 }
             }
         }
     }
-
     console.log('Question generation complete.');
-    return { questions, rawResponses };
+    return {
+        questions,
+        rawResponses
+    };
 }
 
 
