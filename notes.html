@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2746,23 +2745,24 @@ if (estimatedTimeDisplay) {
 
 async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating questions...');
-    const maxQuestions = Math.min(keyPoints.length, 15); // Limit to max 15 questions
-    const questions = []; // To store the final questions
-    const rawResponses = []; // To store the full raw API responses
-    const usedIndices = new Set(); // Track used indices to avoid duplicates
+    const maxQuestions = Math.min(keyPoints.length, 15);
+    const questions = [];
+    const rawResponses = [];
+    const usedIndices = new Set();
+    let failedAttempts = 0;  // Track failed attempts for main loop control
 
-    while (questions.length < maxQuestions) {
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    while (questions.length < maxQuestions && failedAttempts < maxQuestions * maxRetries) {
         let index;
-        // Pick a random index that hasn't been used yet
         do {
             index = Math.floor(Math.random() * keyPoints.length);
         } while (usedIndices.has(index));
-
         usedIndices.add(index);
+
         const keyPoint = keyPoints[index];
         let attempt = 0;
-        let successful = false; // Track if we successfully parsed the question
-
+        let successful = false;
         const prompt = `
 Create a multiple-choice question based on the following key point:
 
@@ -2789,56 +2789,57 @@ Important:
 
         while (attempt < maxRetries && !successful) {
             try {
-                console.log(`Sending prompt to Hugging Face API for random key point...`);
+                console.log(`Sending prompt to Hugging Face API for key point...`);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 15000); // 15-second timeout per API call
+
                 const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${huggingFaceApiKey}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ inputs: prompt })
+                    body: JSON.stringify({ inputs: prompt }),
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeout);
 
                 if (response.ok) {
                     const result = await response.json();
-                    rawResponses.push(result); // Save the raw response
+                    rawResponses.push(result);
 
-                    const generatedText = result[0]?.generated_text || ""; // Ensure result[0] exists
-                    console.log(`Generated text for key point:`, generatedText); // Log the generated text
+                    const generatedText = result[0]?.generated_text || "";
+                    console.log(`Generated text:`, generatedText);
 
-                    // Handle the case where the response is incomplete or incorrectly formatted
                     if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:') || !generatedText.includes('Correct Answer:')) {
-                        console.error(`Malformed response for key point:`, generatedText);
-                        break; // Skip this key point if it's malformed
+                        console.error(`Malformed response:`, generatedText);
+                        failedAttempts++;
+                        break;
                     }
 
-                    // Extract question and answer choices parts
                     const questionPart = generatedText.split("Answer Choices:")[0].replace("Question:", "").trim();
                     const choicesPart = generatedText.split("Answer Choices:")[1].split("Correct Answer:")[0].trim();
                     const correctAnswerText = generatedText.split("Correct Answer:")[1]?.trim();
 
-                    // Parse the question
                     const question = questionPart.trim();
-
-                    // Split and clean up choices, ensuring no extra text
                     const choicesArray = choicesPart.split(/^[A-D]\./m).slice(1).map(choice => choice.trim());
 
-                    // Ensure choices array has exactly 4 options
                     if (choicesArray.length !== 4) {
-                        console.error(`Failed to parse exactly 4 choices for key point`);
-                        break; // Skip if we do not have exactly 4 choices
+                        console.error(`Incorrect number of choices`);
+                        failedAttempts++;
+                        break;
                     }
 
-                    // Parse the correct answer letter, tolerate extra whitespace or unexpected text
                     const correctAnswerMatch = correctAnswerText && /^[A-D]/.exec(correctAnswerText);
                     const correctAnswer = correctAnswerMatch ? correctAnswerMatch[0] : null;
 
                     if (!correctAnswer) {
-                        console.error(`Failed to parse correct answer for key point:`, correctAnswerText);
-                        break; // Skip this key point if the correct answer is malformed
+                        console.error(`Failed to parse correct answer`);
+                        failedAttempts++;
+                        break;
                     }
 
-                    // Save the successfully generated question
                     const generatedQuestion = {
                         keyPoint: keyPoint,
                         question: question,
@@ -2846,42 +2847,40 @@ Important:
                         correctAnswer: correctAnswer
                     };
 
-                    questions.push(generatedQuestion); // Add the generated question to the list
-                    console.log(`Successfully generated question for key point.`);
-                    successful = true; // Mark this key point as successfully processed
+                    questions.push(generatedQuestion);
+                    successful = true;
+                    console.log(`Successfully generated question.`);
 
                 } else {
                     const errorDetails = await response.json();
-                    console.error(`Error generating question for key point:`, errorDetails);
+                    console.error(`API Error:`, errorDetails);
 
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval); // Wait and retry
+                        console.log(`Attempt ${attempt + 1}: Model loading. Retrying...`);
+                        await delay(delayInterval);
                         attempt++;
                     } else {
-                        throw new Error(`Error generating question: ${errorDetails.error}`);
+                        failedAttempts++;
+                        break;
                     }
                 }
             } catch (error) {
-                console.error(`Failed to generate question for key point: ${error.message}`);
+                console.error(`Error: ${error.message}`);
                 if (attempt < maxRetries - 1) {
-                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
                     attempt++;
                 } else {
-                    break; // Skip this key point if all retries fail
+                    failedAttempts++;
+                    break;
                 }
             }
         }
     }
 
-    // Return the successfully generated questions and the raw API responses
     console.log('Question generation complete.');
-    return {
-        questions,    // List of successfully generated questions
-        rawResponses  // Raw API responses (including failed ones)
-    };
+    return { questions, rawResponses };
 }
+
 
 
 
