@@ -3102,7 +3102,7 @@ function loadGeneratedNotes() {
     </svg>
 </div>
 
-<div class="quiz-btn" onclick="toggleNewAction()">
+<div class="quiz-btn" onclick="openQuizModal('${noteId}')">
     <svg class="quiz-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g>
             <path d="M17.644 19.0181H21.3545L19.4984 14.5241L17.644 19.0181Z" fill="white"></path>
@@ -3641,6 +3641,10 @@ function createNote() {
 
                 const dateCreated = formatDate(); // Get the current date
 
+                // Generate questions based on key points
+                const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
+                console.log('Generated Questions:', questions);
+
                 saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated)
                     .then(docId => {
                         noteDiv.setAttribute('data-id', docId);
@@ -3659,6 +3663,26 @@ function createNote() {
 
         noteInput.value = ''; // Clear the textarea after note creation
     }, 2000); // Simulate a 2-second delay for the note generation process
+}
+
+// Function to save the generated note, title, and date to Firestore
+function saveNoteToFirestore2(noteId, questions) {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    try {
+        // Add only the questions to the existing note document in Firestore
+        await db.collection('generatednotes').doc(noteId).update({
+            rawQuestions: questions || [], // Default to an empty array if undefined
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() // Update timestamp
+        });
+        console.log(`Questions for Note ID ${noteId} saved successfully.`);
+    } catch (error) {
+        console.error("Error saving questions to Firestore: ", error);
+    }
 }
 
 // Function to save the generated note, title, and date to Firestore
@@ -3684,6 +3708,9 @@ function saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated) 
         throw error; // Re-throw the error for further handling if needed
     });
 }
+
+
+
 
 
 // Add CSS styles to make "Overview" and "Key Points" text size smaller
@@ -4214,6 +4241,11 @@ function openInNewTab(pdfId) {
     window.open(`dynamic.html?pdfId=${pdfId}`, '_blank');
 }
 
+function openInNewTab(noteId) {
+    // Redirect to dynamic.html with PDF ID as a query parameter
+    window.open(`dynamic.html?noteId=${noteId}`, '_blank');
+}
+
 
 
 async function handleGenerateQuestionsClick(pdfId) {
@@ -4293,8 +4325,151 @@ function resetQuizUI() {
 }
 
 
+let currentQuestionIndex = 0; // Track the current question index
+let rawQuestions = []; // Store questions for the current session
+
+// Function to open the Quiz Modal and load questions from Firestore using noteId
+async function openQuizModal(noteId) {
+    const userId = firebase.auth().currentUser?.uid;
+
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    try {
+        // Fetch the quiz data for the specific note using the provided noteId
+        const noteDoc = await db.collection('generatednotes').doc(noteId).get();
+        
+        if (noteDoc.exists) {
+            const quizData = noteDoc.data();
+            rawQuestions = quizData.rawQuestions || [];
+            currentQuestionIndex = 0; // Reset to the first question
+
+            if (rawQuestions.length > 0) {
+                loadQuestion(currentQuestionIndex, noteId); // Load the first question
+                document.getElementById("QuizModal").style.display = "block"; // Show the modal
+            } else {
+                console.error("No quiz questions found for this note.");
+            }
+        } else {
+            console.error("Note document not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching quiz data from Firestore: ", error);
+    }
+}
+
+// Function to load a question based on the current index and pdfId
+function loadQuestion(index, noteId) {
+    const questionData = rawQuestions[index];
+    const question = questionData.question;
+    const choices = questionData.choices;
+    const correctAnswer = questionData.correctAnswer;
+
+    // Populate the modal with the question number and text
+    const quizQuestionHeader = document.querySelector('#QuizModal h9');
+    quizQuestionHeader.innerHTML = `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#509FE8;" d="M427.023,503.983H84.977c-9.446,0-17.102-7.656-17.102-17.102V84.977 c0-9.446,7.656-17.102,17.102-17.102h342.046c9.446,0,17.102,7.656,17.102,17.102v401.904 C444.125,496.327,436.469,503.983,427.023,503.983z"></path> <path style="fill:#4D8CCF;" d="M84.977,486.881V84.977c0-9.445,7.656-17.102,17.102-17.102H84.977 c-9.446,0-17.102,7.658-17.102,17.102v401.904c0,9.445,7.656,17.102,17.102,17.102h17.102 C92.634,503.983,84.977,496.326,84.977,486.881z"></path> <rect x="110.63" y="67.875" style="fill:#F6F6F7;" width="290.739" height="393.353"></rect> <path style="fill:#D9DCDF;" d="M152.852,110.63h206.296c4.427,0,8.017-3.589,8.017-8.017V67.875h-222.33v34.739 C144.835,107.041,148.424,110.63,152.852,110.63z"></path> <path style="fill:#FFC44F;" d="M350.063,93.528V59.324c0-9.446-7.656-17.102-17.102-17.102h-42.756 c0-18.891-15.314-34.205-34.205-34.205s-34.205,15.314-34.205,34.205H179.04c-9.446,0-17.102,7.656-17.102,17.102v34.205H350.063z"></path> <path style="fill:#FFD791;" d="M332.96,42.221h-17.102c9.446,0,17.102,7.658,17.102,17.102v34.205h17.102V59.324 C350.063,49.879,342.406,42.221,332.96,42.221z"></path> <path style="fill:#F7AB49;" d="M196.142,42.221H179.04c-9.446,0-17.102,7.658-17.102,17.102v34.205h17.102V59.324 C179.04,49.879,186.696,42.221,196.142,42.221z"></path> <path style="fill:#FF8C78;" d="M356.808,316.761l-85.512-171.023c-2.897-5.794-8.818-9.454-15.297-9.454 c-6.479,0-12.4,3.66-15.297,9.454l-85.511,171.023c-4.224,8.447-0.8,18.721,7.649,22.945c8.445,4.223,18.721,0.799,22.945-7.649 l33.754-67.506h72.923l33.754,67.506c2.996,5.993,9.035,9.459,15.31,9.458c2.57,0,5.18-0.581,7.635-1.809 C357.608,335.482,361.033,325.209,356.808,316.761z M236.64,230.347L256,191.628l19.36,38.719H236.64z"></path> <path d="M427.023,59.858h-68.944v-0.534c0-13.851-11.268-25.119-25.119-25.119h-35.502C293.703,14.743,276.542,0,256,0 c-20.541,0-37.703,14.743-41.458,34.205H179.04c-13.851,0-25.119,11.268-25.119,25.119v0.534H84.977 c-13.851,0-25.119,11.268-25.119,25.119v273.637c0,4.427,3.589,8.017,8.017,8.017s8.017-3.589,8.017-8.017V84.977 c0-5.01,4.076-9.086,9.086-9.086h17.637v385.336c0,4.427,3.589,8.017,8.017,8.017H401.37c4.428,0,8.017-3.589,8.017-8.017v-299.29 c0-4.427-3.588-8.017-8.017-8.017s-8.017,3.589-8.017,8.017v291.273H118.647V75.891h35.273v17.637c0,4.427,3.589,8.017,8.017,8.017 h188.125c4.428,0,8.017-3.589,8.017-8.017V75.891h35.273v43.29c0,4.427,3.588,8.017,8.017,8.017s8.017-3.589,8.017-8.017v-43.29 h17.637c5.01,0,9.086,4.076,9.086,9.086v401.904c0,5.01-4.076,9.086-9.086,9.086H84.977c-5.01,0-9.086-4.076-9.086-9.086V401.37 c0-4.427-3.589-8.017-8.017-8.017s-8.017,3.589-8.017,8.017v85.511c0,13.851,11.268,25.119,25.119,25.119h342.046 c13.851,0,25.119-11.268,25.119-25.119V84.977C452.142,71.126,440.874,59.858,427.023,59.858z M342.046,85.511H169.954V59.324 c0-5.01,4.076-9.086,9.086-9.086h42.756c4.427,0,8.017-3.589,8.017-8.017c0-14.44,11.748-26.188,26.188-26.188 c14.441,0,26.188,11.748,26.188,26.188c0,4.427,3.588,8.017,8.017,8.017h42.756c5.01,0,9.086,4.076,9.086,9.086V85.511z"></path> <path d="M256,25.653c-4.427,0-8.017,3.589-8.017,8.017v8.551c0,4.427,3.589,8.017,8.017,8.017c4.428,0,8.017-3.589,8.017-8.017 V33.67C264.017,29.243,260.428,25.653,256,25.653z"></path> <path d="M352.746,346.876c12.388-6.195,17.427-21.313,11.233-33.7l-85.511-171.023c-4.282-8.565-12.891-13.886-22.467-13.886 c-9.575,0-18.185,5.321-22.467,13.886l-85.511,171.023c-6.194,12.387-1.155,27.506,11.234,33.7 c12.388,6.194,27.506,1.155,33.7-11.234l31.538-63.074h63.014l31.537,63.074C325.17,347.896,340.458,353.017,352.746,346.876z M333.385,328.472l-33.754-67.506c-1.359-2.716-4.133-4.432-7.17-4.432h-72.923c-3.037,0-5.813,1.716-7.17,4.432l-33.754,67.506 c-2.241,4.482-7.71,6.303-12.19,4.064c-4.481-2.24-6.304-7.709-4.064-12.19l85.511-171.023c3.286-6.572,12.968-6.572,16.254,0 l85.512,171.023l0,0c2.288,4.575,0.231,10.263-4.412,12.355C340.831,334.681,335.533,332.768,333.385,328.472z"></path> <path d="M263.17,188.043c-2.897-5.792-11.444-5.794-14.34,0l-19.359,38.719c-2.621,5.24,1.323,11.602,7.17,11.602h38.719 c5.847,0,9.792-6.362,7.17-11.602L263.17,188.043z M249.612,222.33L256,209.553l6.389,12.776H249.612z"></path> <path d="M332.96,128.267c-4.428,0-8.017,3.589-8.017,8.017v9.086h-9.086c-4.428,0-8.017,3.589-8.017,8.017 c0,4.427,3.588,8.017,8.017,8.017h9.086v9.086c0,4.427,3.588,8.017,8.017,8.017c4.428,0,8.017-3.589,8.017-8.017v-9.086h9.086 c4.428,0,8.017-3.589,8.017-8.017c0-4.427-3.588-8.017-8.017-8.017h-9.086v-9.086C340.977,131.857,337.389,128.267,332.96,128.267z"></path> <path d="M332.426,384.267c0-4.427-3.588-8.017-8.017-8.017H187.591c-4.427,0-8.017,3.589-8.017,8.017 c0,4.427,3.589,8.017,8.017,8.017h136.818C328.838,392.284,332.426,388.695,332.426,384.267z"></path> <path d="M187.591,410.455c-4.427,0-8.017,3.589-8.017,8.017c0,4.427,3.589,8.017,8.017,8.017h76.96c4.428,0,8.017-3.589,8.017-8.017 c0-4.427-3.588-8.017-8.017-8.017H187.591z"></path> </g></svg> Quiz Question ${index + 1}             <!-- New Round Button with Updated SVG -->
+
+<div style="display: inline-block; line-height: 0;">
+    <svg id="new-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" fill="none" x="0px" y="0px" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: 15px;">
+        <path d="M48 2C48.9337 2 49.7432 2.64607 49.9502 3.55654L51.0568 8.42294C51.5686 10.6738 53.3262 12.4314 55.5771 12.9432L60.4435 14.0498C61.3539 14.2568 62 15.0663 62 16C62 16.9337 61.3539 17.7432 60.4435 17.9502L55.5771 19.0568C53.3262 19.5686 51.5686 21.3262 51.0568 23.5771L49.9502 28.4435C49.7432 29.3539 48.9337 30 48 30C47.0663 30 46.2568 29.3539 46.0498 28.4435L44.9432 23.5771C44.4314 21.3262 42.6738 19.5686 40.4229 19.0568L35.5565 17.9502C34.6461 17.7432 34 16.9337 34 16C34 15.0663 34.6461 14.2568 35.5565 14.0498L40.4229 12.9432C42.6738 12.4314 44.4314 10.6738 44.9432 8.42294L46.0498 3.55654C46.2568 2.64607 47.0663 2 48 2Z" fill="#007bff"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M48 33C49.3098 33 50.5217 32.4915 51.4247 31.6431C51.8015 33.3688 52 35.1612 52 37C52 50.8071 40.8071 62 27 62C13.1929 62 2 50.8071 2 37C2 23.1929 13.1929 12 27 12C28.8388 12 30.6312 12.1985 32.3569 12.5753C31.5085 13.4783 31 14.6902 31 16C31 18.3343 32.6152 20.358 34.8914 20.8755L39.7578 21.9821C40.8832 22.238 41.762 23.1168 42.0179 24.2422L43.1245 29.1086C43.642 31.3848 45.6657 33 48 33ZM15 35C13.8954 35 13 35.8954 13 37C13 38.1046 13.8954 39 15 39H25V49C25 50.1046 25.8954 51 27 51C28.1046 51 29 50.1046 29 49V39H39C40.1046 39 41 38.1046 41 37C41 35.8954 40.1046 35 39 35H29V25C29 23.8954 28.1046 23 27 23C25.8954 23 25 23.8954 25 25V35H15Z" fill="#007bff"/>
+    </svg>
+
+<style>
+    #new-icon:hover {
+        transform: scale(1.2);
+    }
+</style>
 
 
+    <svg id="unique-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" fill="#007bff" width="110" height="110" style="transition: transform 0.3s; cursor: pointer; display: inline-block; margin-left: -20px;" onclick="handleGenerateQuestionsClick('${pdfId}')">
+        <g>
+            <path d="m50.422 33.258 1.5703 4.3594c1.7422 4.8398 5.5547 8.6484 10.395 10.395l4.3594 1.5703c0.39453 0.14062 0.39453 0.69922 0 0.83984l-4.3594 1.5703c-4.8398 1.7422-8.6484 5.5547-10.395 10.395l-1.5703 4.3594c-0.14062 0.39453-0.69922 0.39453-0.83984 0l-1.5703-4.3594c-1.7422-4.8398-5.5547-8.6484-10.395-10.395l-4.3594-1.5703c-0.39453-0.14062-0.39453-0.69922 0-0.83984l4.3594-1.5703c4.8398-1.7422 8.6484-5.5547 10.395-10.395l1.5703-4.3594c0.14062-0.39453 0.69531-0.39453 0.83984 0z"/>
+            <path d="m85.629 28.539c-0.89453-1.4766-2.8125-1.9375-4.293-1.0547-1.4766 0.89453-1.9453 2.8164-1.0547 4.293 3.3203 5.4766 5.0703 11.777 5.0703 18.227 0 19.492-15.859 35.352-35.352 35.352-3.3398 0-6.5977-0.48828-9.7422-1.3906l3.1016-1.4922c1.5547-0.74609 2.2109-2.6172 1.4609-4.1719-0.74219-1.5547-2.6172-2.2109-4.1719-1.4609l-9.7656 4.6953c-0.78125 0.37891-1.3711 1.0625-1.6289 1.8906-0.25391 0.83203-0.15234 1.7266 0.27734 2.4805l5.3984 9.3984c0.57812 1.0078 1.6289 1.5703 2.7148 1.5703 0.52734 0 1.0625-0.13281 1.5547-0.41406 1.4961-0.85938 2.0156-2.7734 1.1523-4.2656l-1.1875-2.0703c3.5078 0.94922 7.1328 1.4766 10.84 1.4766 22.941 0 41.602-18.664 41.602-41.602-0.003907-7.5859-2.0664-15.012-5.9766-21.461z"/>
+            <path d="m49.996 14.648c3.3398 0 6.6016 0.48828 9.7422 1.3906l-3.1016 1.4922c-1.5547 0.74609-2.2109 2.6172-1.4609 4.1719 0.53906 1.1172 1.6523 1.7695 2.8203 1.7695 0.45703 0 0.91406-0.097656 1.3516-0.30859l9.7656-4.6953c0.78125-0.37891 1.3711-1.0625 1.6289-1.8906 0.25781-0.82812 0.16016-1.7266-0.27344-2.4805l-5.3984-9.3984c-0.85547-1.4961-2.7656-2.0117-4.2656-1.1523-1.4961 0.85938-2.0156 2.7734-1.1523 4.2656l1.1875 2.0703c-3.5078-0.94922-7.1328-1.4766-10.84-1.4766-22.941 0-41.602 18.664-41.602 41.602 0 7.5898 2.0664 15.016 5.9766 21.465 0.58594 0.96875 1.6211 1.5039 2.6758 1.5039 0.55469 0 1.1094-0.14844 1.6172-0.45312 1.4766-0.89453 1.9453-2.8164 1.0547-4.293-3.3203-5.4766-5.0703-11.777-5.0703-18.227-0.003906-19.496 15.855-35.355 35.344-35.355z"/>
+        </g>
+        <style>
+            #unique-icon:hover {
+                transform: scale(1.2);
+            }
+        </style>
+    </svg>
+</div>
+
+
+
+            `; // Adds question number
+
+    document.getElementById('quiz-question').textContent = question;
+    document.getElementById('optionA').innerHTML = "<span class='option-label'>A.</span>" + choices[0];
+    document.getElementById('optionB').innerHTML = "<span class='option-label'>B.</span>" + choices[1];
+    document.getElementById('optionC').innerHTML = "<span class='option-label'>C.</span>" + choices[2];
+    document.getElementById('optionD').innerHTML = "<span class='option-label'>D.</span>" + choices[3];
+
+    // Reset styles and Next button
+    const options = document.querySelectorAll('.quiz-card');
+    options.forEach(option => {
+        option.style.backgroundColor = ''; // Reset background color
+        option.onclick = () => handleOptionClick(option, option.id.slice(-1)); // Slice to get 'A', 'B', 'C', 'D'
+    });
+    document.getElementById('next-button').style.display = 'none';
+}
+
+async function handleGenerateQuestionsClick(noteId) {
+    if (!noteId) {
+        console.error("Note ID not provided.");
+        return;
+    }
+
+    // Show a confirmation popup
+    const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
+    if (!confirmRegenerate) {
+        console.log("Question regeneration canceled by the user.");
+        return; // Exit if user selects "Cancel"
+    }
+
+    try {
+        // Fetch the note document data for the specified noteId
+        const noteDoc = await db.collection('generatednotes').doc(noteId).get();
+
+        if (!noteDoc.exists) {
+            console.error("Note document does not exist.");
+            return;
+        }
+
+        // Retrieve the key points and ensure they're correctly parsed
+        const noteData = noteDoc.data();
+        const keyPoints = Array.isArray(noteData.keyPoints) ? noteData.keyPoints : [];
+        const overview = noteData.overview || "No overview available.";
+
+        if (keyPoints.length === 0) {
+            console.warn("No key points available for this note.");
+            return;
+        }
+
+        // Call generateQuestions with keyPoints and await its response
+        const { questions, rawResponses } = await generateQuestions(keyPoints);
+        console.log('Generated Questions:', questions);
+        console.log('Raw Responses:', rawResponses);
+
+        // Save only the updated questions to Firestore
+        await saveNoteToFirestore2(noteId, questions);
+        console.log('Questions updated and saved to Firestore.');
+
+        // Reset everything to default
+        resetQuizUI();
+
+        // Load the first question after resetting
+        loadQuestion(0, noteId);
+
+        closeQuizModal(); // Close the modal if all questions are done
+
+    } catch (error) {
+        console.error("Error generating questions:", error);
+    }
+}
 
 </script>
 
