@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4223,11 +4222,34 @@ async function handleGenerateQuestionsClick(pdfId) {
         return;
     }
 
+    // Get the SVG element
+    const svgElement = document.getElementById("unique-icon");
+
+    // Replace the SVG with a loading spinner
+    const originalSVG = svgElement.innerHTML;
+    svgElement.innerHTML = `
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" class="hds-flight-icon--animation-loading" style="animation: spin 1s linear infinite;">
+            <g fill="#000000" fill-rule="evenodd" clip-rule="evenodd">
+                <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" opacity=".2"></path>
+                <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
+            </g>
+        </svg>
+    `;
+
+    // CSS for spinning animation
+    svgElement.style.cssText += `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `;
+
     // Show a confirmation popup
     const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
     if (!confirmRegenerate) {
         console.log("Question regeneration canceled by the user.");
-        return; // Exit if user selects "Cancel"
+        svgElement.innerHTML = originalSVG; // Revert to original SVG if canceled
+        return;
     }
 
     try {
@@ -4236,38 +4258,35 @@ async function handleGenerateQuestionsClick(pdfId) {
 
         if (!pdfDoc.exists) {
             console.error("PDF document does not exist.");
+            svgElement.innerHTML = originalSVG; // Revert to original SVG if error occurs
             return;
         }
 
-        // Retrieve the key points and ensure they're correctly parsed
         const pdfData = pdfDoc.data();
         const keyPoints = Array.isArray(pdfData.keyPoints) ? pdfData.keyPoints : [];
         const overview = pdfData.overview || "No overview available.";
 
         if (keyPoints.length === 0) {
             console.warn("No key points available for this PDF.");
+            svgElement.innerHTML = originalSVG; // Revert to original SVG if no key points
             return;
         }
 
-        // Call generateQuestions with keyPoints and await its response
         const { questions, rawResponses } = await generateQuestions(keyPoints);
         console.log('Generated Questions:', questions);
         console.log('Raw Responses:', rawResponses);
 
-        // Save only the updated questions to Firestore
         await saveToFirestore3(pdfId, questions);
         console.log('Questions updated and saved to Firestore.');
 
-        // Reset everything to default
         resetQuizUI();
-
-        // Load the first question after resetting
         loadQuestion(0, pdfId);
-
-        closeQuizModal(); // Close the modal if all questions are done
+        closeQuizModal();
 
     } catch (error) {
         console.error("Error generating questions:", error);
+    } finally {
+        svgElement.innerHTML = originalSVG; // Revert to original SVG after completion
     }
 }
 
