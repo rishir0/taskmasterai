@@ -4281,10 +4281,13 @@ function resetQuizUI() {
     options.forEach(option => {
         option.style.backgroundColor = ''; // Reset background color
         option.onclick = () => handleOptionClick(option, option.id.slice(-1)); // Slice to get 'A', 'B', 'C', 'D'
+        option.innerHTML = ""; // Clear the option text
     });
 
     // Hide the Next button
     document.getElementById('next-button').style.display = 'none';
+    // Clear the quiz question text
+    document.getElementById('quiz-question').textContent = "";
 }
 
 
