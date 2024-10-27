@@ -4228,21 +4228,22 @@ async function handleGenerateQuestionsClick(pdfId) {
 // Store the original SVG content to restore later
 const originalSVG = svgElement.innerHTML;
 
-// Add spinner SVG with animation applied to the <g> element
+// Add spinner SVG with animation applied only to the specific <path>
 svgElement.innerHTML = `
-    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="100" height="100" class="loading-spinner" style="cursor: pointer; display: inline-block; margin-left: -20px;">
-        <g class="spinner-group" fill-rule="evenodd" clip-rule="evenodd">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#007bff" width="100" height="100" style="cursor: pointer; display: inline-block; margin-left: -20px;">
+        <g fill-rule="evenodd" clip-rule="evenodd">
             <path fill="#007bff" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z"></path>
-            <path fill="#ffffff" d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
+            <path class="spinner-path" fill="#ffffff" d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>
         </g>
     </svg>
 `;
 
-// Add CSS for spinning animation
+// Add CSS for spinning animation applied only to the .spinner-path
 const style = document.createElement("style");
 style.textContent = `
-    .spinner-group {
+    .spinner-path {
         animation: spin 1s linear infinite;
+        transform-origin: 8px 8px; /* Center of the SVG */
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -4250,6 +4251,7 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
 
 
 
