@@ -4263,6 +4263,8 @@ async function handleGenerateQuestionsClick(pdfId) {
         // Load the first question after resetting
         loadQuestion(0, pdfId);
 
+        closeQuizModal(); // Close the modal if all questions are done
+
     } catch (error) {
         console.error("Error generating questions:", error);
     }
