@@ -3641,9 +3641,13 @@ function createNote() {
 
                 const dateCreated = formatDate(); // Get the current date
 
-                // Generate questions based on key points
-                const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
-                console.log('Generated Questions:', questions);
+// Generate questions based on key points without using await
+generateQuestions(keyPoints).then(({ questions, rawResponses }) => {
+    console.log('Generated Questions:', questions);
+}).catch(error => {
+    console.error('Error generating questions:', error);
+});
+
 
                 saveNoteToFirestore(noteText, overview, keyPoints, title, dateCreated)
                     .then(docId => {
