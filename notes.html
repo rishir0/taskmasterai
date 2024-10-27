@@ -3679,7 +3679,7 @@ function saveNoteToFirestore2(noteId, questions) {
 
     try {
         // Add only the questions to the existing note document in Firestore
-        await db.collection('generatednotes').doc(noteId).update({
+        return db.collection('generatednotes').doc(noteId).update({
             rawQuestions: questions || [], // Default to an empty array if undefined
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Update timestamp
         });
