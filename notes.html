@@ -2956,6 +2956,27 @@ async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts
     }
 }
 
+// Function to save only questions to Firestore
+async function saveToFirestore3(pdfId, questions) {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    try {
+        // Add only the questions to the existing document in Firestore
+        await db.collection('generatedpdfs').doc(pdfId).update({
+            rawQuestions: questions || [], // Default to an empty array if undefined
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() // Update timestamp
+        });
+        console.log(`Questions for PDF ID ${pdfId} saved successfully.`);
+    } catch (error) {
+        console.error("Error saving questions to Firestore: ", error);
+    }
+}
+
+
 
 
 
@@ -4201,6 +4222,13 @@ async function handleGenerateQuestionsClick(pdfId) {
         return;
     }
 
+    // Show a confirmation popup
+    const confirmRegenerate = confirm("Are you sure you want to regenerate questions?");
+    if (!confirmRegenerate) {
+        console.log("Question regeneration canceled by the user.");
+        return; // Exit if user selects "Cancel"
+    }
+
     try {
         // Fetch the PDF document data for the specified pdfId
         const pdfDoc = await db.collection('generatedpdfs').doc(pdfId).get();
@@ -4226,12 +4254,13 @@ async function handleGenerateQuestionsClick(pdfId) {
         console.log('Raw Responses:', rawResponses);
 
         // Save only the updated questions to Firestore
-        await saveToFirestore2(pdfData.fileName, overview, keyPoints, questions);
+        await saveToFirestore3(pdfId, questions);
         console.log('Questions updated and saved to Firestore.');
     } catch (error) {
         console.error("Error generating questions:", error);
     }
 }
+
 
 
 
