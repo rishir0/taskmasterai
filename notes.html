@@ -2220,13 +2220,15 @@ async function handleFileUpload(file) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
                 const page = await pdf.getPage(pageNum);
                 const text = await page.getTextContent();
-                textContent += text.items.map(item => item.str).join(' ');
+                const pageText = text.items.map(item => item.str).join(' ');
 
-                // If no digital text is found, switch to OCR
-                if (!textContent.trim()) {
-                    console.log('No digital text found, using OCR...');
+                if (pageText.trim()) {
+                    // If the page contains digital text, append it
+                    textContent += pageText;
+                } else {
+                    console.log('No digital text found, using OCR with higher resolution...');
                     const pageCanvas = document.createElement('canvas');
-                    const viewport = page.getViewport({ scale: 2 });
+                    const viewport = page.getViewport({ scale: 2 }); // Increase scale for higher resolution
                     const canvasContext = pageCanvas.getContext('2d');
                     pageCanvas.height = viewport.height;
                     pageCanvas.width = viewport.width;
@@ -2240,7 +2242,7 @@ async function handleFileUpload(file) {
                         imageDataUrl,
                         'eng',
                         {
-                            logger: m => console.log(m) // Optional: log OCR progress
+                            logger: m => console.log(m) // Log OCR progress
                         }
                     );
                     textContent += ocrResult.data.text;
@@ -2256,7 +2258,6 @@ async function handleFileUpload(file) {
                 percentageDisplay.style.top = '50%'; // Center vertically
                 percentageDisplay.style.left = '50%'; // Center horizontally
                 percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
-
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
