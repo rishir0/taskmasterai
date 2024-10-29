@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="theme.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
     <style>
      :root {
         --primary-color: #6C63FF;
@@ -2205,12 +2206,10 @@ async function handleFileUpload(file) {
 
     reader.onload = async function () {
         try {
-            console.log('PDF file read successfully, processing PDF...');
             const pdfData = new Uint8Array(reader.result);
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-
             let textContent = '';
-            const totalPages = pdf.numPages; // Total number of pages for progress tracking
+            const totalPages = pdf.numPages;
 
             const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
 
@@ -2235,7 +2234,28 @@ async function handleFileUpload(file) {
                 percentageDisplay.style.left = '50%'; // Center horizontally
                 percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
 
-            }
+                // If text extraction is empty, use OCR (for scanned PDFs or images)
+                if (!textContent.trim()) {
+                    console.log('No digital text found, using OCR...');
+                    const pageCanvas = document.createElement('canvas');
+                    const viewport = page.getViewport({ scale: 1 });
+                    const canvasContext = pageCanvas.getContext('2d');
+                    pageCanvas.height = viewport.height;
+                    pageCanvas.width = viewport.width;
+
+                    await page.render({ canvasContext, viewport }).promise;
+
+                    const imageDataUrl = pageCanvas.toDataURL();
+
+                    const ocrResult = await Tesseract.recognize(
+                        imageDataUrl,
+                        'eng',
+                        {
+                            logger: m => console.log(m) // Optional: log OCR progress
+                        }
+                    );
+                    textContent += ocrResult.data.text;
+                }
 
             console.log('Extracted text:', textContent); // Log extracted text
 
