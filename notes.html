@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="theme.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
     <style>
      :root {
         --primary-color: #6C63FF;
@@ -2215,49 +2214,27 @@ async function handleFileUpload(file) {
 
             const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
 
+
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
                 const page = await pdf.getPage(pageNum);
                 const text = await page.getTextContent();
-                const pageText = text.items.map(item => item.str).join(' ');
-
-                if (pageText.trim()) {
-                    // If the page contains digital text, append it
-                    textContent += pageText;
-                } else {
-                    console.log('No digital text found, using OCR with higher resolution...');
-                    const pageCanvas = document.createElement('canvas');
-                    const viewport = page.getViewport({ scale: 2 }); // Increase scale for higher resolution
-                    const canvasContext = pageCanvas.getContext('2d');
-                    pageCanvas.height = viewport.height;
-                    pageCanvas.width = viewport.width;
-
-                    await page.render({ canvasContext, viewport }).promise;
-
-                    const imageDataUrl = pageCanvas.toDataURL();
-
-                    // Use Tesseract.js for OCR
-                    const ocrResult = await Tesseract.recognize(
-                        imageDataUrl,
-                        'eng',
-                        {
-                            logger: m => console.log(m) // Log OCR progress
-                        }
-                    );
-                    textContent += ocrResult.data.text;
-                }
+                textContent += text.items.map(item => item.str).join(' ');
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
+                const percentageDisplay = document.createElement('span');
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
                 estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
                 percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
+                // Ensure the percentage display is positioned at the center of the progress bar
                 percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
                 percentageDisplay.style.top = '50%'; // Center vertically
                 percentageDisplay.style.left = '50%'; // Center horizontally
                 percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
+
             }
 
             console.log('Extracted text:', textContent); // Log extracted text
@@ -2275,7 +2252,6 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress2();
 
             let progress = 0;
-
 
 
 
