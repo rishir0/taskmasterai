@@ -2762,11 +2762,10 @@ async function generateQuestions(keyPoints, maxRetries = 5, delayInterval = 5000
         let attempt = 0;
         let successful = false; // Track if we successfully parsed the question
 
-        // Updated prompt, removing reference to "key point" in the question
         const prompt = `
 Create a multiple-choice question based on the following key point:
 
-"${keyPoint}"
+Key Point: "${keyPoint}"
 
 Please generate the output in this exact format:
 
@@ -2783,15 +2782,13 @@ Correct Answer: (Indicate the correct answer by its letter: A, B, C, or D)
 Important:
 - Ensure there is exactly one correct answer.
 - The question and answer choices should be clearly written and directly related to the key point.
-- Avoid using the phrase "key point" in the question or answer choices.
-- The question should be standalone, without referencing the source of the information.
 - Each choice should be on its own line with a newline separating "Answer Choices" and "Correct Answer".
 - Avoid any incomplete or malformed responses. Do not include any additional text or explanations outside the specified format.
 `;
 
         while (attempt < maxRetries && !successful) {
             try {
-                console.log(`Sending prompt to Hugging Face API...`);
+                console.log(`Sending prompt to Hugging Face API for random key point...`);
                 const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct", {
                     method: 'POST',
                     headers: {
@@ -2805,69 +2802,59 @@ Important:
                     const result = await response.json();
                     rawResponses.push(result); // Save the raw response
 
-                    const generatedText = result[0]?.generated_text || "";
-                    console.log(`Generated text:`, generatedText);
+                    const generatedText = result[0]?.generated_text || ""; // Ensure result[0] exists
+                    console.log(`Generated text for key point:`, generatedText); // Log the generated text
 
-                    // Check if the response contains the expected parts
-                    if (!generatedText.includes('Question:') || 
-                        !generatedText.includes('Answer Choices:') || 
-                        !generatedText.includes('Correct Answer:')) {
-                        console.error(`Malformed response: Missing question, answer choices, or correct answer.`);
-                        attempt++; // Increment attempt counter
-                        await delay(delayInterval); // Wait before retrying
-                        continue; // Retry instead of breaking the loop
+                    // Handle the case where the response is incomplete or incorrectly formatted
+                    if (!generatedText.includes('Question:') || !generatedText.includes('Answer Choices:') || !generatedText.includes('Correct Answer:')) {
+                        console.error(`Malformed response for key point:`, generatedText);
+                        break; // Skip this key point if it's malformed
                     }
 
-                    // Extract question and answer choices
+                    // Extract question and answer choices parts
                     const questionPart = generatedText.split("Answer Choices:")[0].replace("Question:", "").trim();
                     const choicesPart = generatedText.split("Answer Choices:")[1].split("Correct Answer:")[0].trim();
                     const correctAnswerText = generatedText.split("Correct Answer:")[1]?.trim();
 
-                    // Validate the extracted question, choices, and correct answer
-                    if (!questionPart) {
-                        console.error(`Empty question. Skipping.`);
-                        attempt++; // Increment attempt counter
-                        await delay(delayInterval); // Wait before retrying
-                        continue; // Retry instead of breaking the loop
-                    }
+                    // Parse the question
+                    const question = questionPart.trim();
 
+                    // Split and clean up choices, ensuring no extra text
                     const choicesArray = choicesPart.split(/^[A-D]\./m).slice(1).map(choice => choice.trim());
 
+                    // Ensure choices array has exactly 4 options
                     if (choicesArray.length !== 4) {
-                        console.error(`Incomplete or malformed choices. Expected 4 choices but got ${choicesArray.length}.`);
-                        attempt++; // Increment attempt counter
-                        await delay(delayInterval); // Wait before retrying
-                        continue; // Retry instead of breaking the loop
+                        console.error(`Failed to parse exactly 4 choices for key point`);
+                        break; // Skip if we do not have exactly 4 choices
                     }
 
+                    // Parse the correct answer letter, tolerate extra whitespace or unexpected text
                     const correctAnswerMatch = correctAnswerText && /^[A-D]/.exec(correctAnswerText);
                     const correctAnswer = correctAnswerMatch ? correctAnswerMatch[0] : null;
 
                     if (!correctAnswer) {
-                        console.error(`Invalid or missing correct answer. Skipping.`);
-                        attempt++; // Increment attempt counter
-                        await delay(delayInterval); // Wait before retrying
-                        continue; // Retry instead of breaking the loop
+                        console.error(`Failed to parse correct answer for key point:`, correctAnswerText);
+                        break; // Skip this key point if the correct answer is malformed
                     }
 
-                    // If all elements are valid, save the generated question
+                    // Save the successfully generated question
                     const generatedQuestion = {
                         keyPoint: keyPoint,
-                        question: questionPart.trim(),
+                        question: question,
                         choices: choicesArray,
                         correctAnswer: correctAnswer
                     };
 
                     questions.push(generatedQuestion); // Add the generated question to the list
-                    console.log(`Successfully generated question.`);
-                    successful = true; // Mark as successful
+                    console.log(`Successfully generated question for key point.`);
+                    successful = true; // Mark this key point as successfully processed
 
                 } else {
                     const errorDetails = await response.json();
-                    console.error(`Error generating question:`, errorDetails);
+                    console.error(`Error generating question for key point:`, errorDetails);
 
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying...`);
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                         await delay(delayInterval); // Wait and retry
                         attempt++;
                     } else {
@@ -2875,13 +2862,13 @@ Important:
                     }
                 }
             } catch (error) {
-                console.error(`Failed to generate question: ${error.message}`);
+                console.error(`Failed to generate question for key point: ${error.message}`);
                 if (attempt < maxRetries - 1) {
-                    console.log(`Retrying...`);
-                    await delay(delayInterval); // Wait and retry
+                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
+                    await delay(delayInterval);
                     attempt++;
                 } else {
-                    break; // Exit loop if all retries fail
+                    break; // Skip this key point if all retries fail
                 }
             }
         }
@@ -2893,11 +2880,6 @@ Important:
         questions,    // List of successfully generated questions
         rawResponses  // Raw API responses (including failed ones)
     };
-}
-
-// Helper function to delay execution
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
