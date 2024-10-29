@@ -2815,7 +2815,9 @@ while (attempt < maxRetries && !successful) {
                 !generatedText.includes('Answer Choices:') || 
                 !generatedText.includes('Correct Answer:')) {
                 console.error(`Malformed response: Missing question, answer choices, or correct answer.`);
-                break;
+                attempt++; // Increment attempt counter
+                await delay(delayInterval); // Wait before retrying
+                continue; // Retry instead of breaking the loop
             }
 
             // Extract question and answer choices
@@ -2826,14 +2828,18 @@ while (attempt < maxRetries && !successful) {
             // Validate the extracted question, choices, and correct answer
             if (!questionPart) {
                 console.error(`Empty question. Skipping.`);
-                break;
+                attempt++; // Increment attempt counter
+                await delay(delayInterval); // Wait before retrying
+                continue; // Retry instead of breaking the loop
             }
 
             const choicesArray = choicesPart.split(/^[A-D]\./m).slice(1).map(choice => choice.trim());
 
             if (choicesArray.length !== 4) {
                 console.error(`Incomplete or malformed choices. Expected 4 choices but got ${choicesArray.length}.`);
-                break;
+                attempt++; // Increment attempt counter
+                await delay(delayInterval); // Wait before retrying
+                continue; // Retry instead of breaking the loop
             }
 
             const correctAnswerMatch = correctAnswerText && /^[A-D]/.exec(correctAnswerText);
@@ -2841,7 +2847,9 @@ while (attempt < maxRetries && !successful) {
 
             if (!correctAnswer) {
                 console.error(`Invalid or missing correct answer. Skipping.`);
-                break;
+                attempt++; // Increment attempt counter
+                await delay(delayInterval); // Wait before retrying
+                continue; // Retry instead of breaking the loop
             }
 
             // If all elements are valid, save the generated question
@@ -2872,22 +2880,21 @@ while (attempt < maxRetries && !successful) {
         console.error(`Failed to generate question: ${error.message}`);
         if (attempt < maxRetries - 1) {
             console.log(`Retrying...`);
-            await delay(delayInterval);
+            await delay(delayInterval); // Wait and retry
             attempt++;
         } else {
-            break; // Skip if all retries fail
+            break; // Exit loop if all retries fail
         }
     }
 }
-    
 
-    // Return the successfully generated questions and the raw API responses
-    console.log('Question generation complete.');
-    return {
-        questions,    // List of successfully generated questions
-        rawResponses  // Raw API responses (including failed ones)
-    };
-}
+// Return the successfully generated questions and the raw API responses
+console.log('Question generation complete.');
+return {
+    questions,    // List of successfully generated questions
+    rawResponses  // Raw API responses (including failed ones)
+};
+
 
 
 
