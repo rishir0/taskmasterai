@@ -2226,7 +2226,7 @@ async function handleFileUpload(file) {
                 if (!textContent.trim()) {
                     console.log('No digital text found, using OCR...');
                     const pageCanvas = document.createElement('canvas');
-                    const viewport = page.getViewport({ scale: 1 });
+                    const viewport = page.getViewport({ scale: 2 });
                     const canvasContext = pageCanvas.getContext('2d');
                     pageCanvas.height = viewport.height;
                     pageCanvas.width = viewport.width;
