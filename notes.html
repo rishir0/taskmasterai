@@ -2206,13 +2206,14 @@ async function handleFileUpload(file) {
 
     reader.onload = async function () {
         try {
+            console.log('PDF file read successfully, processing PDF...');
             const pdfData = new Uint8Array(reader.result);
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+
             let textContent = '';
-            const totalPages = pdf.numPages;
+            const totalPages = pdf.numPages; // Total number of pages for progress tracking
 
             const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
-
 
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
@@ -2221,20 +2222,7 @@ async function handleFileUpload(file) {
                 const text = await page.getTextContent();
                 textContent += text.items.map(item => item.str).join(' ');
 
-                // Update progress bar and estimated time after each page is processed
-                const progress = (pageNum / totalPages) * 100;
-                const percentageDisplay = document.createElement('span');
-                progressBar.value = progress;
-                percentageDisplay.innerText = `${Math.round(progress)}%`;
-                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
-                // Ensure the percentage display is positioned at the center of the progress bar
-                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
-                percentageDisplay.style.top = '50%'; // Center vertically
-                percentageDisplay.style.left = '50%'; // Center horizontally
-                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
-
-                // If text extraction is empty, use OCR (for scanned PDFs or images)
+                // If no digital text is found, switch to OCR
                 if (!textContent.trim()) {
                     console.log('No digital text found, using OCR...');
                     const pageCanvas = document.createElement('canvas');
@@ -2247,6 +2235,7 @@ async function handleFileUpload(file) {
 
                     const imageDataUrl = pageCanvas.toDataURL();
 
+                    // Use Tesseract.js for OCR
                     const ocrResult = await Tesseract.recognize(
                         imageDataUrl,
                         'eng',
@@ -2256,6 +2245,19 @@ async function handleFileUpload(file) {
                     );
                     textContent += ocrResult.data.text;
                 }
+
+                // Update progress bar and estimated time after each page is processed
+                const progress = (pageNum / totalPages) * 100;
+                progressBar.value = progress;
+                percentageDisplay.innerText = `${Math.round(progress)}%`;
+                estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
+                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
+                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
+                percentageDisplay.style.top = '50%'; // Center vertically
+                percentageDisplay.style.left = '50%'; // Center horizontally
+                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
+
+            }
 
             console.log('Extracted text:', textContent); // Log extracted text
 
@@ -2272,6 +2274,7 @@ async function handleFileUpload(file) {
             await simulateRealTimeUploadProgress2();
 
             let progress = 0;
+
 
 
 
