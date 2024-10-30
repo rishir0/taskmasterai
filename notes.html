@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2761,7 +2762,8 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Validating key points for grammar and clarity...');
 
     const validationPrompt = `
-    Please review the following key points for grammar and clarity. Return only the corrected sentences, with no numbers, labels, explanations, or commentary of any kind.
+    Review the key points below for grammar and clarity. Each point must be a single, clear sentence without any numbers, labels, or symbols. 
+    When outputting, only show the corrected sentences, without any numbers, labels, explanations, or extra information. EACH KEY POINT MUST BE SEPARATE, WHICH MEANS THAT ONE SENTENCES PER KEY POINT. THERE SHOULD BE NO ERRORS OR MALFORMED TEXT. KEEP EVERYTHING PROFESSIONAL. 
 
     Key Points: "${keyPoints.join('. ')}"
     `;
