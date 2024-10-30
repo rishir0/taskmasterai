@@ -2637,14 +2637,13 @@ function splitTextIntoChunks(text, maxLength = 2000) {
 
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
-    
+
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     const keyPoints = [];
     const totalChunks = chunks.length;
     const startTime = Date.now();
 
-    // Get the elements for the progress bar and estimated time display
     const estimatedTimeDisplay = document.getElementById('estimated-time'); 
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
@@ -2659,11 +2658,11 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
         while (attempt < maxRetries) {
             try {
-                // Generate overview
                 console.log('Sending chunk to Hugging Face API for overview...');
-                
+
+                // Updated Overview Prompt
                 const overviewPrompt = `
-                You are an advanced note-generating assistant. Create a perfect summary based on the following text. Only include the most important points with a clear, direct focus on the main ideas, in no more than 4 sentences, without explanations or extra information.
+                You are an advanced note assistant. Generate a brief, clear summary that covers the main themes only. Keep it under 4 sentences, capturing only essential concepts without explanations.
 
                 Text: "${chunk}"
                 `;
@@ -2685,7 +2684,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 } else {
                     const errorDetails = await overviewResponse.json();
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying...`);
                         await delay(delayInterval);
                         attempt++;
                         continue;
@@ -2694,22 +2693,18 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                     }
                 }
 
-                // Generate key points
+                // Updated Key Points Prompt
                 console.log('Sending chunk to Hugging Face API for key points...');
                 
                 const keyPointsPrompt = `
-                You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
-
-Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text.
-Do not include any labels such as "Key Point" or numbering.
-Do not use bullet points or any symbols.
-Ensure perfect grammar and clarity. Each sentence should end with a period.
-Focus on providing only relevant information without repetition or unnecessary details.
-Do not add any numbers or symbols at the end of each sentence.
+                You are an advanced note assistant. Generate essential key points from the following text. Follow these guidelines:
+                - Each key point should be a single, concise sentence with no numbering, symbols, or labels.
+                - Perfect grammar and clarity are required; each sentence should end with a period.
+                - Focus on relevant information without explanations, redundancy, or unnecessary details.
 
                 Text: "${chunk}"
                 `;
-                
+
                 const keyPointsResponse = await fetch(modelEndpoint, {
                     method: 'POST',
                     headers: {
@@ -2726,7 +2721,6 @@ Do not add any numbers or symbols at the end of each sentence.
                     keyPoints.push(...sentences);
                     console.log('Received key points for chunk.');
 
-                    // Update progress bar and estimated time
                     const currentProgress = ((i + 1) / totalChunks) * 100;
                     const elapsedTime = Date.now() - startTime;
                     const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
@@ -2738,14 +2732,13 @@ Do not add any numbers or symbols at the end of each sentence.
                     if (estimatedTimeDisplay) {
                         const minutes = Math.floor(remainingTime / 60000);
                         const seconds = Math.floor((remainingTime % 60000) / 1000);
-                        const formattedRemainingTime = `${minutes}m ${seconds}s`;
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
+                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
                     }
                     break;
                 } else {
                     const errorDetails = await keyPointsResponse.json();
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying...`);
                         await delay(delayInterval);
                         attempt++;
                     } else {
@@ -2753,7 +2746,7 @@ Do not add any numbers or symbols at the end of each sentence.
                     }
                 }
             } catch (error) {
-                console.error(`Failed to generate summary or key points: ${error.message}`);
+                console.error(`Error generating summary or key points: ${error.message}`);
                 if (attempt < maxRetries - 1) {
                     console.log(`Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
@@ -2765,11 +2758,10 @@ Do not add any numbers or symbols at the end of each sentence.
         }
     }
 
-    console.log('Initial key points generation complete. Validating key points for grammar and clarity...');
-    
-    // Validate and correct the key points
+    console.log('Validating key points for grammar and clarity...');
+
     const validationPrompt = `
-    Review the following key points to ensure they are clear, with perfect grammar, and convey key ideas without any explanations or unnecessary details.
+    Review the key points below for grammar and clarity. Each point must be a single, clear sentence without any numbers, labels, or symbols.
 
     Key Points: "${keyPoints.join('. ')}"
     `;
@@ -2795,7 +2787,6 @@ Do not add any numbers or symbols at the end of each sentence.
 
     console.log('Summary and final validated key points generation complete.');
 
-    // Combine all summaries and limit overview to 4 sentences
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
 
@@ -2804,6 +2795,7 @@ Do not add any numbers or symbols at the end of each sentence.
         keyPoints
     };
 }
+
 
 
 
