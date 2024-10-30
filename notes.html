@@ -2705,9 +2705,12 @@ Focus only on the essential message, and maintain perfect grammar."
                 console.log('Sending chunk to Hugging Face API for key points...');
                 
                 const keyPointsPrompt = `
-You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
+You are a sophisticated note-generating assistant. Your task is to extract complete, relevant key points from the provided text. Follow these rules:
 
-Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text, starting with a capitalized word and ending with a period. Do not include any labels such as 'Key Point' or numbering. Do not use bullet points or any symbols. Ensure each key point is complete and grammatically correct, with no empty or incomplete points. Focus on providing only relevant information without repetition or unnecessary details.
+Each key point must be a single, complete sentence that begins with a capital letter and ends with a period.
+Exclude any labels, numbering, or symbols.
+Ensure each key point conveys a clear, distinct idea without unnecessary or repetitive details.
+Check for perfect grammar and avoid incomplete or malformed points.
                 Text: "${chunk}"
                 `;
                 
