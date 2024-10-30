@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2641,7 +2640,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
-    const keyPoints = [];
+    let keyPoints = [];
     const totalChunks = chunks.length;
     const startTime = Date.now(); // Start time for tracking progress
 
@@ -2770,7 +2769,36 @@ Focus on providing only relevant information without repetition or unnecessary d
         }
     }
 
-    console.log('Summary and key points generation complete.');
+    console.log('Initial generation of summaries and key points complete. Starting verification of key points...');
+
+    // Verify and refine key points
+    const keyPointsVerificationPrompt = `
+    You are a highly precise note-generating assistant. Review the following key points to ensure accuracy and quality:
+
+- Verify that each key point is an accurate representation of the information.
+- Confirm that each key point is a single, complete sentence with proper grammar.
+- Ensure clarity and conciseness, and correct any mistakes if necessary.
+
+    Key Points: "${keyPoints.join('. ')}"
+    `;
+
+    const keyPointsVerificationResponse = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: keyPointsVerificationPrompt }),
+    });
+
+    if (keyPointsVerificationResponse.ok) {
+        const verificationResult = await keyPointsVerificationResponse.json();
+        const verifiedKeyPointsText = verificationResult[0]?.generated_text?.trim();
+        keyPoints = verifiedKeyPointsText.split('. ').map(sentence => sentence.trim());
+        console.log('Key points verified and refined.');
+    } else {
+        console.error('Error during key points verification.');
+    }
 
     // Combine all summaries and limit overview to 4 sentences
     const combinedOverview = summaries.join(' ');
