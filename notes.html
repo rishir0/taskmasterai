@@ -2671,7 +2671,7 @@ function cleanText(text) {
 async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating structured notes...');
 
-    const chunks = splitTextIntoChunks(text);
+    const chunks = splitTextIntoChunks(text);  // Split large text into manageable chunks
     const sections = {
         introduction: [],
         insights: [],
@@ -2720,28 +2720,26 @@ async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval 
 
                 if (response.ok) {
                     const result = await response.json();
-                    const rawSections = result[0]?.generated_text?.trim().split(/\n\n/);
+                    let section = result[0]?.generated_text?.trim();
 
-                    for (let section of rawSections) {
-                        // Process each section slowly, checking text structure and coherence
-                        await new Promise(resolve => setTimeout(resolve, 500)); // Delay to ensure quality generation
-                        
-                        // Remove malformed text patterns and correct formatting
-                        section = section
-                            .replace(/\s+\*/g, "")         // Remove stray bullets
-                            .replace(/[^a-zA-Z0-9\s,.?!]/g, "") // Remove special characters
-                            .replace(/\s+/g, " ");         // Replace extra spaces
+                    // Process each section slowly, checking text structure and coherence
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Delay to ensure quality generation
 
-                        // Detect and categorize content into structured sections
-                        if (section.toLowerCase().includes("introduction")) {
-                            sections.introduction.push(cleanText(section));
-                        } else if (section.toLowerCase().includes("key insights") || section.toLowerCase().includes("key points")) {
-                            sections.insights.push(cleanText(section));
-                        } else if (section.toLowerCase().includes("analysis")) {
-                            sections.analysis.push(cleanText(section));
-                        } else if (section.toLowerCase().includes("conclusion")) {
-                            sections.conclusion.push(cleanText(section));
-                        }
+                    // Remove malformed text patterns and correct formatting
+                    section = section
+                        .replace(/\s+\*/g, "")         // Remove stray bullets
+                        .replace(/[^a-zA-Z0-9\s,.?!]/g, "") // Remove special characters
+                        .replace(/\s+/g, " ");         // Replace extra spaces
+
+                    // Detect and categorize content into structured sections
+                    if (section.toLowerCase().includes("overview")) {
+                        sections.introduction.push(cleanText(section));
+                    } else if (section.toLowerCase().includes("key insights") || section.toLowerCase().includes("key points")) {
+                        sections.insights.push(cleanText(section));
+                    } else if (section.toLowerCase().includes("analysis")) {
+                        sections.analysis.push(cleanText(section));
+                    } else if (section.toLowerCase().includes("conclusion")) {
+                        sections.conclusion.push(cleanText(section));
                     }
 
                     // Progress Update
@@ -2784,7 +2782,7 @@ async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval 
 
     console.log('Note generation complete.');
 
-    // Final formatted notes
+    // Final structured note format
     return {
         introduction: sections.introduction.join('\n'),
         insights: sections.insights.join('\n'),
@@ -2792,6 +2790,7 @@ async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval 
         conclusion: sections.conclusion.join('\n')
     };
 }
+
 
 
 
