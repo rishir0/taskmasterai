@@ -2761,7 +2761,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Validating key points for grammar and clarity...');
 
     const validationPrompt = `
-    Review the key points below for grammar and clarity. Each point must be a single, clear sentence without any numbers, labels, or symbols.
+    Please review the following key points for grammar and clarity. Return only the corrected sentences, with no numbers, labels, explanations, or commentary of any kind.
 
     Key Points: "${keyPoints.join('. ')}"
     `;
