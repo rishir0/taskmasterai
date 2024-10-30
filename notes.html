@@ -2700,8 +2700,13 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 console.log('Sending chunk to Hugging Face API for key points...');
                 
                 const keyPointsPrompt = `
-                You are a highly intelligent note-generating assistant. Generate clear and concise key points based on the following text. Each key point must represent a distinct, essential detail, without unnecessary commentary.
+                You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
 
+Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text.
+Do not include any labels such as "Key Point" or numbering.
+Do not use bullet points or any symbols.
+Ensure perfect grammar and clarity. Each sentence should end with a period.
+Focus on providing only relevant information without repetition or unnecessary details.
                 Text: "${chunk}"
                 `;
                 
