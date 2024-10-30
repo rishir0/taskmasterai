@@ -2640,9 +2640,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
-    let keyPoints = [];
+    const keyPoints = [];
     const totalChunks = chunks.length;
-    const startTime = Date.now(); // Start time for tracking progress
+    const startTime = Date.now();
 
     // Get the elements for the progress bar and estimated time display
     const estimatedTimeDisplay = document.getElementById('estimated-time'); 
@@ -2651,9 +2651,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const uploadingText = document.getElementById('uploading-text');
     
     uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
-    
-    // Simulate real-time progress update (can be implemented separately)
-    await simulateRealTimeUploadProgress(); 
+    await simulateRealTimeUploadProgress();
 
     for (let i = 0; i < totalChunks; i++) {
         let chunk = chunks[i];
@@ -2722,30 +2720,26 @@ Focus on providing only relevant information without repetition or unnecessary d
                 if (keyPointsResponse.ok) {
                     const keyPointsResult = await keyPointsResponse.json();
                     const keyPointText = keyPointsResult[0]?.generated_text?.trim();
-
-                    // Split key points into individual sentences
                     const sentences = keyPointText.split('. ').map(sentence => sentence.trim());
                     keyPoints.push(...sentences);
                     console.log('Received key points for chunk.');
 
                     // Update progress bar and estimated time
-                    const currentProgress = ((i + 1) / totalChunks) * 100; // Calculate percentage
-                    const elapsedTime = Date.now() - startTime; // Time elapsed so far
-                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks; // Estimate total time
+                    const currentProgress = ((i + 1) / totalChunks) * 100;
+                    const elapsedTime = Date.now() - startTime;
+                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
                     const remainingTime = estimatedTotalTime - elapsedTime;
 
-                    // Update progress bar and percentage
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                    // Format the remaining time for display
                     if (estimatedTimeDisplay) {
                         const minutes = Math.floor(remainingTime / 60000);
                         const seconds = Math.floor((remainingTime % 60000) / 1000);
                         const formattedRemainingTime = `${minutes}m ${seconds}s`;
                         estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
                     }
-                    break; // Move on to the next chunk after successful response
+                    break;
                 } else {
                     const errorDetails = await keyPointsResponse.json();
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
@@ -2769,46 +2763,47 @@ Focus on providing only relevant information without repetition or unnecessary d
         }
     }
 
-    console.log('Initial generation of summaries and key points complete. Starting verification of key points...');
-
-    // Verify and refine key points
-    const keyPointsVerificationPrompt = `
-    You are a highly precise note-generating assistant. Review the following key points to ensure accuracy and quality:
-
-- Verify that each key point is an accurate representation of the information.
-- Confirm that each key point is a single, complete sentence with proper grammar.
-- Ensure clarity and conciseness, and correct any mistakes if necessary.
+    console.log('Initial key points generation complete. Validating key points for grammar and clarity...');
+    
+    // Validate and correct the key points
+    const validationPrompt = `
+    Please carefully review the following key points. Ensure that each key point is a single, clear sentence with perfect grammar. 
+    Correct any issues related to accuracy, clarity, and sentence structure:
 
     Key Points: "${keyPoints.join('. ')}"
     `;
 
-    const keyPointsVerificationResponse = await fetch(modelEndpoint, {
+    const validationResponse = await fetch(modelEndpoint, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${huggingFaceApiKey}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ inputs: keyPointsVerificationPrompt }),
+        body: JSON.stringify({ inputs: validationPrompt }),
     });
 
-    if (keyPointsVerificationResponse.ok) {
-        const verificationResult = await keyPointsVerificationResponse.json();
-        const verifiedKeyPointsText = verificationResult[0]?.generated_text?.trim();
-        keyPoints = verifiedKeyPointsText.split('. ').map(sentence => sentence.trim());
-        console.log('Key points verified and refined.');
+    if (validationResponse.ok) {
+        const validatedResult = await validationResponse.json();
+        const validatedKeyPoints = validatedResult[0]?.generated_text?.trim().split('. ').map(sentence => sentence.trim());
+        keyPoints.length = 0;
+        keyPoints.push(...validatedKeyPoints);
+        console.log('Final key points validated and corrected.');
     } else {
-        console.error('Error during key points verification.');
+        console.error('Error validating key points');
     }
+
+    console.log('Summary and final validated key points generation complete.');
 
     // Combine all summaries and limit overview to 4 sentences
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
 
     return {
-        overview: overviewSentences, // Final overview, limited to 4 sentences
-        keyPoints  // Final key points without labels or bullet points
+        overview: overviewSentences,
+        keyPoints
     };
 }
+
 
 
 
