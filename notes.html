@@ -2733,69 +2733,84 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
 async function refineSummaryAndKeyPoints(overview, keyPoints, maxRetries = 3, delayInterval = 3000) {
     const llamaModelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
-    const prompt = `
-        Here is a summary and its key points. Check for any errors, add missing information if needed, and return the corrected summary and key points without any explanations or comments.
-        Summary: ${overview}
+
+    // Prompt for refining the overview
+    const overviewPrompt = `
+        Here is an overview. Revise it into exactly 8 concise sentences based on the content provided, with no explanation or comments. Return only the revised overview.
+        Overview: ${overview}
+    `;
+
+    // Prompt for refining the key points separately
+    const keyPointsPrompt = `
+        Here are key points. Update them to be more accurate, distinct from the overview, and clear. Return only the revised key points. Do not include any explanation, comment, or overlap with the overview.
         Key Points: ${keyPoints.join(" ")}
     `;
 
-    let attempt = 0;
+    // Function to handle API requests
+    async function sendPromptToModel(prompt, description) {
+        let attempt = 0;
 
-    while (attempt < maxRetries) {
-        try {
-            console.log('Sending summary and key points for refinement...');
-            const response = await fetch(llamaModelEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${huggingFaceApiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: prompt })
-            });
+        while (attempt < maxRetries) {
+            try {
+                console.log(`Sending ${description} for refinement...`);
+                const response = await fetch(llamaModelEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ inputs: prompt })
+                });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Received response from the model:', result); // Log the full response for debugging
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log(`Received response from the model for ${description}:`, result);
 
-                // Validate the response format
-                if (result[0] && result[0].generated_text) {
-                    const refinedOverview = result[0].generated_text;
-                    const refinedKeyPoints = refinedOverview.split('. ').map(sentence => sentence.trim() + '.');
+                    if (result[0] && result[0].generated_text) {
+                        return result[0].generated_text;
+                    } else {
+                        console.error('Unexpected response format:', result);
+                        throw new Error('Invalid response format from model. Expected "generated_text" field is missing.');
+                    }
 
-                    console.log('Refinement complete.');
-                    return {
-                        overview: refinedOverview,
-                        keyPoints: refinedKeyPoints
-                    };
                 } else {
-                    console.error('Unexpected response format:', result);
-                    throw new Error('Invalid response format from model. Expected "generated_text" field is missing.');
+                    const errorDetails = await response.json();
+                    console.error(`Error from Llama model for ${description}:`, errorDetails);
+
+                    if (errorDetails.error && errorDetails.error.includes('loading')) {
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        await delay(delayInterval);
+                        attempt++;
+                    } else {
+                        throw new Error(`Error refining ${description}: ${errorDetails.error}`);
+                    }
                 }
-
-            } else {
-                const errorDetails = await response.json();
-                console.error(`Error from Llama model:`, errorDetails);
-
-                if (errorDetails.error && errorDetails.error.includes('loading')) {
-                    console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+            } catch (error) {
+                console.error(`Failed to refine ${description}: ${error.message}`);
+                if (attempt < maxRetries - 1) {
+                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
                     attempt++;
                 } else {
-                    throw new Error(`Error refining summary: ${errorDetails.error}`);
+                    throw error;
                 }
-            }
-        } catch (error) {
-            console.error(`Failed to refine summary: ${error.message}`);
-            if (attempt < maxRetries - 1) {
-                console.log(`Retrying in ${delayInterval / 1000} seconds...`);
-                await delay(delayInterval);
-                attempt++;
-            } else {
-                throw error; // Throw the error if all retries fail
             }
         }
     }
+
+    // Refine overview and key points separately
+    const refinedOverview = await sendPromptToModel(overviewPrompt, 'overview');
+    const refinedKeyPoints = await sendPromptToModel(keyPointsPrompt, 'key points');
+
+    // Split the refined key points into individual sentences
+    const refinedKeyPointsArray = refinedKeyPoints.split('. ').map(sentence => sentence.trim() + '.');
+
+    return {
+        overview: refinedOverview,
+        keyPoints: refinedKeyPointsArray
+    };
 }
+
 
 
 
