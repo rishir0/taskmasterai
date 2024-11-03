@@ -4371,9 +4371,8 @@ function resetQuizUI() {
 
 </script>
 
-<!-- Move your script here, before the closing body tag -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+window.onload = function() {
     function toggleSVG() {
         const lockPath = document.getElementById('lockPath');
         if (!lockPath) return; // Check if the element is found
@@ -4387,7 +4386,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Attach the function to the click event
     document.querySelector('.lock-btn').addEventListener('click', toggleSVG);
-});
+};
 </script>
 
 
