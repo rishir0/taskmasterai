@@ -2622,32 +2622,24 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Function to generate summary and key points for the entire text
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
-    
-    // Define the prompt for the model
-    const prompt = "Please generate a structured summary and key points. The summary should provide an overview limited to four sentences, and key points should cover main details concisely.";
+    const startTime = Date.now(); // Capture the start time
 
-    const summaries = [];
-    const keyPoints = [];
-    const startTime = Date.now();
-
-    // Ensure progress-related elements are accessible
     const estimatedTimeDisplay = document.getElementById('estimated-time');
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
-
     const uploadingText = document.getElementById('uploading-text');
     uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-    // Simulate progress (adjust based on actual response time)
-    await simulateRealTimeUploadProgress();
+    await simulateRealTimeUploadProgress(); // Start simulating progress
 
     let attempt = 0;
     while (attempt < maxRetries) {
         try {
             console.log('Sending text to Hugging Face API...');
+
+            // Send the entire text with the prompt for context-aware summarization
             const response = await fetch(modelEndpoint, {
                 method: 'POST',
                 headers: {
@@ -2657,39 +2649,37 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 body: JSON.stringify({
                     inputs: text,
                     parameters: {
-                        prompt: prompt
+                        prompt: "Generate an overview and key points based on the provided text. Organize the output into clear, structured sections with accurate details and concise summaries."
                     }
                 })
             });
 
             if (response.ok) {
                 const result = await response.json();
-                const summary = result[0].summary_text;
-                summaries.push(summary);
 
-                // Extract key points from the summary text
-                const sentences = summary.split('. ');
-                keyPoints.push(...sentences.map(sentence => sentence.trim() + '.'));
+                // Verify that the result contains the expected structure
+                if (result && result[0] && result[0].summary_text) {
+                    const summary = result[0].summary_text;
 
-                console.log('Received summary.');
+                    // Generate overview and key points from the summary
+                    const overviewSentences = summary.split('. ').slice(0, 4).join('. ');
+                    const keyPoints = summary.split('. ').map(sentence => sentence.trim() + '.'); // Ensure full sentences
 
-                // Calculate and display progress
-                const elapsedTime = Date.now() - startTime;
-                const currentProgress = 100; // Complete since it's a single text
-                const remainingTime = (elapsedTime / (attempt + 1)) * (maxRetries - attempt);
+                    console.log('Received summary.');
 
-                // Update progress bar and estimated time display
-                progressBar.value = currentProgress;
-                percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+                    // Update progress to 100%
+                    progressBar.value = 100;
+                    percentageDisplay.innerText = '100%';
+                    estimatedTimeDisplay.innerText = 'Estimated time remaining: 0m 0s';
 
-                if (estimatedTimeDisplay) {
-                    const minutes = Math.floor(remainingTime / 60000);
-                    const seconds = Math.floor((remainingTime % 60000) / 1000);
-                    estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
+                    return {
+                        overview: overviewSentences,
+                        keyPoints
+                    };
+                } else {
+                    console.error('Unexpected response structure:', result);
+                    throw new Error('Unexpected response structure from Hugging Face API.');
                 }
-
-                break; // Exit loop on successful response
-
             } else {
                 const errorDetails = await response.json();
                 if (errorDetails.error && errorDetails.error.includes('loading')) {
@@ -2712,17 +2702,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
             }
         }
     }
-
     console.log('Summary generation complete.');
-
-    // Compile overview and limit to 4 sentences
-    const combinedOverview = summaries.join(' ');
-    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
-
-    return {
-        overview: overviewSentences,
-        keyPoints
-    };
 }
 
 
