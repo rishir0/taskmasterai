@@ -2631,7 +2631,12 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
+// Helper function to wait for a certain amount of time (in ms)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function generateSummary(text, maxRetries = 5, delayInterval = 10000) {
     console.log('Generating summary and key points...');
     
     const startTime = Date.now(); // Start time for tracking progress
@@ -2670,15 +2675,20 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 body: JSON.stringify({ inputs: overviewPrompt }),
             });
 
+            await delay(3000); // Allow model some time to process before checking
+
             if (overviewResponse.ok) {
                 const result = await overviewResponse.json();
                 overview = result[0]?.generated_text?.trim();
 
-                // Extract sentences 3 through 8 for final overview
+                // Extract sentences 3 through 8 for final overview if response has at least 8 sentences
                 const sentences = overview.split('. ').map(sentence => sentence.trim());
-                overview = sentences.slice(2, 8).join('. ') + '.';
-
-                console.log('Received clean overview.');
+                if (sentences.length >= 8) {
+                    overview = sentences.slice(2, 8).join('. ') + '.';
+                    console.log('Received complete overview.');
+                } else {
+                    throw new Error('Overview generation incomplete.');
+                }
 
                 // Update progress bar to 50%
                 progressBar.value = 50;
@@ -2696,6 +2706,8 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         } catch (error) {
             console.error(`Failed to generate overview: ${error.message}`);
             if (attempt === maxRetries - 1) throw error;
+            console.log(`Retrying overview generation in ${delayInterval / 1000} seconds...`);
+            await delay(delayInterval);
         }
     }
 
@@ -2725,14 +2737,20 @@ Focus on providing only relevant information without repetition or unnecessary d
                 body: JSON.stringify({ inputs: keyPointsPrompt }),
             });
 
+            await delay(3000); // Allow model some time to process before checking
+
             if (keyPointsResponse.ok) {
                 const keyPointsResult = await keyPointsResponse.json();
                 const keyPointText = keyPointsResult[0]?.generated_text?.trim();
 
                 // Split key points into individual sentences, ensuring each is a single sentence
-                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim() + '.');
+                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim() + '.').filter(sentence => sentence !== '.');
 
-                console.log('Received single-sentence key points.');
+                if (keyPoints.length > 1) {
+                    console.log('Received complete key points.');
+                } else {
+                    throw new Error('Key points generation incomplete.');
+                }
 
                 // Update progress bar to 100%
                 progressBar.value = 100;
@@ -2750,6 +2768,8 @@ Focus on providing only relevant information without repetition or unnecessary d
         } catch (error) {
             console.error(`Failed to generate key points: ${error.message}`);
             if (attempt === maxRetries - 1) throw error;
+            console.log(`Retrying key points generation in ${delayInterval / 1000} seconds...`);
+            await delay(delayInterval);
         }
     }
 
@@ -2760,6 +2780,7 @@ Focus on providing only relevant information without repetition or unnecessary d
         keyPoints  // Final key points, each as a single sentence
     };
 }
+
 
 
 
