@@ -2686,10 +2686,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 10000) {
                 const result = await overviewResponse.json();
                 overview = result[0]?.generated_text?.trim();
 
-                // Validate the overview output
-                if (overview === '.' || overview.length < 10) {
-                    throw new Error('Invalid overview response.');
-                }
 
                 // Extract sentences 3 through 8 for final overview if response has at least 8 sentences
                 const sentences = overview.split('. ').map(sentence => sentence.trim());
