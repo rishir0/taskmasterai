@@ -2621,6 +2621,11 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Helper function to wait for a certain amount of time (in ms)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     
@@ -2646,7 +2651,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
             console.log('Sending text to Hugging Face API for overview...');
             
             const overviewPrompt = `
-            You are a highly intelligent note-generating assistant. Generate a concise, clear summary based on the following text. The summary should capture the central theme and should be no more than 4 sentences. Avoid unnecessary details or explanations.
+            You are a highly intelligent note-generating assistant. Generate a direct, clean overview of the following text. The overview should capture the central theme and be exactly 4 complete sentences. Do not include any explanations, labels, or additional instructions.
 
             Text: "${text}"
             `;
@@ -2663,7 +2668,12 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
             if (overviewResponse.ok) {
                 const result = await overviewResponse.json();
                 overview = result[0]?.generated_text?.trim();
-                console.log('Received overview.');
+
+                // Ensure the overview ends in a complete sentence
+                const sentences = overview.split('. ').slice(0, 4).map(sentence => sentence.trim()).join('. ') + '.';
+                overview = sentences;
+
+                console.log('Received clean overview.');
 
                 // Update progress bar to 50%
                 progressBar.value = 50;
