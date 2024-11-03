@@ -2631,6 +2631,11 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Helper function to wait for a certain amount of time (in ms)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     
@@ -2680,9 +2685,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
                 console.log('Received clean overview.');
 
-                // Update progress bar to 50%
-                progressBar.value = 50;
-                percentageDisplay.innerText = '50%';
                 break;
             } else {
                 const errorDetails = await overviewResponse.json();
@@ -2730,13 +2732,11 @@ Focus on providing only relevant information without repetition or unnecessary d
                 const keyPointText = keyPointsResult[0]?.generated_text?.trim();
 
                 // Split key points into individual sentences, ensuring each is a single sentence
-                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim() + '.');
+                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim() + '.').filter(sentence => sentence !== '.');
 
                 console.log('Received single-sentence key points.');
 
-                // Update progress bar to 100%
-                progressBar.value = 100;
-                percentageDisplay.innerText = '100%';
+
                 break;
             } else {
                 const errorDetails = await keyPointsResponse.json();
@@ -2760,6 +2760,7 @@ Focus on providing only relevant information without repetition or unnecessary d
         keyPoints  // Final key points, each as a single sentence
     };
 }
+
 
 
 
