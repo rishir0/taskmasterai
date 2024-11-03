@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2623,27 +2621,9 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Helper function to split text into chunks by character limit
-function splitTextIntoChunks(text, maxLength = 2000) {
-    console.log('Splitting text into chunks...');
-    const chunks = [];
-    let start = 0;
-    while (start < text.length) {
-        const end = start + maxLength;
-        chunks.push(text.slice(start, end));
-        start = end;
-    }
-    console.log(`Text split into ${chunks.length} chunk(s).`);
-    return chunks;
-}
-
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     
-    const chunks = splitTextIntoChunks(text);
-    const summaries = [];
-    const keyPoints = [];
-    const totalChunks = chunks.length;
     const startTime = Date.now(); // Start time for tracking progress
 
     // Get the elements for the progress bar and estimated time display
@@ -2657,128 +2637,109 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     // Simulate real-time progress update (can be implemented separately)
     await simulateRealTimeUploadProgress(); 
 
-    for (let i = 0; i < totalChunks; i++) {
-        let chunk = chunks[i];
-        let attempt = 0;
+    let overview = '';
+    let keyPoints = [];
 
-        while (attempt < maxRetries) {
-            try {
-                // Generate overview
-                console.log('Sending chunk to Hugging Face API for overview...');
-                
-                const overviewPrompt = `
-                You are a highly intelligent note-generating assistant. Generate a concise, clear summary based on the following text. The summary should capture the central theme and should be no more than 4 sentences. Avoid unnecessary details or explanations.
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            // Generate overview
+            console.log('Sending text to Hugging Face API for overview...');
+            
+            const overviewPrompt = `
+            You are a highly intelligent note-generating assistant. Generate a concise, clear summary based on the following text. The summary should capture the central theme and should be no more than 4 sentences. Avoid unnecessary details or explanations.
 
-                Text: "${chunk}"
-                `;
-                
-                const overviewResponse = await fetch(modelEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${huggingFaceApiKey}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ inputs: overviewPrompt }),
-                });
+            Text: "${text}"
+            `;
+            
+            const overviewResponse = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ inputs: overviewPrompt }),
+            });
 
-                if (overviewResponse.ok) {
-                    const result = await overviewResponse.json();
-                    const summary = result[0]?.generated_text?.trim();
-                    summaries.push(summary);
-                    console.log('Received summary for chunk.');
+            if (overviewResponse.ok) {
+                const result = await overviewResponse.json();
+                overview = result[0]?.generated_text?.trim();
+                console.log('Received overview.');
+
+                // Update progress bar to 50%
+                progressBar.value = 50;
+                percentageDisplay.innerText = '50%';
+                break;
+            } else {
+                const errorDetails = await overviewResponse.json();
+                if (errorDetails.error && errorDetails.error.includes('loading')) {
+                    console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                    await delay(delayInterval);
                 } else {
-                    const errorDetails = await overviewResponse.json();
-                    if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval);
-                        attempt++;
-                        continue;
-                    } else {
-                        throw new Error(`Error generating overview: ${errorDetails.error}`);
-                    }
+                    throw new Error(`Error generating overview: ${errorDetails.error}`);
                 }
+            }
+        } catch (error) {
+            console.error(`Failed to generate overview: ${error.message}`);
+            if (attempt === maxRetries - 1) throw error;
+        }
+    }
 
-                // Generate key points
-                console.log('Sending chunk to Hugging Face API for key points...');
-                
-                const keyPointsPrompt = `
-                You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            // Generate key points
+            console.log('Sending text to Hugging Face API for key points...');
+            
+            const keyPointsPrompt = `
+            You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
 
 Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text.
 Do not include any labels such as "Key Point" or numbering.
 Do not use bullet points or any symbols.
 Ensure perfect grammar and clarity. Each sentence should end with a period.
 Focus on providing only relevant information without repetition or unnecessary details.
-                Text: "${chunk}"
-                `;
-                
-                const keyPointsResponse = await fetch(modelEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${huggingFaceApiKey}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ inputs: keyPointsPrompt }),
-                });
+            Text: "${text}"
+            `;
+            
+            const keyPointsResponse = await fetch(modelEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${huggingFaceApiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ inputs: keyPointsPrompt }),
+            });
 
-                if (keyPointsResponse.ok) {
-                    const keyPointsResult = await keyPointsResponse.json();
-                    const keyPointText = keyPointsResult[0]?.generated_text?.trim();
+            if (keyPointsResponse.ok) {
+                const keyPointsResult = await keyPointsResponse.json();
+                const keyPointText = keyPointsResult[0]?.generated_text?.trim();
 
-                    // Split key points into individual sentences
-                    const sentences = keyPointText.split('. ').map(sentence => sentence.trim());
-                    keyPoints.push(...sentences);
-                    console.log('Received key points for chunk.');
+                // Split key points into individual sentences
+                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim());
+                console.log('Received key points.');
 
-                    // Update progress bar and estimated time
-                    const currentProgress = ((i + 1) / totalChunks) * 100; // Calculate percentage
-                    const elapsedTime = Date.now() - startTime; // Time elapsed so far
-                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks; // Estimate total time
-                    const remainingTime = estimatedTotalTime - elapsedTime;
-
-                    // Update progress bar and percentage
-                    progressBar.value = currentProgress;
-                    percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
-
-                    // Format the remaining time for display
-                    if (estimatedTimeDisplay) {
-                        const minutes = Math.floor(remainingTime / 60000);
-                        const seconds = Math.floor((remainingTime % 60000) / 1000);
-                        const formattedRemainingTime = `${minutes}m ${seconds}s`;
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
-                    }
-                    break; // Move on to the next chunk after successful response
-                } else {
-                    const errorDetails = await keyPointsResponse.json();
-                    if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval);
-                        attempt++;
-                    } else {
-                        throw new Error(`Error generating key points: ${errorDetails.error}`);
-                    }
-                }
-            } catch (error) {
-                console.error(`Failed to generate summary or key points: ${error.message}`);
-                if (attempt < maxRetries - 1) {
-                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
+                // Update progress bar to 100%
+                progressBar.value = 100;
+                percentageDisplay.innerText = '100%';
+                break;
+            } else {
+                const errorDetails = await keyPointsResponse.json();
+                if (errorDetails.error && errorDetails.error.includes('loading')) {
+                    console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
-                    attempt++;
                 } else {
-                    throw error;
+                    throw new Error(`Error generating key points: ${errorDetails.error}`);
                 }
             }
+        } catch (error) {
+            console.error(`Failed to generate key points: ${error.message}`);
+            if (attempt === maxRetries - 1) throw error;
         }
     }
 
     console.log('Summary and key points generation complete.');
 
-    // Combine all summaries and limit overview to 4 sentences
-    const combinedOverview = summaries.join(' ');
-    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
-
     return {
-        overview: overviewSentences, // Final overview, limited to 4 sentences
+        overview, // Final overview, limited to 4 sentences
         keyPoints  // Final key points without labels or bullet points
     };
 }
