@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2640,17 +2641,15 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     const chunks = splitTextIntoChunks(text);
     const summaries = [];
     const keyPoints = [];
-    const totalChunks = chunks.length;
-    const startTime = Date.now();
+    const totalChunks = chunks.length; // Total number of chunks
+    const startTime = Date.now(); // Capture the start time
 
     const estimatedTimeDisplay = document.getElementById('estimated-time');
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
-
     const uploadingText = document.getElementById('uploading-text');
     uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-    // Start simulating progress
     await simulateRealTimeUploadProgress();
 
     for (let i = 0; i < totalChunks; i++) {
@@ -2659,53 +2658,74 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
 
         while (attempt < maxRetries) {
             try {
-                console.log('Sending chunk to Hugging Face API...');
-                const response = await fetch(modelEndpoint, {
+                console.log('Sending chunk to Hugging Face API for overview...');
+                const overviewPrompt = {
+                    inputs: chunk,
+                    parameters: {
+                        prompt: "You are an advanced summarization assistant. Generate an overview for the given text with a maximum of 8 sentences. Ensure no comments, explanations, or repetitions. The overview should provide only the most essential points, without including the first two and last two sentences of the original text."
+                    }
+                };
+
+                const overviewResponse = await fetch(modelEndpoint, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${huggingFaceApiKey}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ inputs: chunk })
+                    body: JSON.stringify(overviewPrompt)
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    const summary = result[0].summary_text;
+                if (overviewResponse.ok) {
+                    const overviewResult = await overviewResponse.json();
+                    const summary = overviewResult[0].summary_text;
                     summaries.push(summary);
 
-                    const sentences = summary.split('. ');
-                    keyPoints.push(...sentences.map(sentence => sentence.trim() + '.'));
+                    // Now, generate key points based on the overview
+                    console.log('Sending chunk to Hugging Face API for key points...');
+                    const keyPointsPrompt = {
+                        inputs: summary,
+                        parameters: {
+                            prompt: "You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines: Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text. Do not include any labels such as 'Key Point' or numbering. Do not use bullet points or any symbols. Ensure perfect grammar and clarity. Each sentence should end with a period. Focus on providing only relevant information without repetition or unnecessary details."
+                        }
+                    };
 
-                    console.log('Received summary for chunk.');
+                    const keyPointsResponse = await fetch(modelEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${huggingFaceApiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(keyPointsPrompt)
+                    });
 
-                    const currentProgress = ((i + 1) / totalChunks) * 100;
-                    const elapsedTime = Date.now() - startTime;
-                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
-                    const remainingTime = estimatedTotalTime - elapsedTime;
+                    if (keyPointsResponse.ok) {
+                        const keyPointsResult = await keyPointsResponse.json();
+                        const keyPointsSentences = keyPointsResult[0].summary_text.split('. ');
+                        keyPoints.push(...keyPointsSentences.map(sentence => sentence.trim() + '.'));
 
-                    progressBar.value = currentProgress;
-                    percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
+                        console.log('Received key points for chunk.');
 
-                    if (estimatedTimeDisplay) {
-                        const minutes = Math.floor(remainingTime / 60000);
-                        const seconds = Math.floor((remainingTime % 60000) / 1000);
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
-                    }
+                        // Update progress after processing each chunk
+                        const currentProgress = (i + 1) / totalChunks * 100;
+                        const elapsedTime = Date.now() - startTime;
+                        const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
+                        const remainingTime = estimatedTotalTime - elapsedTime;
 
-                    break;
+                        progressBar.value = currentProgress;
+                        percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
-                } else {
-                    const errorDetails = await response.json();
+                        if (estimatedTimeDisplay) {
+                            const minutes = Math.floor(remainingTime / 60000);
+                            const seconds = Math.floor((remainingTime % 60000) / 1000);
+                            estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
+                        }
 
-                    if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval);
-                        attempt++;
+                        break; // Exit retry loop after successful response
                     } else {
-                        console.error(`Error from Hugging Face API: ${errorDetails.error}`);
-                        throw new Error(`Error generating summary: ${errorDetails.error}`);
+                        throw new Error(`Error generating key points: ${await keyPointsResponse.json()}`);
                     }
+                } else {
+                    throw new Error(`Error generating overview: ${await overviewResponse.json()}`);
                 }
             } catch (error) {
                 console.error(`Failed to generate summary: ${error.message}`);
@@ -2720,117 +2740,17 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
         }
     }
 
-    console.log('Summary generation complete.');
+    console.log('Summary and key point generation complete.');
 
+    // Combine summaries and limit overview to a maximum of 4 sentences
     const combinedOverview = summaries.join(' ');
     const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
 
-    // Step 2: Send generated overview and key points for validation and refinement
-    const refinedResult = await refineSummaryAndKeyPoints(overviewSentences, keyPoints);
-
-    return refinedResult; // Return refined overview and key points
-}
-async function refineSummaryAndKeyPoints(overview, keyPoints, maxRetries = 3, delayInterval = 3000) {
-    const llamaModelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
-
-const overviewPrompt = `
-    You are an advanced text processing assistant. Your task is to take the provided overview and condense it into exactly 8 sentences. 
-    Follow these guidelines:
-    1. Do not include the first two and last two sentences of the input.
-    2. Each sentence must convey a clear, distinct idea relevant to the main topic.
-    3. The output must be perfectly grammatical, clear, and concise.
-    4. Do not include any explanations, comments, or opinions. 
-    5. The content should not introduce any new ideas or information outside of the given overview.
-    6. Ensure there is no redundant or overlapping information between sentences.
-    Provide only the revised 8 sentences as your final output without any extra words or labels.
-    Overview: ${overview}
-`;
-
-
-const keyPointsPrompt = `
-    You are an expert note-generating assistant. Your task is to revise and, if necessary, expand the provided key points based on the following criteria:
-    1. Each key point must be a precise, standalone statement relevant to the main content.
-    2. Ensure that the key points do not overlap with the overview but complement it by providing additional details.
-    3. If the provided key points are too few or too short, generate additional key points to cover all important aspects of the content.
-    4. Do not include any explanation, comments, or opinions.
-    5. Ensure each key point is accurate and distinct from the others.
-    6. Each key point must be grammatically correct, clear, and concise, presented as a separate sentence.
-    7. The content should strictly adhere to the original subject matter, without introducing any unrelated details.
-    Provide the revised key points as individual, properly separated sentences, with no additional text or labels.
-    Key Points: ${keyPoints.join(" ")}
-`;
-
-
-    // Function to handle API requests
-    async function sendPromptToModel(prompt, description) {
-        let attempt = 0;
-
-        while (attempt < maxRetries) {
-            try {
-                console.log(`Sending ${description} for refinement...`);
-                const response = await fetch(llamaModelEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${huggingFaceApiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ inputs: prompt })
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log(`Received response from the model for ${description}:`, result);
-
-                    if (result[0] && result[0].generated_text) {
-                        return result[0].generated_text;
-                    } else {
-                        console.error('Unexpected response format:', result);
-                        throw new Error('Invalid response format from model. Expected "generated_text" field is missing.');
-                    }
-
-                } else {
-                    const errorDetails = await response.json();
-                    console.error(`Error from Llama model for ${description}:`, errorDetails);
-
-                    if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
-                        await delay(delayInterval);
-                        attempt++;
-                    } else {
-                        throw new Error(`Error refining ${description}: ${errorDetails.error}`);
-                    }
-                }
-            } catch (error) {
-                console.error(`Failed to refine ${description}: ${error.message}`);
-                if (attempt < maxRetries - 1) {
-                    console.log(`Retrying in ${delayInterval / 1000} seconds...`);
-                    await delay(delayInterval);
-                    attempt++;
-                } else {
-                    throw error;
-                }
-            }
-        }
-    }
-
-    // Refine overview and key points separately
-    const refinedOverview = await sendPromptToModel(overviewPrompt, 'overview');
-    
-    // Split the refined overview, remove first 2 and last 2 sentences
-    const refinedOverviewSentences = refinedOverview.split('. ').map(sentence => sentence.trim() + '.');
-    const finalOverview = refinedOverviewSentences.slice(2, -2).join(' ');  // Remove the first 2 and last 2
-
-    const refinedKeyPoints = await sendPromptToModel(keyPointsPrompt, 'key points');
-    
-    // Split the refined key points into individual sentences
-    const refinedKeyPointsArray = refinedKeyPoints.split('. ').map(sentence => sentence.trim() + '.');
-
     return {
-        overview: finalOverview,
-        keyPoints: refinedKeyPointsArray
+        overview: overviewSentences,
+        keyPoints
     };
 }
-
 
 
 
