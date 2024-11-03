@@ -2626,6 +2626,11 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Helper function to wait for a certain amount of time (in ms)
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     console.log('Generating summary and key points...');
     
@@ -2651,7 +2656,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
             console.log('Sending text to Hugging Face API for overview...');
             
             const overviewPrompt = `
-            You are a highly intelligent note-generating assistant. Generate a direct, clean overview of the following text. The overview should capture the central theme and be exactly 4 complete sentences. Do not include any explanations, labels, or additional instructions.
+            You are a highly intelligent note-generating assistant. Generate a direct, clean overview of the following text. The overview should capture the central theme and be exactly 8 complete sentences. Do not include any explanations, labels, or additional instructions.
 
             Text: "${text}"
             `;
@@ -2669,9 +2674,9 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
                 const result = await overviewResponse.json();
                 overview = result[0]?.generated_text?.trim();
 
-                // Ensure the overview ends in a complete sentence
-                const sentences = overview.split('. ').slice(0, 4).map(sentence => sentence.trim()).join('. ') + '.';
-                overview = sentences;
+                // Extract sentences 3 through 8 for final overview
+                const sentences = overview.split('. ').map(sentence => sentence.trim());
+                overview = sentences.slice(2, 8).join('. ') + '.';
 
                 console.log('Received clean overview.');
 
@@ -2703,6 +2708,7 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
             You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
 
 Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text.
+Each sentence must end with a period and must not contain more than one sentence.
 Do not include any labels such as "Key Point" or numbering.
 Do not use bullet points or any symbols.
 Ensure perfect grammar and clarity. Each sentence should end with a period.
@@ -2723,9 +2729,10 @@ Focus on providing only relevant information without repetition or unnecessary d
                 const keyPointsResult = await keyPointsResponse.json();
                 const keyPointText = keyPointsResult[0]?.generated_text?.trim();
 
-                // Split key points into individual sentences
-                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim());
-                console.log('Received key points.');
+                // Split key points into individual sentences, ensuring each is a single sentence
+                keyPoints = keyPointText.split('. ').map(sentence => sentence.trim() + '.');
+
+                console.log('Received single-sentence key points.');
 
                 // Update progress bar to 100%
                 progressBar.value = 100;
@@ -2749,10 +2756,11 @@ Focus on providing only relevant information without repetition or unnecessary d
     console.log('Summary and key points generation complete.');
 
     return {
-        overview, // Final overview, limited to 4 sentences
-        keyPoints  // Final key points without labels or bullet points
+        overview, // Final overview with sentences 3 to 8
+        keyPoints  // Final key points, each as a single sentence
     };
 }
+
 
 
 
