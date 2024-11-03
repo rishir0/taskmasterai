@@ -4381,7 +4381,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Attach the function to the click event
-    document.querySelector('.lock-btn').onclick = toggleSVG;
+    document.querySelector('.lock-btn').addEventListener('click', toggleSVG);
 });
 
 
