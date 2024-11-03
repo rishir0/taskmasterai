@@ -2731,7 +2731,6 @@ async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
     return refinedResult; // Return refined overview and key points
 }
 
-// Function to send the summary and key points for refinement
 async function refineSummaryAndKeyPoints(overview, keyPoints, maxRetries = 3, delayInterval = 3000) {
     const llamaModelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
     const prompt = `
@@ -2756,24 +2755,32 @@ async function refineSummaryAndKeyPoints(overview, keyPoints, maxRetries = 3, de
 
             if (response.ok) {
                 const result = await response.json();
-                const refinedOverview = result[0].summary_text;
-                const refinedKeyPoints = refinedOverview.split('. ').map(sentence => sentence.trim() + '.');
+                console.log('Received response from the model:', result); // Log the full response for debugging
 
-                console.log('Refinement complete.');
-                return {
-                    overview: refinedOverview,
-                    keyPoints: refinedKeyPoints
-                };
+                // Validate the response format
+                if (result[0] && result[0].generated_text) {
+                    const refinedOverview = result[0].generated_text;
+                    const refinedKeyPoints = refinedOverview.split('. ').map(sentence => sentence.trim() + '.');
+
+                    console.log('Refinement complete.');
+                    return {
+                        overview: refinedOverview,
+                        keyPoints: refinedKeyPoints
+                    };
+                } else {
+                    console.error('Unexpected response format:', result);
+                    throw new Error('Invalid response format from model. Expected "generated_text" field is missing.');
+                }
 
             } else {
                 const errorDetails = await response.json();
+                console.error(`Error from Llama model:`, errorDetails);
 
                 if (errorDetails.error && errorDetails.error.includes('loading')) {
                     console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
                     attempt++;
                 } else {
-                    console.error(`Error from Llama model: ${errorDetails.error}`);
                     throw new Error(`Error refining summary: ${errorDetails.error}`);
                 }
             }
@@ -2784,11 +2791,12 @@ async function refineSummaryAndKeyPoints(overview, keyPoints, maxRetries = 3, de
                 await delay(delayInterval);
                 attempt++;
             } else {
-                throw error;
+                throw error; // Throw the error if all retries fail
             }
         }
     }
 }
+
 
 
 
