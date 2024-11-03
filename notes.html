@@ -2258,20 +2258,17 @@ async function handleFileUpload(file) {
 
 
 try {
-// Generate structured TurboLearn-style notes
-const { introduction, insights, analysis, conclusion } = await generateTurboLearnStyleNotes(textContent);
-console.log('TurboLearn-style notes generation complete.');
+    // Generate overview and key points
+    const { overview, keyPoints } = await generateSummary(textContent);
+    console.log('Overview and key points generation complete.');
 
-// Example of how to display the structured notes (optional)
-console.log("📂 Introduction:\n", introduction);
-console.log("💡 Key Insights:\n", insights);
-console.log("🔍 Detailed Analysis:\n", analysis);
-console.log("📝 Conclusion:\n", conclusion);
+    // Generate questions based on key points
+    const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
+    console.log('Generated Questions:', questions);
 
-
-// Save TurboLearn-style structured notes to Firestore
-await saveToFirestore2(file.name, introduction, insights, analysis, conclusion);
-console.log('TurboLearn-style structured notes saved to Firestore.');
+    // Save overview, key points, and raw questions to Firestore
+   await saveToFirestore2(file.name, overview, keyPoints, questions);
+    console.log('Overview, key points, and questions saved to Firestore.');
     
 
             closePdfUploadModal();
@@ -2640,56 +2637,25 @@ function splitTextIntoChunks(text, maxLength = 2000) {
     return chunks;
 }
 
-// Helper function to wait for a certain amount of time (in ms)
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Helper function to split text into chunks by character limit
-function splitTextIntoChunks(text, maxLength = 2000) {
-    console.log('Splitting text into chunks...');
-    const chunks = [];
-    let start = 0;
-    while (start < text.length) {
-        const end = start + maxLength;
-        chunks.push(text.slice(start, end));
-        start = end;
-    }
-    console.log(`Text split into ${chunks.length} chunk(s).`);
-    return chunks;
-}
-
-// Helper function to clean and properly format each text section
-function cleanText(text) {
-    return text
-        .trim()
-        .replace(/(\.|!|\?)\s*(\w)/g, (match, punct, next) => `${punct} ${next.toUpperCase()}`) // Ensure sentences start capitalized
-        .replace(/\s([.,?!])/g, "$1")  // Remove spaces before punctuation
-        .replace(/([a-zA-Z])(\.|!|\?)/g, "$1$2 ") // Add space after punctuation
-        .replace(/\n/g, " ")
-        .replace(/(\b\w+\b)/g, "$1"); // Ensure words are separated by single spaces
-}
-
-async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval = 5000) {
-    console.log('Generating structured notes...');
-
-    const chunks = splitTextIntoChunks(text);  // Split large text into manageable chunks
-    const sections = {
-        introduction: [],
-        insights: [],
-        analysis: [],
-        conclusion: []
-    };
+async function generateSummary(text, maxRetries = 5, delayInterval = 5000) {
+    console.log('Generating summary and key points...');
+    
+    const chunks = splitTextIntoChunks(text);
+    const summaries = [];
+    const keyPoints = [];
     const totalChunks = chunks.length;
-    const startTime = Date.now();
+    const startTime = Date.now(); // Start time for tracking progress
 
-    const estimatedTimeDisplay = document.getElementById('estimated-time');
+    // Get the elements for the progress bar and estimated time display
+    const estimatedTimeDisplay = document.getElementById('estimated-time'); 
     const progressBar = document.getElementById('progressBar2');
     const percentageDisplay = document.querySelector('.progress-percentage');
     const uploadingText = document.getElementById('uploading-text');
-
-    uploadingText.innerHTML = 'Generating TurboLearn-Style Notes<span id="ellipsis2"></span>';
-    await simulateRealTimeUploadProgress();
+    
+    uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
+    
+    // Simulate real-time progress update (can be implemented separately)
+    await simulateRealTimeUploadProgress(); 
 
     for (let i = 0; i < totalChunks; i++) {
         let chunk = chunks[i];
@@ -2697,80 +2663,103 @@ async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval 
 
         while (attempt < maxRetries) {
             try {
-                console.log('Sending chunk to Hugging Face API for context-aware note structuring...');
-
-                // Structured Prompt for AI
-                const structuringPrompt = `
-                You are an advanced note assistant creating well-structured, professional notes. Format the content below in TurboLearn style:
+                // Generate overview
+                console.log('Sending chunk to Hugging Face API for overview...');
                 
-                - 📂 Introduction: Provide a 2-3 sentence summary of main themes.
-                - 💡 Key Insights: List significant takeaways as short, clear points, one per line.
-                - 🔍 Detailed Analysis: Present a structured analysis in organized paragraphs.
-                - 📝 Conclusion: Summarize main takeaways concisely.
+                const overviewPrompt = `
+                You are a highly intelligent note-generating assistant. Generate a concise, clear summary based on the following text. The summary should capture the central theme and should be no more than 4 sentences. Avoid unnecessary details or explanations.
 
                 Text: "${chunk}"
                 `;
-
-                const response = await fetch(modelEndpoint, {
+                
+                const overviewResponse = await fetch(modelEndpoint, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${huggingFaceApiKey}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ inputs: structuringPrompt }),
+                    body: JSON.stringify({ inputs: overviewPrompt }),
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    let section = result[0]?.generated_text?.trim();
-
-                    // Process each section slowly, checking text structure and coherence
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Delay to ensure quality generation
-
-                    // Remove malformed text patterns and correct formatting
-                    section = section
-                        .replace(/\s+\*/g, "")         // Remove stray bullets
-                        .replace(/[^a-zA-Z0-9\s,.?!]/g, "") // Remove special characters
-                        .replace(/\s+/g, " ");         // Replace extra spaces
-
-                    // Detect and categorize content into structured sections
-                    if (section.toLowerCase().includes("overview")) {
-                        sections.introduction.push(cleanText(section));
-                    } else if (section.toLowerCase().includes("key insights") || section.toLowerCase().includes("key points")) {
-                        sections.insights.push(cleanText(section));
-                    } else if (section.toLowerCase().includes("analysis")) {
-                        sections.analysis.push(cleanText(section));
-                    } else if (section.toLowerCase().includes("conclusion")) {
-                        sections.conclusion.push(cleanText(section));
+                if (overviewResponse.ok) {
+                    const result = await overviewResponse.json();
+                    const summary = result[0]?.generated_text?.trim();
+                    summaries.push(summary);
+                    console.log('Received summary for chunk.');
+                } else {
+                    const errorDetails = await overviewResponse.json();
+                    if (errorDetails.error && errorDetails.error.includes('loading')) {
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
+                        await delay(delayInterval);
+                        attempt++;
+                        continue;
+                    } else {
+                        throw new Error(`Error generating overview: ${errorDetails.error}`);
                     }
+                }
 
-                    // Progress Update
-                    const currentProgress = ((i + 1) / totalChunks) * 100;
-                    const elapsedTime = Date.now() - startTime;
-                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks;
+                // Generate key points
+                console.log('Sending chunk to Hugging Face API for key points...');
+                
+                const keyPointsPrompt = `
+                You are an advanced note-generating assistant. Your task is to generate key points from the given text. Follow these guidelines:
+
+Each key point must be a single, concise sentence that conveys a distinct and essential idea from the text.
+Do not include any labels such as "Key Point" or numbering.
+Do not use bullet points or any symbols.
+Ensure perfect grammar and clarity. Each sentence should end with a period.
+Focus on providing only relevant information without repetition or unnecessary details.
+                Text: "${chunk}"
+                `;
+                
+                const keyPointsResponse = await fetch(modelEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ inputs: keyPointsPrompt }),
+                });
+
+                if (keyPointsResponse.ok) {
+                    const keyPointsResult = await keyPointsResponse.json();
+                    const keyPointText = keyPointsResult[0]?.generated_text?.trim();
+
+                    // Split key points into individual sentences
+                    const sentences = keyPointText.split('. ').map(sentence => sentence.trim());
+                    keyPoints.push(...sentences);
+                    console.log('Received key points for chunk.');
+
+                    // Update progress bar and estimated time
+                    const currentProgress = ((i + 1) / totalChunks) * 100; // Calculate percentage
+                    const elapsedTime = Date.now() - startTime; // Time elapsed so far
+                    const estimatedTotalTime = (elapsedTime / (i + 1)) * totalChunks; // Estimate total time
                     const remainingTime = estimatedTotalTime - elapsedTime;
 
+                    // Update progress bar and percentage
                     progressBar.value = currentProgress;
                     percentageDisplay.innerText = `${Math.floor(currentProgress)}%`;
 
+                    // Format the remaining time for display
                     if (estimatedTimeDisplay) {
                         const minutes = Math.floor(remainingTime / 60000);
                         const seconds = Math.floor((remainingTime % 60000) / 1000);
-                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${minutes}m ${seconds}s`;
+                        const formattedRemainingTime = `${minutes}m ${seconds}s`;
+                        estimatedTimeDisplay.innerText = `Estimated time remaining: ${formattedRemainingTime}`;
                     }
-                    break;
+                    break; // Move on to the next chunk after successful response
                 } else {
-                    const errorDetails = await response.json();
+                    const errorDetails = await keyPointsResponse.json();
                     if (errorDetails.error && errorDetails.error.includes('loading')) {
-                        console.log(`Attempt ${attempt + 1}: Model is loading. Retrying...`);
+                        console.log(`Attempt ${attempt + 1}: Model is still loading. Retrying in ${delayInterval / 1000} seconds...`);
                         await delay(delayInterval);
                         attempt++;
                     } else {
-                        throw new Error(`Error generating structured notes: ${errorDetails.error}`);
+                        throw new Error(`Error generating key points: ${errorDetails.error}`);
                     }
                 }
             } catch (error) {
-                console.error(`Error in note generation: ${error.message}`);
+                console.error(`Failed to generate summary or key points: ${error.message}`);
                 if (attempt < maxRetries - 1) {
                     console.log(`Retrying in ${delayInterval / 1000} seconds...`);
                     await delay(delayInterval);
@@ -2782,19 +2771,17 @@ async function generateTurboLearnStyleNotes(text, maxRetries = 5, delayInterval 
         }
     }
 
-    console.log('Note generation complete.');
+    console.log('Summary and key points generation complete.');
 
-    // Final structured note format
+    // Combine all summaries and limit overview to 4 sentences
+    const combinedOverview = summaries.join(' ');
+    const overviewSentences = combinedOverview.split('. ').slice(0, 4).join('. ');
+
     return {
-        introduction: sections.introduction.join('\n'),
-        insights: sections.insights.join('\n'),
-        analysis: sections.analysis.join('\n'),
-        conclusion: sections.conclusion.join('\n')
+        overview: overviewSentences, // Final overview, limited to 4 sentences
+        keyPoints  // Final key points without labels or bullet points
     };
 }
-
-
-
 
 
 
@@ -2988,8 +2975,8 @@ function flattenQuestions(questions) {
     });
 }
 
-// Function to save TurboLearn-style structured notes to Firestore
-async function saveToFirestore2(fileName, introduction, insights, analysis, conclusion) {
+// Function to save overview, key points, and raw questions to Firestore
+async function saveToFirestore2(fileName, overview, keyPoints, rawGeneratedTexts) {
     const userId = firebase.auth().currentUser?.uid;
     if (!userId) {
         console.error("User not authenticated yet");
@@ -2997,17 +2984,16 @@ async function saveToFirestore2(fileName, introduction, insights, analysis, conc
     }
 
     try {
-        // Add the structured note data to Firestore in the 'generatedpdfs' collection
+        // Add the PDF data to Firestore in the 'generatedpdfs' collection
         await db.collection('generatedpdfs').add({
             userId: userId,
             fileName: fileName,             // Store the file name
-            introduction: introduction,      // Store the Introduction section
-            insights: insights,              // Store the Key Insights section
-            analysis: analysis,              // Store the Detailed Analysis section
-            conclusion: conclusion,          // Store the Conclusion section
+            overview: overview,             // Store the generated overview
+            keyPoints: keyPoints,           // Store the array of key points
+            rawQuestions: rawGeneratedTexts, // Store the array of raw generated texts (full responses)
             timestamp: firebase.firestore.FieldValue.serverTimestamp() // Add timestamp
         });
-        console.log(`TurboLearn-style notes for ${fileName} saved successfully.`);
+        console.log(`Overview, key points, and questions for ${fileName} saved successfully.`);
     } catch (error) {
         console.error("Error saving to Firestore: ", error);
     }
