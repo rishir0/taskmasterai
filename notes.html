@@ -2191,10 +2191,9 @@ async function handleFileUpload(file) {
     progressContainer.style.display = 'block';
     progressBar.value = 0;
     percentageDisplay.innerText = '';
-    percentageDisplay.style = '';
     estimatedTimeDisplay.style.display = 'block'; // Make sure it's visible
 
-    // Change "Uploading" to "Generating Note"
+    // Change "Uploading" to "Processing PDF"
     uploadingText.innerHTML = 'Uploading<span id="ellipsis2"></span>';
 
     const startTime = Date.now(); // Capture the start time
@@ -2212,9 +2211,6 @@ async function handleFileUpload(file) {
             let textContent = '';
             const totalPages = pdf.numPages; // Total number of pages for progress tracking
 
-            const estimatedTimeDisplay = document.getElementById('estimated-time'); // Get the element for estimated time
-
-
             // Process each page and update progress
             for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                 console.log(`Processing page ${pageNum} of ${pdf.numPages}...`);
@@ -2224,20 +2220,17 @@ async function handleFileUpload(file) {
 
                 // Update progress bar and estimated time after each page is processed
                 const progress = (pageNum / totalPages) * 100;
-                const percentageDisplay = document.createElement('span');
                 progressBar.value = progress;
                 percentageDisplay.innerText = `${Math.round(progress)}%`;
                 estimatedTimeDisplay.innerText = updateEstimatedTime(startTime, pageNum, totalPages);
-                percentageDisplay.style.color = 'white'; // Ensure the text color is white if needed
-                // Ensure the percentage display is positioned at the center of the progress bar
-                percentageDisplay.style.position = 'absolute'; // Set positioning to absolute
-                percentageDisplay.style.top = '50%'; // Center vertically
-                percentageDisplay.style.left = '50%'; // Center horizontally
-                percentageDisplay.style.transform = 'translate(-50%, -50%)'; // Offset for proper centering
-
+                percentageDisplay.style.color = 'white';
+                percentageDisplay.style.position = 'absolute';
+                percentageDisplay.style.top = '50%';
+                percentageDisplay.style.left = '50%';
+                percentageDisplay.style.transform = 'translate(-50%, -50%)';
             }
 
-            console.log('Extracted text:', textContent); // Log extracted text
+            console.log('Extracted text:', textContent);
 
             if (!textContent) {
                 throw new Error('No text extracted from PDF.');
@@ -2246,28 +2239,19 @@ async function handleFileUpload(file) {
             console.log('PDF text extraction complete.');
 
             // Change "Uploading" to "Generating Note"
-            uploadingText.innerHTML = 'Processing PDF<span id="ellipsis2"></span>';
+            uploadingText.innerHTML = 'Generating Note<span id="ellipsis2"></span>';
 
-            // Simulate real-time upload progress
-            await simulateRealTimeUploadProgress2();
+            // Generate overview and key points using the new generateSummary function
+            const { overview, keyPoints } = await generateSummary(textContent);
+            console.log('Overview and key points generation complete.');
 
-            let progress = 0;
+            // Generate questions based on key points
+            const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
+            console.log('Generated Questions:', questions);
 
-
-
-try {
-    // Generate overview and key points
-    const { overview, keyPoints } = await generateSummary(textContent);
-    console.log('Overview and key points generation complete.');
-
-    // Generate questions based on key points
-    const { questions, rawResponses } = await generateQuestions(keyPoints); // Extract questions and raw responses
-    console.log('Generated Questions:', questions);
-
-    // Save overview, key points, and raw questions to Firestore
-   await saveToFirestore2(file.name, overview, keyPoints, questions);
-    console.log('Overview, key points, and questions saved to Firestore.');
-    
+            // Save overview, key points, and raw questions to Firestore
+            await saveToFirestore2(file.name, overview, keyPoints, questions);
+            console.log('Overview, key points, and questions saved to Firestore.');
 
             closePdfUploadModal();
             loadAllNotes();
