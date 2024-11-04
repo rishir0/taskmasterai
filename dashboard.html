@@ -260,7 +260,30 @@ body.night-mode {
     gap: 20px; /* Space between timers */
 }
 
+/* Main Container for Layout */
+.main-container {
+    display: flex;
+    justify-content: space-between; /* Space between main content and timer sidebar */
+}
+
+/* Timer Sidebar */
+.timer-sidebar {
+    width: 300px; /* Fixed width for the sidebar */
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px; /* Stick the sidebar to the top */
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between timer sections */
+}
+
+/* Pomodoro Timer styling */
 .pomodoro-timer, .custom-timer {
+    width: 100%; /* Ensure it fits the width of the sidebar */
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
@@ -277,6 +300,7 @@ body.night-mode {
     margin-bottom: 10px;
 }
 
+/* Input Styles */
 .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
     width: 100px;
     padding: 10px;
@@ -289,12 +313,14 @@ body.night-mode {
     margin-bottom: 20px;
 }
 
+/* Timer Button Container */
 .pomodoro-timer .button-container, .custom-timer .button-container {
     display: flex;
-    gap: 10px; /* Space between buttons */
-    margin-top: 10px; /* Space above buttons */
+    gap: 10px;
+    margin-top: 10px;
 }
 
+/* Timer Buttons */
 .pomodoro-timer button, .custom-timer button {
     background-color: var(--primary-color);
     color: var(--text-color);
@@ -313,7 +339,8 @@ body.night-mode {
     transform: scale(1.05);
 }
 
-#add-timer {
+/* Add Timer Button */
+#add-timer, .remove-timer {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
@@ -325,88 +352,24 @@ body.night-mode {
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
-    width: 32px; /* Ensures the button is round */
-    height: 32px; /* Ensures the button is round */
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#add-timer:hover {
+#add-timer:hover, .remove-timer:hover {
     background-color: var(--accent-color);
     transform: scale(1.05);
 }
 
-.remove-timer {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-left: 10px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
-    width: 32px; /* Ensures the button is round */
-    height: 32px; /* Ensures the button is round */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.remove-timer:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05);
-}
-
+/* Custom Timers Layout */
 #custom-timers {
     display: flex;
+    flex-direction: column;
     gap: 20px;
-    flex-wrap: wrap; /* Allow custom timers to wrap to the next line if there's not enough space */
-}
-
-
-.dropdown-menu {
-    margin-bottom: 20px;
-}
-
-.dropdown-header {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 10px;
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    color: var(--text-color);
-    transition: background-color 0.3s ease;
-}
-
-.dropdown-header:hover {
-    background-color: var(--hover-bg); /* Use hover-bg for background on hover */
-    color: var(--text-color);
-}
-
-.dropdown-icon {
-    margin-left: auto;
-    transition: transform 0.3s ease;
-}
-
-.dropdown-content {
-    display: none;
-    padding: 10px;
-    border-radius: 15px;
-    background-color: var(--card-bg);
-    margin-top: 10px;
-}
-
-.dropdown-menu.open .dropdown-content {
-    display: block;
-}
-
-.dropdown-menu.open .dropdown-icon {
-    transform: rotate(180deg);
+    width: 100%;
 }
 
 .custom-timers {
@@ -415,12 +378,6 @@ body.night-mode {
     padding: 20px;
     border-radius: var(--border-radius);
     text-align: center;
-    margin-bottom: 30px;
-}
-
-.custom-timers h2 {
-    margin-bottom: 20px;
-    color: var(--text-color);
 }
 
 .custom-timer {
@@ -440,6 +397,7 @@ body.night-mode {
     margin-bottom: 10px;
 }
 
+/* Custom Timer Buttons */
 .custom-timer button {
     background-color: var(--accent-color);
     color: var(--text-color);
@@ -458,6 +416,7 @@ body.night-mode {
     background-color: var(--accent-color);
     transform: scale(1.05);
 }
+
 
 
 .account-button {
@@ -1259,6 +1218,7 @@ scrollbar-thumb {
                 </div>
             </div>
         </div>
+<div class="main-container">
 <div class="main-content">
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
@@ -1329,7 +1289,8 @@ scrollbar-thumb {
         </div>
     </div>
 
-    <div class="timer-container">
+    <!-- Timer Sidebar -->
+    <div class="timer-sidebar">
         <div class="pomodoro-timer custom-timer">
             <div style="display: flex; align-items: center;">
                 <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
