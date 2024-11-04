@@ -1039,7 +1039,6 @@ scrollbar-thumb {
 
 .nav-tabs li a:hover {
     background-color: var(--hover-bg);
-    color: var(--accent-color);
 }
 
 /* Highlight active tab with primary color */
@@ -1264,21 +1263,6 @@ scrollbar-thumb {
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
     </div>
-    <div class="timer-container">
-        <div class="pomodoro-timer custom-timer">
-            <div style="display: flex; align-items: center;">
-                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                <button id="add-timer">+</button>
-            </div>
-            <input type="text" id="timer" value="25:00" readonly>
-            <div class="button-container">
-                <button id="start">Start</button>
-                <button id="pause">Pause</button>
-                <button id="reset">Reset</button>
-            </div>
-        </div>
-        <div id="custom-timers"></div>
-    </div>
 
     <!-- Custom alert modal -->
     <div id="custom-alert-modal" class="modal">
@@ -1343,6 +1327,22 @@ scrollbar-thumb {
             </div>
             <div id="plans-list"></div>
         </div>
+    </div>
+
+    <div class="timer-container">
+        <div class="pomodoro-timer custom-timer">
+            <div style="display: flex; align-items: center;">
+                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+                <button id="add-timer">+</button>
+            </div>
+            <input type="text" id="timer" value="25:00" readonly>
+            <div class="button-container">
+                <button id="start">Start</button>
+                <button id="pause">Pause</button>
+                <button id="reset">Reset</button>
+            </div>
+        </div>
+        <div id="custom-timers"></div>
     </div>
 </div>
 
