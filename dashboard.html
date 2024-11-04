@@ -1042,9 +1042,11 @@ scrollbar-thumb {
     color: var(--accent-color);
 }
 
-.nav-tabs li.active a {
-    background-color: var(--primary-color);
-    color: var(--text-color);
+/* Highlight active tab with primary color */
+.nav-tabs li a.active {
+    background-color: var(--primary-color); /* Primary color for the active tab */
+    color: var(--text-color); /* Text color for active tab */
+    font-weight: bold; /* Make the active tab bold for more visibility */
 }
 
 /* Content Sections */
@@ -2776,8 +2778,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
-<!-- Add JavaScript for the tabbed navigation and collapsible functionality -->
 <script>
+    // Function to open a specific tab
     function openTab(event, tabName) {
         // Hide all tab-content elements
         var tabContents = document.querySelectorAll('.tab-content');
@@ -2791,11 +2793,22 @@ document.addEventListener('DOMContentLoaded', function() {
             tabLink.classList.remove('active');
         });
 
-        // Show the clicked tab
+        // Show the clicked tab and set it as active
         document.getElementById(tabName).style.display = 'block';
-        event.currentTarget.classList.add('active');
+        if (event) {
+            event.currentTarget.classList.add('active');
+        }
     }
+
+    // Automatically show the "Tasks" section by default when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        var defaultTabLink = document.querySelector('.nav-tabs li:first-child a');
+        openTab(null, 'tasks-section'); // Open "Tasks" tab
+        defaultTabLink.classList.add('active'); // Set the default tab as active
+    });
 </script>
+
+
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
