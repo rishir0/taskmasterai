@@ -282,6 +282,7 @@ body.night-mode {
     border-left: 2px solid var(--border-color); /* Optional: Add a border to separate the sidebar */
     gap: 20px;
     overflow-y: auto;
+    scroll-behavior: smooth; /* Smooth scrolling */
 }
 
 /* Pomodoro Timer styling */
@@ -1841,23 +1842,19 @@ startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
 addButton.addEventListener('click', () => {
-  if (customTimerCount < 2) { // Ensure the limit for custom timers is respected
-    const name = `Custom Timer ${customTimerCount + 1}`;
-    const time = 3600; // Default to 1 hour for new custom timers
+  const name = `Custom Timer ${customTimerCount + 1}`;
+  const time = 3600; // Default to 1 hour for new custom timers
 
-    saveCustomTimerToFirestore(name, time).then((timerId) => {
-      addCustomTimerFromFirestore(timerId, name, time);
-    });
-  } else {
-    showAlert('You can only create up to 2 custom timers.');
-  }
+  saveCustomTimerToFirestore(name, time).then((timerId) => {
+    addCustomTimerFromFirestore(timerId, name, time);
+  });
 });
 
 // Load existing custom timers on page load
 firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        loadCustomTimers();
-    }
+  if (user) {
+    loadCustomTimers();
+  }
 });
 
 
