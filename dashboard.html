@@ -1014,6 +1014,136 @@ scrollbar-thumb {
     font-weight: 600; /* Semi-bold */
 }
         
+
+
+/* Tab Navigation */
+.nav-tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.nav-tabs li a {
+    padding: 10px 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-tabs li a:hover {
+    background-color: var(--hover-bg);
+    color: var(--accent-color);
+}
+
+.nav-tabs li.active a {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Content Sections */
+.tab-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    transition: background-color 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Section Headings */
+.tab-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Input Fields */
+.tab-content input[type="text"],
+.tab-content input[type="date"] {
+    width: 70%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+/* Buttons */
+.tab-content button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.tab-content button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Task, Goal, Project, and Plan Items */
+.task-item, .goal-item, .project-item, .plan-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.task-item:hover, .goal-item:hover, .project-item:hover, .plan-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Button Container for Items */
+.button-container {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Item Buttons */
+.task-item button, .goal-item button, .project-item button, .plan-item button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.task-item button:hover, .goal-item button:hover, .project-item button:hover, .plan-item button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Lists */
+#tasks-list, #goals-list, #projects-list, #plans-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
     </style>
 </head>
 <body>
@@ -1128,75 +1258,93 @@ scrollbar-thumb {
                 </div>
             </div>
         </div>
-        <div class="main-content">
-        <div class="dashboard-header">
-            <h1>Welcome, <span id="displayName">User</span>!</h1>
-        </div>
-        <div class="timer-container">
-            <div class="pomodoro-timer custom-timer">
-                <div style="display: flex; align-items: center;">
-                    <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                    <button id="add-timer">+</button> <!-- Add the + button here -->
-                </div>
-                <input type="text" id="timer" value="25:00" readonly>
-                <div class="button-container">
-                    <button id="start">Start</button>
-                    <button id="pause">Pause</button>
-                    <button id="reset">Reset</button>
-                </div>
+<div class="main-content">
+    <div class="dashboard-header">
+        <h1>Welcome, <span id="displayName">User</span>!</h1>
+    </div>
+    <div class="timer-container">
+        <div class="pomodoro-timer custom-timer">
+            <div style="display: flex; align-items: center;">
+                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+                <button id="add-timer">+</button>
             </div>
-            <div id="custom-timers"></div>
+            <input type="text" id="timer" value="25:00" readonly>
+            <div class="button-container">
+                <button id="start">Start</button>
+                <button id="pause">Pause</button>
+                <button id="reset">Reset</button>
+            </div>
         </div>
-
-          <!-- Custom alert modal -->
-  <div id="custom-alert-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <p id="alert-message"></p>
-    </div>
-  </div>
-
-<div id="tasks-projects" class="section">
-    <div class="tasks-section">
-        <h2>Tasks</h2>
-        <div class="goal-card">
-            <input type="text" id="task-input" placeholder="Enter new task">
-            <input type="date" id="task-due-date" placeholder="Due date"> <!-- Task due date -->
-            <button onclick="createTask()">Create Task</button>
-        </div>
-        <div id="tasks-list"></div> <!-- Task items will be added here dynamically -->
-    </div>
-    
-    <div class="goals-section">
-        <h2>Goals</h2>
-        <div class="goal-card">
-            <input type="text" id="goal-input" placeholder="Enter new goal">
-            <input type="date" id="goal-due-date" placeholder="Due date"> <!-- Goal due date -->
-            <button onclick="createGoal()">Create Goal</button>
-        </div>
-        <div id="goals-list"></div> <!-- Goal items will be added here dynamically -->
+        <div id="custom-timers"></div>
     </div>
 
-    <div class="projects-section">
-        <h2>Projects</h2>
-        <div class="goal-card">
-            <input type="text" id="project-input" placeholder="Enter new project">
-            <input type="date" id="project-due-date" placeholder="Due date"> <!-- Project due date -->
-            <button onclick="createProject()">Create Project</button>
+    <!-- Custom alert modal -->
+    <div id="custom-alert-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="alert-message"></p>
         </div>
-        <div id="projects-list"></div> <!-- Project items will be added here dynamically -->
     </div>
 
-    <div class="plans-section">
-        <h2>Plans</h2>
-        <div class="goal-card">
-            <input type="text" id="plan-input" placeholder="Enter new plan">
-            <input type="date" id="plan-due-date" placeholder="Due date"> <!-- Plan due date -->
-            <button onclick="createPlan()">Create Plan</button>
+    <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
+        <li><a href="#goals" class="tab-link" onclick="openTab(event, 'goals-section')">Goals</a></li>
+        <li><a href="#projects" class="tab-link" onclick="openTab(event, 'projects-section')">Projects</a></li>
+        <li><a href="#plans" class="tab-link" onclick="openTab(event, 'plans-section')">Plans</a></li>
+    </ul>
+
+    <!-- Content for Tabs -->
+    <div id="tasks-section" class="tab-content">
+        <div class="tasks-section collapsible">
+            <h2>Tasks</h2>
+            <div class="goal-card">
+                <input type="text" id="task-input" placeholder="Enter new task">
+                <input type="date" id="task-due-date" placeholder="Due date">
+                <button onclick="createTask()">Create Task</button>
+            </div>
+            <div id="tasks-list"></div>
         </div>
-        <div id="plans-list"></div> <!-- Plan items will be added here dynamically -->
+    </div>
+
+    <div id="goals-section" class="tab-content" style="display: none;">
+        <div class="goals-section collapsible">
+            <h2>Goals</h2>
+            <div class="goal-card">
+                <input type="text" id="goal-input" placeholder="Enter new goal">
+                <input type="date" id="goal-due-date" placeholder="Due date">
+                <button onclick="createGoal()">Create Goal</button>
+            </div>
+            <div id="goals-list"></div>
+        </div>
+    </div>
+
+    <div id="projects-section" class="tab-content" style="display: none;">
+        <div class="projects-section collapsible">
+            <h2>Projects</h2>
+            <div class="goal-card">
+                <input type="text" id="project-input" placeholder="Enter new project">
+                <input type="date" id="project-due-date" placeholder="Due date">
+                <button onclick="createProject()">Create Project</button>
+            </div>
+            <div id="projects-list"></div>
+        </div>
+    </div>
+
+    <div id="plans-section" class="tab-content" style="display: none;">
+        <div class="plans-section collapsible">
+            <h2>Plans</h2>
+            <div class="goal-card">
+                <input type="text" id="plan-input" placeholder="Enter new plan">
+                <input type="date" id="plan-due-date" placeholder="Due date">
+                <button onclick="createPlan()">Create Plan</button>
+            </div>
+            <div id="plans-list"></div>
+        </div>
     </div>
 </div>
+
+
 
 
 <!-- Edit Modal -->
@@ -2626,6 +2774,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+</script>
+
+<!-- Add JavaScript for the tabbed navigation and collapsible functionality -->
+<script>
+    function openTab(event, tabName) {
+        // Hide all tab-content elements
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function(tabContent) {
+            tabContent.style.display = 'none';
+        });
+
+        // Remove active class from all tab links
+        var tabLinks = document.querySelectorAll('.tab-link');
+        tabLinks.forEach(function(tabLink) {
+            tabLink.classList.remove('active');
+        });
+
+        // Show the clicked tab
+        document.getElementById(tabName).style.display = 'block';
+        event.currentTarget.classList.add('active');
+    }
 </script>
 
     <script>
