@@ -263,7 +263,8 @@ body.night-mode {
 /* Main Container for Layout */
 .main-container {
     display: flex;
-    justify-content: space-between; /* Space between main content and timer sidebar */
+    justify-content: flex-start; /* Aligns content and sidebar closer together */
+    gap: 30px; /* Add a small gap between the main content and sidebar */
 }
 
 /* Timer Sidebar */
@@ -1221,6 +1222,7 @@ scrollbar-thumb {
                 </div>
             </div>
         </div>
+<div class="main-container">
 <div class="main-content">
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
