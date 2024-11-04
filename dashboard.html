@@ -252,12 +252,22 @@ body.night-mode {
     color: var(--text-color);
 }
 
+/* Move the timer-container to the right */
 .timer-container {
+    position: fixed; /* Make it stay fixed on the right side */
+    right: 0;
+    top: 0;
+    width: 250px; /* Set a width for the sidebar */
+    height: 100vh; /* Full height of the viewport */
     display: flex;
-    justify-content: center; /* Center the timers container */
-    align-items: flex-start; /* Align timers to the top */
-    flex-wrap: wrap; /* Allow timers to wrap to the next line if there's not enough space */
-    gap: 20px; /* Space between timers */
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1); /* Adjust background as needed */
+    backdrop-filter: blur(10px);
+    border-left: 2px solid var(--border-color); /* Optional: Add a border to separate the sidebar */
+    gap: 20px;
+    overflow-y: auto;
 }
 
 /* Main Container for Layout */
@@ -283,14 +293,17 @@ body.night-mode {
 
 /* Pomodoro Timer styling */
 .pomodoro-timer, .custom-timer {
-    width: 100%; /* Ensure it fits the width of the sidebar */
     background-color: var(--card-bg);
     padding: 20px;
-    border-radius: var(--border-radius);
+    border-radius: 50%; /* Make the timers round */
+    width: 150px; /* Ensure it's round */
+    height: 150px; /* Ensure it's round */
     text-align: center;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
 }
 
 .pomodoro-timer h2, .custom-timer h2 {
@@ -302,7 +315,7 @@ body.night-mode {
 
 /* Input Styles */
 .pomodoro-timer input[type="text"], .custom-timer input[type="text"] {
-    width: 100px;
+    width: 80px; /* Smaller input to fit inside the round timer */
     padding: 10px;
     border: none;
     border-radius: var(--border-radius);
@@ -310,14 +323,14 @@ body.night-mode {
     color: var(--text-color);
     text-align: center;
     font-size: 1.5rem;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 /* Timer Button Container */
 .pomodoro-timer .button-container, .custom-timer .button-container {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 5px; /* Space between buttons */
+    justify-content: center;
 }
 
 /* Timer Buttons */
@@ -325,13 +338,18 @@ body.night-mode {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
+    padding: 5px 10px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.8rem;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#custom-timers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .pomodoro-timer button:hover, .custom-timer button:hover {
@@ -364,13 +382,7 @@ body.night-mode {
     transform: scale(1.05);
 }
 
-/* Custom Timers Layout */
-#custom-timers {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-}
+
 
 .custom-timers {
     margin-top: 30px;
