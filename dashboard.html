@@ -1154,6 +1154,131 @@ scrollbar-thumb {
 }
 
 
+/* Header Section Styling */
+.header-section {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    transition: background-color 0.3s ease;
+}
+
+.header-section .greeting {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.header-section h1 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.header-section #current-date {
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.header-section .productivity-stats {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.productivity-stats h2 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.productivity-stats p {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+.header-section .focus-quote {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.focus-quote h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.focus-quote p {
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.header-section .upcoming-deadlines {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.upcoming-deadlines h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.upcoming-deadlines ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.upcoming-deadlines li {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.upcoming-deadlines li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-section .quick-access {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.quick-access input {
+    width: 70%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin-right: 10px;
+}
+
+.quick-access button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.quick-access button:hover {
+    background-color: var(--accent-color);
+}
 
     </style>
 </head>
@@ -1270,8 +1395,40 @@ scrollbar-thumb {
             </div>
         </div>
 <div class="main-content">
-    <div class="dashboard-header">
-        <h1>Welcome, <span id="displayName">User</span>!</h1>
+    <!-- Section with all enhancements above the Tasks, Goals, Projects, Plans tabs -->
+    <div class="header-section">
+        <div class="greeting">
+            <h1>Welcome, <span id="displayName">User</span>!</h1>
+            <p id="current-date">Today is: <!-- JS can insert current date here --></p>
+        </div>
+
+        <!-- Productivity Stats -->
+        <div class="productivity-stats">
+            <h2>Today's Productivity</h2>
+            <p>Tasks Completed: <span id="tasks-completed">0</span></p>
+            <p>Pomodoros Completed: <span id="pomodoros-completed">0</span> / 6</p>
+            <p>Goals Achieved: <span id="goals-achieved">0</span></p>
+        </div>
+
+        <!-- Motivational Quote/Focus -->
+        <div class="focus-quote">
+            <h3>Focus for Today:</h3>
+            <p id="daily-focus">"Stay focused and keep pushing forward!"</p>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="upcoming-deadlines">
+            <h3>Upcoming Deadlines</h3>
+            <ul id="deadlines-list">
+                <li>No upcoming deadlines</li>
+            </ul>
+        </div>
+
+        <!-- Search Bar / Quick Access -->
+        <div class="quick-access">
+            <input type="text" id="search-bar" placeholder="Search tasks, goals, projects...">
+            <button onclick="quickSearch()">Search</button>
+        </div>
     </div>
 
     <!-- Custom alert modal -->
@@ -1282,72 +1439,72 @@ scrollbar-thumb {
         </div>
     </div>
 
-<!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
-    <li><a href="#goals" class="tab-link" onclick="openTab(event, 'goals-section')">Goals</a></li>
-    <li><a href="#projects" class="tab-link" onclick="openTab(event, 'projects-section')">Projects</a></li>
-    <li><a href="#plans" class="tab-link" onclick="openTab(event, 'plans-section')">Plans</a></li>
-</ul>
+    <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
+        <li><a href="#goals" class="tab-link" onclick="openTab(event, 'goals-section')">Goals</a></li>
+        <li><a href="#projects" class="tab-link" onclick="openTab(event, 'projects-section')">Projects</a></li>
+        <li><a href="#plans" class="tab-link" onclick="openTab(event, 'plans-section')">Plans</a></li>
+    </ul>
 
-<!-- Content for Tabs -->
-<div id="tasks-section" class="tab-content">
-    <div class="tasks-section collapsible">
-        <h2>Tasks</h2>
-        <div class="goal-card">
-            <div class="form-group">
-                <input type="text" id="task-input" placeholder="Enter new task">
-                <button onclick="createTask()">Create Task</button>
-                <input type="date" id="task-due-date" placeholder="Due date">
+    <!-- Content for Tabs -->
+    <div id="tasks-section" class="tab-content">
+        <div class="tasks-section collapsible">
+            <h2>Tasks</h2>
+            <div class="goal-card">
+                <div class="form-group">
+                    <input type="text" id="task-input" placeholder="Enter new task">
+                    <button onclick="createTask()">Create Task</button>
+                    <input type="date" id="task-due-date" placeholder="Due date">
+                </div>
             </div>
+            <div id="tasks-list"></div>
         </div>
-        <div id="tasks-list"></div>
+    </div>
+
+    <div id="goals-section" class="tab-content" style="display: none;">
+        <div class="goals-section collapsible">
+            <h2>Goals</h2>
+            <div class="goal-card">
+                <div class="form-group">
+                    <input type="text" id="goal-input" placeholder="Enter new goal">
+                    <button onclick="createGoal()">Create Goal</button>
+                    <input type="date" id="goal-due-date" placeholder="Due date">
+                </div>
+            </div>
+            <div id="goals-list"></div>
+        </div>
+    </div>
+
+    <div id="projects-section" class="tab-content" style="display: none;">
+        <div class="projects-section collapsible">
+            <h2>Projects</h2>
+            <div class="goal-card">
+                <div class="form-group">
+                    <input type="text" id="project-input" placeholder="Enter new project">
+                    <button onclick="createProject()">Create Project</button>
+                    <input type="date" id="project-due-date" placeholder="Due date">
+                </div>
+            </div>
+            <div id="projects-list"></div>
+        </div>
+    </div>
+
+    <div id="plans-section" class="tab-content" style="display: none;">
+        <div class="plans-section collapsible">
+            <h2>Plans</h2>
+            <div class="goal-card">
+                <div class="form-group">
+                    <input type="text" id="plan-input" placeholder="Enter new plan">
+                    <button onclick="createPlan()">Create Plan</button>
+                    <input type="date" id="plan-due-date" placeholder="Due date">
+                </div>
+            </div>
+            <div id="plans-list"></div>
+        </div>
     </div>
 </div>
 
-<div id="goals-section" class="tab-content" style="display: none;">
-    <div class="goals-section collapsible">
-        <h2>Goals</h2>
-        <div class="goal-card">
-            <div class="form-group">
-                <input type="text" id="goal-input" placeholder="Enter new goal">
-                <button onclick="createGoal()">Create Goal</button>
-                <input type="date" id="goal-due-date" placeholder="Due date">
-            </div>
-        </div>
-        <div id="goals-list"></div>
-    </div>
-</div>
-
-<div id="projects-section" class="tab-content" style="display: none;">
-    <div class="projects-section collapsible">
-        <h2>Projects</h2>
-        <div class="goal-card">
-            <div class="form-group">
-                <input type="text" id="project-input" placeholder="Enter new project">
-                <button onclick="createProject()">Create Project</button>
-                <input type="date" id="project-due-date" placeholder="Due date">
-            </div>
-        </div>
-        <div id="projects-list"></div>
-    </div>
-</div>
-
-<div id="plans-section" class="tab-content" style="display: none;">
-    <div class="plans-section collapsible">
-        <h2>Plans</h2>
-        <div class="goal-card">
-            <div class="form-group">
-                <input type="text" id="plan-input" placeholder="Enter new plan">
-                <button onclick="createPlan()">Create Plan</button>
-                <input type="date" id="plan-due-date" placeholder="Due date">
-            </div>
-        </div>
-        <div id="plans-list"></div>
-    </div>
-</div>
-
-</div>
 
 
     <!-- Timer Sidebar -->
