@@ -3009,14 +3009,15 @@ function loadProductivityData() {
             .then(snapshot => {
                 if (!snapshot.empty) {
                     dataExists = true;
-                    const completedCount = snapshot.docs.length;
+                    const totalCount = snapshot.docs.length;
+                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
 
                     // Create dynamic section for each collection
                     const collectionDiv = document.createElement('div');
                     collectionDiv.className = 'progress-item';
 
                     const collectionLabel = document.createElement('p');
-                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}`;
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
                     collectionDiv.appendChild(collectionLabel);
 
                     // Create progress bar for each collection
@@ -3025,7 +3026,8 @@ function loadProductivityData() {
 
                     const progressFill = document.createElement('div');
                     progressFill.className = 'progress-fill';
-                    progressFill.style.width = `${Math.min(completedCount * 10, 100)}%`; // Set width based on completion count
+                    const completionPercentage = (completedCount / totalCount) * 100;
+                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`; // Set width based on completion count
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
@@ -3053,6 +3055,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 let dataExists = false; // Shared flag to track if any data exists
 
