@@ -3046,11 +3046,11 @@ function loadUpcomingDeadlines() {
 
     // Collections with due dates to check
     const collections = [
-        { name: 'tasks', label: 'Task', dateField: 'dueDate' },
-        { name: 'goals', label: 'Goal', dateField: 'dueDate' },
-        { name: 'projects', label: 'Project', dateField: 'dueDate' },
-        { name: 'plans', label: 'Plan', dateField: 'dueDate' },
-        { name: 'events', label: 'Event', dateField: null } // Events use different fields
+        { name: 'tasks', label: 'Task', dateField: 'dueDate', titleField: 'task' },
+        { name: 'goals', label: 'Goal', dateField: 'dueDate', titleField: 'goal' },
+        { name: 'projects', label: 'Project', dateField: 'dueDate', titleField: 'project' },
+        { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' },
+        { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
     let dataExists = false;
@@ -3063,6 +3063,7 @@ function loadUpcomingDeadlines() {
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let deadlineDate;
+                    let titleText = data[collection.titleField] || '';
 
                     // Check due date or event-specific date fields
                     if (collection.name === 'events') {
@@ -3082,7 +3083,7 @@ function loadUpcomingDeadlines() {
                         tag.textContent = collection.label;
 
                         const deadlineText = document.createElement('span');
-                        deadlineText.textContent = `${data.title || data.task || ''} (Due: ${deadlineDate.toLocaleDateString()})`;
+                        deadlineText.textContent = `${titleText} (Due: ${deadlineDate.toLocaleDateString()})`;
 
                         listItem.appendChild(tag);
                         listItem.appendChild(deadlineText);
@@ -3111,6 +3112,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadUpcomingDeadlines();
     }
 });
+
 
 
 
