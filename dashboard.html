@@ -3057,7 +3057,7 @@ function loadUpcomingDeadlines() {
 
     const loadPromises = collections.map(collection => {
         return db.collection(collection.name)
-            .where('uid', '==', userId) // Check for events using 'uid' field
+            .where('userId', '==', userId)
             .get()
             .then(snapshot => {
                 snapshot.forEach(doc => {
@@ -3114,7 +3114,60 @@ firebase.auth().onAuthStateChanged(user => {
 });
 
 
+function loadUpcomingEvents() {
+    const userId = firebase.auth().currentUser.uid;
+    const deadlinesList = document.getElementById('deadlines-list');
+    let eventDataExists = false;
 
+    db.collection('events')
+        .where('uid', '==', userId)
+        .get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                const data = doc.data();
+
+                // Check if we have the required date fields
+                if (data.year && data.month && data.day) {
+                    const eventDate = new Date(data.year, data.month - 1, data.day);
+
+                    // Only display upcoming events
+                    if (eventDate >= new Date()) {
+                        eventDataExists = true;
+                        const listItem = document.createElement('li');
+                        const tag = document.createElement('span');
+                        tag.className = 'deadline-tag';
+                        tag.textContent = 'Event';
+
+                        const eventText = document.createElement('span');
+                        eventText.textContent = `${data.title} (Due: ${eventDate.toLocaleDateString()})`;
+
+                        listItem.appendChild(tag);
+                        listItem.appendChild(eventText);
+                        deadlinesList.appendChild(listItem);
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Error loading events data: ", error);
+        })
+        .finally(() => {
+            // Show "No upcoming deadlines" if no event data is found
+            if (!eventDataExists && deadlinesList.children.length === 0) {
+                const noDeadlinesMessage = document.createElement('li');
+                noDeadlinesMessage.textContent = "No upcoming deadlines";
+                deadlinesList.appendChild(noDeadlinesMessage);
+            }
+        });
+}
+
+// Call the function after checking user authentication
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        loadUpcomingDeadlines(); // Existing function to load other deadlines
+        loadUpcomingEvents();    // New function to load events
+    }
+});
 
 
 
