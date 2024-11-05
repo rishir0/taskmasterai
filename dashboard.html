@@ -3065,7 +3065,6 @@ function loadUpcomingDeadlines() {
         { name: 'goals', label: 'Goal', dateField: 'dueDate', titleField: 'goal' },
         { name: 'projects', label: 'Project', dateField: 'dueDate', titleField: 'project' },
         { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' },
-        { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
     let dataExists = false;
@@ -3080,12 +3079,8 @@ function loadUpcomingDeadlines() {
                     let deadlineDate;
                     let titleText = data[collection.titleField] || '';
 
-                    // Check due date or event-specific date fields
-                    if (collection.name === 'events') {
-                        if (data.year && data.month && data.day) {
-                            deadlineDate = new Date(data.year, data.month - 1, data.day);
-                        }
-                    } else if (data[collection.dateField]) {
+                    // Check due date fields
+                    if (data[collection.dateField]) {
                         deadlineDate = data[collection.dateField].toDate();
                     }
 
@@ -3119,30 +3114,8 @@ function loadUpcomingDeadlines() {
             });
     });
 
-    // If no deadlines exist, show default message
-    Promise.all(loadPromises).then(() => {
-        if (!dataExists) {
-            const noDeadlinesMessage = document.createElement('li');
-            noDeadlinesMessage.textContent = "No upcoming deadlines";
-            deadlinesList.appendChild(noDeadlinesMessage);
-        }
-    });
-}
-
-// Call this function on page load or user login
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        loadUpcomingDeadlines();
-    }
-});
-
-
-function loadUpcomingEvents() {
-    const userId = firebase.auth().currentUser.uid;
-    const deadlinesList = document.getElementById('deadlines-list');
-    let eventDataExists = false;
-
-    db.collection('events')
+    // Add event-specific logic
+    const eventPromise = db.collection('events')
         .where('uid', '==', userId)
         .get()
         .then(snapshot => {
@@ -3156,13 +3129,11 @@ function loadUpcomingEvents() {
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
-                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
-                    const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
+                    const eventDate = new Date(data.year, data.month - 1, data.day); // month - 1 to set Date object
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
-                        eventDataExists = true;
+                        dataExists = true;
                         const listItem = document.createElement('li');
                         const tag = document.createElement('span');
                         tag.className = 'deadline-tag';
@@ -3188,23 +3159,25 @@ function loadUpcomingEvents() {
         })
         .catch(error => {
             console.error("Error loading events data: ", error);
-        })
-        .finally(() => {
-            // Show "No upcoming deadlines" if no event data is found
-            if (!eventDataExists && deadlinesList.children.length === 0) {
-                const noDeadlinesMessage = document.createElement('li');
-                noDeadlinesMessage.textContent = "No upcoming deadlines";
-                deadlinesList.appendChild(noDeadlinesMessage);
-            }
         });
+
+    // Combine all promises and show default message if no data exists
+    Promise.all([...loadPromises, eventPromise]).then(() => {
+        if (!dataExists) {
+            const noDeadlinesMessage = document.createElement('li');
+            noDeadlinesMessage.textContent = "No upcoming deadlines";
+            deadlinesList.appendChild(noDeadlinesMessage);
+        }
+    });
 }
 
-// Call the function after checking user authentication
+// Call this function on page load or user login
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        loadUpcomingEvents();    // New function to load events
+        loadUpcomingDeadlines();
     }
 });
+
 
 
 
