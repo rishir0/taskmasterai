@@ -3138,7 +3138,9 @@ function loadUpcomingEvents() {
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
-                    const eventDate = new Date(data.year, data.month - 1, data.day);
+                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
+                    const correctedMonth = data.month + 1;
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
@@ -3177,6 +3179,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadUpcomingEvents();    // New function to load events
     }
 });
+
 
 
 
