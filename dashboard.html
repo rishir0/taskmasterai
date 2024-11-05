@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1113,15 +1112,14 @@ scrollbar-thumb {
 /* Form Group for aligned input, button, and date */
 .form-group {
     display: flex;
-    align-items: center; /* Vertically centers all elements */
+    align-items: center;
     gap: 10px; /* Adds space between input, button, and date */
 }
 
-/* Adjust the text input width and height */
-.form-group input[type="text"],
-.form-group input[type="date"] {
-    padding: 10px; /* Uniform padding */
-    height: 40px; /* Set height for both inputs */
+/* Adjust the text input width */
+.form-group input[type="text"] {
+    width: 50%;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: var(--bg-color);
@@ -1134,18 +1132,26 @@ scrollbar-thumb {
     color: var(--text-color);
     border: none;
     padding: 10px 20px;
-    height: 40px; /* Ensure the button has the same height as inputs */
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
 }
 
+/* Adjust the date input style */
+.form-group input[type="date"] {
+    width: auto; /* Date input fits its content */
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
 /* Button hover effect */
 .form-group button:hover {
     background-color: var(--accent-color);
 }
-
 
 
 
