@@ -3057,7 +3057,7 @@ function loadUpcomingDeadlines() {
 
     const loadPromises = collections.map(collection => {
         return db.collection(collection.name)
-            .where('userId', '==', userId)
+            .where('uid', '==', userId) // Check for events using 'uid' field
             .get()
             .then(snapshot => {
                 snapshot.forEach(doc => {
@@ -3112,6 +3112,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadUpcomingDeadlines();
     }
 });
+
 
 
 
