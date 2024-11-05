@@ -2928,8 +2928,34 @@ function displayRandomQuote() {
     }
 }
 
-// Call the function when the page loads
-window.addEventListener('load', displayRandomQuote);
+// Function to display a greeting based on the time of day
+function displayGreeting() {
+    const currentHour = new Date().getHours();
+    let greeting;
+
+    if (currentHour >= 5 && currentHour < 12) {
+        greeting = "Good morning";
+    } else if (currentHour >= 12 && currentHour < 17) {
+        greeting = "Good afternoon";
+    } else if (currentHour >= 17 && currentHour < 21) {
+        greeting = "Good evening";
+    } else {
+        greeting = "Good night";
+    }
+
+    // Update the greeting in the <h1> element
+    const greetingElement = document.querySelector('.dashboard-header h1');
+    if (greetingElement) {
+        greetingElement.innerHTML = `${greeting}, <span id="displayName">User</span>!`;
+    }
+}
+
+// Call the functions when the page loads
+window.addEventListener('load', () => {
+    displayRandomQuote();
+    displayGreeting();
+});
+
 
 
 
