@@ -3164,7 +3164,6 @@ function loadUpcomingEvents() {
 // Call the function after checking user authentication
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        loadUpcomingDeadlines(); // Existing function to load other deadlines
         loadUpcomingEvents();    // New function to load events
     }
 });
