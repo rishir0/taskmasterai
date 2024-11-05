@@ -2965,6 +2965,71 @@ window.addEventListener('load', () => {
 });
 
 
+// Function to load productivity data
+function loadProductivityData() {
+    const userId = firebase.auth().currentUser.uid;
+    const productivitySection = document.querySelector('.productivity-stats');
+    productivitySection.innerHTML = ''; // Clear section content initially
+
+    // Create an array of Firestore collections to check
+    const collections = [
+        { name: 'tasks', label: 'Tasks' },
+        { name: 'goals', label: 'Goals' },
+        { name: 'projects', label: 'Projects' },
+        { name: 'plans', label: 'Plans' }
+    ];
+
+    let dataExists = false; // Track if any data is found
+
+    collections.forEach(collection => {
+        db.collection(collection.name)
+            .where('userId', '==', userId)
+            .get()
+            .then(snapshot => {
+                if (!snapshot.empty) {
+                    dataExists = true;
+                    const completedCount = snapshot.docs.length;
+
+                    // Create dynamic section for each collection
+                    const collectionDiv = document.createElement('div');
+                    collectionDiv.className = 'progress-item';
+
+                    const collectionLabel = document.createElement('p');
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}`;
+                    collectionDiv.appendChild(collectionLabel);
+
+                    // Create progress bar for each collection
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    progressFill.style.width = `${(completedCount / 10) * 100}%`; // Adjust for max count
+                    progressBar.appendChild(progressFill);
+
+                    collectionDiv.appendChild(progressBar);
+                    productivitySection.appendChild(collectionDiv);
+                }
+            })
+            .catch(error => {
+                console.error(`Error loading ${collection.label} data: `, error);
+            });
+    });
+
+    // Display default message if no data found
+    if (!dataExists) {
+        const noDataMessage = document.createElement('p');
+        noDataMessage.textContent = "Looks like you have nothing for today.";
+        productivitySection.appendChild(noDataMessage);
+    }
+}
+
+// Call this function on page load or user login
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        loadProductivityData();
+    }
+});
 
 
 
