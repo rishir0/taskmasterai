@@ -2293,8 +2293,8 @@ async function createPlanEvent(planId, planTitle, dueDate) {
 function loadTasks() {
     db.collection('tasks')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('dueDate') // Order by dueDate, which will leave nulls at the top
-        .orderBy('createdAt') // Secondary order by creation date
+        .orderBy('dueDate')
+        .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const tasksList = document.getElementById('tasks-list');
             tasksList.innerHTML = '';
@@ -2311,7 +2311,6 @@ function loadTasks() {
                 }
             });
 
-            // Combine tasks without dates at the top, followed by those with dates
             const sortedTasks = [...tasksWithoutDate, ...tasksWithDate];
 
             sortedTasks.forEach(({ id, task }) => {
@@ -2322,14 +2321,11 @@ function loadTasks() {
                     const dueDate = task.dueDate.toDate();
                     const today = new Date();
                     if (dueDate < today) {
-                        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Set to accent color if due date is passed
+                        taskDiv.style.backgroundColor = 'var(--primary-color)';
                     }
 
-                    // Display task and due date
                     const dueDateText = document.createElement('span');
                     dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
-                    
-                    // Apply styles for the card effect and position
                     dueDateText.style.marginLeft = '100px';
                     dueDateText.style.color = '#c9302c';
                     dueDateText.style.fontWeight = 'bold';
@@ -2346,10 +2342,16 @@ function loadTasks() {
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(id, 'task', task.task));
                 buttonContainer.appendChild(createDeleteButton(id, 'task'));
-                
-                // Add "Mark as Complete" button
-                const completeButton = createCompleteButton(id);
-                buttonContainer.appendChild(completeButton);
+
+                if (task.completed) {
+                    // Show green checkmark if task is already completed
+                    const checkmark = createCheckmark();
+                    buttonContainer.appendChild(checkmark);
+                } else {
+                    // Add "Mark as Complete" button if not completed
+                    const completeButton = createCompleteButton(id, buttonContainer);
+                    buttonContainer.appendChild(completeButton);
+                }
 
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
@@ -2358,9 +2360,9 @@ function loadTasks() {
 }
 
 // Function to create the "Mark as Complete" button
-function createCompleteButton(id) {
+function createCompleteButton(id, buttonContainer) {
     const completeButton = document.createElement('button');
-    completeButton.className = 'complete-button'; // Apply the same styles as edit/delete
+    completeButton.className = 'complete-button';
     completeButton.textContent = 'Mark as Complete';
 
     completeButton.addEventListener('click', () => {
@@ -2368,12 +2370,27 @@ function createCompleteButton(id) {
             completed: true
         }).then(() => {
             console.log(`Task ${id} marked as completed.`);
+            // Replace button with checkmark after marking as complete
+            buttonContainer.removeChild(completeButton);
+            const checkmark = createCheckmark();
+            buttonContainer.appendChild(checkmark);
         }).catch(error => {
             console.error('Error marking task as complete: ', error);
         });
     });
 
     return completeButton;
+}
+
+// Function to create a green checkmark element
+function createCheckmark() {
+    const checkmark = document.createElement('span');
+    checkmark.textContent = '✔'; // Green checkmark character
+    checkmark.style.color = 'green';
+    checkmark.style.fontSize = '16px';
+    checkmark.style.fontWeight = 'bold';
+    checkmark.style.marginLeft = '10px'; // Space between the checkmark and text
+    return checkmark;
 }
 
 
