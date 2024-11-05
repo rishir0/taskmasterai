@@ -3054,20 +3054,7 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 
-let dataExists = false; // Flag to check if any data exists (either deadlines or events)
-let deadlinesChecked = false; // To track if deadlines check is done
-let eventsChecked = false;    // To track if events check is done
-
-function checkIfNoDeadlinesMessageNeeded() {
-    const deadlinesList = document.getElementById('deadlines-list');
-    
-    // Only show the "No upcoming deadlines" message if both checks are done and no data exists
-    if (deadlinesChecked && eventsChecked && !dataExists) {
-        const noDeadlinesMessage = document.createElement('li');
-        noDeadlinesMessage.textContent = "No upcoming deadlines";
-        deadlinesList.appendChild(noDeadlinesMessage);
-    }
-}
+let dataExists = false; // Shared flag to track if any data exists
 
 function loadUpcomingDeadlines() {
     const userId = firebase.auth().currentUser.uid;
@@ -3132,10 +3119,14 @@ function loadUpcomingDeadlines() {
             });
     });
 
-    // Once all collections are checked
+    // Wait until all collections have been checked
     Promise.all(loadPromises).then(() => {
-        deadlinesChecked = true; // Mark deadlines check as done
-        checkIfNoDeadlinesMessageNeeded(); // Check if we need to show the no deadlines message
+        // Only show "No upcoming deadlines" if no data was found for deadlines and events check isn't done yet
+        if (!dataExists && deadlinesList.children.length === 0) {
+            const noDeadlinesMessage = document.createElement('li');
+            noDeadlinesMessage.textContent = "No upcoming deadlines";
+            deadlinesList.appendChild(noDeadlinesMessage);
+        }
     });
 }
 
@@ -3190,8 +3181,16 @@ function loadUpcomingEvents() {
                 }
             });
         })
-            eventsChecked = true; // Mark events check as done
-            checkIfNoDeadlinesMessageNeeded(); // Check if we need to show the no deadlines message
+        .catch(error => {
+            console.error("Error loading events data: ", error);
+        })
+        .finally(() => {
+            // Show "No upcoming deadlines" only if neither deadlines nor events exist
+            if (!eventDataExists && !dataExists && deadlinesList.children.length === 0) {
+                const noDeadlinesMessage = document.createElement('li');
+                noDeadlinesMessage.textContent = "No upcoming deadlines";
+                deadlinesList.appendChild(noDeadlinesMessage);
+            }
         })
         .catch(error => {
             console.error("Error loading events data: ", error);
