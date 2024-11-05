@@ -3066,8 +3066,11 @@ function loadUpcomingDeadlines() {
         { name: 'tasks', label: 'Task', dateField: 'dueDate', titleField: 'task' },
         { name: 'goals', label: 'Goal', dateField: 'dueDate', titleField: 'goal' },
         { name: 'projects', label: 'Project', dateField: 'dueDate', titleField: 'project' },
-        { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' }
+        { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' },
+        { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
+
+    let dataExists = false;
 
     const loadPromises = collections.map(collection => {
         return db.collection(collection.name)
@@ -3076,11 +3079,21 @@ function loadUpcomingDeadlines() {
             .then(snapshot => {
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    let deadlineDate = data[collection.dateField]?.toDate();
+                    let deadlineDate;
                     let titleText = data[collection.titleField] || '';
 
+                    // Check due date or event-specific date fields
+                    if (collection.name === 'events') {
+                        if (data.year && data.month && data.day) {
+                            deadlineDate = new Date(data.year, data.month - 1, data.day);
+                        }
+                    } else if (data[collection.dateField]) {
+                        deadlineDate = data[collection.dateField].toDate();
+                    }
+
+                    // If there's a valid deadline date in the future
                     if (deadlineDate && deadlineDate >= new Date()) {
-                        dataExists = true; // Data exists if we find any valid deadlines
+                        dataExists = true;
                         const listItem = document.createElement('li');
                         const tag = document.createElement('span');
                         tag.className = 'deadline-tag';
@@ -3119,32 +3132,34 @@ function loadUpcomingDeadlines() {
     });
 }
 
+
+
 function loadUpcomingEvents() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
+    let eventDataExists = false;
 
     db.collection('events')
         .where('uid', '==', userId)
         .get()
         .then(snapshot => {
-            let eventDataExists = false;
-
             snapshot.forEach(doc => {
                 const data = doc.data();
 
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                    return;
+                    return; // Skip to the next document if any linked field is present
                 }
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
-                    const eventDate = new Date(data.year, data.month - 1, data.day);
+                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
+                    const correctedMonth = data.month + 1;
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
-                        dataExists = true; // Data exists if we find any valid events
-                        eventDataExists = true; // Mark event-specific data as found
+                        eventDataExists = true;
                         const listItem = document.createElement('li');
                         const tag = document.createElement('span');
                         tag.className = 'deadline-tag';
@@ -3167,7 +3182,11 @@ function loadUpcomingEvents() {
                     }
                 }
             });
-
+        })
+        .catch(error => {
+            console.error("Error loading events data: ", error);
+        })
+        .finally(() => {
             // Show "No upcoming deadlines" only if neither deadlines nor events exist
             if (!eventDataExists && !dataExists && deadlinesList.children.length === 0) {
                 const noDeadlinesMessage = document.createElement('li');
@@ -3187,7 +3206,6 @@ firebase.auth().onAuthStateChanged(user => {
         loadUpcomingEvents();    // Load events
     }
 });
-
 
 
 
