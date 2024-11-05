@@ -3098,7 +3098,7 @@ function loadUpcomingDeadlines() {
                         tag.textContent = collection.label;
 
                         const deadlineText = document.createElement('span');
-                        deadlineText.textContent = `${titleText} `;
+                        deadlineText.textContent = `${titleText} - `;
 
                         // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
@@ -3164,7 +3164,7 @@ function loadUpcomingEvents() {
                         tag.textContent = 'Event';
 
                         const eventText = document.createElement('span');
-                        eventText.textContent = `${data.title} (Due: `;
+                        eventText.textContent = `${data.title} - `;
 
                         // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
@@ -3172,7 +3172,7 @@ function loadUpcomingEvents() {
                         dueDateText.classList.add('due-date'); // Apply due-date style
 
                         eventText.appendChild(dueDateText);
-                        eventText.appendChild(document.createTextNode(')'));
+                        eventText.appendChild(document.createTextNode(''));
 
                         listItem.appendChild(tag);
                         listItem.appendChild(eventText);
