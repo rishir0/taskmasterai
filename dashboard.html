@@ -2328,7 +2328,7 @@ if (task.dueDate) {
 
     // Display task and due date
     const dueDateText = document.createElement('span');
-    dueDateText.textContent = `${dueDate.toLocaleDateString()}`;
+    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
     
     // Apply styles for the card effect and position
     dueDateText.style.marginLeft = '100px'; // Pushes the due date more to the right
@@ -2394,7 +2394,7 @@ function loadProjects() {
                     }
 
                     const dueDateText = document.createElement('span');
-                    dueDateText.textContent = `${dueDate.toLocaleDateString()}`;
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
                     dueDateText.style.marginLeft = '100px';
                     dueDateText.style.color = '#c9302c';
                     dueDateText.style.fontWeight = 'bold';
@@ -3098,7 +3098,7 @@ function loadUpcomingDeadlines() {
                         tag.textContent = collection.label;
 
                         const deadlineText = document.createElement('span');
-                        deadlineText.textContent = `${titleText} (Due: `;
+                        deadlineText.textContent = `${titleText} `;
 
                         // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
@@ -3106,7 +3106,7 @@ function loadUpcomingDeadlines() {
                         dueDateText.classList.add('due-date'); // Apply due-date style
 
                         deadlineText.appendChild(dueDateText);
-                        deadlineText.appendChild(document.createTextNode(')'));
+                        deadlineText.appendChild(document.createTextNode(''));
 
                         listItem.appendChild(tag);
                         listItem.appendChild(deadlineText);
