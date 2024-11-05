@@ -2971,18 +2971,24 @@ function loadProductivityData() {
     const productivitySection = document.querySelector('.productivity-stats');
     productivitySection.innerHTML = ''; // Clear section content initially
 
+    // Keep the header
+    const header = document.createElement('h2');
+    header.textContent = "Today's Productivity";
+    productivitySection.appendChild(header);
+
     // Create an array of Firestore collections to check
     const collections = [
-        { name: 'tasks', label: 'Tasks' },
-        { name: 'goals', label: 'Goals' },
-        { name: 'projects', label: 'Projects' },
-        { name: 'plans', label: 'Plans' }
+        { name: 'tasks', label: 'Tasks', maxCount: 10 },
+        { name: 'goals', label: 'Goals', maxCount: 5 },
+        { name: 'projects', label: 'Projects', maxCount: 3 },
+        { name: 'plans', label: 'Plans', maxCount: 4 }
     ];
 
     let dataExists = false; // Track if any data is found
 
-    collections.forEach(collection => {
-        db.collection(collection.name)
+    // Track completed promises to check after all are done
+    const loadPromises = collections.map(collection => {
+        return db.collection(collection.name)
             .where('userId', '==', userId)
             .get()
             .then(snapshot => {
@@ -2995,7 +3001,7 @@ function loadProductivityData() {
                     collectionDiv.className = 'progress-item';
 
                     const collectionLabel = document.createElement('p');
-                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}`;
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount} / ${collection.maxCount}`;
                     collectionDiv.appendChild(collectionLabel);
 
                     // Create progress bar for each collection
@@ -3004,7 +3010,7 @@ function loadProductivityData() {
 
                     const progressFill = document.createElement('div');
                     progressFill.className = 'progress-fill';
-                    progressFill.style.width = `${(completedCount / 10) * 100}%`; // Adjust for max count
+                    progressFill.style.width = `${(completedCount / collection.maxCount) * 100}%`; // Adjust width based on max count
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
@@ -3016,12 +3022,14 @@ function loadProductivityData() {
             });
     });
 
-    // Display default message if no data found
-    if (!dataExists) {
-        const noDataMessage = document.createElement('p');
-        noDataMessage.textContent = "Looks like you have nothing for today.";
-        productivitySection.appendChild(noDataMessage);
-    }
+    // After all collections are checked, show the message if no data exists
+    Promise.all(loadPromises).then(() => {
+        if (!dataExists) {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = "Looks like you have nothing for today.";
+            productivitySection.appendChild(noDataMessage);
+        }
+    });
 }
 
 // Call this function on page load or user login
@@ -3030,6 +3038,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 
