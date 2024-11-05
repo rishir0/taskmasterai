@@ -1154,7 +1154,7 @@ scrollbar-thumb {
 }
 
 
-/* Header Section Styling */
+/* General Card Styling */
 .header-section {
     background-color: var(--card-bg);
     padding: 20px;
@@ -1162,63 +1162,30 @@ scrollbar-thumb {
     width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
     transition: background-color 0.3s ease;
-    gap: 20px; /* Added gap for seamless spacing */
 }
 
-.header-section .greeting {
-    flex: 1;
-    min-width: 250px; /* Ensures layout responsiveness */
-    margin-bottom: 10px;
-}
-
-.header-section h1 {
-    color: var(--primary-color);
-    font-size: 2rem;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.header-section #current-date {
-    color: var(--text-color);
-    font-size: 1.1rem;
-}
-
-.header-section .productivity-stats {
+/* Specific Styling for Productivity Section */
+.productivity-section .productivity-stats {
     flex: 1;
     min-width: 250px;
-    margin-bottom: 10px;
 }
 
-.productivity-stats h2 {
+/* Specific Styling for Deadlines Section */
+.deadlines-section .upcoming-deadlines {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Productivity Stats Styling */
+.productivity-stats h2, .upcoming-deadlines h3 {
     color: var(--primary-color);
     font-size: 1.5rem;
     margin-bottom: 10px;
     font-weight: bold;
 }
 
-.productivity-stats p {
-    color: var(--text-color);
-    font-size: 1rem;
-    margin: 5px 0;
-}
-
-.header-section .upcoming-deadlines {
-    flex: 1;
-    min-width: 250px;
-    margin-bottom: 10px;
-}
-
-.upcoming-deadlines h3 {
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
+/* Upcoming Deadlines List Styling */
 .upcoming-deadlines ul {
     list-style: none;
     padding: 0;
@@ -1237,43 +1204,22 @@ scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.header-section .quick-access {
-    flex: 1;
-    min-width: 250px;
-    margin-bottom: 10px;
+/* Progress Bar Container */
+.progress-bar {
+    background-color: rgba(255, 255, 255, 0.1); /* Background for the empty part of the bar */
+    border-radius: 10px;
+    height: 15px;
+    width: 100%; /* Full width of its container */
+    margin-top: 5px;
+    overflow: hidden;
 }
 
-.quick-access input {
-    width: 70%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin-right: 10px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
-    transition: background-color 0.3s ease;
-}
-
-.quick-access input:focus {
-    background-color: var(--input-focus-bg); /* Add a focus state */
-    outline: none;
-}
-
-.quick-access button {
-    background-color: var(--hover-bg);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.quick-access button:hover {
-    background-color: var(--accent-color);
-    transform: scale(1.05); /* Added hover scale effect */
+/* Filled part of the Progress Bar */
+.progress-fill {
+    background-color: var(--primary-color); /* Use primary color for the fill */
+    height: 100%;
+    border-radius: 10px; /* Ensure rounded corners */
+    transition: width 0.3s ease; /* Smooth width change */
 }
 
 
@@ -1397,30 +1343,33 @@ scrollbar-thumb {
         <h1>Welcome, <span id="displayName">User</span>!</h1>
     </div>
 
-    <!-- New Section with Productivity Stats, Deadlines, Search Bar -->
-    <div class="header-section">
-        <!-- Productivity Stats -->
+    <!-- Today's Productivity Section -->
+    <div class="header-section productivity-section">
         <div class="productivity-stats">
             <h2>Today's Productivity</h2>
             <p>Tasks Completed: <span id="tasks-completed">0</span></p>
+
+            <!-- Pomodoro Progress Bar -->
             <p>Pomodoros Completed: <span id="pomodoros-completed">0</span> / 6</p>
+            <div class="progress-bar">
+                <div id="pomodoro-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+
             <p>Goals Achieved: <span id="goals-achieved">0</span></p>
         </div>
+    </div>
 
-        <!-- Upcoming Deadlines -->
+    <!-- Upcoming Deadlines Section -->
+    <div class="header-section deadlines-section">
         <div class="upcoming-deadlines">
             <h3>Upcoming Deadlines</h3>
             <ul id="deadlines-list">
                 <li>No upcoming deadlines</li>
             </ul>
         </div>
-
-        <!-- Search Bar / Quick Access -->
-        <div class="quick-access">
-            <input type="text" id="search-bar" placeholder="Search tasks, goals, projects...">
-            <button onclick="quickSearch()">Search</button>
-        </div>
     </div>
+</div>
+
 
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
     <ul class="nav nav-tabs">
