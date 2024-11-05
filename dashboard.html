@@ -3039,6 +3039,78 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 
+function loadUpcomingDeadlines() {
+    const userId = firebase.auth().currentUser.uid;
+    const deadlinesList = document.getElementById('deadlines-list');
+    deadlinesList.innerHTML = ''; // Clear initial content
+
+    // Collections with due dates to check
+    const collections = [
+        { name: 'tasks', label: 'Task', dateField: 'dueDate' },
+        { name: 'goals', label: 'Goal', dateField: 'dueDate' },
+        { name: 'projects', label: 'Project', dateField: 'dueDate' },
+        { name: 'plans', label: 'Plan', dateField: 'dueDate' },
+        { name: 'events', label: 'Event', dateField: null } // Events use different fields
+    ];
+
+    let dataExists = false;
+
+    const loadPromises = collections.map(collection => {
+        return db.collection(collection.name)
+            .where('userId', '==', userId)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    let deadlineDate;
+
+                    // Check due date or event-specific date fields
+                    if (collection.name === 'events') {
+                        if (data.year && data.month && data.day) {
+                            deadlineDate = new Date(data.year, data.month - 1, data.day);
+                        }
+                    } else if (data[collection.dateField]) {
+                        deadlineDate = data[collection.dateField].toDate();
+                    }
+
+                    // If there's a valid deadline date in the future
+                    if (deadlineDate && deadlineDate >= new Date()) {
+                        dataExists = true;
+                        const listItem = document.createElement('li');
+                        const tag = document.createElement('span');
+                        tag.className = 'deadline-tag';
+                        tag.textContent = collection.label;
+
+                        const deadlineText = document.createElement('span');
+                        deadlineText.textContent = `${data.title || data.task || ''} (Due: ${deadlineDate.toLocaleDateString()})`;
+
+                        listItem.appendChild(tag);
+                        listItem.appendChild(deadlineText);
+                        deadlinesList.appendChild(listItem);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error(`Error loading ${collection.label} data: `, error);
+            });
+    });
+
+    // If no deadlines exist, show default message
+    Promise.all(loadPromises).then(() => {
+        if (!dataExists) {
+            const noDeadlinesMessage = document.createElement('li');
+            noDeadlinesMessage.textContent = "No upcoming deadlines";
+            deadlinesList.appendChild(noDeadlinesMessage);
+        }
+    });
+}
+
+// Call this function on page load or user login
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        loadUpcomingDeadlines();
+    }
+});
 
 
 
