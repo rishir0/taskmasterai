@@ -2932,21 +2932,26 @@ function displayRandomQuote() {
 function displayGreeting() {
     const currentHour = new Date().getHours();
     let greeting;
+    let emoji;
 
     if (currentHour >= 5 && currentHour < 12) {
         greeting = "Good morning";
+        emoji = "☀️"; // Sun emoji for morning
     } else if (currentHour >= 12 && currentHour < 17) {
         greeting = "Good afternoon";
+        emoji = "🌞"; // Sun with face emoji for afternoon
     } else if (currentHour >= 17 && currentHour < 21) {
         greeting = "Good evening";
+        emoji = "🌇"; // Sunset emoji for evening
     } else {
         greeting = "Good night";
+        emoji = "🌙"; // Crescent moon emoji for night
     }
 
     // Update the greeting in the <h1> element
     const greetingElement = document.querySelector('.dashboard-header h1');
     if (greetingElement) {
-        greetingElement.innerHTML = `${greeting}, <span id="displayName">User</span>!`;
+        greetingElement.innerHTML = `${emoji} ${greeting}, <span id="displayName">User</span>!`;
     }
 }
 
@@ -2955,6 +2960,7 @@ window.addEventListener('load', () => {
     displayRandomQuote();
     displayGreeting();
 });
+
 
 
 
