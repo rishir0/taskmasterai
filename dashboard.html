@@ -2901,6 +2901,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+// Array of productivity-driven quotes
+const quotes = [
+    "Start where you are. Use what you have. Do what you can.",
+    "Success is not the key to happiness. Happiness is the key to success.",
+    "Don't watch the clock; do what it does. Keep going.",
+    "Your only limit is your mind.",
+    "Small daily improvements are the key to staggering long-term results.",
+    "Success is the sum of small efforts, repeated day in and day out.",
+    "Believe you can, and you're halfway there.",
+    "Productivity is never an accident. It is always the result of a commitment to excellence, intelligent planning, and focused effort.",
+    "Do something today that your future self will thank you for.",
+    "The secret of getting ahead is getting started."
+];
+
+// Function to display a random quote
+function displayRandomQuote() {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const randomQuote = quotes[randomIndex];
+
+    // Find the <p> element containing "Your personalized dashboard" and replace its text
+    const personalizedDashboardElement = document.querySelector('.dashboard-header p');
+    if (personalizedDashboardElement) {
+        personalizedDashboardElement.textContent = randomQuote;
+    }
+}
+
+// Call the function when the page loads
+window.addEventListener('load', displayRandomQuote);
+
+
 </script>
 
 <script>
