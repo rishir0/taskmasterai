@@ -2318,28 +2318,26 @@ function loadTasks() {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-item';
 
-// If dueDate exists, check if it's passed
-if (task.dueDate) {
-    const dueDate = task.dueDate.toDate();
-    const today = new Date();
-    if (dueDate < today) {
-        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Set to accent color if due date is passed
-    }
+                if (task.dueDate) {
+                    const dueDate = task.dueDate.toDate();
+                    const today = new Date();
+                    if (dueDate < today) {
+                        taskDiv.style.backgroundColor = 'var(--primary-color)'; // Set to accent color if due date is passed
+                    }
 
-    // Display task and due date
-    const dueDateText = document.createElement('span');
-    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
-    
-    // Apply styles for the card effect and position
-    dueDateText.style.marginLeft = '100px'; // Pushes the due date more to the right
-    dueDateText.style.color = '#c9302c';
-    dueDateText.style.fontWeight = 'bold'; // Set the due date text to bold
-    dueDateText.style.padding = '5px 10px'; // Adds padding inside the "card"
-    dueDateText.style.borderRadius = '8px'; // Rounds the corners of the card
-    dueDateText.style.display = 'inline-block'; // Ensures it behaves like a block element for padding
-    taskDiv.appendChild(dueDateText);
-}
-
+                    // Display task and due date
+                    const dueDateText = document.createElement('span');
+                    dueDateText.textContent = ` (Due: ${dueDate.toLocaleDateString()})`;
+                    
+                    // Apply styles for the card effect and position
+                    dueDateText.style.marginLeft = '100px';
+                    dueDateText.style.color = '#c9302c';
+                    dueDateText.style.fontWeight = 'bold';
+                    dueDateText.style.padding = '5px 10px';
+                    dueDateText.style.borderRadius = '8px';
+                    dueDateText.style.display = 'inline-block';
+                    taskDiv.appendChild(dueDateText);
+                }
 
                 const taskText = document.createElement('span');
                 taskText.textContent = `${task.task}`;
@@ -2348,11 +2346,34 @@ if (task.dueDate) {
                 const buttonContainer = createButtonContainer();
                 buttonContainer.appendChild(createEditButton(id, 'task', task.task));
                 buttonContainer.appendChild(createDeleteButton(id, 'task'));
+                
+                // Add "Mark as Complete" button
+                const completeButton = createCompleteButton(id);
+                buttonContainer.appendChild(completeButton);
 
                 taskDiv.appendChild(buttonContainer);
                 tasksList.appendChild(taskDiv);
             });
         });
+}
+
+// Function to create the "Mark as Complete" button
+function createCompleteButton(id) {
+    const completeButton = document.createElement('button');
+    completeButton.className = 'complete-button'; // Apply the same styles as edit/delete
+    completeButton.textContent = 'Mark as Complete';
+
+    completeButton.addEventListener('click', () => {
+        db.collection('tasks').doc(id).update({
+            completed: true
+        }).then(() => {
+            console.log(`Task ${id} marked as completed.`);
+        }).catch(error => {
+            console.error('Error marking task as complete: ', error);
+        });
+    });
+
+    return completeButton;
 }
 
 
