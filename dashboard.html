@@ -3136,6 +3136,11 @@ function loadUpcomingEvents() {
             snapshot.forEach(doc => {
                 const data = doc.data();
 
+                // Skip events with linked items
+                if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
+                    return; // Skip to the next document if any linked field is present
+                }
+
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
                     // Adjust month by adding 1 since Firestore stores it as zero-indexed
@@ -3179,6 +3184,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadUpcomingEvents();    // New function to load events
     }
 });
+
 
 
 
