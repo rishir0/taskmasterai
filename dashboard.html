@@ -3041,7 +3041,7 @@ function loadProductivityData() {
     Promise.all(loadPromises).then(() => {
         if (!dataExists) {
             const noDataMessage = document.createElement('p');
-            noDataMessage.textContent = "Looks like you have nothing for today.";
+            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
             productivitySection.appendChild(noDataMessage);
         }
     });
