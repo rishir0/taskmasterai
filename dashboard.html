@@ -1109,6 +1109,51 @@ scrollbar-thumb {
     margin: 0;
 }
 
+/* Form Group for aligned input, button, and date */
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between input, button, and date */
+}
+
+/* Adjust the text input width */
+.form-group input[type="text"] {
+    width: 50%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Adjust the button styles */
+.form-group button {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+/* Adjust the date input style */
+.form-group input[type="date"] {
+    width: auto; /* Date input fits its content */
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Button hover effect */
+.form-group button:hover {
+    background-color: var(--accent-color);
+}
+
+
 
     </style>
 </head>
@@ -1237,62 +1282,71 @@ scrollbar-thumb {
         </div>
     </div>
 
-    <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
-        <li><a href="#goals" class="tab-link" onclick="openTab(event, 'goals-section')">Goals</a></li>
-        <li><a href="#projects" class="tab-link" onclick="openTab(event, 'projects-section')">Projects</a></li>
-        <li><a href="#plans" class="tab-link" onclick="openTab(event, 'plans-section')">Plans</a></li>
-    </ul>
+<!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
+    <li><a href="#goals" class="tab-link" onclick="openTab(event, 'goals-section')">Goals</a></li>
+    <li><a href="#projects" class="tab-link" onclick="openTab(event, 'projects-section')">Projects</a></li>
+    <li><a href="#plans" class="tab-link" onclick="openTab(event, 'plans-section')">Plans</a></li>
+</ul>
 
-    <!-- Content for Tabs -->
-    <div id="tasks-section" class="tab-content">
-        <div class="tasks-section collapsible">
-            <h2>Tasks</h2>
-            <div class="goal-card">
+<!-- Content for Tabs -->
+<div id="tasks-section" class="tab-content">
+    <div class="tasks-section collapsible">
+        <h2>Tasks</h2>
+        <div class="goal-card">
+            <div class="form-group">
                 <input type="text" id="task-input" placeholder="Enter new task">
-                <input type="date" id="task-due-date" placeholder="Due date">
                 <button onclick="createTask()">Create Task</button>
+                <input type="date" id="task-due-date" placeholder="Due date">
             </div>
-            <div id="tasks-list"></div>
         </div>
+        <div id="tasks-list"></div>
     </div>
+</div>
 
-    <div id="goals-section" class="tab-content" style="display: none;">
-        <div class="goals-section collapsible">
-            <h2>Goals</h2>
-            <div class="goal-card">
+<div id="goals-section" class="tab-content" style="display: none;">
+    <div class="goals-section collapsible">
+        <h2>Goals</h2>
+        <div class="goal-card">
+            <div class="form-group">
                 <input type="text" id="goal-input" placeholder="Enter new goal">
-                <input type="date" id="goal-due-date" placeholder="Due date">
                 <button onclick="createGoal()">Create Goal</button>
+                <input type="date" id="goal-due-date" placeholder="Due date">
             </div>
-            <div id="goals-list"></div>
         </div>
+        <div id="goals-list"></div>
     </div>
+</div>
 
-    <div id="projects-section" class="tab-content" style="display: none;">
-        <div class="projects-section collapsible">
-            <h2>Projects</h2>
-            <div class="goal-card">
+<div id="projects-section" class="tab-content" style="display: none;">
+    <div class="projects-section collapsible">
+        <h2>Projects</h2>
+        <div class="goal-card">
+            <div class="form-group">
                 <input type="text" id="project-input" placeholder="Enter new project">
-                <input type="date" id="project-due-date" placeholder="Due date">
                 <button onclick="createProject()">Create Project</button>
+                <input type="date" id="project-due-date" placeholder="Due date">
             </div>
-            <div id="projects-list"></div>
         </div>
+        <div id="projects-list"></div>
     </div>
+</div>
 
-    <div id="plans-section" class="tab-content" style="display: none;">
-        <div class="plans-section collapsible">
-            <h2>Plans</h2>
-            <div class="goal-card">
+<div id="plans-section" class="tab-content" style="display: none;">
+    <div class="plans-section collapsible">
+        <h2>Plans</h2>
+        <div class="goal-card">
+            <div class="form-group">
                 <input type="text" id="plan-input" placeholder="Enter new plan">
-                <input type="date" id="plan-due-date" placeholder="Due date">
                 <button onclick="createPlan()">Create Plan</button>
+                <input type="date" id="plan-due-date" placeholder="Due date">
             </div>
-            <div id="plans-list"></div>
         </div>
+        <div id="plans-list"></div>
     </div>
+</div>
+
 </div>
 
 
