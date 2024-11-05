@@ -1166,10 +1166,12 @@ scrollbar-thumb {
     justify-content: space-between;
     flex-wrap: wrap;
     transition: background-color 0.3s ease;
+    gap: 20px; /* Added gap for seamless spacing */
 }
 
 .header-section .greeting {
     flex: 1;
+    min-width: 250px; /* Ensures layout responsiveness */
     margin-bottom: 10px;
 }
 
@@ -1187,6 +1189,7 @@ scrollbar-thumb {
 
 .header-section .productivity-stats {
     flex: 1;
+    min-width: 250px;
     margin-bottom: 10px;
 }
 
@@ -1203,25 +1206,9 @@ scrollbar-thumb {
     margin: 5px 0;
 }
 
-.header-section .focus-quote {
-    flex: 1;
-    margin-bottom: 10px;
-}
-
-.focus-quote h3 {
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.focus-quote p {
-    color: var(--text-color);
-    font-size: 1rem;
-}
-
 .header-section .upcoming-deadlines {
     flex: 1;
+    min-width: 250px;
     margin-bottom: 10px;
 }
 
@@ -1252,6 +1239,7 @@ scrollbar-thumb {
 
 .header-section .quick-access {
     flex: 1;
+    min-width: 250px;
     margin-bottom: 10px;
 }
 
@@ -1263,6 +1251,13 @@ scrollbar-thumb {
     background-color: var(--bg-color);
     color: var(--text-color);
     margin-right: 10px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
+    transition: background-color 0.3s ease;
+}
+
+.quick-access input:focus {
+    background-color: var(--input-focus-bg); /* Add a focus state */
+    outline: none;
 }
 
 .quick-access button {
@@ -1273,12 +1268,14 @@ scrollbar-thumb {
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .quick-access button:hover {
     background-color: var(--accent-color);
+    transform: scale(1.05); /* Added hover scale effect */
 }
+
 
     </style>
 </head>
@@ -1395,18 +1392,13 @@ scrollbar-thumb {
             </div>
         </div>
 <div class="main-content">
+    <!-- Dashboard Header (left unchanged) -->
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
     </div>
 
-    <!-- Custom alert modal -->
-    <div id="custom-alert-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p id="alert-message"></p>
-        </div>
-    </div>
-
+    <!-- New Section with Productivity Stats, Deadlines, Search Bar -->
+    <div class="header-section">
         <!-- Productivity Stats -->
         <div class="productivity-stats">
             <h2>Today's Productivity</h2>
@@ -1429,8 +1421,6 @@ scrollbar-thumb {
             <button onclick="quickSearch()">Search</button>
         </div>
     </div>
-
-
 
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
     <ul class="nav nav-tabs">
@@ -1497,6 +1487,7 @@ scrollbar-thumb {
         </div>
     </div>
 </div>
+
 
 
 
