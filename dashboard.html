@@ -1395,12 +1395,17 @@ scrollbar-thumb {
             </div>
         </div>
 <div class="main-content">
-    <!-- Section with all enhancements above the Tasks, Goals, Projects, Plans tabs -->
-    <div class="header-section">
-        <div class="greeting">
-            <h1>Welcome, <span id="displayName">User</span>!</h1>
-            <p id="current-date">Today is: <!-- JS can insert current date here --></p>
+    <div class="dashboard-header">
+        <h1>Welcome, <span id="displayName">User</span>!</h1>
+    </div>
+
+    <!-- Custom alert modal -->
+    <div id="custom-alert-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="alert-message"></p>
         </div>
+    </div>
 
         <!-- Productivity Stats -->
         <div class="productivity-stats">
@@ -1408,12 +1413,6 @@ scrollbar-thumb {
             <p>Tasks Completed: <span id="tasks-completed">0</span></p>
             <p>Pomodoros Completed: <span id="pomodoros-completed">0</span> / 6</p>
             <p>Goals Achieved: <span id="goals-achieved">0</span></p>
-        </div>
-
-        <!-- Motivational Quote/Focus -->
-        <div class="focus-quote">
-            <h3>Focus for Today:</h3>
-            <p id="daily-focus">"Stay focused and keep pushing forward!"</p>
         </div>
 
         <!-- Upcoming Deadlines -->
@@ -1431,13 +1430,7 @@ scrollbar-thumb {
         </div>
     </div>
 
-    <!-- Custom alert modal -->
-    <div id="custom-alert-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p id="alert-message"></p>
-        </div>
-    </div>
+
 
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
     <ul class="nav nav-tabs">
@@ -1504,6 +1497,7 @@ scrollbar-thumb {
         </div>
     </div>
 </div>
+
 
 
 
