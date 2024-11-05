@@ -3070,8 +3070,6 @@ function loadUpcomingDeadlines() {
         { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
-    let dataExists = false;
-
     const loadPromises = collections.map(collection => {
         return db.collection(collection.name)
             .where('userId', '==', userId)
