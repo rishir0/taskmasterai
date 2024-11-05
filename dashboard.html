@@ -1222,6 +1222,16 @@ scrollbar-thumb {
     transition: width 0.3s ease; /* Smooth width change */
 }
 
+/* Hide scrollbars while allowing scrolling */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
 
     </style>
 </head>
@@ -1347,15 +1357,24 @@ scrollbar-thumb {
     <div class="header-section productivity-section">
         <div class="productivity-stats">
             <h2>Today's Productivity</h2>
-            <p>Tasks Completed: <span id="tasks-completed">0</span></p>
 
-            <!-- Pomodoro Progress Bar -->
+            <!-- Tasks Completed with Progress Bar -->
+            <p>Tasks Completed: <span id="tasks-completed">0</span> / 10</p>
+            <div class="progress-bar">
+                <div id="tasks-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+
+            <!-- Pomodoros Completed with Progress Bar -->
             <p>Pomodoros Completed: <span id="pomodoros-completed">0</span> / 6</p>
             <div class="progress-bar">
                 <div id="pomodoro-progress" class="progress-fill" style="width: 0%;"></div>
             </div>
 
-            <p>Goals Achieved: <span id="goals-achieved">0</span></p>
+            <!-- Goals Achieved with Progress Bar -->
+            <p>Goals Achieved: <span id="goals-achieved">0</span> / 5</p>
+            <div class="progress-bar">
+                <div id="goals-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
         </div>
     </div>
 
