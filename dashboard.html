@@ -3169,15 +3169,10 @@ function loadUpcomingEvents() {
                         tag.textContent = 'Event';
 
                         const eventText = document.createElement('span');
-                        eventText.textContent = `${data.title} (Due: `;
+                        eventText.textContent = `${data.title} (Due: ${eventDate.toLocaleDateString()})`;
 
-                        // Create due date span with new CSS class
-                        const dueDateText = document.createElement('span');
-                        dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date'); // Apply due-date style
-
-                        eventText.appendChild(dueDateText);
-                        eventText.appendChild(document.createTextNode(')'));
+                        // Apply due-date styling directly to the entire event text
+                        eventText.classList.add('due-date'); // Apply due-date style
 
                         listItem.appendChild(tag);
                         listItem.appendChild(eventText);
