@@ -2916,20 +2916,21 @@ const quotes = [
     "The secret of getting ahead is getting started."
 ];
 
-// Function to display a random quote
+// Function to display a random quote with italics and quotation marks
 function displayRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
 
-    // Find the <p> element containing "Your personalized dashboard" and replace its text
+    // Find the <p> element containing "Your personalized dashboard" and replace its text with italics and quotes
     const personalizedDashboardElement = document.querySelector('.dashboard-header p');
     if (personalizedDashboardElement) {
-        personalizedDashboardElement.textContent = randomQuote;
+        personalizedDashboardElement.innerHTML = `<em>"${randomQuote}"</em>`;
     }
 }
 
 // Call the function when the page loads
 window.addEventListener('load', displayRandomQuote);
+
 
 
 </script>
