@@ -1241,6 +1241,11 @@ scrollbar-thumb {
     font-size: 0.9em;
 }
 
+/* Style for due dates */
+.due-date {
+    color: #c9302c;        /* Red color for the due date */
+    font-weight: bold;     /* Bold text */
+}
 
 
     </style>
@@ -3093,7 +3098,15 @@ function loadUpcomingDeadlines() {
                         tag.textContent = collection.label;
 
                         const deadlineText = document.createElement('span');
-                        deadlineText.textContent = `${titleText} (Due: ${deadlineDate.toLocaleDateString()})`;
+                        deadlineText.textContent = `${titleText} (Due: `;
+
+                        // Create due date span with new CSS class
+                        const dueDateText = document.createElement('span');
+                        dueDateText.textContent = deadlineDate.toLocaleDateString();
+                        dueDateText.classList.add('due-date'); // Apply due-date style
+
+                        deadlineText.appendChild(dueDateText);
+                        deadlineText.appendChild(document.createTextNode(')'));
 
                         listItem.appendChild(tag);
                         listItem.appendChild(deadlineText);
@@ -3156,7 +3169,15 @@ function loadUpcomingEvents() {
                         tag.textContent = 'Event';
 
                         const eventText = document.createElement('span');
-                        eventText.textContent = `${data.title} (Due: ${eventDate.toLocaleDateString()})`;
+                        eventText.textContent = `${data.title} (Due: `;
+
+                        // Create due date span with new CSS class
+                        const dueDateText = document.createElement('span');
+                        dueDateText.textContent = eventDate.toLocaleDateString();
+                        dueDateText.classList.add('due-date'); // Apply due-date style
+
+                        eventText.appendChild(dueDateText);
+                        eventText.appendChild(document.createTextNode(')'));
 
                         listItem.appendChild(tag);
                         listItem.appendChild(eventText);
