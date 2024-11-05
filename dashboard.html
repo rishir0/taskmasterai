@@ -2976,12 +2976,12 @@ function loadProductivityData() {
     header.textContent = "Today's Productivity";
     productivitySection.appendChild(header);
 
-    // Create an array of Firestore collections to check
+    // Array of Firestore collections to check
     const collections = [
-        { name: 'tasks', label: 'Tasks', maxCount: 10 },
-        { name: 'goals', label: 'Goals', maxCount: 5 },
-        { name: 'projects', label: 'Projects', maxCount: 3 },
-        { name: 'plans', label: 'Plans', maxCount: 4 }
+        { name: 'tasks', label: 'Tasks' },
+        { name: 'goals', label: 'Goals' },
+        { name: 'projects', label: 'Projects' },
+        { name: 'plans', label: 'Plans' }
     ];
 
     let dataExists = false; // Track if any data is found
@@ -3001,7 +3001,7 @@ function loadProductivityData() {
                     collectionDiv.className = 'progress-item';
 
                     const collectionLabel = document.createElement('p');
-                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount} / ${collection.maxCount}`;
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}`;
                     collectionDiv.appendChild(collectionLabel);
 
                     // Create progress bar for each collection
@@ -3010,7 +3010,7 @@ function loadProductivityData() {
 
                     const progressFill = document.createElement('div');
                     progressFill.className = 'progress-fill';
-                    progressFill.style.width = `${(completedCount / collection.maxCount) * 100}%`; // Adjust width based on max count
+                    progressFill.style.width = `${Math.min(completedCount * 10, 100)}%`; // Set width based on completion count
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
