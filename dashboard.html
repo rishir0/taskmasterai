@@ -1572,7 +1572,7 @@ window.addEventListener('beforeunload', () => {
 });
 
 
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     auth.onAuthStateChanged(function(user) {
         if (user) {
             // Update the UI with the user's display name
@@ -1621,13 +1621,15 @@ window.addEventListener('beforeunload', () => {
             loadProjects();
             loadGoals();
             loadPlans();
+
+            // Display greeting after user information is loaded
+            displayGreeting(username); // Pass the username to the greeting function
         } else {
             // No user is signed in, redirect to login page
             window.location.href = "login.html";
         }
     });
 });
-
 
 function updateDisplayNameIfAnonymous() {
     const user = firebase.auth().currentUser;
@@ -2902,6 +2904,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+
 // Array of productivity-driven quotes
 const quotes = [
     "Start where you are. Use what you have. Do what you can.",
@@ -2929,7 +2933,7 @@ function displayRandomQuote() {
 }
 
 // Function to display a greeting based on the time of day
-function displayGreeting() {
+function displayGreeting(username) {
     const currentHour = new Date().getHours();
     let greeting;
     let emoji;
@@ -2951,15 +2955,15 @@ function displayGreeting() {
     // Update the greeting in the <h1> element
     const greetingElement = document.querySelector('.dashboard-header h1');
     if (greetingElement) {
-        greetingElement.innerHTML = `${emoji} ${greeting}, <span id="displayName">User</span>!`;
+        greetingElement.innerHTML = `${emoji} ${greeting}, <span id="displayName">${username}</span>!`;
     }
 }
 
 // Call the functions when the page loads
 window.addEventListener('load', () => {
     displayRandomQuote();
-    displayGreeting();
 });
+
 
 
 
