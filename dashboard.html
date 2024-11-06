@@ -3068,32 +3068,44 @@ function loadProductivityData() {
         { name: 'plans', label: 'Plans' }
     ];
 
-    let dataExists = false; // Track if any data is found
+    let totalDataCount = 0; // Track total data items across all collections
+    const dataCounts = {}; // To track data counts for all collections
 
-    // Track listeners for real-time updates
     collections.forEach(collection => {
+        dataCounts[collection.name] = 0; // Initialize count for each collection
+
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
                 let collectionDiv = document.querySelector(`.progress-item[data-collection="${collection.name}"]`);
-                
-                if (!snapshot.empty) {
-                    dataExists = true;
 
-                    // If the section for this collection does not exist, create it
-                    if (!collectionDiv) {
-                        collectionDiv = document.createElement('div');
-                        collectionDiv.className = 'progress-item';
-                        collectionDiv.setAttribute('data-collection', collection.name);
-                        productivitySection.appendChild(collectionDiv);
+                if (!collectionDiv) {
+                    // If not, create a new section for this collection
+                    collectionDiv = document.createElement('div');
+                    collectionDiv.className = 'progress-item';
+                    collectionDiv.setAttribute('data-collection', collection.name);
+                    productivitySection.appendChild(collectionDiv);
+                }
+
+                // Clear existing content within the collection section
+                collectionDiv.innerHTML = '';
+
+                // Handle document changes to update data in real-time
+                snapshot.docChanges().forEach(change => {
+                    const docId = change.doc.id;
+
+                    if (change.type === 'added' || change.type === 'modified') {
+                        dataCounts[collection.name] += 1; // Increase count
+                    } else if (change.type === 'removed') {
+                        dataCounts[collection.name] -= 1; // Decrease count
                     }
+                });
 
-                    // Clear existing content within the collection section
-                    collectionDiv.innerHTML = '';
+                const totalCount = snapshot.size;
+                const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
+                dataCounts[collection.name] = totalCount; // Update count
 
-                    const totalCount = snapshot.docs.length;
-                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
-
+                if (totalCount > 0) {
                     const collectionLabel = document.createElement('p');
                     collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
                     collectionDiv.appendChild(collectionLabel);
@@ -3109,15 +3121,24 @@ function loadProductivityData() {
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
-                } else if (!dataExists) {
-                    const noDataMessage = document.createElement('p');
-                    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
-                    productivitySection.appendChild(noDataMessage);
+                } else {
+                    // Remove the section if there are no documents
+                    collectionDiv.remove();
                 }
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
+
+    // Check if no data exists across all collections
+    setTimeout(() => {
+        const totalItems = Object.values(dataCounts).reduce((sum, count) => sum + count, 0);
+        if (totalItems === 0) {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+            productivitySection.appendChild(noDataMessage);
+        }
+    }, 1000); // Delay to ensure Firestore queries have completed
 }
 
 // Call this function on page load or user login
@@ -3126,6 +3147,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 
