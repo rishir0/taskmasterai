@@ -2336,7 +2336,7 @@ function loadTasks() {
                 }
 
                 const taskText = document.createElement('span');
-                taskText.textContent = `${task.task}`;
+                taskText.textContent = task.task;
                 taskDiv.insertBefore(taskText, taskDiv.firstChild);
 
                 const buttonContainer = createButtonContainer();
@@ -2344,12 +2344,10 @@ function loadTasks() {
                 buttonContainer.appendChild(createDeleteButton(id, 'task'));
 
                 if (task.completed) {
-                    // Show green checkmark if task is already completed
                     const checkmark = createCheckmark();
                     buttonContainer.appendChild(checkmark);
                 } else {
-                    // Add "Mark as Complete" button if not completed
-                    const completeButton = createCompleteButton(id, buttonContainer);
+                    const completeButton = createCompleteButton(id, 'tasks', buttonContainer);
                     buttonContainer.appendChild(completeButton);
                 }
 
@@ -2359,39 +2357,7 @@ function loadTasks() {
         });
 }
 
-// Function to create the "Mark as Complete" button
-function createCompleteButton(id, buttonContainer) {
-    const completeButton = document.createElement('button');
-    completeButton.className = 'complete-button';
-    completeButton.textContent = 'Mark as Complete';
 
-    completeButton.addEventListener('click', () => {
-        db.collection('tasks').doc(id).update({
-            completed: true
-        }).then(() => {
-            console.log(`Task ${id} marked as completed.`);
-            // Replace button with checkmark after marking as complete
-            buttonContainer.removeChild(completeButton);
-            const checkmark = createCheckmark();
-            buttonContainer.appendChild(checkmark);
-        }).catch(error => {
-            console.error('Error marking task as complete: ', error);
-        });
-    });
-
-    return completeButton;
-}
-
-// Function to create a green checkmark element
-function createCheckmark() {
-    const checkmark = document.createElement('span');
-    checkmark.textContent = '✔'; // Green checkmark character
-    checkmark.style.color = 'green';
-    checkmark.style.fontSize = '16px';
-    checkmark.style.fontWeight = 'bold';
-    checkmark.style.marginLeft = '10px'; // Space between the checkmark and text
-    return checkmark;
-}
 
 
 
@@ -2399,8 +2365,8 @@ function createCheckmark() {
 function loadProjects() {
     db.collection('projects')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('dueDate') // Order by dueDate first (nulls come first)
-        .orderBy('createdAt') // Then by creation date
+        .orderBy('dueDate')
+        .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const projectsList = document.getElementById('projects-list');
             projectsList.innerHTML = '';
@@ -2450,17 +2416,28 @@ function loadProjects() {
                 buttonContainer.appendChild(createEditButton(id, 'project', project.project));
                 buttonContainer.appendChild(createDeleteButton(id, 'project'));
 
+                if (project.completed) {
+                    // Show green checkmark if the project is already completed
+                    const checkmark = createCheckmark();
+                    buttonContainer.appendChild(checkmark);
+                } else {
+                    // Add "Mark as Complete" button if not completed
+                    const completeButton = createCompleteButton(id, 'projects', buttonContainer);
+                    buttonContainer.appendChild(completeButton);
+                }
+
                 projectDiv.appendChild(buttonContainer);
                 projectsList.appendChild(projectDiv);
             });
         });
 }
 
+
 function loadGoals() {
     db.collection('goals')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('dueDate') // Order by dueDate first (nulls come first)
-        .orderBy('createdAt') // Then by creation date
+        .orderBy('dueDate')
+        .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const goalsList = document.getElementById('goals-list');
             goalsList.innerHTML = '';
@@ -2510,17 +2487,29 @@ function loadGoals() {
                 buttonContainer.appendChild(createEditButton(id, 'goal', goal.goal));
                 buttonContainer.appendChild(createDeleteButton(id, 'goal'));
 
+                if (goal.completed) {
+                    // Show green checkmark if goal is already completed
+                    const checkmark = createCheckmark();
+                    buttonContainer.appendChild(checkmark);
+                } else {
+                    // Add "Mark as Complete" button if not completed
+                    const completeButton = createCompleteButton(id, buttonContainer);
+                    buttonContainer.appendChild(completeButton);
+                }
+
                 goalDiv.appendChild(buttonContainer);
                 goalsList.appendChild(goalDiv);
             });
         });
 }
 
+
+
 function loadPlans() {
     db.collection('plans')
         .where('userId', '==', firebase.auth().currentUser.uid)
-        .orderBy('dueDate') // Order by dueDate first (nulls come first)
-        .orderBy('createdAt') // Then by creation date
+        .orderBy('dueDate')
+        .orderBy('createdAt')
         .onSnapshot(snapshot => {
             const plansList = document.getElementById('plans-list');
             plansList.innerHTML = '';
@@ -2570,10 +2559,54 @@ function loadPlans() {
                 buttonContainer.appendChild(createEditButton(id, 'plan', plan.plan));
                 buttonContainer.appendChild(createDeleteButton(id, 'plan'));
 
+                if (plan.completed) {
+                    // Show green checkmark if the plan is already completed
+                    const checkmark = createCheckmark();
+                    buttonContainer.appendChild(checkmark);
+                } else {
+                    // Add "Mark as Complete" button if not completed
+                    const completeButton = createCompleteButton(id, 'plans', buttonContainer);
+                    buttonContainer.appendChild(completeButton);
+                }
+
                 planDiv.appendChild(buttonContainer);
                 plansList.appendChild(planDiv);
             });
         });
+}
+
+
+// Unified function to create the "Mark as Complete" button for both tasks and goals
+function createCompleteButton(id, collectionName, buttonContainer) {
+    const completeButton = document.createElement('button');
+    completeButton.className = 'complete-button';
+    completeButton.textContent = 'Mark as Complete';
+
+    completeButton.addEventListener('click', () => {
+        db.collection(collectionName).doc(id).update({
+            completed: true
+        }).then(() => {
+            console.log(`${collectionName.slice(0, -1)} ${id} marked as completed.`);
+            buttonContainer.removeChild(completeButton);
+            const checkmark = createCheckmark();
+            buttonContainer.appendChild(checkmark);
+        }).catch(error => {
+            console.error(`Error marking ${collectionName.slice(0, -1)} as complete: `, error);
+        });
+    });
+
+    return completeButton;
+}
+
+// Function to create a green checkmark element
+function createCheckmark() {
+    const checkmark = document.createElement('span');
+    checkmark.textContent = '✔'; // Green checkmark character
+    checkmark.style.color = 'green';
+    checkmark.style.fontSize = '16px';
+    checkmark.style.fontWeight = 'bold';
+    checkmark.style.marginLeft = '10px';
+    return checkmark;
 }
 
 // Functions to create Edit and Delete buttons
