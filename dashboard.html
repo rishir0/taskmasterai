@@ -3060,6 +3060,12 @@ function loadProductivityData() {
     header.textContent = "Today's Productivity";
     productivitySection.appendChild(header);
 
+    // Create the no-data message element
+    const noDataMessage = document.createElement('p');
+    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+    noDataMessage.style.display = 'none'; // Hide it by default
+    productivitySection.appendChild(noDataMessage);
+
     // Array of Firestore collections to check
     const collections = [
         { name: 'tasks', label: 'Tasks' },
@@ -3090,22 +3096,14 @@ function loadProductivityData() {
                 // Clear existing content within the collection section
                 collectionDiv.innerHTML = '';
 
-                // Handle document changes to update data in real-time
-                snapshot.docChanges().forEach(change => {
-                    const docId = change.doc.id;
+                if (!snapshot.empty) {
+                    const totalCount = snapshot.size;
+                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
+                    dataCounts[collection.name] = totalCount; // Update count
 
-                    if (change.type === 'added' || change.type === 'modified') {
-                        dataCounts[collection.name] += 1; // Increase count
-                    } else if (change.type === 'removed') {
-                        dataCounts[collection.name] -= 1; // Decrease count
-                    }
-                });
+                    // Update the total data count
+                    totalDataCount = Object.values(dataCounts).reduce((sum, count) => sum + count, 0);
 
-                const totalCount = snapshot.size;
-                const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
-                dataCounts[collection.name] = totalCount; // Update count
-
-                if (totalCount > 0) {
                     const collectionLabel = document.createElement('p');
                     collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
                     collectionDiv.appendChild(collectionLabel);
@@ -3121,24 +3119,26 @@ function loadProductivityData() {
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
+
+                    // Hide the no-data message if there is data
+                    noDataMessage.style.display = 'none';
                 } else {
+                    // If the collection is empty, reset the count
+                    dataCounts[collection.name] = 0;
+
                     // Remove the section if there are no documents
                     collectionDiv.remove();
+                }
+
+                // Check if all collections have no data
+                totalDataCount = Object.values(dataCounts).reduce((sum, count) => sum + count, 0);
+                if (totalDataCount === 0) {
+                    noDataMessage.style.display = 'block'; // Show the no-data message
                 }
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
-
-    // Check if no data exists across all collections
-    setTimeout(() => {
-        const totalItems = Object.values(dataCounts).reduce((sum, count) => sum + count, 0);
-        if (totalItems === 0) {
-            const noDataMessage = document.createElement('p');
-            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
-            productivitySection.appendChild(noDataMessage);
-        }
-    }, 1000); // Delay to ensure Firestore queries have completed
 }
 
 // Call this function on page load or user login
@@ -3147,6 +3147,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 
