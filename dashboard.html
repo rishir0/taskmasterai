@@ -3052,13 +3052,13 @@ window.addEventListener('load', () => {
 function loadProductivityData() {
     const userId = firebase.auth().currentUser.uid;
     const productivitySection = document.querySelector('.productivity-stats');
-
+    
     // Keep the header
     const header = document.createElement('h2');
     header.textContent = "Today's Productivity";
 
-    // Initial clearing of section content (but keeping the header intact)
-    productivitySection.innerHTML = ''; // Clear section content initially
+    // Clear section content initially (but keep the header)
+    productivitySection.innerHTML = ''; 
     productivitySection.appendChild(header);
 
     // Array of Firestore collections to check
@@ -3069,14 +3069,20 @@ function loadProductivityData() {
         { name: 'plans', label: 'Plans' }
     ];
 
-    let dataExists = false;
+    let dataExists = false; // Track if any data exists in total
 
-    // Iterate over each collection and listen for changes
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
                 let collectionDataExists = false; // Reset for each collection
+
+                // Find any existing elements for the current collection to update
+                const existingCollectionDiv = document.querySelector(`#${collection.name}-progress`);
+
+                if (existingCollectionDiv) {
+                    existingCollectionDiv.innerHTML = ''; // Clear existing content before re-adding
+                }
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -3088,6 +3094,7 @@ function loadProductivityData() {
                         // Create dynamic section for each collection
                         const collectionDiv = document.createElement('div');
                         collectionDiv.className = 'progress-item';
+                        collectionDiv.id = `${collection.name}-progress`; // Set unique ID to identify
 
                         const collectionLabel = document.createElement('p');
                         collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
@@ -3104,16 +3111,25 @@ function loadProductivityData() {
                         progressBar.appendChild(progressFill);
 
                         collectionDiv.appendChild(progressBar);
-                        productivitySection.appendChild(collectionDiv);
+
+                        // Append to section only if it's new or being updated
+                        if (!existingCollectionDiv) {
+                            productivitySection.appendChild(collectionDiv);
+                        }
                     }
                 });
 
-                // Show message if no data found for this collection (only show once if no data)
-                if (!collectionDataExists && !dataExists) {
+                // Update the "dataExists" flag if data was found in any collection
+                if (collectionDataExists) {
+                    dataExists = true;
+                }
+
+                // If no data exists in any of the collections, show the "no data" message
+                if (!dataExists && !document.querySelector('.no-data-message')) {
                     const noDataMessage = document.createElement('p');
+                    noDataMessage.classList.add('no-data-message');
                     noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
                     productivitySection.appendChild(noDataMessage);
-                    dataExists = true; // Set dataExists to true to ensure it only shows the message once
                 }
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
@@ -3127,6 +3143,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 
