@@ -3070,23 +3070,29 @@ function loadProductivityData() {
 
     let dataExists = false; // Track if any data is found
 
-   // Track listeners for real-time updates
+    // Track listeners for real-time updates
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
-                // Clear the section to prevent duplicate entries
-                productivitySection.innerHTML = '';
-                productivitySection.appendChild(header);
-
+                let collectionDiv = document.querySelector(`.progress-item[data-collection="${collection.name}"]`);
+                
                 if (!snapshot.empty) {
                     dataExists = true;
+
+                    // If the section for this collection does not exist, create it
+                    if (!collectionDiv) {
+                        collectionDiv = document.createElement('div');
+                        collectionDiv.className = 'progress-item';
+                        collectionDiv.setAttribute('data-collection', collection.name);
+                        productivitySection.appendChild(collectionDiv);
+                    }
+
+                    // Clear existing content within the collection section
+                    collectionDiv.innerHTML = '';
+
                     const totalCount = snapshot.docs.length;
                     const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
-
-                    // Create dynamic section for each collection
-                    const collectionDiv = document.createElement('div');
-                    collectionDiv.className = 'progress-item';
 
                     const collectionLabel = document.createElement('p');
                     collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
@@ -3103,7 +3109,6 @@ function loadProductivityData() {
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
-                    productivitySection.appendChild(collectionDiv);
                 } else if (!dataExists) {
                     const noDataMessage = document.createElement('p');
                     noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
@@ -3114,12 +3119,14 @@ function loadProductivityData() {
             });
     });
 }
+
 // Call this function on page load or user login
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
         loadProductivityData();
     }
 });
+
 
 
 let dataExists = false; // Shared flag to track if any data exists
