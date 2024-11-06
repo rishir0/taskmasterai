@@ -3168,11 +3168,15 @@ function loadUpcomingDeadlines() {
         { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
-    const loadPromises = collections.map(collection => {
-        return db.collection(collection.name)
+    collections.forEach(collection => {
+        db.collection(collection.name)
             .where('userId', '==', userId)
-            .get()
-            .then(snapshot => {
+            .onSnapshot(snapshot => {
+                let dataAdded = false;
+
+                // Clear the content only for the current collection to avoid duplication
+                deadlinesList.innerHTML = '';
+
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let deadlineDate;
@@ -3190,6 +3194,8 @@ function loadUpcomingDeadlines() {
                     // If there's a valid deadline date in the future
                     if (deadlineDate && deadlineDate >= new Date()) {
                         dataExists = true;
+                        dataAdded = true;
+
                         const listItem = document.createElement('li');
                         const tag = document.createElement('span');
                         tag.className = 'deadline-tag';
@@ -3211,22 +3217,19 @@ function loadUpcomingDeadlines() {
                         deadlinesList.appendChild(listItem);
                     }
                 });
-            })
-            .catch(error => {
+
+                if (!dataAdded && deadlinesList.children.length === 0) {
+                    dataExists = false;
+                    const noDeadlinesMessage = document.createElement('li');
+                    noDeadlinesMessage.textContent = "No upcoming deadlines";
+                    deadlinesList.appendChild(noDeadlinesMessage);
+                }
+            }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
-
-    // Wait until all collections have been checked
-    Promise.all(loadPromises).then(() => {
-        // Only show "No upcoming deadlines" if no data was found for deadlines and events check isn't done yet
-        if (!dataExists && deadlinesList.children.length === 0) {
-            const noDeadlinesMessage = document.createElement('li');
-            noDeadlinesMessage.textContent = "No upcoming deadlines";
-            deadlinesList.appendChild(noDeadlinesMessage);
-        }
-    });
 }
+
 
 
 
