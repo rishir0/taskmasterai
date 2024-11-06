@@ -3049,6 +3049,7 @@ window.addEventListener('load', () => {
 });
 
 
+// Function to load productivity data
 function loadProductivityData() {
     const userId = firebase.auth().currentUser.uid;
     const productivitySection = document.querySelector('.productivity-stats');
@@ -3069,48 +3070,45 @@ function loadProductivityData() {
 
     let dataExists = false; // Track if any data is found
 
-    // Track completed promises to check after all are done
-    const loadPromises = collections.map(collection => {
-        return new Promise(resolve => {
-            db.collection(collection.name)
-                .where('userId', '==', userId)
-                .onSnapshot(snapshot => {
-                    // Clear the section to prevent duplicate entries
-                    productivitySection.innerHTML = '';
-                    productivitySection.appendChild(header);
+   // Track listeners for real-time updates
+    collections.forEach(collection => {
+        db.collection(collection.name)
+            .where('userId', '==', userId)
+            .onSnapshot(snapshot => {
+                // Clear the section to prevent duplicate entries
+                productivitySection.innerHTML = '';
+                productivitySection.appendChild(header);
 
-                    if (!snapshot.empty) {
-                        dataExists = true;
-                        const totalCount = snapshot.docs.length;
-                        const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
+                if (!snapshot.empty) {
+                    dataExists = true;
+                    const totalCount = snapshot.docs.length;
+                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
 
-                        // Create dynamic section for each collection
-                        const collectionDiv = document.createElement('div');
-                        collectionDiv.className = 'progress-item';
+                    // Create dynamic section for each collection
+                    const collectionDiv = document.createElement('div');
+                    collectionDiv.className = 'progress-item';
 
-                        const collectionLabel = document.createElement('p');
-                        collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
-                        collectionDiv.appendChild(collectionLabel);
+                    const collectionLabel = document.createElement('p');
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
+                    collectionDiv.appendChild(collectionLabel);
 
-                        // Create progress bar for each collection
-                        const progressBar = document.createElement('div');
-                        progressBar.className = 'progress-bar';
+                    // Create progress bar for each collection
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
 
-                        const progressFill = document.createElement('div');
-                        progressFill.className = 'progress-fill';
-                        const completionPercentage = (completedCount / totalCount) * 100;
-                        progressFill.style.width = `${Math.min(completionPercentage, 100)}%`; // Set width based on completion count
-                        progressBar.appendChild(progressFill);
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    const completionPercentage = (completedCount / totalCount) * 100;
+                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`; // Set width based on completion count
+                    progressBar.appendChild(progressFill);
 
-                        collectionDiv.appendChild(progressBar);
-                        productivitySection.appendChild(collectionDiv);
-                    }
-                    resolve(); // Resolve promise after snapshot handling
-                }, error => {
-                    console.error(`Error loading ${collection.label} data: `, error);
-                    resolve(); // Resolve even on error
-                });
-        });
+                    collectionDiv.appendChild(progressBar);
+                    productivitySection.appendChild(collectionDiv);
+                }
+            })
+            .catch(error => {
+                console.error(`Error loading ${collection.label} data: `, error);
+            });
     });
 
     // After all collections are checked, show the message if no data exists
