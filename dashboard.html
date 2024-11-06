@@ -2488,12 +2488,10 @@ function loadGoals() {
                 buttonContainer.appendChild(createDeleteButton(id, 'goal'));
 
                 if (goal.completed) {
-                    // Show green checkmark if goal is already completed
                     const checkmark = createCheckmark();
                     buttonContainer.appendChild(checkmark);
                 } else {
-                    // Add "Mark as Complete" button if not completed
-                    const completeButton = createCompleteButton(id, buttonContainer);
+                    const completeButton = createCompleteButton(id, 'goals', buttonContainer);
                     buttonContainer.appendChild(completeButton);
                 }
 
