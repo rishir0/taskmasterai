@@ -3049,15 +3049,14 @@ window.addEventListener('load', () => {
 });
 
 
-// Function to load productivity data
 function loadProductivityData() {
     const userId = firebase.auth().currentUser.uid;
     const productivitySection = document.querySelector('.productivity-stats');
-    productivitySection.innerHTML = ''; // Clear section content initially
 
     // Keep the header
     const header = document.createElement('h2');
     header.textContent = "Today's Productivity";
+    productivitySection.innerHTML = ''; // Clear section content initially
     productivitySection.appendChild(header);
 
     // Array of Firestore collections to check
@@ -3068,14 +3067,17 @@ function loadProductivityData() {
         { name: 'plans', label: 'Plans' }
     ];
 
-    let dataExists = false; // Track if any data is found
+    let dataExists = false;
 
-    // Track completed promises to check after all are done
-    const loadPromises = collections.map(collection => {
-        return db.collection(collection.name)
+    collections.forEach(collection => {
+        db.collection(collection.name)
             .where('userId', '==', userId)
-            .get()
-            .then(snapshot => {
+            .onSnapshot(snapshot => {
+                // Clear the productivity section except the header on each update
+                productivitySection.innerHTML = '';
+                productivitySection.appendChild(header);
+                dataExists = false;
+
                 if (!snapshot.empty) {
                     dataExists = true;
                     const totalCount = snapshot.docs.length;
@@ -3096,25 +3098,22 @@ function loadProductivityData() {
                     const progressFill = document.createElement('div');
                     progressFill.className = 'progress-fill';
                     const completionPercentage = (completedCount / totalCount) * 100;
-                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`; // Set width based on completion count
+                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`;
                     progressBar.appendChild(progressFill);
 
                     collectionDiv.appendChild(progressBar);
                     productivitySection.appendChild(collectionDiv);
                 }
-            })
-            .catch(error => {
+
+                // Show message if no data is found after iterating through collections
+                if (!dataExists && productivitySection.children.length === 1) {
+                    const noDataMessage = document.createElement('p');
+                    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+                    productivitySection.appendChild(noDataMessage);
+                }
+            }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
-    });
-
-    // After all collections are checked, show the message if no data exists
-    Promise.all(loadPromises).then(() => {
-        if (!dataExists) {
-            const noDataMessage = document.createElement('p');
-            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
-            productivitySection.appendChild(noDataMessage);
-        }
     });
 }
 
@@ -3124,6 +3123,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 let dataExists = false; // Shared flag to track if any data exists
@@ -3142,11 +3142,17 @@ function loadUpcomingDeadlines() {
         { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
-    const loadPromises = collections.map(collection => {
-        return db.collection(collection.name)
+    let dataExists = false;
+
+    // Clear and set up listeners for each collection
+    collections.forEach(collection => {
+        db.collection(collection.name)
             .where('userId', '==', userId)
-            .get()
-            .then(snapshot => {
+            .onSnapshot(snapshot => {
+                // Clear list to avoid duplicate entries for this collection
+                deadlinesList.innerHTML = '';
+                dataExists = false; // Reset flag
+
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let deadlineDate;
@@ -3178,54 +3184,51 @@ function loadUpcomingDeadlines() {
                         dueDateText.classList.add('due-date'); // Apply due-date style
 
                         deadlineText.appendChild(dueDateText);
-                        deadlineText.appendChild(document.createTextNode(''));
-
                         listItem.appendChild(tag);
                         listItem.appendChild(deadlineText);
                         deadlinesList.appendChild(listItem);
                     }
                 });
-            })
-            .catch(error => {
+
+                // Show "No upcoming deadlines" only if there is no data found
+                if (!dataExists && deadlinesList.children.length === 0) {
+                    const noDeadlinesMessage = document.createElement('li');
+                    noDeadlinesMessage.textContent = "No upcoming deadlines";
+                    deadlinesList.appendChild(noDeadlinesMessage);
+                }
+            }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
-
-    // Wait until all collections have been checked
-    Promise.all(loadPromises).then(() => {
-        // Only show "No upcoming deadlines" if no data was found for deadlines and events check isn't done yet
-        if (!dataExists && deadlinesList.children.length === 0) {
-            const noDeadlinesMessage = document.createElement('li');
-            noDeadlinesMessage.textContent = "No upcoming deadlines";
-            deadlinesList.appendChild(noDeadlinesMessage);
-        }
-    });
 }
+
 
 
 
 function loadUpcomingEvents() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
-    let eventDataExists = false;
 
+    // Set up a real-time listener
     db.collection('events')
         .where('uid', '==', userId)
-        .get()
-        .then(snapshot => {
+        .onSnapshot(snapshot => {
+            // Clear the existing list before re-rendering
+            deadlinesList.innerHTML = '';
+            let eventDataExists = false;
+
             snapshot.forEach(doc => {
                 const data = doc.data();
 
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                    return; // Skip to the next document if any linked field is present
+                    return;
                 }
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
-                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
                     const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
@@ -3238,36 +3241,29 @@ function loadUpcomingEvents() {
                         const eventText = document.createElement('span');
                         eventText.textContent = `${data.title} - `;
 
-                        // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
                         dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date'); // Apply due-date style
+                        dueDateText.classList.add('due-date');
 
                         eventText.appendChild(dueDateText);
-                        eventText.appendChild(document.createTextNode(''));
-
                         listItem.appendChild(tag);
                         listItem.appendChild(eventText);
                         deadlinesList.appendChild(listItem);
                     }
                 }
             });
-        })
-        .catch(error => {
-            console.error("Error loading events data: ", error);
-        })
-        .finally(() => {
-            // Show "No upcoming deadlines" only if neither deadlines nor events exist
-            if (!eventDataExists && !dataExists && deadlinesList.children.length === 0) {
+
+            // Show "No upcoming deadlines" only if there are no events
+            if (!eventDataExists && deadlinesList.children.length === 0) {
                 const noDeadlinesMessage = document.createElement('li');
                 noDeadlinesMessage.textContent = "No upcoming deadlines";
                 deadlinesList.appendChild(noDeadlinesMessage);
             }
-        })
-        .catch(error => {
+        }, error => {
             console.error("Error loading events data: ", error);
         });
 }
+
 
 // Call both functions on page load or user login
 firebase.auth().onAuthStateChanged(user => {
