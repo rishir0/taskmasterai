@@ -3153,11 +3153,14 @@ firebase.auth().onAuthStateChanged(user => {
 
 
 let dataExists = false; // Shared flag to track if any data exists
+const upcomingDeadlines = new Map(); // Store upcoming deadlines by collection and document ID
 
 function loadUpcomingDeadlines() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
-    deadlinesList.innerHTML = ''; // Clear initial content
+
+    // Clear all existing data from the map
+    upcomingDeadlines.clear();
 
     // Collections with due dates to check
     const collections = [
@@ -3168,14 +3171,12 @@ function loadUpcomingDeadlines() {
         { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
+    // Load data from each collection in real-time
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
-                let dataAdded = false;
-
-                // Clear the content only for the current collection to avoid duplication
-                deadlinesList.innerHTML = '';
+                let collectionHasData = false;
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -3194,40 +3195,66 @@ function loadUpcomingDeadlines() {
                     // If there's a valid deadline date in the future
                     if (deadlineDate && deadlineDate >= new Date()) {
                         dataExists = true;
-                        dataAdded = true;
+                        collectionHasData = true;
 
-                        const listItem = document.createElement('li');
-                        const tag = document.createElement('span');
-                        tag.className = 'deadline-tag';
-                        tag.textContent = collection.label;
-
-                        const deadlineText = document.createElement('span');
-                        deadlineText.textContent = `${titleText} - `;
-
-                        // Create due date span with new CSS class
-                        const dueDateText = document.createElement('span');
-                        dueDateText.textContent = deadlineDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date'); // Apply due-date style
-
-                        deadlineText.appendChild(dueDateText);
-                        deadlineText.appendChild(document.createTextNode(''));
-
-                        listItem.appendChild(tag);
-                        listItem.appendChild(deadlineText);
-                        deadlinesList.appendChild(listItem);
+                        // Add or update the deadline in the map
+                        upcomingDeadlines.set(doc.id, {
+                            label: collection.label,
+                            title: titleText,
+                            date: deadlineDate
+                        });
+                    } else {
+                        // Remove the deadline if it's outdated or invalid
+                        upcomingDeadlines.delete(doc.id);
                     }
                 });
 
-                if (!dataAdded && deadlinesList.children.length === 0) {
+                // If no data found in this snapshot and no existing deadlines, update dataExists
+                if (!collectionHasData && upcomingDeadlines.size === 0) {
                     dataExists = false;
-                    const noDeadlinesMessage = document.createElement('li');
-                    noDeadlinesMessage.textContent = "No upcoming deadlines";
-                    deadlinesList.appendChild(noDeadlinesMessage);
                 }
+
+                // Rebuild the deadlines list
+                rebuildDeadlinesList();
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
+}
+
+function rebuildDeadlinesList() {
+    const deadlinesList = document.getElementById('deadlines-list');
+    deadlinesList.innerHTML = ''; // Clear the list
+
+    if (upcomingDeadlines.size > 0) {
+        // Populate the list with deadlines from the map
+        upcomingDeadlines.forEach((value, key) => {
+            const listItem = document.createElement('li');
+            const tag = document.createElement('span');
+            tag.className = 'deadline-tag';
+            tag.textContent = value.label;
+
+            const deadlineText = document.createElement('span');
+            deadlineText.textContent = `${value.title} - `;
+
+            // Create due date span with new CSS class
+            const dueDateText = document.createElement('span');
+            dueDateText.textContent = value.date.toLocaleDateString();
+            dueDateText.classList.add('due-date'); // Apply due-date style
+
+            deadlineText.appendChild(dueDateText);
+            deadlineText.appendChild(document.createTextNode(''));
+
+            listItem.appendChild(tag);
+            listItem.appendChild(deadlineText);
+            deadlinesList.appendChild(listItem);
+        });
+    } else {
+        // If no deadlines exist, show "No upcoming deadlines" message
+        const noDeadlinesMessage = document.createElement('li');
+        noDeadlinesMessage.textContent = "No upcoming deadlines";
+        deadlinesList.appendChild(noDeadlinesMessage);
+    }
 }
 
 
