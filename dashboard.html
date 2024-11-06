@@ -3056,6 +3056,8 @@ function loadProductivityData() {
     // Keep the header
     const header = document.createElement('h2');
     header.textContent = "Today's Productivity";
+
+    // Initial clearing of section content (but keeping the header intact)
     productivitySection.innerHTML = ''; // Clear section content initially
     productivitySection.appendChild(header);
 
@@ -3069,47 +3071,49 @@ function loadProductivityData() {
 
     let dataExists = false;
 
+    // Iterate over each collection and listen for changes
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
-                // Clear the productivity section except the header on each update
-                productivitySection.innerHTML = '';
-                productivitySection.appendChild(header);
-                dataExists = false;
+                let collectionDataExists = false; // Reset for each collection
 
-                if (!snapshot.empty) {
-                    dataExists = true;
-                    const totalCount = snapshot.docs.length;
-                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.completed !== undefined) { // Check for completed property
+                        collectionDataExists = true;
+                        const totalCount = snapshot.docs.length;
+                        const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
 
-                    // Create dynamic section for each collection
-                    const collectionDiv = document.createElement('div');
-                    collectionDiv.className = 'progress-item';
+                        // Create dynamic section for each collection
+                        const collectionDiv = document.createElement('div');
+                        collectionDiv.className = 'progress-item';
 
-                    const collectionLabel = document.createElement('p');
-                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
-                    collectionDiv.appendChild(collectionLabel);
+                        const collectionLabel = document.createElement('p');
+                        collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
+                        collectionDiv.appendChild(collectionLabel);
 
-                    // Create progress bar for each collection
-                    const progressBar = document.createElement('div');
-                    progressBar.className = 'progress-bar';
+                        // Create progress bar for each collection
+                        const progressBar = document.createElement('div');
+                        progressBar.className = 'progress-bar';
 
-                    const progressFill = document.createElement('div');
-                    progressFill.className = 'progress-fill';
-                    const completionPercentage = (completedCount / totalCount) * 100;
-                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`;
-                    progressBar.appendChild(progressFill);
+                        const progressFill = document.createElement('div');
+                        progressFill.className = 'progress-fill';
+                        const completionPercentage = (completedCount / totalCount) * 100;
+                        progressFill.style.width = `${Math.min(completionPercentage, 100)}%`;
+                        progressBar.appendChild(progressFill);
 
-                    collectionDiv.appendChild(progressBar);
-                    productivitySection.appendChild(collectionDiv);
-                }
+                        collectionDiv.appendChild(progressBar);
+                        productivitySection.appendChild(collectionDiv);
+                    }
+                });
 
-                // Show message if no data is found after iterating through collections
-                if (!dataExists && productivitySection.children.length === 1) {
+                // Show message if no data found for this collection (only show once if no data)
+                if (!collectionDataExists && !dataExists) {
                     const noDataMessage = document.createElement('p');
                     noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
                     productivitySection.appendChild(noDataMessage);
+                    dataExists = true; // Set dataExists to true to ensure it only shows the message once
                 }
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
@@ -3123,6 +3127,7 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
+
 
 
 
