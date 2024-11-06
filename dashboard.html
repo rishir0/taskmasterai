@@ -3104,23 +3104,16 @@ function loadProductivityData() {
 
                     collectionDiv.appendChild(progressBar);
                     productivitySection.appendChild(collectionDiv);
+                } else if (!dataExists) {
+                    const noDataMessage = document.createElement('p');
+                    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+                    productivitySection.appendChild(noDataMessage);
                 }
-            })
-            .catch(error => {
+            }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
-
-    // After all collections are checked, show the message if no data exists
-    Promise.all(loadPromises).then(() => {
-        if (!dataExists) {
-            const noDataMessage = document.createElement('p');
-            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
-            productivitySection.appendChild(noDataMessage);
-        }
-    });
 }
-
 // Call this function on page load or user login
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
