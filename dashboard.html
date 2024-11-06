@@ -3049,16 +3049,15 @@ window.addEventListener('load', () => {
 });
 
 
+// Function to load productivity data
 function loadProductivityData() {
     const userId = firebase.auth().currentUser.uid;
     const productivitySection = document.querySelector('.productivity-stats');
-    
+    productivitySection.innerHTML = ''; // Clear section content initially
+
     // Keep the header
     const header = document.createElement('h2');
     header.textContent = "Today's Productivity";
-
-    // Clear section content initially (but keep the header)
-    productivitySection.innerHTML = ''; 
     productivitySection.appendChild(header);
 
     // Array of Firestore collections to check
@@ -3069,71 +3068,53 @@ function loadProductivityData() {
         { name: 'plans', label: 'Plans' }
     ];
 
-    let dataExists = false; // Track if any data exists in total
+    let dataExists = false; // Track if any data is found
 
-    collections.forEach(collection => {
-        db.collection(collection.name)
+    // Track completed promises to check after all are done
+    const loadPromises = collections.map(collection => {
+        return db.collection(collection.name)
             .where('userId', '==', userId)
-            .onSnapshot(snapshot => {
-                let collectionDataExists = false; // Reset for each collection
-
-                // Find any existing elements for the current collection to update
-                const existingCollectionDiv = document.querySelector(`#${collection.name}-progress`);
-
-                if (existingCollectionDiv) {
-                    existingCollectionDiv.innerHTML = ''; // Clear existing content before re-adding
-                }
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.completed !== undefined) { // Check for completed property
-                        collectionDataExists = true;
-                        const totalCount = snapshot.docs.length;
-                        const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
-
-                        // Create dynamic section for each collection
-                        const collectionDiv = document.createElement('div');
-                        collectionDiv.className = 'progress-item';
-                        collectionDiv.id = `${collection.name}-progress`; // Set unique ID to identify
-
-                        const collectionLabel = document.createElement('p');
-                        collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
-                        collectionDiv.appendChild(collectionLabel);
-
-                        // Create progress bar for each collection
-                        const progressBar = document.createElement('div');
-                        progressBar.className = 'progress-bar';
-
-                        const progressFill = document.createElement('div');
-                        progressFill.className = 'progress-fill';
-                        const completionPercentage = (completedCount / totalCount) * 100;
-                        progressFill.style.width = `${Math.min(completionPercentage, 100)}%`;
-                        progressBar.appendChild(progressFill);
-
-                        collectionDiv.appendChild(progressBar);
-
-                        // Append to section only if it's new or being updated
-                        if (!existingCollectionDiv) {
-                            productivitySection.appendChild(collectionDiv);
-                        }
-                    }
-                });
-
-                // Update the "dataExists" flag if data was found in any collection
-                if (collectionDataExists) {
+            .get()
+            .then(snapshot => {
+                if (!snapshot.empty) {
                     dataExists = true;
-                }
+                    const totalCount = snapshot.docs.length;
+                    const completedCount = snapshot.docs.filter(doc => doc.data().completed).length;
 
-                // If no data exists in any of the collections, show the "no data" message
-                if (!dataExists && !document.querySelector('.no-data-message')) {
-                    const noDataMessage = document.createElement('p');
-                    noDataMessage.classList.add('no-data-message');
-                    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
-                    productivitySection.appendChild(noDataMessage);
+                    // Create dynamic section for each collection
+                    const collectionDiv = document.createElement('div');
+                    collectionDiv.className = 'progress-item';
+
+                    const collectionLabel = document.createElement('p');
+                    collectionLabel.textContent = `${collection.label} Completed: ${completedCount}/${totalCount}`;
+                    collectionDiv.appendChild(collectionLabel);
+
+                    // Create progress bar for each collection
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'progress-fill';
+                    const completionPercentage = (completedCount / totalCount) * 100;
+                    progressFill.style.width = `${Math.min(completionPercentage, 100)}%`; // Set width based on completion count
+                    progressBar.appendChild(progressFill);
+
+                    collectionDiv.appendChild(progressBar);
+                    productivitySection.appendChild(collectionDiv);
                 }
-            }, error => {
+            })
+            .catch(error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
+    });
+
+    // After all collections are checked, show the message if no data exists
+    Promise.all(loadPromises).then(() => {
+        if (!dataExists) {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+            productivitySection.appendChild(noDataMessage);
+        }
     });
 }
 
@@ -3143,9 +3124,6 @@ firebase.auth().onAuthStateChanged(user => {
         loadProductivityData();
     }
 });
-
-
-
 
 
 let dataExists = false; // Shared flag to track if any data exists
@@ -3164,17 +3142,11 @@ function loadUpcomingDeadlines() {
         { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
     ];
 
-    let dataExists = false;
-
-    // Clear and set up listeners for each collection
-    collections.forEach(collection => {
-        db.collection(collection.name)
+    const loadPromises = collections.map(collection => {
+        return db.collection(collection.name)
             .where('userId', '==', userId)
-            .onSnapshot(snapshot => {
-                // Clear list to avoid duplicate entries for this collection
-                deadlinesList.innerHTML = '';
-                dataExists = false; // Reset flag
-
+            .get()
+            .then(snapshot => {
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let deadlineDate;
@@ -3206,51 +3178,54 @@ function loadUpcomingDeadlines() {
                         dueDateText.classList.add('due-date'); // Apply due-date style
 
                         deadlineText.appendChild(dueDateText);
+                        deadlineText.appendChild(document.createTextNode(''));
+
                         listItem.appendChild(tag);
                         listItem.appendChild(deadlineText);
                         deadlinesList.appendChild(listItem);
                     }
                 });
-
-                // Show "No upcoming deadlines" only if there is no data found
-                if (!dataExists && deadlinesList.children.length === 0) {
-                    const noDeadlinesMessage = document.createElement('li');
-                    noDeadlinesMessage.textContent = "No upcoming deadlines";
-                    deadlinesList.appendChild(noDeadlinesMessage);
-                }
-            }, error => {
+            })
+            .catch(error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
     });
-}
 
+    // Wait until all collections have been checked
+    Promise.all(loadPromises).then(() => {
+        // Only show "No upcoming deadlines" if no data was found for deadlines and events check isn't done yet
+        if (!dataExists && deadlinesList.children.length === 0) {
+            const noDeadlinesMessage = document.createElement('li');
+            noDeadlinesMessage.textContent = "No upcoming deadlines";
+            deadlinesList.appendChild(noDeadlinesMessage);
+        }
+    });
+}
 
 
 
 function loadUpcomingEvents() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
+    let eventDataExists = false;
 
-    // Set up a real-time listener
     db.collection('events')
         .where('uid', '==', userId)
-        .onSnapshot(snapshot => {
-            // Clear the existing list before re-rendering
-            deadlinesList.innerHTML = '';
-            let eventDataExists = false;
-
+        .get()
+        .then(snapshot => {
             snapshot.forEach(doc => {
                 const data = doc.data();
 
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                    return;
+                    return; // Skip to the next document if any linked field is present
                 }
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
+                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
                     const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
@@ -3263,29 +3238,36 @@ function loadUpcomingEvents() {
                         const eventText = document.createElement('span');
                         eventText.textContent = `${data.title} - `;
 
+                        // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
                         dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date');
+                        dueDateText.classList.add('due-date'); // Apply due-date style
 
                         eventText.appendChild(dueDateText);
+                        eventText.appendChild(document.createTextNode(''));
+
                         listItem.appendChild(tag);
                         listItem.appendChild(eventText);
                         deadlinesList.appendChild(listItem);
                     }
                 }
             });
-
-            // Show "No upcoming deadlines" only if there are no events
-            if (!eventDataExists && deadlinesList.children.length === 0) {
+        })
+        .catch(error => {
+            console.error("Error loading events data: ", error);
+        })
+        .finally(() => {
+            // Show "No upcoming deadlines" only if neither deadlines nor events exist
+            if (!eventDataExists && !dataExists && deadlinesList.children.length === 0) {
                 const noDeadlinesMessage = document.createElement('li');
                 noDeadlinesMessage.textContent = "No upcoming deadlines";
                 deadlinesList.appendChild(noDeadlinesMessage);
             }
-        }, error => {
+        })
+        .catch(error => {
             console.error("Error loading events data: ", error);
         });
 }
-
 
 // Call both functions on page load or user login
 firebase.auth().onAuthStateChanged(user => {
