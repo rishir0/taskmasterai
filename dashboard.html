@@ -1188,6 +1188,89 @@ scrollbar-thumb {
     background-color: var(--accent-color);
 }
 
+/* Mobile Styles */
+@media (max-width: 768px) {
+    /* Tab Navigation */
+    .nav-tabs li {
+        display: block; /* Stack tabs vertically */
+        margin-right: 0; /* Remove right margin */
+        margin-bottom: 10px; /* Add space between tabs */
+    }
+
+    .nav-tabs li a {
+        padding: 8px 16px; /* Reduce padding for smaller screens */
+        font-size: 0.9rem; /* Decrease font size */
+    }
+
+    /* Content Sections */
+    .tab-content {
+        padding: 15px; /* Reduce padding */
+        border-radius: 8px; /* Slightly smaller border-radius */
+    }
+
+    /* Section Headings */
+    .tab-content h2 {
+        font-size: 1.2rem; /* Decrease heading size */
+        margin-bottom: 15px; /* Adjust spacing */
+    }
+
+    /* Input Fields */
+    .tab-content input[type="text"],
+    .tab-content input[type="date"] {
+        width: 100%; /* Full width on mobile */
+        padding: 8px; /* Reduce padding */
+    }
+
+    /* Task, Goal, Project, and Plan Items */
+    .task-item, .goal-item, .project-item, .plan-item {
+        padding: 10px; /* Reduce padding */
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start; /* Align text to the left */
+    }
+
+    /* Button Container for Items */
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 8px; /* Add more space between buttons */
+    }
+
+    /* Item Buttons */
+    .task-item button, .goal-item button, .project-item button, .plan-item button {
+        font-size: 0.85rem; /* Decrease button text size */
+        padding: 5px 15px; /* Reduce button padding */
+    }
+
+    /* Lists */
+    #tasks-list, #goals-list, #projects-list, #plans-list {
+        padding: 0; /* Maintain zero padding */
+        margin: 0; /* Maintain zero margin */
+    }
+
+    /* Form Group for aligned input, button, and date */
+    .form-group {
+        flex-direction: column; /* Stack inputs and buttons vertically */
+        align-items: stretch; /* Make input and button full width */
+    }
+
+    /* Adjust the text input width */
+    .form-group input[type="text"],
+    .form-group input[type="date"] {
+        width: 100%; /* Full width input */
+        padding: 8px; /* Reduce padding */
+    }
+
+    /* Adjust the button styles */
+    .form-group button {
+        width: 100%; /* Full width button */
+        padding: 10px; /* Maintain padding */
+    }
+
+    /* Button hover effect */
+    .form-group button:hover {
+        background-color: var(--accent-color);
+    }
+}
+
 
 /* General Card Styling */
 .header-section {
