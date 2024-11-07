@@ -51,7 +51,20 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 
+/* Section Headings */
+.tab-content h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
 
+/* Filled part of the Progress Bar */
+.progress-fill {
+    background-color: white; /* Use primary color for the fill */
+    height: 100%;
+    border-radius: 10px; /* Ensure rounded corners */
+    transition: width 0.3s ease; /* Smooth width change */
+}
 
 
 #tasks-projects .tasks-section h2,
