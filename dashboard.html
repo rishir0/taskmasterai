@@ -287,27 +287,26 @@ body.night-mode {
     overflow-y: auto;
 }
 
+/* Mobile Styles */
 @media (max-width: 768px) {
-    .main-content {
-        margin-right: 0; /* Remove margin on mobile */
+    .timer-sidebar {
+        display: none; /* Hide the sidebar initially on mobile */
+    }
+
+    /* Show the sidebar below main content on mobile */
+    .main-content + .timer-sidebar {
+        display: flex;
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
+        padding: 10px;
+        border-left: none;
+        border-top: 2px solid var(--border-color); /* Optional border at the top */
+        background: transparent; /* Ensure no background overlap */
     }
 }
 
-/* Mobile Styles for Timer Sidebar */
-@media (max-width: 768px) {
-    .timer-sidebar {
-        position: static !important; /* Remove fixed positioning */
-        width: 100% !important; /* Full width */
-        height: auto !important; /* Let height adjust based on content */
-        margin-top: 20px !important; /* Space between main content and sidebar */
-        border-left: none !important; /* Remove left border */
-        border-top: 2px solid var(--border-color) !important; /* Add top border for separation */
-        backdrop-filter: none !important; /* Remove blur effect if causing issues */
-        overflow-y: visible !important; /* Ensure content is fully visible */
-        padding: 10px !important; /* Adjust padding for smaller screens */
-        background: var(--background-color, #fff) !important; /* Ensure background is visible */
-    }
-}
 
 /* Pomodoro Timer styling */
 .pomodoro-timer, .custom-timer {
