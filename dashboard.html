@@ -287,15 +287,25 @@ body.night-mode {
     overflow-y: auto;
 }
 
+@media (max-width: 768px) {
+    .main-content {
+        margin-right: 0; /* Remove margin on mobile */
+    }
+}
+
 /* Mobile Styles for Timer Sidebar */
 @media (max-width: 768px) {
     .timer-sidebar {
-        position: static; /* Remove fixed position on mobile */
-        width: 100%; /* Full width below main content */
-        height: auto; /* Adjust height based on content */
-        margin-top: 20px; /* Add space between main content and sidebar */
-        border-left: none; /* Remove border on mobile */
-        border-top: 2px solid var(--border-color); /* Optional: Add a border above instead */
+        position: static !important; /* Remove fixed positioning */
+        width: 100% !important; /* Full width */
+        height: auto !important; /* Let height adjust based on content */
+        margin-top: 20px !important; /* Space between main content and sidebar */
+        border-left: none !important; /* Remove left border */
+        border-top: 2px solid var(--border-color) !important; /* Add top border for separation */
+        backdrop-filter: none !important; /* Remove blur effect if causing issues */
+        overflow-y: visible !important; /* Ensure content is fully visible */
+        padding: 10px !important; /* Adjust padding for smaller screens */
+        background: var(--background-color, #fff) !important; /* Ensure background is visible */
     }
 }
 
