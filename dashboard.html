@@ -287,18 +287,34 @@ body.night-mode {
     overflow-y: auto;
 }
 
-/* Mobile Styles: Move Sidebar Below Main Content */
+/* Add a wrapper around both the main content and sidebar */
+.container {
+    display: flex;
+    flex-direction: row; /* Default to row on desktop */
+}
+
+/* Main Content Styling */
+.main-content {
+    flex: 1; /* Allow main content to take up available space */
+}
+
+/* Mobile Styles: Stack Sidebar Below Main Content */
 @media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack main content and sidebar vertically */
+    }
+
     .timer-sidebar {
-        position: relative; /* Sidebar follows main content */
+        position: relative;
         width: 100%; /* Full width below main content */
         height: auto; /* Adjust height to fit content */
-        border-left: none; /* Remove border to avoid separation */
-        margin-top: 20px; /* Optional: add some spacing from main content */
+        display: block; /* Ensure it behaves as a block element */
+        border-left: none; /* Remove border */
+        margin-top: 20px; /* Optional: Add spacing */
     }
 
     .main-content {
-        width: 100%; /* Ensure main content takes up full width on mobile */
+        width: 100%; /* Full width for main content */
         margin-right: 0;
     }
 }
