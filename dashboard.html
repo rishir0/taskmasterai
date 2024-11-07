@@ -1372,7 +1372,7 @@ scrollbar-thumb {
     <!-- Today's Productivity Section -->
     <div class="header-section productivity-section">
         <div class="productivity-stats">
-            <h2>Today's Productivity</h2>
+            <h2>Your Productivity</h2>
 
             <!-- Tasks Completed with Progress Bar -->
             <p>Tasks Completed: <span id="tasks-completed">0</span> / 10</p>
@@ -3057,12 +3057,12 @@ function loadProductivityData() {
 
     // Keep the header
     const header = document.createElement('h2');
-    header.textContent = "Today's Productivity";
+    header.textContent = "Your Productivity";
     productivitySection.appendChild(header);
 
     // Create the no-data message element
     const noDataMessage = document.createElement('p');
-    noDataMessage.textContent = "✨ Nothing planned for today—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
+    noDataMessage.textContent = "✨ Nothing productive scheduled—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨";
     noDataMessage.style.display = 'none'; // Hide it by default
     productivitySection.appendChild(noDataMessage);
 
