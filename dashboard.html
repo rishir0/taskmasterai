@@ -287,6 +287,18 @@ body.night-mode {
     overflow-y: auto;
 }
 
+/* Mobile Styles for Timer Sidebar */
+@media (max-width: 768px) {
+    .timer-sidebar {
+        position: static; /* Remove fixed position on mobile */
+        width: 100%; /* Full width below main content */
+        height: auto; /* Adjust height based on content */
+        margin-top: 20px; /* Add space between main content and sidebar */
+        border-left: none; /* Remove border on mobile */
+        border-top: 2px solid var(--border-color); /* Optional: Add a border above instead */
+    }
+}
+
 /* Pomodoro Timer styling */
 .pomodoro-timer, .custom-timer {
     width: 100%; /* Ensure it fits the width of the sidebar */
