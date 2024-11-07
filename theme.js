@@ -57,6 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
     display: inline; /* Keep date inline */
 }
 
+.arrow-icon {
+    width: 54px;
+    height: 54px;
+    fill: white; /* Ensure the arrow icon is white */
+    margin-bottom: -10px;
+}
+
 /* Note text styling */
 .note-item p.note-text {
     font-size: 1rem; /* Note text size */
