@@ -287,15 +287,19 @@ body.night-mode {
     overflow-y: auto;
 }
 
-/* Mobile Styles: Hide Sidebar and Expand Main Content */
+/* Mobile Styles: Move Sidebar Below Main Content */
 @media (max-width: 768px) {
     .timer-sidebar {
-        display: none; /* Hide the sidebar on mobile */
+        position: relative; /* Sidebar follows main content */
+        width: 100%; /* Full width below main content */
+        height: auto; /* Adjust height to fit content */
+        border-left: none; /* Remove border to avoid separation */
+        margin-top: 20px; /* Optional: add some spacing from main content */
     }
 
     .main-content {
         width: 100%; /* Ensure main content takes up full width on mobile */
-        margin-right: 0; /* Remove any margin that might be offsetting content */
+        margin-right: 0;
     }
 }
 
