@@ -287,10 +287,15 @@ body.night-mode {
     overflow-y: auto;
 }
 
-/* Mobile Styles: Hide Sidebar */
+/* Mobile Styles: Hide Sidebar and Expand Main Content */
 @media (max-width: 768px) {
     .timer-sidebar {
-        display: none; /* Hide the sidebar on mobile devices */
+        display: none; /* Hide the sidebar on mobile */
+    }
+
+    .main-content {
+        width: 100%; /* Ensure main content takes up full width on mobile */
+        margin-right: 0; /* Remove any margin that might be offsetting content */
     }
 }
 
