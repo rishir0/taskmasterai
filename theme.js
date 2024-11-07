@@ -50,6 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }
 
+/* Productivity Stats Styling */
+.productivity-stats h2, .upcoming-deadlines h3 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
 
 /* Section Headings */
 .tab-content h2 {
