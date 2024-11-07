@@ -50,6 +50,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }
 
+/* Date styling */
+.note-item span.date {
+    font-size: 0.9rem; /* Date size */
+    color: white; /* Date color */
+    display: inline; /* Keep date inline */
+}
+
+/* Note text styling */
+.note-item p.note-text {
+    font-size: 1rem; /* Note text size */
+    color: white; /* Note text color */
+    margin: 5px 0 0 0; /* Space above note text */
+}
+
+/* Title styling */
+.note-item strong2 {
+    font-size: 1.3rem; /* Title size */
+    color: white; /* Title color */
+    display: inline; /* Keep title inline */
+    margin-right: 10px; /* Space between title and date */
+    font-weight: bold; /* Make the title bold */
+}
+
 /* Productivity Stats Styling */
 .productivity-stats h2, .upcoming-deadlines h3 {
     color: white;
