@@ -1191,10 +1191,16 @@ scrollbar-thumb {
 /* Mobile Styles */
 @media (max-width: 768px) {
     /* Tab Navigation */
+    .nav-tabs {
+        display: flex;
+        flex-wrap: wrap; /* Allow wrapping when tabs overflow */
+        justify-content: space-between; /* Space tabs evenly on the line */
+    }
+
     .nav-tabs li {
-        display: block; /* Stack tabs vertically */
+        display: block;
+        margin-bottom: 10px; /* Add vertical spacing between rows of tabs */
         margin-right: 0; /* Remove right margin */
-        margin-bottom: 10px; /* Add space between tabs */
     }
 
     .nav-tabs li a {
@@ -1230,8 +1236,10 @@ scrollbar-thumb {
 
     /* Button Container for Items */
     .button-container {
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 8px; /* Add more space between buttons */
+        display: flex;
+        flex-wrap: wrap; /* Allow buttons to wrap when they overflow */
+        gap: 5px; /* Add space between buttons */
+        justify-content: flex-start; /* Align buttons horizontally */
     }
 
     /* Item Buttons */
@@ -1270,6 +1278,7 @@ scrollbar-thumb {
         background-color: var(--accent-color);
     }
 }
+
 
 
 /* General Card Styling */
