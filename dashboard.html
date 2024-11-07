@@ -298,19 +298,21 @@ body.night-mode {
     flex: 1; /* Allow main content to take up available space */
 }
 
-/* Mobile Styles: Stack Sidebar Below Main Content */
+/* Mobile Styles: Stack Sidebar at the Bottom */
 @media (max-width: 768px) {
     .container {
         flex-direction: column; /* Stack main content and sidebar vertically */
     }
 
     .timer-sidebar {
-        position: relative;
+        position: static; /* Make it appear in natural document flow */
         width: 100%; /* Full width below main content */
         height: auto; /* Adjust height to fit content */
-        display: block; /* Ensure it behaves as a block element */
+        display: block; /* Behave as a block element */
         border-left: none; /* Remove border */
-        margin-top: 20px; /* Optional: Add spacing */
+        margin-top: 20px; /* Optional: Add spacing above the sidebar */
+        overflow-y: auto; /* Allow scrolling within the sidebar if content overflows */
+        max-height: 50vh; /* Limit the sidebar height to half the viewport on mobile */
     }
 
     .main-content {
@@ -318,7 +320,6 @@ body.night-mode {
         margin-right: 0;
     }
 }
-
 
 /* Pomodoro Timer styling */
 .pomodoro-timer, .custom-timer {
