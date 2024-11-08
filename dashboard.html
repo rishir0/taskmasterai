@@ -1543,65 +1543,36 @@ scrollbar-thumb {
         <p>Your personalized dashboard</p>
     </div>
 
-<!-- AI Assistant Section -->
+<!-- AI Summary Section -->
 <div class="header-section ai-assistant-section">
     <div class="ai-assistant-card">
-        <!-- SVG Icon with text size alignment -->
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" style="width: 1em; height: 1em; vertical-align: middle; fill: currentColor;">
-            <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-            <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-        </svg>
+        <h2><svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+            </svg>Your Summary Insights</h2>
+        
+        <div class="summary-section">
+            <h3>Today’s Tasks</h3>
+            <p id="today-tasks-summary">Summary of tasks for today will appear here.</p>
+        </div>
 
-        <h2>SmartTask Navigator</h2>
-        <p>Need help organizing your tasks? Let our AI assistant sort them by priority for you.</p>
-        <button class="ai-button" onclick="sortTasksByAI()">Sort My Tasks</button>
+        <div class="summary-section">
+            <h3>Upcoming Deadlines</h3>
+            <p id="upcoming-deadlines-summary">Summary of upcoming deadlines will appear here.</p>
+        </div>
 
-        <!-- AI Response Section: Summarized Task Overview -->
-        <div id="ai-response">
-            <h3>Weekly Overview</h3>
+        <div class="summary-section">
+            <h3>Priority Tasks</h3>
+            <p id="priority-tasks-summary">Summary of priority tasks will appear here.</p>
+        </div>
 
-            <!-- Tasks Section -->
-            <h4>Tasks</h4>
-            <ul>
-                <li><strong>Write client proposal</strong> - Deadline: 2024-11-09 | Priority: High | Status: In Progress</li>
-                <li><strong>Prepare financial report</strong> - Deadline: 2024-11-12 | Priority: Medium | Status: Pending</li>
-                <li><strong>Schedule team meeting</strong> - Deadline: 2024-11-07 | Priority: Low | Status: Pending</li>
-            </ul>
-
-            <!-- Goals Section -->
-            <h4>Goals</h4>
-            <ul>
-                <li><strong>Goal: Increase website traffic by 20%</strong> - Deadline: 2024-12-01 | Progress: 35% Complete</li>
-                <li><strong>Goal: Complete UX redesign for the app</strong> - Deadline: 2024-11-30 | Progress: 50% Complete</li>
-            </ul>
-
-            <!-- Projects Section -->
-            <h4>Projects</h4>
-            <ul>
-                <li><strong>Project: Marketing Campaign</strong> - Deadline: 2024-11-15 | Status: In Progress
-                    <ul>
-                        <li>Finalize ad content - 2024-11-07</li>
-                        <li>Launch paid ads - 2024-11-10</li>
-                    </ul>
-                </li>
-                <li><strong>Project: Mobile App Development</strong> - Deadline: 2024-11-20 | Status: In Progress
-                    <ul>
-                        <li>Code backend API - 2024-11-08</li>
-                        <li>Beta testing phase - 2024-11-15</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <!-- Calendar Events Section -->
-            <h4>Calendar Events</h4>
-            <ul>
-                <li><strong>Meeting: Client Strategy Session</strong> - Date: 2024-11-07 | Time: 10:00 AM | Location: Zoom</li>
-                <li><strong>Event: Product Launch Webinar</strong> - Date: 2024-11-09 | Time: 2:00 PM | Location: Virtual</li>
-                <li><strong>Meeting: Team Sync</strong> - Date: 2024-11-08 | Time: 4:00 PM | Location: Conference Room B</li>
-            </ul>
+        <div class="summary-section">
+            <h3>Completed Tasks</h3>
+            <p id="completed-tasks-summary">Summary of completed tasks will appear here.</p>
         </div>
     </div>
 </div>
+
 
 
 
