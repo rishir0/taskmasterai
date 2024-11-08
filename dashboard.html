@@ -1386,8 +1386,9 @@ scrollbar-thumb {
 }
 
 .ai-assistant-card h2 {
-    color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-top: -5px;
+    color: #007bff;
+    margin-bottom: 2px;
     font-weight: bold;
 }
 
@@ -1396,21 +1397,6 @@ scrollbar-thumb {
     font-size: 1.1rem;
 }
 
-.ai-button {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 12px 24px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.ai-button:hover {
-    background-color: var(--hover-bg);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
 
 .ai-response {
     margin-top: 20px;
@@ -1420,6 +1406,90 @@ scrollbar-thumb {
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ai-generated-tag .icon {
+    width: 2em;  /* Keep the icon size */
+    height: 2em; /* Keep the icon size */
+    fill: #007bff; /* Set the SVG color to white */
+    margin-right: -2px;
+    margin-left: -6px;  /* Space between icon and text */
+}
+
+.summary-section h3 {
+    display: flex;
+    align-items: center;
+    font-size: 18px; /* Adjust font size if needed */
+    color: #c9302c;
+}
+
+.summary-section p {
+    font-size: 16px; /* Adjust the font size */
+    color: white; /* Set the text color */
+    line-height: 1.6; /* Add line height for better readability */
+    margin: 10px 0; /* Add vertical margin for spacing */
+    padding: 8px; /* Add padding inside the paragraph */
+    background-color: #007bff; /* Light background color */
+    border-radius: 10px; /* Rounded corners for the background */
+    word-wrap: break-word; /* Ensure text wraps properly */
+}
+
+
+/* General styling for SVG icons in the AI Summary section */
+.header-section svg.icon2,
+.header-section button svg {
+    width: 74px;          /* Ensures a consistent size */
+    height: 74px;         /* Adjust as needed */
+    fill: white;        /* Sets a visible dark color; change as needed */
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -15px;
+    margin-right: -15px;
+}
+
+/* Additional button styling */
+.hide-ai-section-button {
+    float: right;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Define hover styles for original and hidden SVG states */
+.hide-ai-section-button svg:hover {
+    fill: #c9302c; /* Default darker fill */
+}
+
+.hide-ai-section-button .primary-hover:hover {
+    fill: var(--primary-color); /* Primary color on hover when hidden */
+}
+
+
+.beta-tag {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    background-size: 300% 300%;
+    color: var(--text-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    animation: swish-gradient 3s infinite ease-in-out;
+    margin-left: 5px;
+    margin-top: 200px;
+    vertical-align: middle;
+}
+
+@keyframes swish-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
     </style>
@@ -1544,34 +1614,47 @@ scrollbar-thumb {
     </div>
 
 <!-- AI Summary Section -->
-<div class="header-section ai-assistant-section">
+<div id="ai-summary-section" class="header-section ai-assistant-section">
     <div class="ai-assistant-card">
         <h2>
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" style="width: 1em; height: 1em; vertical-align: middle;">
-                <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
-                <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
-            </svg>
-            Your Summary Insights
+            <div class="ai-generated-tag">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" style="width: 1.2em; height: 2em; vertical-align: middle;">
+                    <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+                    <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+                </svg>
+                Your Summary Insights <span class="beta-tag">BETA</span>
+            
+            <!-- Hide AI Section Button -->
+        <button id="hide-ai-section-button" class="hide-ai-section-button">
+            <div class="hide-ai-section-button" style="float: right; background: none; border: none; cursor: pointer;">
+                <svg class = "icon2" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0">
+                    <path d="m19.012 32.711c-0.17188 1.6484 1.0391 3.1211 2.6797 3.2891h0.12891 0.17969c1.5391 0 2.8281-1.1719 2.9883-2.7109l0.19141-1.8594c0.32812-3.3008 2.9609-5.9414 6.2695-6.2617l1.8594-0.19141c0.80078-0.078124 1.5195-0.46875 2.0195-1.0898 0.51172-0.62109 0.73828-1.3984 0.66016-2.1992s-0.46094-1.5195-1.0781-2.0195c-0.62109-0.51172-1.3984-0.73828-2.1992-0.66016l-1.8594 0.19141c-6.1406 0.60938-11.031 5.5117-11.648 11.641l-0.19141 1.8594z"/>
+                    <path d="m33.301 75.02-1.8594-0.19141c-3.3008-0.32812-5.9414-2.9609-6.2617-6.2695l-0.19141-1.8594c-0.078125-0.80078-0.46875-1.5195-1.0898-2.0195-0.62109-0.51172-1.3984-0.73828-2.1992-0.66016s-1.5195 0.46094-2.0195 1.0781c-0.51172 0.62109-0.73828 1.3984-0.66016 2.1992l0.23828 2.3516c0.82031 5.8984 5.6211 10.551 11.578 11.141l1.8594 0.19141c1.6602 0.16016 3.1211-1.0391 3.2812-2.6914 0-0.089843 0.019532-0.19922 0.019532-0.30078 0-1.5391-1.1602-2.8281-2.6992-2.9883z"/>
+                    <path d="m67.309 80.98 2.1914-0.21875c5.9805-0.76172 10.699-5.5898 11.301-11.609l0.19141-1.8594c0.078124-0.80078-0.16016-1.5781-0.66016-2.1992s-1.2188-1-2.0117-1.0781c-0.10937 0-0.21094-0.019531-0.30859-0.019531-1.5391 0-2.8281 1.1602-2.9883 2.6992l-0.19141 1.8594c-0.32812 3.3008-2.9609 5.9414-6.2695 6.2617l-1.8594 0.19141c-0.80078 0.078126-1.5195 0.46875-2.0195 1.0898-0.51172 0.62109-0.73828 1.3984-0.66016 2.1992 0.16016 1.6484 1.6406 2.8516 3.2891 2.6797z"/>
+                    <path d="m80.73 30.328c-0.82812-5.8906-5.6211-10.539-11.578-11.129l-1.8594-0.19141c-0.10156 0-0.19922-0.011718-0.30078-0.011718-1.5195 0-2.8281 1.1602-2.9805 2.6992 0 0.10938-0.019531 0.21094-0.019531 0.30078 0 1.5391 1.1602 2.8281 2.6992 2.9883l1.8594 0.19141c3.3008 0.32812 5.9414 2.9609 6.2617 6.2695l0.19141 1.8594c0.16016 1.6484 1.6406 2.8594 3.2891 2.6914 0.80078-0.078125 1.5195-0.46875 2.0195-1.0898s0.73828-1.3984 0.66016-2.1992l-0.23828-2.3594z"/>
+                    <path d="m49.98 67c1.6719 0 3.0195-1.3516 3.0195-3v-5.2109l0.82031-0.14844c2.1289-0.39844 4.1797-1.1211 6.0781-2.1484l0.73828-0.39844 3.0195 3.7812c0.98828 1.2383 2.9492 1.4805 4.2305 0.46094 0.62109-0.5 1.0117-1.2109 1.1016-2.0117 0.089844-0.80078-0.14062-1.5781-0.64062-2.1992l-3.0195-3.7812 0.55078-0.62891c1.7305-1.9883 3.0391-4.25 3.9102-6.7188 0.26953-0.76172 0.23047-1.5703-0.12109-2.2891-0.35156-0.73047-0.94922-1.2695-1.7109-1.5391-0.75-0.26953-1.5703-0.23047-2.2891 0.12109-0.73047 0.35156-1.2695 0.94922-1.5391 1.7109-2.1211 5.9805-7.8008 10-14.121 10-6.3203 0-12.012-4.0195-14.121-10-0.55078-1.5508-2.2695-2.3711-3.8398-1.8281-0.75 0.26172-1.3594 0.80859-1.6992 1.5312-0.33984 0.71875-0.39062 1.5391-0.12109 2.3086 0.87109 2.4492 2.1797 4.7109 3.9102 6.7188l0.53906 0.62891-3.0195 3.7812c-1.0312 1.2891-0.82031 3.1797 0.46094 4.2188 1.2695 1.0117 3.2305 0.78125 4.2188-0.46094l3.0195-3.7812 0.73047 0.39062c1.9297 1.0312 3.9688 1.7617 6.0781 2.1484l0.82031 0.14844v5.2109c0 1.6484 1.3516 3 3 3z"/>
+                   </svg>
+                </button>
         </h2>
 
         <div class="summary-section">
-            <h3>Today’s Tasks</h3>
-            <p id="today-tasks-summary">Summary of tasks for today will appear here.</p>
+            <h3>Unavailable</h3>
+            <p id="today-tasks-summary">In development, coming soon...</p>
         </div>
 
         <div class="summary-section">
-            <h3>Upcoming Deadlines</h3>
-            <p id="upcoming-deadlines-summary">Summary of upcoming deadlines will appear here.</p>
+            <h3>Unavailable</h3>
+            <p id="upcoming-deadlines-summary">In development, coming soon...</p>
         </div>
 
         <div class="summary-section">
-            <h3>Priority Tasks</h3>
-            <p id="priority-tasks-summary">Summary of priority tasks will appear here.</p>
+            <h3>Unavailable</h3>
+            <p id="priority-tasks-summary">In development, coming soon...</p>
         </div>
 
         <div class="summary-section">
-            <h3>Completed Tasks</h3>
-            <p id="completed-tasks-summary">Summary of completed tasks will appear here.</p>
+            <h3>Unavailable</h3>
+            <p id="completed-tasks-summary">In development, coming soon...</p>
         </div>
     </div>
 </div>
@@ -3628,7 +3711,65 @@ firebase.auth().onAuthStateChanged(user => {
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const summarySections = document.querySelectorAll("#ai-summary-section .summary-section");
+        const hideButton = document.getElementById("hide-ai-section-button");
+        const hideIcon = hideButton.querySelector("svg");
 
+        // Define original and hidden SVG paths
+        const originalSVGPath = `
+    <path d="m19.012 32.711c-0.17188 1.6484 1.0391 3.1211 2.6797 3.2891h0.12891 0.17969c1.5391 0 2.8281-1.1719 2.9883-2.7109l0.19141-1.8594c0.32812-3.3008 2.9609-5.9414 6.2695-6.2617l1.8594-0.19141c0.80078-0.078124 1.5195-0.46875 2.0195-1.0898 0.51172-0.62109 0.73828-1.3984 0.66016-2.1992s-0.46094-1.5195-1.0781-2.0195c-0.62109-0.51172-1.3984-0.73828-2.1992-0.66016l-1.8594 0.19141c-6.1406 0.60938-11.031 5.5117-11.648 11.641l-0.19141 1.8594z"/>
+    <path d="m33.301 75.02-1.8594-0.19141c-3.3008-0.32812-5.9414-2.9609-6.2617-6.2695l-0.19141-1.8594c-0.078125-0.80078-0.46875-1.5195-1.0898-2.0195-0.62109-0.51172-1.3984-0.73828-2.1992-0.66016s-1.5195 0.46094-2.0195 1.0781c-0.51172 0.62109-0.73828 1.3984-0.66016 2.1992l0.23828 2.3516c0.82031 5.8984 5.6211 10.551 11.578 11.141l1.8594 0.19141c1.6602 0.16016 3.1211-1.0391 3.2812-2.6914 0-0.089843 0.019532-0.19922 0.019532-0.30078 0-1.5391-1.1602-2.8281-2.6992-2.9883z"/>
+    <path d="m67.309 80.98 2.1914-0.21875c5.9805-0.76172 10.699-5.5898 11.301-11.609l0.19141-1.8594c0.078124-0.80078-0.16016-1.5781-0.66016-2.1992s-1.2188-1-2.0117-1.0781c-0.10937 0-0.21094-0.019531-0.30859-0.019531-1.5391 0-2.8281 1.1602-2.9883 2.6992l-0.19141 1.8594c-0.32812 3.3008-2.9609 5.9414-6.2695 6.2617l-1.8594 0.19141c-0.80078 0.078126-1.5195 0.46875-2.0195 1.0898-0.51172 0.62109-0.73828 1.3984-0.66016 2.1992 0.16016 1.6484 1.6406 2.8516 3.2891 2.6797z"/>
+    <path d="m80.73 30.328c-0.82812-5.8906-5.6211-10.539-11.578-11.129l-1.8594-0.19141c-0.10156 0-0.19922-0.011718-0.30078-0.011718-1.5195 0-2.8281 1.1602-2.9805 2.6992 0 0.10938-0.019531 0.21094-0.019531 0.30078 0 1.5391 1.1602 2.8281 2.6992 2.9883l1.8594 0.19141c3.3008 0.32812 5.9414 2.9609 6.2617 6.2695l0.19141 1.8594c0.16016 1.6484 1.6406 2.8594 3.2891 2.6914 0.80078-0.078125 1.5195-0.46875 2.0195-1.0898s0.73828-1.3984 0.66016-2.1992l-0.23828-2.3594z"/>
+    <path d="m49.98 67c1.6719 0 3.0195-1.3516 3.0195-3v-5.2109l0.82031-0.14844c2.1289-0.39844 4.1797-1.1211 6.0781-2.1484l0.73828-0.39844 3.0195 3.7812c0.98828 1.2383 2.9492 1.4805 4.2305 0.46094 0.62109-0.5 1.0117-1.2109 1.1016-2.0117 0.089844-0.80078-0.14062-1.5781-0.64062-2.1992l-3.0195-3.7812 0.55078-0.62891c1.7305-1.9883 3.0391-4.25 3.9102-6.7188 0.26953-0.76172 0.23047-1.5703-0.12109-2.2891-0.35156-0.73047-0.94922-1.2695-1.7109-1.5391-0.75-0.26953-1.5703-0.23047-2.2891 0.12109-0.73047 0.35156-1.2695 0.94922-1.5391 1.7109-2.1211 5.9805-7.8008 10-14.121 10-6.3203 0-12.012-4.0195-14.121-10-0.55078-1.5508-2.2695-2.3711-3.8398-1.8281-0.75 0.26172-1.3594 0.80859-1.6992 1.5312-0.33984 0.71875-0.39062 1.5391-0.12109 2.3086 0.87109 2.4492 2.1797 4.7109 3.9102 6.7188l0.53906 0.62891-3.0195 3.7812c-1.0312 1.2891-0.82031 3.1797 0.46094 4.2188 1.2695 1.0117 3.2305 0.78125 4.2188-0.46094l3.0195-3.7812 0.73047 0.39062c1.9297 1.0312 3.9688 1.7617 6.0781 2.1484l0.82031 0.14844v5.2109c0 1.6484 1.3516 3 3 3z"/>
+`;
+
+        const hiddenSVGPath = `
+            <path d="m81 54c0-15.391 0-23.871-5.5586-29.43-5.5586-5.5703-14.039-5.5703-29.441-5.5703h-4c-1.6484 0-3 1.3516-3 3s1.3516 3 3 3h4c14.238 0 21.379 0 25.191 3.8086 3.8086 3.8086 3.8086 10.949 3.8086 25.191v4c0 1.6484 1.3516 3 3 3s3-1.3516 3-3z"/>
+            <path d="m61 62c1.6484 0 3-1.3516 3-3v-4c0-8.1016 0-12.559-3.2188-15.781-3.2188-3.2188-7.6797-3.2188-15.781-3.2188h-4c-1.6484 0-3 1.3516-3 3s1.3516 3 3 3h4c2.4492 0 4.5586 0 6.3086 0.089844l2.2383 0.12109-15.672 15.672c-1.1719 1.1719-1.1719 3.0703 0 4.2383 1.1289 1.1289 3.1094 1.1289 4.2383 0l15.672-15.672 0.12109 2.2383c0.089844 1.7383 0.089844 3.8594 0.089844 6.3086v4c0 1.6484 1.3516 3 3 3z"/>
+            <path d="m19 42v4c0 15.391 0 23.871 5.5586 29.43 5.5586 5.5703 14.039 5.5703 29.441 5.5703h4c1.6484 0 3-1.3516 3-3s-1.3516-3-3-3h-4c-14.238 0-21.379 0-25.191-3.8086-3.8086-3.8086-3.8086-10.949-3.8086-25.191v-4c0-1.6484-1.3516-3-3-3s-3 1.3516-3 3z"/>
+        `;
+
+    // Update the SVG icon based on visibility state
+    function updateIcon(isHidden) {
+        hideIcon.innerHTML = isHidden ? hiddenSVGPath : originalSVGPath;
+        hideIcon.classList.toggle("primary-hover", isHidden);
+    }
+
+    // Initialize visibility and icon based on localStorage
+    const isInitiallyHidden = localStorage.getItem("aiSectionHidden") === "true";
+    if (isInitiallyHidden) {
+        summarySections.forEach(section => section.style.display = "none");
+    }
+    updateIcon(isInitiallyHidden);
+
+    // Toggle AI summary-section visibility with confirmation and save preference
+    hideButton.addEventListener("click", function() {
+        const isHidden = Array.from(summarySections).every(section => section.style.display === "none");
+
+        if (!isHidden) {
+            const userConfirmed = confirm("Are you sure you want to hide this section?");
+            if (userConfirmed) {
+                summarySections.forEach(section => section.style.display = "none");
+                localStorage.setItem("aiSectionHidden", "true");
+                updateIcon(true);
+            }
+        } else {
+            summarySections.forEach(section => section.style.display = "block");
+            localStorage.setItem("aiSectionHidden", "false");
+            updateIcon(false);
+        }
+    });
+});
+
+function updateIcon(isHidden) {
+    hideIcon.innerHTML = isHidden ? hiddenSVGPath : originalSVGPath;
+    hideIcon.classList.toggle("primary-hover", isHidden); // Add/remove primary-hover class based on state
+}
+
+</script>
 
     <script>
         document.querySelector('.sidebar-toggle').addEventListener('click', () => {
