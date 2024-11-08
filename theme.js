@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }
 
+.section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
 /* Date styling */
 .note-item span.date {
     font-size: 0.9rem; /* Date size */
