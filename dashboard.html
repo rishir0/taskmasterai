@@ -1331,6 +1331,50 @@ scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Progress Bar Container */
+.progress-bar {
+    background-color: rgba(255, 255, 255, 0.1); /* Background for the empty part of the bar */
+    border-radius: 10px;
+    height: 15px;
+    width: 100%; /* Full width of its container */
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+/* Filled part of the Progress Bar */
+.progress-fill {
+    background-color: var(--primary-color); /* Use primary color for the fill */
+    height: 100%;
+    border-radius: 10px; /* Ensure rounded corners */
+    transition: width 0.3s ease; /* Smooth width change */
+}
+
+/* Hide scrollbars while allowing scrolling */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
+.deadline-tag {
+    background-color: #ffcc00;
+    color: #333;
+    padding: 2px 6px;
+    margin-right: 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Style for due dates */
+.due-date {
+    color: #c9302c;        /* Red color for the due date */
+    font-weight: bold;     /* Bold text */
+}
+
+
 /* AI Assistant Section */
 .ai-assistant-section {
     background-color: var(--card-bg);
@@ -1377,78 +1421,6 @@ scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* Animations for Notifications */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.notification {
-    background-color: var(--success-color);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Notifications Error Style */
-.notification-error {
-    background-color: var(--error-color);
-}
-
-/* Hover Effects for Productivity Section */
-.progress-bar {
-    position: relative;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    height: 15px;
-    margin-bottom: 15px;
-}
-
-.progress-fill {
-    height: 100%;
-    background-color: var(--primary-color);
-    border-radius: 10px;
-    transition: width 0.3s ease;
-}
-
-.progress-bar:hover .progress-fill {
-    background-color: var(--accent-color);
-}
-
-/* Hide scrollbars while allowing scrolling */
-* {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer and Edge */
-}
-
-*::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-
-.deadline-tag {
-    background-color: #ffcc00;
-    color: #333;
-    padding: 2px 6px;
-    margin-right: 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-
-/* Style for due dates */
-.due-date {
-    color: #c9302c;        /* Red color for the due date */
-    font-weight: bold;     /* Bold text */
-}
-
 
     </style>
 </head>
@@ -1565,21 +1537,73 @@ scrollbar-thumb {
             </div>
         </div>
 <div class="main-content">
-    <!-- Dashboard Header -->
+    <!-- Dashboard Header (left unchanged) -->
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
-        <p>Your personalized dashboard to boost productivity</p>
+        <p>Your personalized dashboard</p>
     </div>
 
-    <!-- AI Assistant Section -->
-    <div class="header-section ai-assistant-section">
-        <div class="ai-assistant-card">
-            <h2>AI Productivity Assistant</h2>
-            <p>Need help organizing your tasks? Let our AI assistant sort them by priority for you.</p>
-            <button class="ai-button" onclick="sortTasksByAI()">Sort My Tasks</button>
-            <div id="ai-response"></div>
+<!-- AI Assistant Section -->
+<div class="header-section ai-assistant-section">
+    <div class="ai-assistant-card">
+        <!-- SVG Icon with text size alignment -->
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-5.0 -10.0 110.0 135.0" style="width: 1em; height: 1em; vertical-align: middle; fill: currentColor;">
+            <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
+            <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
+        </svg>
+
+        <h2>SmartTask Navigator</h2>
+        <p>Need help organizing your tasks? Let our AI assistant sort them by priority for you.</p>
+        <button class="ai-button" onclick="sortTasksByAI()">Sort My Tasks</button>
+
+        <!-- AI Response Section: Summarized Task Overview -->
+        <div id="ai-response">
+            <h3>Weekly Overview</h3>
+
+            <!-- Tasks Section -->
+            <h4>Tasks</h4>
+            <ul>
+                <li><strong>Write client proposal</strong> - Deadline: 2024-11-09 | Priority: High | Status: In Progress</li>
+                <li><strong>Prepare financial report</strong> - Deadline: 2024-11-12 | Priority: Medium | Status: Pending</li>
+                <li><strong>Schedule team meeting</strong> - Deadline: 2024-11-07 | Priority: Low | Status: Pending</li>
+            </ul>
+
+            <!-- Goals Section -->
+            <h4>Goals</h4>
+            <ul>
+                <li><strong>Goal: Increase website traffic by 20%</strong> - Deadline: 2024-12-01 | Progress: 35% Complete</li>
+                <li><strong>Goal: Complete UX redesign for the app</strong> - Deadline: 2024-11-30 | Progress: 50% Complete</li>
+            </ul>
+
+            <!-- Projects Section -->
+            <h4>Projects</h4>
+            <ul>
+                <li><strong>Project: Marketing Campaign</strong> - Deadline: 2024-11-15 | Status: In Progress
+                    <ul>
+                        <li>Finalize ad content - 2024-11-07</li>
+                        <li>Launch paid ads - 2024-11-10</li>
+                    </ul>
+                </li>
+                <li><strong>Project: Mobile App Development</strong> - Deadline: 2024-11-20 | Status: In Progress
+                    <ul>
+                        <li>Code backend API - 2024-11-08</li>
+                        <li>Beta testing phase - 2024-11-15</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Calendar Events Section -->
+            <h4>Calendar Events</h4>
+            <ul>
+                <li><strong>Meeting: Client Strategy Session</strong> - Date: 2024-11-07 | Time: 10:00 AM | Location: Zoom</li>
+                <li><strong>Event: Product Launch Webinar</strong> - Date: 2024-11-09 | Time: 2:00 PM | Location: Virtual</li>
+                <li><strong>Meeting: Team Sync</strong> - Date: 2024-11-08 | Time: 4:00 PM | Location: Conference Room B</li>
+            </ul>
         </div>
     </div>
+</div>
+
+
 
     <!-- Today's Productivity Section -->
     <div class="header-section productivity-section">
@@ -1616,6 +1640,8 @@ scrollbar-thumb {
         </div>
     </div>
 
+
+
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
@@ -1628,7 +1654,7 @@ scrollbar-thumb {
     <div id="tasks-section" class="tab-content">
         <div class="tasks-section collapsible">
             <h2>Tasks</h2>
-            <div class="task-card">
+            <div class="goal-card">
                 <div class="form-group">
                     <input type="text" id="task-input" placeholder="Enter new task">
                     <button onclick="createTask()">Create Task</button>
@@ -1681,7 +1707,6 @@ scrollbar-thumb {
         </div>
     </div>
 </div>
-
 
 
 
