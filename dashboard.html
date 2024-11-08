@@ -1331,22 +1331,97 @@ scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Progress Bar Container */
-.progress-bar {
-    background-color: rgba(255, 255, 255, 0.1); /* Background for the empty part of the bar */
+/* AI Assistant Section */
+.ai-assistant-section {
+    background-color: var(--card-bg);
+    padding: 20px;
     border-radius: 10px;
-    height: 15px;
-    width: 100%; /* Full width of its container */
-    margin-top: 5px;
-    overflow: hidden;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Filled part of the Progress Bar */
+.ai-assistant-card h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.ai-assistant-card p {
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.ai-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ai-button:hover {
+    background-color: var(--hover-bg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ai-response {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations for Notifications */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification {
+    background-color: var(--success-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Notifications Error Style */
+.notification-error {
+    background-color: var(--error-color);
+}
+
+/* Hover Effects for Productivity Section */
+.progress-bar {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 15px;
+    margin-bottom: 15px;
+}
+
 .progress-fill {
-    background-color: var(--primary-color); /* Use primary color for the fill */
     height: 100%;
-    border-radius: 10px; /* Ensure rounded corners */
-    transition: width 0.3s ease; /* Smooth width change */
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progress-bar:hover .progress-fill {
+    background-color: var(--accent-color);
 }
 
 /* Hide scrollbars while allowing scrolling */
@@ -1490,10 +1565,20 @@ scrollbar-thumb {
             </div>
         </div>
 <div class="main-content">
-    <!-- Dashboard Header (left unchanged) -->
+    <!-- Dashboard Header -->
     <div class="dashboard-header">
         <h1>Welcome, <span id="displayName">User</span>!</h1>
-        <p>Your personalized dashboard</p>
+        <p>Your personalized dashboard to boost productivity</p>
+    </div>
+
+    <!-- AI Assistant Section -->
+    <div class="header-section ai-assistant-section">
+        <div class="ai-assistant-card">
+            <h2>AI Productivity Assistant</h2>
+            <p>Need help organizing your tasks? Let our AI assistant sort them by priority for you.</p>
+            <button class="ai-button" onclick="sortTasksByAI()">Sort My Tasks</button>
+            <div id="ai-response"></div>
+        </div>
     </div>
 
     <!-- Today's Productivity Section -->
@@ -1531,8 +1616,6 @@ scrollbar-thumb {
         </div>
     </div>
 
-
-
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tasks" class="tab-link" onclick="openTab(event, 'tasks-section')">Tasks</a></li>
@@ -1545,7 +1628,7 @@ scrollbar-thumb {
     <div id="tasks-section" class="tab-content">
         <div class="tasks-section collapsible">
             <h2>Tasks</h2>
-            <div class="goal-card">
+            <div class="task-card">
                 <div class="form-group">
                     <input type="text" id="task-input" placeholder="Enter new task">
                     <button onclick="createTask()">Create Task</button>
@@ -1598,6 +1681,7 @@ scrollbar-thumb {
         </div>
     </div>
 </div>
+
 
 
 
