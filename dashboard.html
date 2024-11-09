@@ -3548,7 +3548,6 @@ function loadUpcomingEvents() {
         .where('uid', '==', userId)
         .onSnapshot(snapshot => { // Listen to real-time updates
             let eventDataExists = false;
-            deadlinesList.innerHTML = ''; // Clear the current list to avoid duplication
 
             snapshot.forEach(doc => {
                 const data = doc.data();
