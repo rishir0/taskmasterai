@@ -3768,7 +3768,7 @@ function updateIcon(isHidden) {
 
 
 // Function to load productivity data from Firestore
-async function loadProductivityData2() {
+async function loadProductivityData() {
     const currentUser = getCurrentUser(); // Fetch the current user's ID
     const tasks = await fetchFirestoreCollection('tasks', currentUser.userId);
     const goals = await fetchFirestoreCollection('goals', currentUser.userId);
