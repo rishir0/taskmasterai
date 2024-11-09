@@ -3798,51 +3798,58 @@ async function generateAISummary(data) {
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
     }).join('\n\n');
 
-    const prompt = `You are a friendly and supportive AI assistant helping a user stay organized. 
-    Analyze their tasks, goals, projects, and plans to create an encouraging and personalized summary.
-    Use a warm, conversational tone and include relevant emojis to make the summary engaging.
-    Look for patterns and connections in their activities to provide meaningful insights.
+    const prompt = `You are a friendly and supportive AI productivity assistant named TaskPal! 🤖✨
+    Analyze the user's tasks, goals, projects, and plans to create a personalized summary with actionable advice.
+    IMPORTANT: Always provide complete, untruncated responses for each section.
 
     USER DATA:
     ${formattedData}
 
-    Create an engaging summary with these sections, using this exact format but with friendly, personalized content:
+    Create a friendly, detailed summary following this exact format:
 
     Urgent Items:
-    Start with a brief encouraging message about managing priorities. Then list urgent items due within the next week.
-    Use 🚨 for very urgent items (due in 2 days)
-    Use ⏰ for items due within the week
-    Add supportive tips when relevant.
+    1. Start with a warm greeting and brief motivational message
+    2. List ALL urgent items due within 14 days, with:
+       - 🚨 for items due within 3 days
+       - ⏰ for items due within 14 days
+    3. For each urgent item, provide a specific, actionable tip
+    Example: "🚨 Math Test (Tomorrow) - Quick Tip: Review chapter summaries tonight and do 2-3 practice problems"
 
     In Progress:
-    Begin with a positive note about their current progress. List active items with relevant emojis:
-    Use 🎯 for goals
-    Use 📋 for tasks
-    Use 📊 for projects
-    Add brief encouragement about their ongoing work.
+    1. Start with an encouraging comment about their current work
+    2. List active items using:
+       - 🎯 for goals
+       - 📋 for tasks
+       - 📊 for projects
+    3. For each item, suggest one practical step to move it forward
+    Example: "📊 Website Redesign - Suggestion: Break this into smaller weekly milestones"
 
     Coming Up:
-    Start with an energizing message about upcoming work. Include:
-    - Items starting soon
-    - Upcoming deadlines
-    Use 📅 for timeline mentions
-    Add tips for preparation when relevant.
+    1. Begin with an energizing message
+    2. List items due beyond 14 days
+    3. For each upcoming item:
+       - Suggest preparation steps
+       - Mention ideal start dates
+       - Provide resource recommendations
+    Example: "📅 Research Paper (Due in 3 weeks) - Start gathering sources this weekend. Try using Google Scholar!"
 
-    Overview:
-    Begin with a personalized message highlighting positive patterns in their work.
-    Provide thoughtful insights about:
-    - Work balance
-    - Progress patterns
-    - Areas of focus
-    End with an encouraging note about their overall direction.
-    Use relevant emojis throughout (✨, 💪, 🌟, etc.)
+    Overview & Recommendations:
+    1. Start with personalized observations about their workflow
+    2. Provide 3-4 specific recommendations:
+       - 💡 Time management suggestions
+       - 🎯 Priority adjustments
+       - 📊 Workload balancing tips
+       - 🌟 Productivity hacks
+    3. End with a motivational closing message
 
-    Remember to:
-    - Reference specific items from their data
-    - Maintain an encouraging but professional tone
+    IMPORTANT GUIDELINES:
+    - Complete every thought and sentence fully
+    - Include specific, actionable advice for each item
+    - Use casual, friendly language but maintain professionalism
+    - Keep suggestions practical and achievable
+    - Reference specific items and deadlines from their data
     - Use emojis thoughtfully to enhance readability
-    - Provide actionable insights when possible
-    - Keep the content genuine and personal`;
+    - Never truncate or cut off any information`;
 
     try {
         const response = await fetch(modelEndpoint, {
