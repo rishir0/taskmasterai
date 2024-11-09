@@ -3764,6 +3764,81 @@ function updateIcon(isHidden) {
     hideIcon.classList.toggle("primary-hover", isHidden); // Add/remove primary-hover class based on state
 }
 
+
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+
+const db = getFirestore();
+
+// Function to fetch data for a given collection
+async function fetchData(collectionName, userId) {
+    const q = query(collection(db, collectionName), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    let data = [];
+    querySnapshot.forEach((doc) => {
+        data.push(doc.data());
+    });
+    return data;
+}
+
+// Function to fetch tasks, goals, projects, and plans
+async function fetchAllData(userId) {
+    const tasks = await fetchData("tasks", userId);
+    const goals = await fetchData("goals", userId);
+    const projects = await fetchData("projects", userId);
+    const plans = await fetchData("plans", userId);
+    
+    return { tasks, goals, projects, plans };
+}
+
+const summarizeData = async (allData) => {
+    const response = await fetch(modelEndpoint, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${huggingFaceApiKey}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            inputs: {
+                "text": generatePrompt(allData)
+            }
+        })
+    });
+    
+    const result = await response.json();
+    return result.generated_text;
+};
+
+// Generate prompt based on collected data
+function generatePrompt(allData) {
+    let prompt = "You are an advanced AI assistant. Summarize the user's current tasks, goals, projects, and plans. Provide a concise overview, dynamically structuring sections based on their content. The summary should be clear and well-organized. Here is the data:\n\n";
+
+    prompt += "Tasks:\n" + allData.tasks.map(t => `Task: ${t.task}, Due: ${t.dueDate}`).join("\n") + "\n\n";
+    prompt += "Goals:\n" + allData.goals.map(g => `Goal: ${g.task}, Due: ${g.dueDate}`).join("\n") + "\n\n";
+    prompt += "Projects:\n" + allData.projects.map(p => `Project: ${p.task}, Due: ${p.dueDate}`).join("\n") + "\n\n";
+    prompt += "Plans:\n" + allData.plans.map(p => `Plan: ${p.task}, Due: ${p.dueDate}`).join("\n") + "\n";
+
+    return prompt;
+}
+
+function updateSummarySection(summary) {
+    document.getElementById("today-tasks-summary").innerText = summary;
+    document.getElementById("upcoming-deadlines-summary").innerText = summary;
+    document.getElementById("priority-tasks-summary").innerText = summary;
+    document.getElementById("completed-tasks-summary").innerText = summary;
+}
+
+// Call the function
+async function updateAiSummary(userId) {
+    const allData = await fetchAllData(userId);
+    const summary = await summarizeData(allData);
+    updateSummarySection(summary);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const userId = firebase.auth().currentUser.uid;
+    updateAiSummary(userId);
+});
+
 </script>
 
     <script>
