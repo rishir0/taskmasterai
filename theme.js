@@ -27,6 +27,31 @@ document.addEventListener('DOMContentLoaded', function() {
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+
+.upgrade-btn2 {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 25px; /* Increased border-radius for a rounder look */
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    position: relative; /* Ensure the SVG is positioned relative to the button */
+}
+
+.feature-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    fill: white;
+}
+
+.feature-icon path {
+  fill: white;
+}
     
     .card {
         margin-bottom: 20px;
@@ -135,6 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+
 
 /* Set placeholder text to white for all input fields */
 input::placeholder, 
