@@ -3792,128 +3792,101 @@ async function fetchCollectionData(userId) {
 }
 
 async function generateAISummary(data) {
-    // Previous data formatting code remains the same
     const formattedData = Object.entries(data).map(([category, items]) => {
         return `${category.toUpperCase()}:\n` + 
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
     }).join('\n\n');
 
-    const prompt = `You are a friendly and supportive AI productivity assistant named TaskPal! 🤖✨
-    Analyze the user's tasks, goals, projects, and plans to create a personalized summary with actionable advice.
-    IMPORTANT: Always provide complete, untruncated responses for each section.
+    // Break down the generation into separate sections
+    async function generateSection(sectionName, data, instructions) {
+        const sectionPrompt = `You are TaskPal, a friendly AI assistant. Generate ONLY the ${sectionName} section.
+        Keep your response focused and complete. Never truncate or cut off mid-sentence.
 
-    USER DATA:
-    ${formattedData}
+        USER DATA:
+        ${data}
 
-    Create a friendly, detailed summary following this exact format:
+        INSTRUCTIONS FOR ${sectionName}:
+        ${instructions}
 
-    Urgent Items:
-    1. Start with a warm greeting and brief motivational message
-    2. List ALL urgent items due within 14 days, with:
-       - 🚨 for items due within 3 days
-       - ⏰ for items due within 14 days
-    3. For each urgent item, provide a specific, actionable tip
-    Example: "🚨 Math Test (Tomorrow) - Quick Tip: Review chapter summaries tonight and do 2-3 practice problems"
+        FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
+        ${sectionName}:
+        [Your complete response here]`;
 
-    In Progress:
-    1. Start with an encouraging comment about their current work
-    2. List active items using:
-       - 🎯 for goals
-       - 📋 for tasks
-       - 📊 for projects
-    3. For each item, suggest one practical step to move it forward
-    Example: "📊 Website Redesign - Suggestion: Break this into smaller weekly milestones"
-
-    Coming Up:
-    1. Begin with an energizing message
-    2. List items due beyond 14 days
-    3. For each upcoming item:
-       - Suggest preparation steps
-       - Mention ideal start dates
-       - Provide resource recommendations
-    Example: "📅 Research Paper (Due in 3 weeks) - Start gathering sources this weekend. Try using Google Scholar!"
-
-    Overview & Recommendations:
-    1. Start with personalized observations about their workflow
-    2. Provide 3-4 specific recommendations:
-       - 💡 Time management suggestions
-       - 🎯 Priority adjustments
-       - 📊 Workload balancing tips
-       - 🌟 Productivity hacks
-    3. End with a motivational closing message
-
-    IMPORTANT GUIDELINES:
-    - Complete every thought and sentence fully
-    - Include specific, actionable advice for each item
-    - Use casual, friendly language but maintain professionalism
-    - Keep suggestions practical and achievable
-    - Reference specific items and deadlines from their data
-    - Use emojis thoughtfully to enhance readability
-    - Never truncate or cut off any information`;
-
-    try {
         const response = await fetch(modelEndpoint, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${huggingFaceApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ inputs: prompt }),
+            body: JSON.stringify({ 
+                inputs: sectionPrompt,
+                parameters: {
+                    max_new_tokens: 500,  // Increase token limit
+                    temperature: 0.7,     // Slightly reduce randomness
+                    top_p: 0.9,          // More focused responses
+                    stop: ["\n\n"]       // Stop at double newline to prevent runoff
+                }
+            }),
         });
 
         if (!response.ok) {
-            throw new Error('AI model request failed');
+            throw new Error(`Failed to generate ${sectionName}`);
         }
 
         const result = await response.json();
-        const generatedText = result[0]?.generated_text || "";
-        console.log("Raw AI response:", generatedText);
+        return result[0]?.generated_text || "";
+    }
 
-        // Updated parsing logic to handle various formats
-        const sections = {};
-        const sectionNames = ["Urgent Items", "In Progress", "Coming Up", "Overview"];
-        
-        for (let i = 0; i < sectionNames.length; i++) {
-            const currentSection = sectionNames[i];
-            const nextSection = sectionNames[i + 1];
+    try {
+        // Generate each section separately
+        const sections = {
+            "Urgent Items": await generateSection("Urgent Items", formattedData, `
+                1. Start with a warm, brief greeting (max 2 sentences)
+                2. List ALL urgent items due within 14 days
+                3. Use 🚨 for items due within 3 days
+                4. Use ⏰ for items due within 14 days
+                5. For each item, add ONE specific, actionable tip
+                6. Keep total response under 200 words`),
             
-            // Updated regex patterns to handle more variations
-            const patterns = [
-                new RegExp(`${currentSection}:?\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=${nextSection}:|$)`, 'i'),
-                new RegExp(`\\*\\*${currentSection}\\*\\*:?\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=\\*\\*|$)`, 'i'),
-                new RegExp(`${currentSection}\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=(?:\\*\\*|${nextSection}|$))`, 'i')
-            ];
+            "In Progress": await generateSection("In Progress", formattedData, `
+                1. Start with ONE encouraging sentence
+                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+                3. Add ONE practical next step for each item
+                4. Keep total response under 150 words`),
             
-            let sectionContent = "No content available";
+            "Coming Up": await generateSection("Coming Up", formattedData, `
+                1. List items due beyond 14 days
+                2. For each item, suggest ONE preparation step
+                3. Add start dates where relevant
+                4. Keep total response under 150 words`),
             
-            // Try each pattern until we find a match
-            for (const pattern of patterns) {
-                const match = generatedText.match(pattern);
-                if (match && match[1]?.trim()) {
-                    sectionContent = match[1].trim();
-                    break;
-                }
-            }
-            
-            // Clean up the content
-            sectionContent = sectionContent
-                .replace(/dashboard:\d+/g, '') // Remove dashboard numbers
-                .replace(/\*\*/g, '')          // Remove markdown bold markers
-                .trim();
-            
-            sections[currentSection] = sectionContent;
-        }
+            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
+                1. Give TWO specific observations about work patterns
+                2. Provide THREE actionable recommendations
+                3. End with ONE motivational sentence
+                4. Use emojis sparingly and meaningfully
+                5. Keep total response under 150 words`)
+        };
+
+        // Clean up each section's response
+        Object.keys(sections).forEach(key => {
+            sections[key] = sections[key]
+                .replace(/^.*?:/, '') // Remove section header from response
+                .trim()               // Remove extra whitespace
+                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
+        });
 
         return sections;
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
         return {
-            "Error": "Failed to generate summary. Please try again later.",
+            "Error": "Failed to generate complete summary. Please try again.",
             "Details": error.message
         };
     }
 }
+
 
 // Updated render function to handle the formatted content better
 function renderSections(summaryData) {
