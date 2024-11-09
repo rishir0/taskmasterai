@@ -3792,6 +3792,7 @@ async function fetchCollectionData(userId) {
 }
 
 async function generateAISummary(data) {
+    // Format the data for better prompt understanding
     const formattedData = Object.entries(data).map(([category, items]) => {
         return `${category.toUpperCase()}:\n` + 
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
