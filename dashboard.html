@@ -1870,8 +1870,6 @@ function initializeUserStatus() {
     }
 }
 
-// Call initializeUserStatus on page load
-initializeUserStatus();
 
 // Update status to offline when the page is unloaded
 window.addEventListener('beforeunload', () => {
@@ -3782,7 +3780,7 @@ async function fetchCollectionData(userId) {
             allData[collectionName] = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                type: collectionName.slice(0, -1) // Remove 's' to get singular form
+                type: collectionName.slice(0, -1)
             }));
         }
         
@@ -3872,18 +3870,11 @@ function showLoading() {
 }
 
 // Main function to update the summary
-async function updateAISummary() {
-    // Get current user
-    const user = auth.currentUser;
-    if (!user) {
-        console.error('No user logged in');
-        return;
-    }
-
+async function updateAISummary(userId) {
     showLoading();
 
     try {
-        const data = await fetchCollectionData(user.uid);
+        const data = await fetchCollectionData(userId);
         if (data) {
             const summary = await generateAISummary(data);
             if (summary) {
@@ -3906,9 +3897,6 @@ async function updateAISummary() {
 
 // Initialize and set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial load
-    updateAISummary();
-
     // Set up hide button functionality
     const hideButton = document.getElementById('hide-ai-section-button');
     if (hideButton) {
@@ -3918,10 +3906,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Update summary when auth state changes
-    auth.onAuthStateChanged(user => {
+    // Check authentication state and update summary
+    firebase.auth().onAuthStateChanged(user => {
         if (user) {
-            updateAISummary();
+            console.log('User is logged in:', user.uid);
+            updateAISummary(user.uid);
+        } else {
+            console.log('No user logged in');
+            const aiSummarySection = document.getElementById('ai-summary-section');
+            const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+            summaryContainer.innerHTML = `
+                <div class="summary-section">
+                    <p>Please log in to view your summary.</p>
+                </div>
+            `;
         }
     });
 });
