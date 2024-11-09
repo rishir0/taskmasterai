@@ -3542,55 +3542,63 @@ function loadUpcomingDeadlines() {
 
 function loadUpcomingEvents() {
     const userId = firebase.auth().currentUser.uid;
+    const deadlinesList = document.getElementById('deadlines-list');
 
     db.collection('events')
         .where('uid', '==', userId)
-        .onSnapshot(snapshot => {
-            let listModified = false;
+        .onSnapshot(snapshot => { // Listen to real-time updates
+            let eventDataExists = false;
+            deadlinesList.innerHTML = ''; // Clear the current list to avoid duplication
 
-            snapshot.docChanges().forEach(change => {
-                const doc = change.doc;
+            snapshot.forEach(doc => {
                 const data = doc.data();
-                let eventDate;
-
-                // Debugging: Log retrieved document data to ensure it's fetching correctly
-                console.log(`Event Document Data:`, data);
 
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
                     return;
                 }
 
-                if (data.year && data.month !== undefined && data.day) {
-                    // Adjust month and construct date object correctly
-                    eventDate = new Date(data.year, data.month - 1, data.day);
-                    let titleText = data.title || '';
+                // Check if we have the required date fields
+                if (data.year && data.month && data.day) {
+                    const correctedMonth = data.month + 1;
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
 
-                    // Debugging: Log date for each event to ensure it's being calculated correctly
-                    console.log(`Event Date for ${titleText}:`, eventDate);
-
+                    // Only display upcoming events
                     if (eventDate >= new Date()) {
-                        if (change.type === 'added' || change.type === 'modified') {
-                            upcomingEvents.set(`events-${doc.id}`, {
-                                label: 'Event',
-                                title: titleText,
-                                date: eventDate
-                            });
-                        } else if (change.type === 'removed') {
-                            upcomingEvents.delete(`events-${doc.id}`);
-                        }
-                        listModified = true;
+                        eventDataExists = true;
+                        const listItem = document.createElement('li');
+                        const tag = document.createElement('span');
+                        tag.className = 'deadline-tag';
+                        tag.textContent = 'Event';
+
+                        const eventText = document.createElement('span');
+                        eventText.textContent = `${data.title} - `;
+
+                        const dueDateText = document.createElement('span');
+                        dueDateText.textContent = eventDate.toLocaleDateString();
+                        dueDateText.classList.add('due-date');
+
+                        eventText.appendChild(dueDateText);
+                        eventText.appendChild(document.createTextNode(''));
+
+                        listItem.appendChild(tag);
+                        listItem.appendChild(eventText);
+                        deadlinesList.appendChild(listItem);
                     }
                 }
             });
 
-            if (listModified) {
-                rebuildDeadlinesList();
+            // Show "No upcoming deadlines" only if there are no upcoming events
+            if (!eventDataExists && deadlinesList.children.length === 0) {
+                const noDeadlinesMessage = document.createElement('li');
+                noDeadlinesMessage.textContent = "No upcoming deadlines";
+                deadlinesList.appendChild(noDeadlinesMessage);
             }
         }, error => {
             console.error("Error loading events data: ", error);
         });
 }
+
 
 function rebuildDeadlinesList() {
     const deadlinesList = document.getElementById('deadlines-list');
