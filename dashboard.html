@@ -3493,7 +3493,7 @@ firebase.auth().onAuthStateChanged(user => {
 let dataExists = false; // Shared flag to track if any data exists
 const upcomingDeadlines = new Map(); // Store upcoming deadlines by collection and document ID
 
-function loadUpcomingDeadlines() {
+function loadAllUpcomingDeadlines() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
 
@@ -3522,6 +3522,10 @@ function loadUpcomingDeadlines() {
 
                     // Check due date or event-specific date fields
                     if (collection.name === 'events') {
+                        // Skip events with linked items
+                        if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
+                            return; // Skip this event
+                        }
                         if (data.year && data.month && data.day) {
                             deadlineDate = new Date(data.year, data.month - 1, data.day);
                         }
@@ -3598,75 +3602,15 @@ function rebuildDeadlinesList() {
     }
 }
 
+// Call the function to load all deadlines initially
+loadAllUpcomingDeadlines();
 
-
-
-
-function loadUpcomingEvents() {
-    const userId = firebase.auth().currentUser.uid;
-    const deadlinesList = document.getElementById('deadlines-list');
-
-    db.collection('events')
-        .where('uid', '==', userId)
-        .onSnapshot(snapshot => { // Listen to real-time updates
-            let eventDataExists = false;
-            deadlinesList.innerHTML = ''; // Clear the current list to avoid duplication
-
-            snapshot.forEach(doc => {
-                const data = doc.data();
-
-                // Skip events with linked items
-                if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                    return;
-                }
-
-                // Check if we have the required date fields
-                if (data.year && data.month && data.day) {
-                    const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
-
-                    // Only display upcoming events
-                    if (eventDate >= new Date()) {
-                        eventDataExists = true;
-                        const listItem = document.createElement('li');
-                        const tag = document.createElement('span');
-                        tag.className = 'deadline-tag';
-                        tag.textContent = 'Event';
-
-                        const eventText = document.createElement('span');
-                        eventText.textContent = `${data.title} - `;
-
-                        const dueDateText = document.createElement('span');
-                        dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date');
-
-                        eventText.appendChild(dueDateText);
-                        eventText.appendChild(document.createTextNode(''));
-
-                        listItem.appendChild(tag);
-                        listItem.appendChild(eventText);
-                        deadlinesList.appendChild(listItem);
-                    }
-                }
-            });
-
-            // Show "No upcoming deadlines" only if there are no upcoming events
-            if (!eventDataExists && deadlinesList.children.length === 0) {
-                const noDeadlinesMessage = document.createElement('li');
-                noDeadlinesMessage.textContent = "No upcoming deadlines";
-                deadlinesList.appendChild(noDeadlinesMessage);
-            }
-        }, error => {
-            console.error("Error loading events data: ", error);
-        });
-}
 
 
 // Call both functions on page load or user login
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-        loadUpcomingDeadlines(); // Load deadlines
-        loadUpcomingEvents();    // Load events
+loadAllUpcomingDeadlines();
     }
 });
 
