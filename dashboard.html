@@ -3605,25 +3605,25 @@ function rebuildDeadlinesList() {
 function loadUpcomingEvents() {
     const userId = firebase.auth().currentUser.uid;
     const deadlinesList = document.getElementById('deadlines-list');
-    let eventDataExists = false;
 
     db.collection('events')
         .where('uid', '==', userId)
-        .get()
-        .then(snapshot => {
+        .onSnapshot(snapshot => { // Listen to real-time updates
+            let eventDataExists = false;
+            deadlinesList.innerHTML = ''; // Clear the current list to avoid duplication
+
             snapshot.forEach(doc => {
                 const data = doc.data();
 
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                    return; // Skip to the next document if any linked field is present
+                    return;
                 }
 
                 // Check if we have the required date fields
                 if (data.year && data.month && data.day) {
-                    // Adjust month by adding 1 since Firestore stores it as zero-indexed
                     const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day); // correctedMonth - 1 to set Date object
+                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
 
                     // Only display upcoming events
                     if (eventDate >= new Date()) {
@@ -3636,10 +3636,9 @@ function loadUpcomingEvents() {
                         const eventText = document.createElement('span');
                         eventText.textContent = `${data.title} - `;
 
-                        // Create due date span with new CSS class
                         const dueDateText = document.createElement('span');
                         dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date'); // Apply due-date style
+                        dueDateText.classList.add('due-date');
 
                         eventText.appendChild(dueDateText);
                         eventText.appendChild(document.createTextNode(''));
@@ -3650,22 +3649,18 @@ function loadUpcomingEvents() {
                     }
                 }
             });
-        })
-        .catch(error => {
-            console.error("Error loading events data: ", error);
-        })
-        .finally(() => {
-            // Show "No upcoming deadlines" only if neither deadlines nor events exist
-            if (!eventDataExists && !dataExists && deadlinesList.children.length === 0) {
+
+            // Show "No upcoming deadlines" only if there are no upcoming events
+            if (!eventDataExists && deadlinesList.children.length === 0) {
                 const noDeadlinesMessage = document.createElement('li');
                 noDeadlinesMessage.textContent = "No upcoming deadlines";
                 deadlinesList.appendChild(noDeadlinesMessage);
             }
-        })
-        .catch(error => {
+        }, error => {
             console.error("Error loading events data: ", error);
         });
 }
+
 
 // Call both functions on page load or user login
 firebase.auth().onAuthStateChanged(user => {
