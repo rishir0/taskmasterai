@@ -1440,7 +1440,7 @@ scrollbar-thumb {
 .header-section button svg {
     width: 74px;          /* Ensures a consistent size */
     height: 74px;         /* Adjust as needed */
-    fill: white;        /* Sets a visible dark color; change as needed */
+    fill: #007bff;        /* Sets a visible dark color; change as needed */
     display: inline-block;
     vertical-align: middle;
     margin-top: -15px;
@@ -3587,9 +3587,9 @@ function loadUpcomingEvents() {
 
 function rebuildDeadlinesList() {
     const deadlinesList = document.getElementById('deadlines-list');
-    deadlinesList.innerHTML = ''; // Clear the list
+    deadlinesList.innerHTML = ''; // Clear the entire list once before rendering
 
-    // Combine deadlines and events, then sort by date
+    // Combine and sort all deadlines and events by date
     const allDeadlines = [...upcomingDeadlines.values(), ...upcomingEvents.values()].sort((a, b) => a.date - b.date);
 
     if (allDeadlines.length > 0) {
@@ -3619,6 +3619,7 @@ function rebuildDeadlinesList() {
         deadlinesList.appendChild(noDeadlinesMessage);
     }
 }
+
 
 
 // Call both functions on page load or user login
