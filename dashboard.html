@@ -3490,14 +3490,25 @@ firebase.auth().onAuthStateChanged(user => {
 
 
 
-let dataExists = false; // Shared flag to track if any data exists
-const upcomingDeadlines = new Map(); // Store deadlines for tasks, goals, projects, and plans
-const upcomingEvents = new Map(); // Store upcoming events
+function checkNoDeadlinesMessage() {
+    const deadlinesList = document.getElementById('deadlines-list');
+    // Remove existing "No upcoming deadlines" message
+    const noDeadlinesMessage = deadlinesList.querySelector('.no-deadlines');
+    if (noDeadlinesMessage) noDeadlinesMessage.remove();
+
+    // Add message only if both collections are empty
+    if (deadlinesList.children.length === 0) {
+        const noDeadlinesMessage = document.createElement('li');
+        noDeadlinesMessage.className = 'no-deadlines';
+        noDeadlinesMessage.textContent = "No upcoming deadlines";
+        deadlinesList.appendChild(noDeadlinesMessage);
+    }
+}
 
 function loadUpcomingDeadlines() {
     const userId = firebase.auth().currentUser.uid;
+    const deadlinesList = document.getElementById('deadlines-list');
 
-    // Collections with due dates to check
     const collections = [
         { name: 'tasks', label: 'Task', dateField: 'dueDate', titleField: 'task' },
         { name: 'goals', label: 'Goal', dateField: 'dueDate', titleField: 'goal' },
@@ -3505,35 +3516,45 @@ function loadUpcomingDeadlines() {
         { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' }
     ];
 
+    deadlinesList.querySelectorAll('.deadline-item').forEach(item => item.remove()); // Clear only items with class deadline-item
+
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
             .onSnapshot(snapshot => {
-                let listModified = false;
-
                 snapshot.docChanges().forEach(change => {
                     const doc = change.doc;
                     const data = doc.data();
-                    let deadlineDate = data[collection.dateField]?.toDate();
+                    let deadlineDate = data[collection.dateField] ? data[collection.dateField].toDate() : null;
                     let titleText = data[collection.titleField] || '';
 
-                    if (deadlineDate && deadlineDate >= new Date()) {
-                        if (change.type === 'added' || change.type === 'modified') {
-                            upcomingDeadlines.set(`${collection.name}-${doc.id}`, {
-                                label: collection.label,
-                                title: titleText,
-                                date: deadlineDate
-                            });
-                        } else if (change.type === 'removed') {
-                            upcomingDeadlines.delete(`${collection.name}-${doc.id}`);
+                    if (change.type === 'added' || change.type === 'modified') {
+                        if (deadlineDate && deadlineDate >= new Date()) {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'deadline-item';
+
+                            const tag = document.createElement('span');
+                            tag.className = 'deadline-tag';
+                            tag.textContent = collection.label;
+
+                            const deadlineText = document.createElement('span');
+                            deadlineText.textContent = `${titleText} - `;
+
+                            const dueDateText = document.createElement('span');
+                            dueDateText.textContent = deadlineDate.toLocaleDateString();
+                            dueDateText.classList.add('due-date');
+
+                            deadlineText.appendChild(dueDateText);
+                            listItem.appendChild(tag);
+                            listItem.appendChild(deadlineText);
+                            deadlinesList.appendChild(listItem);
                         }
-                        listModified = true;
+                    } else if (change.type === 'removed') {
+                        const existingItem = deadlinesList.querySelector(`#${collection.name}-${doc.id}`);
+                        if (existingItem) existingItem.remove();
                     }
                 });
-
-                if (listModified) {
-                    rebuildDeadlinesList();
-                }
+                checkNoDeadlinesMessage();
             }, error => {
                 console.error(`Error loading ${collection.label} data: `, error);
             });
@@ -3546,57 +3567,52 @@ function loadUpcomingEvents() {
 
     db.collection('events')
         .where('uid', '==', userId)
-        .onSnapshot(snapshot => { // Listen to real-time updates
-            let eventDataExists = false;
-
-            snapshot.forEach(doc => {
+        .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                const doc = change.doc;
                 const data = doc.data();
 
-                // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
                     return;
                 }
 
-                // Check if we have the required date fields
-                if (data.year && data.month && data.day) {
-                    const correctedMonth = data.month + 1;
-                    const eventDate = new Date(data.year, correctedMonth - 1, data.day);
+                if (data.year && data.month !== undefined && data.day) {
+                    const eventDate = new Date(data.year, data.month, data.day);
+                    let titleText = data.title || '';
 
-                    // Only display upcoming events
-                    if (eventDate >= new Date()) {
-                        eventDataExists = true;
-                        const listItem = document.createElement('li');
-                        const tag = document.createElement('span');
-                        tag.className = 'deadline-tag';
-                        tag.textContent = 'Event';
+                    if (change.type === 'added' || change.type === 'modified') {
+                        if (eventDate >= new Date()) {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'deadline-item';
 
-                        const eventText = document.createElement('span');
-                        eventText.textContent = `${data.title} - `;
+                            const tag = document.createElement('span');
+                            tag.className = 'deadline-tag';
+                            tag.textContent = 'Event';
 
-                        const dueDateText = document.createElement('span');
-                        dueDateText.textContent = eventDate.toLocaleDateString();
-                        dueDateText.classList.add('due-date');
+                            const eventText = document.createElement('span');
+                            eventText.textContent = `${titleText} - `;
 
-                        eventText.appendChild(dueDateText);
-                        eventText.appendChild(document.createTextNode(''));
+                            const dueDateText = document.createElement('span');
+                            dueDateText.textContent = eventDate.toLocaleDateString();
+                            dueDateText.classList.add('due-date');
 
-                        listItem.appendChild(tag);
-                        listItem.appendChild(eventText);
-                        deadlinesList.appendChild(listItem);
+                            eventText.appendChild(dueDateText);
+                            listItem.appendChild(tag);
+                            listItem.appendChild(eventText);
+                            deadlinesList.appendChild(listItem);
+                        }
+                    } else if (change.type === 'removed') {
+                        const existingItem = deadlinesList.querySelector(`#events-${doc.id}`);
+                        if (existingItem) existingItem.remove();
                     }
                 }
             });
-
-            // Show "No upcoming deadlines" only if there are no upcoming events
-            if (!eventDataExists && deadlinesList.children.length === 0) {
-                const noDeadlinesMessage = document.createElement('li');
-                noDeadlinesMessage.textContent = "No upcoming deadlines";
-                deadlinesList.appendChild(noDeadlinesMessage);
-            }
+            checkNoDeadlinesMessage();
         }, error => {
             console.error("Error loading events data: ", error);
         });
 }
+
 
 
 function rebuildDeadlinesList() {
