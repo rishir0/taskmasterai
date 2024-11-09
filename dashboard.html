@@ -3793,26 +3793,30 @@ async function fetchCollectionData(userId) {
 
 // Process data with Llama model
 async function generateAISummary(data) {
-    const prompt = `
-        As an AI assistant, analyze the following user data and create a dynamic summary. 
-        Focus on identifying patterns, priorities, and key insights.
-        Group related items together and create relevant sections based on the content.
-        
-        Consider:
-        - Urgency based on due dates
-        - Common themes or categories
-        - Dependencies between items
-        - Progress status
-        - Priority patterns
-        
-        Data to analyze:
-        ${JSON.stringify(data, null, 2)}
-        
-        Create a structured summary with dynamic sections based on the actual content.
-        Format the response as JSON with section titles and their corresponding summaries.
-    `;
+    // Format the data for better prompt understanding
+    const formattedData = Object.entries(data).map(([category, items]) => {
+        return `${category.toUpperCase()}:\n` + 
+            items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
+    }).join('\n\n');
+
+    const prompt = `Analyze the following user's tasks, goals, projects, and plans and create a comprehensive summary. 
+    Format your response into distinct sections based on what you find most important or noteworthy.
+
+    USER DATA:
+    ${formattedData}
+
+    Create a summary with the following sections:
+    1. "Urgent Items" - List any items due within the next week
+    2. "In Progress" - Summarize current active items
+    3. "Coming Up" - Highlight items starting soon or upcoming deadlines
+    4. "Overview" - Provide a high-level summary of all activities
+
+    Format your response as a JSON object with these exact section names as keys and detailed summaries as values.
+    Make sure the response can be parsed as valid JSON.`;
 
     try {
+        console.log("Sending prompt to Llama:", prompt);
+        
         const response = await fetch(modelEndpoint, {
             method: 'POST',
             headers: {
@@ -3826,10 +3830,41 @@ async function generateAISummary(data) {
             throw new Error('AI model request failed');
         }
 
-        return await response.json();
+        const rawResponse = await response.json();
+        console.log("Raw AI response:", rawResponse);
+
+        // Try to parse the response as JSON
+        try {
+            // If the response is already a JSON object, use it directly
+            if (typeof rawResponse === 'object' && rawResponse !== null) {
+                return rawResponse;
+            }
+            
+            // If it's a string, try to parse it
+            if (typeof rawResponse === 'string') {
+                return JSON.parse(rawResponse);
+            }
+
+            // If we can't parse it properly, create a formatted response
+            return {
+                "Urgent Items": "Unable to process urgent items at this time.",
+                "In Progress": "Unable to process in-progress items at this time.",
+                "Coming Up": "Unable to process upcoming items at this time.",
+                "Overview": "Unable to process overview at this time."
+            };
+        } catch (parseError) {
+            console.error('Error parsing AI response:', parseError);
+            return {
+                "Error": "Unable to generate summary at this time. Please try again later.",
+                "Raw Response": JSON.stringify(rawResponse)
+            };
+        }
     } catch (error) {
         console.error('Error generating AI summary:', error);
-        return null;
+        return {
+            "Error": "Failed to connect to AI service. Please try again later.",
+            "Details": error.message
+        };
     }
 }
 
@@ -3875,8 +3910,12 @@ async function updateAISummary(userId) {
 
     try {
         const data = await fetchCollectionData(userId);
+        console.log("Fetched data:", data);  // Debug log
+        
         if (data) {
             const summary = await generateAISummary(data);
+            console.log("Generated summary:", summary);  // Debug log
+            
             if (summary) {
                 renderSections(summary);
             } else {
@@ -3890,6 +3929,7 @@ async function updateAISummary(userId) {
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
                 <p>Unable to generate summary at this time. Please try again later.</p>
+                <p class="error-details">Error: ${error.message}</p>
             </div>
         `;
     }
