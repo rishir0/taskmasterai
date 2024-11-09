@@ -3767,75 +3767,89 @@ function updateIcon(isHidden) {
 
 
 
-// Function to fetch data for a given collection
-async function fetchData(collectionName, userId) {
-    const q = query(collection(db, collectionName), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    let data = [];
-    querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-    });
-    return data;
+// AI Summary Function
+async function generateAISummary() {
+    const userId = firebase.auth().currentUser.uid;
+    const collections = ['tasks', 'goals', 'projects', 'plans'];
+    const allData = [];
+
+    try {
+        // Fetch data from all collections for the current user
+        for (const collection of collections) {
+            const snapshot = await db.collection(collection).where('userId', '==', userId).get();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                allData.push({
+                    collection,
+                    ...data
+                });
+            });
+        }
+
+        // If no data is found, show a default message
+        if (allData.length === 0) {
+            return "✨ Nothing productive scheduled—why not get started? Create a task, goal, project, or plan to stay productive! ✨";
+        }
+
+        // Prepare the summary prompt for Hugging Face model
+        const prompt = `
+        You are an AI assistant. Below is a list of tasks, goals, projects, and plans that a user has.
+        Summarize the user's overall productivity by dividing it into four sections: Tasks, Goals, Projects, and Plans.
+        Focus on the overall progress and what's most important for the user to focus on next.
+
+        Tasks:
+        ${allData.filter(item => item.collection === 'tasks').map(item => item.task).join("\n")}
+
+        Goals:
+        ${allData.filter(item => item.collection === 'goals').map(item => item.goal).join("\n")}
+
+        Projects:
+        ${allData.filter(item => item.collection === 'projects').map(item => item.project).join("\n")}
+
+        Plans:
+        ${allData.filter(item => item.collection === 'plans').map(item => item.plan).join("\n")}
+        `;
+
+        // Call Hugging Face model to get the summary
+        const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer YOUR_HUGGING_FACE_API_KEY` },
+            body: JSON.stringify({ inputs: prompt })
+        });
+
+        const summary = await response.json();
+
+        // Return the summary text
+        return summary.generated_text;
+
+    } catch (error) {
+        console.error("Error generating AI summary:", error);
+        return "Error generating summary.";
+    }
 }
 
-// Function to fetch tasks, goals, projects, and plans
-async function fetchAllData(userId) {
-    const tasks = await fetchData("tasks", userId);
-    const goals = await fetchData("goals", userId);
-    const projects = await fetchData("projects", userId);
-    const plans = await fetchData("plans", userId);
-    
-    return { tasks, goals, projects, plans };
-}
+// Trigger function when the page loads and user is authenticated
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        // Call the AI summary function
+        generateAISummary().then(summaryText => {
+            // Display the AI summary on the dashboard
+            document.querySelector('.ai-summary-section').textContent = summaryText;
+        });
+    }
+});
 
-const summarizeData = async (allData) => {
-    const response = await fetch(modelEndpoint, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${huggingFaceApiKey}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            inputs: {
-                "text": generatePrompt(allData)
-            }
-        })
+// Or you can alternatively trigger it on window load if Firebase auth isn't used
+window.onload = function() {
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            generateAISummary().then(summaryText => {
+                document.querySelector('.ai-summary-section').textContent = summaryText;
+            });
+        }
     });
-    
-    const result = await response.json();
-    return result.generated_text;
 };
 
-// Generate prompt based on collected data
-function generatePrompt(allData) {
-    let prompt = "You are an advanced AI assistant. Summarize the user's current tasks, goals, projects, and plans. Provide a concise overview, dynamically structuring sections based on their content. The summary should be clear and well-organized. Here is the data:\n\n";
-
-    prompt += "Tasks:\n" + allData.tasks.map(t => `Task: ${t.task}, Due: ${t.dueDate}`).join("\n") + "\n\n";
-    prompt += "Goals:\n" + allData.goals.map(g => `Goal: ${g.task}, Due: ${g.dueDate}`).join("\n") + "\n\n";
-    prompt += "Projects:\n" + allData.projects.map(p => `Project: ${p.task}, Due: ${p.dueDate}`).join("\n") + "\n\n";
-    prompt += "Plans:\n" + allData.plans.map(p => `Plan: ${p.task}, Due: ${p.dueDate}`).join("\n") + "\n";
-
-    return prompt;
-}
-
-function updateSummarySection(summary) {
-    document.getElementById("today-tasks-summary").innerText = summary;
-    document.getElementById("upcoming-deadlines-summary").innerText = summary;
-    document.getElementById("priority-tasks-summary").innerText = summary;
-    document.getElementById("completed-tasks-summary").innerText = summary;
-}
-
-// Call the function
-async function updateAiSummary(userId) {
-    const allData = await fetchAllData(userId);
-    const summary = await summarizeData(allData);
-    updateSummarySection(summary);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const userId = firebase.auth().currentUser.uid;
-    updateAiSummary(userId);
-});
 
 </script>
 
