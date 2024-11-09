@@ -3765,18 +3765,21 @@ function updateIcon(isHidden) {
 }
 
 
-
+// Hugging Face API setup
+const huggingFaceApiKey = "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";
 
 // Function to load productivity data from Firestore
 async function loadProductivityData() {
-    const currentUser = getCurrentUser(); // Fetch the current user's ID
-    const tasks = await fetchFirestoreCollection('tasks', currentUser.userId);
-    const goals = await fetchFirestoreCollection('goals', currentUser.userId);
-    const projects = await fetchFirestoreCollection('projects', currentUser.userId);
-    const plans = await fetchFirestoreCollection('plans', currentUser.userId);
+    const currentUser = firebase.auth().currentUser.uid; 
+    const tasks = await fetchFirestoreCollection('tasks', currentUser.uid);
+    const goals = await fetchFirestoreCollection('goals', currentUser.uid);
+    const projects = await fetchFirestoreCollection('projects', currentUser.uid);
+    const plans = await fetchFirestoreCollection('plans', currentUser.uid);
     
     return { tasks, goals, projects, plans };
 }
+
+
 
 // Function to fetch a Firestore collection for a user
 async function fetchFirestoreCollection(collectionName, userId) {
