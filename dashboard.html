@@ -3792,7 +3792,7 @@ async function fetchCollectionData(userId) {
 }
 
 async function generateAISummary(data) {
-    // Format the data for better prompt understanding
+    // Previous data formatting code remains the same
     const formattedData = Object.entries(data).map(([category, items]) => {
         return `${category.toUpperCase()}:\n` + 
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
@@ -3845,8 +3845,6 @@ async function generateAISummary(data) {
     - Keep the content genuine and personal`;
 
     try {
-        console.log("Sending prompt to Llama:", prompt);
-        
         const response = await fetch(modelEndpoint, {
             method: 'POST',
             headers: {
@@ -3864,7 +3862,7 @@ async function generateAISummary(data) {
         const generatedText = result[0]?.generated_text || "";
         console.log("Raw AI response:", generatedText);
 
-        // Parse the response into sections
+        // Updated parsing logic to handle various formats
         const sections = {};
         const sectionNames = ["Urgent Items", "In Progress", "Coming Up", "Overview"];
         
@@ -3872,16 +3870,29 @@ async function generateAISummary(data) {
             const currentSection = sectionNames[i];
             const nextSection = sectionNames[i + 1];
             
-            let sectionContent;
-            if (nextSection) {
-                const pattern = new RegExp(`${currentSection}:\\s*([\\s\\S]*?)(?=${nextSection}:|$)`);
+            // Updated regex patterns to handle more variations
+            const patterns = [
+                new RegExp(`${currentSection}:?\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=${nextSection}:|$)`, 'i'),
+                new RegExp(`\\*\\*${currentSection}\\*\\*:?\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=\\*\\*|$)`, 'i'),
+                new RegExp(`${currentSection}\\s*(?:🚨)?\\s*([\\s\\S]*?)(?=(?:\\*\\*|${nextSection}|$))`, 'i')
+            ];
+            
+            let sectionContent = "No content available";
+            
+            // Try each pattern until we find a match
+            for (const pattern of patterns) {
                 const match = generatedText.match(pattern);
-                sectionContent = match ? match[1].trim() : "No content available";
-            } else {
-                const pattern = new RegExp(`${currentSection}:\\s*([\\s\\S]*?)$`);
-                const match = generatedText.match(pattern);
-                sectionContent = match ? match[1].trim() : "No content available";
+                if (match && match[1]?.trim()) {
+                    sectionContent = match[1].trim();
+                    break;
+                }
             }
+            
+            // Clean up the content
+            sectionContent = sectionContent
+                .replace(/dashboard:\d+/g, '') // Remove dashboard numbers
+                .replace(/\*\*/g, '')          // Remove markdown bold markers
+                .trim();
             
             sections[currentSection] = sectionContent;
         }
@@ -3897,7 +3908,7 @@ async function generateAISummary(data) {
     }
 }
 
-// Updated render function to properly handle the sections
+// Updated render function to handle the formatted content better
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
@@ -3911,8 +3922,10 @@ function renderSections(summaryData) {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
         
-        // Convert newlines to <br> tags for proper formatting
-        const formattedContent = content.replace(/\n/g, '<br>');
+        // Convert newlines to <br> tags and preserve emojis
+        const formattedContent = content
+            .replace(/\n/g, '<br>')
+            .replace(/\r/g, '');
         
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
