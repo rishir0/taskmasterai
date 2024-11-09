@@ -1440,7 +1440,7 @@ scrollbar-thumb {
 .header-section button svg {
     width: 74px;          /* Ensures a consistent size */
     height: 74px;         /* Adjust as needed */
-    fill: #007bff;        /* Sets a visible dark color; change as needed */
+    fill: white;        /* Sets a visible dark color; change as needed */
     display: inline-block;
     vertical-align: middle;
     margin-top: -15px;
@@ -3491,23 +3491,20 @@ firebase.auth().onAuthStateChanged(user => {
 
 
 let dataExists = false; // Shared flag to track if any data exists
-const upcomingDeadlines = new Map(); // Store upcoming deadlines by collection and document ID
+const upcomingDeadlines = new Map(); // Store deadlines for tasks, goals, projects, and plans
+const upcomingEvents = new Map(); // Store upcoming events
 
-function loadAllUpcomingDeadlines() {
+function loadUpcomingDeadlines() {
     const userId = firebase.auth().currentUser.uid;
-    const deadlinesList = document.getElementById('deadlines-list');
 
     // Collections with due dates to check
     const collections = [
         { name: 'tasks', label: 'Task', dateField: 'dueDate', titleField: 'task' },
         { name: 'goals', label: 'Goal', dateField: 'dueDate', titleField: 'goal' },
         { name: 'projects', label: 'Project', dateField: 'dueDate', titleField: 'project' },
-        { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' },
-        { name: 'events', label: 'Event', dateField: null, titleField: 'title' } // Events use different fields
+        { name: 'plans', label: 'Plan', dateField: 'dueDate', titleField: 'plan' }
     ];
 
-    // Clear the map and initialize listeners for all collections
-    upcomingDeadlines.clear();
     collections.forEach(collection => {
         db.collection(collection.name)
             .where('userId', '==', userId)
@@ -3517,47 +3514,23 @@ function loadAllUpcomingDeadlines() {
                 snapshot.docChanges().forEach(change => {
                     const doc = change.doc;
                     const data = doc.data();
-                    let deadlineDate;
+                    let deadlineDate = data[collection.dateField]?.toDate();
                     let titleText = data[collection.titleField] || '';
 
-                    // Check due date or event-specific date fields
-                    if (collection.name === 'events') {
-                        // Skip events with linked items
-                        if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
-                            return; // Skip this event
-                        }
-                        if (data.year && data.month && data.day) {
-                            deadlineDate = new Date(data.year, data.month - 1, data.day);
-                        }
-                    } else if (data[collection.dateField]) {
-                        deadlineDate = data[collection.dateField].toDate();
-                    }
-
-                    // Process additions and modifications
-                    if (change.type === 'added' || change.type === 'modified') {
-                        if (deadlineDate && deadlineDate >= new Date()) {
-                            // Add or update the deadline in the map
+                    if (deadlineDate && deadlineDate >= new Date()) {
+                        if (change.type === 'added' || change.type === 'modified') {
                             upcomingDeadlines.set(`${collection.name}-${doc.id}`, {
                                 label: collection.label,
                                 title: titleText,
                                 date: deadlineDate
                             });
-                            listModified = true;
-                        } else {
-                            // Remove if the date is invalid or in the past
+                        } else if (change.type === 'removed') {
                             upcomingDeadlines.delete(`${collection.name}-${doc.id}`);
-                            listModified = true;
                         }
-                    }
-
-                    // Process deletions
-                    if (change.type === 'removed') {
-                        upcomingDeadlines.delete(`${collection.name}-${doc.id}`);
                         listModified = true;
                     }
                 });
 
-                // Rebuild the list if any modifications were made
                 if (listModified) {
                     rebuildDeadlinesList();
                 }
@@ -3567,26 +3540,72 @@ function loadAllUpcomingDeadlines() {
     });
 }
 
+function loadUpcomingEvents() {
+    const userId = firebase.auth().currentUser.uid;
+
+    db.collection('events')
+        .where('uid', '==', userId)
+        .onSnapshot(snapshot => {
+            let listModified = false;
+
+            snapshot.docChanges().forEach(change => {
+                const doc = change.doc;
+                const data = doc.data();
+                let eventDate;
+
+                // Skip events with linked items
+                if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
+                    return;
+                }
+
+                if (data.year && data.month && data.day) {
+                    eventDate = new Date(data.year, data.month - 1, data.day);
+                    let titleText = data.title || '';
+
+                    if (eventDate >= new Date()) {
+                        if (change.type === 'added' || change.type === 'modified') {
+                            upcomingEvents.set(`events-${doc.id}`, {
+                                label: 'Event',
+                                title: titleText,
+                                date: eventDate
+                            });
+                        } else if (change.type === 'removed') {
+                            upcomingEvents.delete(`events-${doc.id}`);
+                        }
+                        listModified = true;
+                    }
+                }
+            });
+
+            if (listModified) {
+                rebuildDeadlinesList();
+            }
+        }, error => {
+            console.error("Error loading events data: ", error);
+        });
+}
+
 function rebuildDeadlinesList() {
     const deadlinesList = document.getElementById('deadlines-list');
     deadlinesList.innerHTML = ''; // Clear the list
 
-    if (upcomingDeadlines.size > 0) {
-        // Populate the list with deadlines from the map
+    // Combine deadlines and events, then sort by date
+    const allDeadlines = [...upcomingDeadlines.values(), ...upcomingEvents.values()].sort((a, b) => a.date - b.date);
+
+    if (allDeadlines.length > 0) {
         dataExists = true;
-        upcomingDeadlines.forEach((value, key) => {
+        allDeadlines.forEach(item => {
             const listItem = document.createElement('li');
             const tag = document.createElement('span');
             tag.className = 'deadline-tag';
-            tag.textContent = value.label;
+            tag.textContent = item.label;
 
             const deadlineText = document.createElement('span');
-            deadlineText.textContent = `${value.title} - `;
+            deadlineText.textContent = `${item.title} - `;
 
-            // Create due date span with new CSS class
             const dueDateText = document.createElement('span');
-            dueDateText.textContent = value.date.toLocaleDateString();
-            dueDateText.classList.add('due-date'); // Apply due-date style
+            dueDateText.textContent = item.date.toLocaleDateString();
+            dueDateText.classList.add('due-date');
 
             deadlineText.appendChild(dueDateText);
             listItem.appendChild(tag);
@@ -3594,7 +3613,6 @@ function rebuildDeadlinesList() {
             deadlinesList.appendChild(listItem);
         });
     } else {
-        // If no deadlines exist, show "No upcoming deadlines" message
         dataExists = false;
         const noDeadlinesMessage = document.createElement('li');
         noDeadlinesMessage.textContent = "No upcoming deadlines";
@@ -3603,13 +3621,11 @@ function rebuildDeadlinesList() {
 }
 
 
-
-
-
 // Call both functions on page load or user login
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
-loadAllUpcomingDeadlines();
+        loadUpcomingDeadlines(); // Load deadlines
+        loadUpcomingEvents();    // Load events
     }
 });
 
