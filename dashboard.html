@@ -3792,36 +3792,56 @@ async function fetchCollectionData(userId) {
 }
 
 async function generateAISummary(data) {
-    // Format the data for better prompt understanding
     const formattedData = Object.entries(data).map(([category, items]) => {
         return `${category.toUpperCase()}:\n` + 
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
     }).join('\n\n');
 
-    const prompt = `Analyze the following user's tasks, goals, projects, and plans and create a comprehensive summary. 
-    Format your response into distinct sections based on what you find most important or noteworthy.
+    const prompt = `You are a friendly and supportive AI assistant helping a user stay organized. 
+    Analyze their tasks, goals, projects, and plans to create an encouraging and personalized summary.
+    Use a warm, conversational tone and include relevant emojis to make the summary engaging.
+    Look for patterns and connections in their activities to provide meaningful insights.
 
     USER DATA:
     ${formattedData}
 
-    Create a summary with the following sections:
-    1. "Urgent Items" - List any items due within the next week
-    2. "In Progress" - Summarize current active items
-    3. "Coming Up" - Highlight items starting soon or upcoming deadlines
-    4. "Overview" - Provide a high-level summary of all activities
+    Create an engaging summary with these sections, using this exact format but with friendly, personalized content:
 
-    Important: Format your response exactly like this, maintaining the exact section headers:
     Urgent Items:
-    (urgent items content)
+    Start with a brief encouraging message about managing priorities. Then list urgent items due within the next week.
+    Use 🚨 for very urgent items (due in 2 days)
+    Use ⏰ for items due within the week
+    Add supportive tips when relevant.
 
     In Progress:
-    (in progress content)
+    Begin with a positive note about their current progress. List active items with relevant emojis:
+    Use 🎯 for goals
+    Use 📋 for tasks
+    Use 📊 for projects
+    Add brief encouragement about their ongoing work.
 
     Coming Up:
-    (coming up content)
+    Start with an energizing message about upcoming work. Include:
+    - Items starting soon
+    - Upcoming deadlines
+    Use 📅 for timeline mentions
+    Add tips for preparation when relevant.
 
     Overview:
-    (overview content)`;
+    Begin with a personalized message highlighting positive patterns in their work.
+    Provide thoughtful insights about:
+    - Work balance
+    - Progress patterns
+    - Areas of focus
+    End with an encouraging note about their overall direction.
+    Use relevant emojis throughout (✨, 💪, 🌟, etc.)
+
+    Remember to:
+    - Reference specific items from their data
+    - Maintain an encouraging but professional tone
+    - Use emojis thoughtfully to enhance readability
+    - Provide actionable insights when possible
+    - Keep the content genuine and personal`;
 
     try {
         console.log("Sending prompt to Llama:", prompt);
