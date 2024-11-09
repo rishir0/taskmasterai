@@ -3791,7 +3791,6 @@ async function fetchCollectionData(userId) {
     }
 }
 
-// Process data with Llama model
 async function generateAISummary(data) {
     // Format the data for better prompt understanding
     const formattedData = Object.entries(data).map(([category, items]) => {
@@ -3811,8 +3810,18 @@ async function generateAISummary(data) {
     3. "Coming Up" - Highlight items starting soon or upcoming deadlines
     4. "Overview" - Provide a high-level summary of all activities
 
-    Format your response as a JSON object with these exact section names as keys and detailed summaries as values.
-    Make sure the response can be parsed as valid JSON.`;
+    Important: Format your response exactly like this, maintaining the exact section headers:
+    Urgent Items:
+    (urgent items content)
+
+    In Progress:
+    (in progress content)
+
+    Coming Up:
+    (coming up content)
+
+    Overview:
+    (overview content)`;
 
     try {
         console.log("Sending prompt to Llama:", prompt);
@@ -3830,45 +3839,44 @@ async function generateAISummary(data) {
             throw new Error('AI model request failed');
         }
 
-        const rawResponse = await response.json();
-        console.log("Raw AI response:", rawResponse);
+        const result = await response.json();
+        const generatedText = result[0]?.generated_text || "";
+        console.log("Raw AI response:", generatedText);
 
-        // Try to parse the response as JSON
-        try {
-            // If the response is already a JSON object, use it directly
-            if (typeof rawResponse === 'object' && rawResponse !== null) {
-                return rawResponse;
+        // Parse the response into sections
+        const sections = {};
+        const sectionNames = ["Urgent Items", "In Progress", "Coming Up", "Overview"];
+        
+        for (let i = 0; i < sectionNames.length; i++) {
+            const currentSection = sectionNames[i];
+            const nextSection = sectionNames[i + 1];
+            
+            let sectionContent;
+            if (nextSection) {
+                const pattern = new RegExp(`${currentSection}:\\s*([\\s\\S]*?)(?=${nextSection}:|$)`);
+                const match = generatedText.match(pattern);
+                sectionContent = match ? match[1].trim() : "No content available";
+            } else {
+                const pattern = new RegExp(`${currentSection}:\\s*([\\s\\S]*?)$`);
+                const match = generatedText.match(pattern);
+                sectionContent = match ? match[1].trim() : "No content available";
             }
             
-            // If it's a string, try to parse it
-            if (typeof rawResponse === 'string') {
-                return JSON.parse(rawResponse);
-            }
-
-            // If we can't parse it properly, create a formatted response
-            return {
-                "Urgent Items": "Unable to process urgent items at this time.",
-                "In Progress": "Unable to process in-progress items at this time.",
-                "Coming Up": "Unable to process upcoming items at this time.",
-                "Overview": "Unable to process overview at this time."
-            };
-        } catch (parseError) {
-            console.error('Error parsing AI response:', parseError);
-            return {
-                "Error": "Unable to generate summary at this time. Please try again later.",
-                "Raw Response": JSON.stringify(rawResponse)
-            };
+            sections[currentSection] = sectionContent;
         }
+
+        return sections;
+
     } catch (error) {
         console.error('Error generating AI summary:', error);
         return {
-            "Error": "Failed to connect to AI service. Please try again later.",
+            "Error": "Failed to generate summary. Please try again later.",
             "Details": error.message
         };
     }
 }
 
-// Render the summary sections
+// Updated render function to properly handle the sections
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
@@ -3881,9 +3889,13 @@ function renderSections(summaryData) {
     Object.entries(summaryData).forEach(([sectionTitle, content]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
+        
+        // Convert newlines to <br> tags for proper formatting
+        const formattedContent = content.replace(/\n/g, '<br>');
+        
         sectionElement.innerHTML = `
-            <h3>${sectionTitle}</h3>
-            <p>${content}</p>
+            <h3 class="section-title">${sectionTitle}</h3>
+            <div class="section-content">${formattedContent}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
