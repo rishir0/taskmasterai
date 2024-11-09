@@ -3764,130 +3764,167 @@ function updateIcon(isHidden) {
     hideIcon.classList.toggle("primary-hover", isHidden); // Add/remove primary-hover class based on state
 }
 
-
-// Hugging Face API setup
+// Constants
 const huggingFaceApiKey = "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";
+const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
+const collections = ['tasks', 'goals', 'projects', 'plans'];
 
-// Function to load productivity data from Firestore
-async function loadProductivityData() {
-    const currentUser = firebase.auth().currentUser.uid; 
-    const tasks = await fetchFirestoreCollection('tasks', currentUser.uid);
-    const goals = await fetchFirestoreCollection('goals', currentUser.uid);
-    const projects = await fetchFirestoreCollection('projects', currentUser.uid);
-    const plans = await fetchFirestoreCollection('plans', currentUser.uid);
-    
-    return { tasks, goals, projects, plans };
-}
-
-
-
-// Function to fetch a Firestore collection for a user
-async function fetchFirestoreCollection(collectionName, userId) {
-    const collectionRef = firestore.collection(collectionName).where('userId', '==', userId);
-    const snapshot = await collectionRef.get();
-    return snapshot.docs.map(doc => doc.data());
-}
-
-// Function to generate AI summaries using Hugging Face model
-async function generateProductivitySummary(productivityData) {
-    const model = 'meta-llama/Llama-3.2-11B-Vision-Instruct'; // Specify the model to use
-    
-    // Define the prompt for summarizing productivity data
-    const prompt = `
-        You are an AI assistant that organizes tasks, goals, projects, and plans into different categories. 
-        Based on the data provided, generate concise summaries for the following sections:
-        
-        1. Today's Tasks
-        2. Upcoming Deadlines
-        3. Priority Tasks
-        4. Completed Tasks
-
-        Here is the data to use:
-        ${JSON.stringify(productivityData)}
-        
-        Make sure the summaries are accurate, well-structured, and relevant.
-    `;
-
-    // Call the Hugging Face API to generate the summary
-    const response = await fetch('https://api-inference.huggingface.co/models/' + model, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer YOUR_HUGGING_FACE_API_KEY`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            inputs: prompt,
-        }),
-    });
-
-    const result = await response.json();
-    const generatedSummaryText = result.generated_text;
-
-    // Process the generated text and split it into sections
-    const summarySections = parseSummaries(generatedSummaryText);
-
-    return summarySections;
-}
-
-// Function to parse the generated summary text into sections
-function parseSummaries(summaryText) {
-    const summaryLines = summaryText.split('\n');
-    
-    let sections = {
-        todayTasks: '',
-        upcomingDeadlines: '',
-        priorityTasks: '',
-        completedTasks: ''
-    };
-
-    let currentSection = '';
-
-    summaryLines.forEach(line => {
-        if (line.includes("Today's Tasks")) {
-            currentSection = 'todayTasks';
-        } else if (line.includes('Upcoming Deadlines')) {
-            currentSection = 'upcomingDeadlines';
-        } else if (line.includes('Priority Tasks')) {
-            currentSection = 'priorityTasks';
-        } else if (line.includes('Completed Tasks')) {
-            currentSection = 'completedTasks';
-        } else if (line.trim() !== '') {
-            sections[currentSection] += line.trim() + ' ';
-        }
-    });
-
-    return sections;
-}
-
-// Function to display the AI-generated summaries on the dashboard
-async function displayAISummaries() {
+// Fetch data from all collections
+async function fetchCollectionData(userId) {
     try {
-        const productivityData = await loadProductivityData();
-
-        const generatedSummary = await generateProductivitySummary(productivityData);
+        const allData = {};
         
-        // Update the AI summary section with the generated summaries
-        document.getElementById('today-tasks-summary').innerText = generatedSummary.todayTasks || 'No tasks for today.';
-        document.getElementById('upcoming-deadlines-summary').innerText = generatedSummary.upcomingDeadlines || 'No upcoming deadlines.';
-        document.getElementById('priority-tasks-summary').innerText = generatedSummary.priorityTasks || 'No priority tasks.';
-        document.getElementById('completed-tasks-summary').innerText = generatedSummary.completedTasks || 'No completed tasks yet.';
-
-        // Optionally, you can also change the section headers if needed
-        document.querySelectorAll('.summary-section h3')[0].innerText = 'Today\'s Tasks';
-        document.querySelectorAll('.summary-section h3')[1].innerText = 'Upcoming Deadlines';
-        document.querySelectorAll('.summary-section h3')[2].innerText = 'Priority Tasks';
-        document.querySelectorAll('.summary-section h3')[3].innerText = 'Completed Tasks';
+        for (const collectionName of collections) {
+            const snapshot = await db.collection(collectionName)
+                                  .where('userId', '==', userId)
+                                  .get();
+            
+            allData[collectionName] = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                type: collectionName.slice(0, -1) // Remove 's' to get singular form
+            }));
+        }
+        
+        return allData;
     } catch (error) {
-        console.error('Error displaying AI summaries:', error);
+        console.error('Error fetching data:', error);
+        return null;
     }
 }
 
-// Call this function to load the summaries when needed
-window.onload = function() {
-    displayAISummaries();
-};
+// Process data with Llama model
+async function generateAISummary(data) {
+    const prompt = `
+        As an AI assistant, analyze the following user data and create a dynamic summary. 
+        Focus on identifying patterns, priorities, and key insights.
+        Group related items together and create relevant sections based on the content.
+        
+        Consider:
+        - Urgency based on due dates
+        - Common themes or categories
+        - Dependencies between items
+        - Progress status
+        - Priority patterns
+        
+        Data to analyze:
+        ${JSON.stringify(data, null, 2)}
+        
+        Create a structured summary with dynamic sections based on the actual content.
+        Format the response as JSON with section titles and their corresponding summaries.
+    `;
 
+    try {
+        const response = await fetch(modelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingFaceApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ inputs: prompt }),
+        });
 
+        if (!response.ok) {
+            throw new Error('AI model request failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error generating AI summary:', error);
+        return null;
+    }
+}
+
+// Render the summary sections
+function renderSections(summaryData) {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    
+    // Clear existing sections
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+    existingSections.forEach(section => section.remove());
+
+    // Add new sections
+    Object.entries(summaryData).forEach(([sectionTitle, content]) => {
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'summary-section';
+        sectionElement.innerHTML = `
+            <h3>${sectionTitle}</h3>
+            <p>${content}</p>
+        `;
+        summaryContainer.appendChild(sectionElement);
+    });
+}
+
+// Show loading state
+function showLoading() {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    
+    // Clear existing sections
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+    existingSections.forEach(section => section.remove());
+
+    const loadingSection = document.createElement('div');
+    loadingSection.className = 'summary-section loading-state';
+    loadingSection.innerHTML = '<p>Generating your smart overview...</p>';
+    summaryContainer.appendChild(loadingSection);
+}
+
+// Main function to update the summary
+async function updateAISummary() {
+    // Get current user
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('No user logged in');
+        return;
+    }
+
+    showLoading();
+
+    try {
+        const data = await fetchCollectionData(user.uid);
+        if (data) {
+            const summary = await generateAISummary(data);
+            if (summary) {
+                renderSections(summary);
+            } else {
+                throw new Error('Failed to generate summary');
+            }
+        }
+    } catch (error) {
+        console.error('Error updating summary:', error);
+        const aiSummarySection = document.getElementById('ai-summary-section');
+        const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+        summaryContainer.innerHTML += `
+            <div class="summary-section error-state">
+                <p>Unable to generate summary at this time. Please try again later.</p>
+            </div>
+        `;
+    }
+}
+
+// Initialize and set up event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    updateAISummary();
+
+    // Set up hide button functionality
+    const hideButton = document.getElementById('hide-ai-section-button');
+    if (hideButton) {
+        hideButton.addEventListener('click', () => {
+            const aiSummarySection = document.getElementById('ai-summary-section');
+            aiSummarySection.style.display = aiSummarySection.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    // Update summary when auth state changes
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            updateAISummary();
+        }
+    });
+});
 </script>
 
     <script>
