@@ -3553,14 +3553,21 @@ function loadUpcomingEvents() {
                 const data = doc.data();
                 let eventDate;
 
+                // Debugging: Log retrieved document data to ensure it's fetching correctly
+                console.log(`Event Document Data:`, data);
+
                 // Skip events with linked items
                 if (data.linkedTaskId || data.linkedGoalId || data.linkedPlanId || data.linkedProjectId) {
                     return;
                 }
 
-                if (data.year && data.month && data.day) {
+                if (data.year && data.month !== undefined && data.day) {
+                    // Adjust month and construct date object correctly
                     eventDate = new Date(data.year, data.month - 1, data.day);
                     let titleText = data.title || '';
+
+                    // Debugging: Log date for each event to ensure it's being calculated correctly
+                    console.log(`Event Date for ${titleText}:`, eventDate);
 
                     if (eventDate >= new Date()) {
                         if (change.type === 'added' || change.type === 'modified') {
@@ -3587,9 +3594,9 @@ function loadUpcomingEvents() {
 
 function rebuildDeadlinesList() {
     const deadlinesList = document.getElementById('deadlines-list');
-    deadlinesList.innerHTML = ''; // Clear the entire list once before rendering
+    deadlinesList.innerHTML = ''; // Clear the list once before rendering
 
-    // Combine and sort all deadlines and events by date
+    // Combine deadlines and events, then sort by date
     const allDeadlines = [...upcomingDeadlines.values(), ...upcomingEvents.values()].sort((a, b) => a.date - b.date);
 
     if (allDeadlines.length > 0) {
