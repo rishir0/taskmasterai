@@ -3818,7 +3818,6 @@ function renderPlaceholderMessage() {
     `;
     summaryContainer.appendChild(placeholderSection);
 }
-}
 
 async function generateAISummary(data) {
     const formattedData = Object.entries(data).map(([category, items]) => {
@@ -3911,10 +3910,7 @@ async function generateAISummary(data) {
 }
 
 
-// Render sections based on summary data
 function renderSections(summaryData) {
-    if (!summaryData) return; // Exit if there's no data to render
-
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
