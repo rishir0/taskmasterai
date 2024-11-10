@@ -3854,20 +3854,23 @@ async function generateAISummary(data) {
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
-    // Each section receives displayName in instructions
-    async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
+    async function generateDynamicSection(data, instructions) {
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. 
+        I will analyze the user's data and dynamically create section titles based on the task categories and priorities.
+        
         USER DATA:
         ${data}
 
-        INSTRUCTIONS FOR ${sectionName}:
+        INSTRUCTIONS:
         ${instructions}
 
-        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-        ${sectionName}:
-        [My complete response here]`;
+        I WILL FORMAT MY RESPONSE LIKE THIS:
+        [Section Name]:
+        [Content for that section, providing specific, actionable items based on the category's needs]`;
 
         const response = await fetch(modelEndpoint, {
             method: 'POST',
@@ -3879,7 +3882,7 @@ async function generateAISummary(data) {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to generate ${sectionName}`);
+            throw new Error(`Failed to generate section`);
         }
 
         const result = await response.json();
@@ -3887,47 +3890,24 @@ async function generateAISummary(data) {
     }
 
     try {
-        // Generate each section separately
-        const sections = {
-            "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a warm, brief greeting (max 2 sentences)
-                2. List ALL urgent items due within 14 days
-                3. Use 🚨 for items due within 3 days
-                4. Use ⏰ for items due within 14 days
-                5. For each item, add ONE specific, actionable tip
-                6. Keep total response under 100 words
-                5. When outputting don't include the words "Urgent Items"`),
-            
-            "In Progress": await generateSection("In Progress", formattedData, `
-                1. Start with ONE encouraging sentence
-                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-                3. Add ONE practical next step for each item
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "In Progress"`),
-            
-            "Coming Up": await generateSection("Coming Up", formattedData, `
-                1. For each item, suggest ONE preparation step
-                2. Add start dates where relevant
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "Coming Up"`),
-            
-            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide THREE actionable recommendations
-                2. End with ONE motivational sentence
-                3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "Overview & Recommendations"`)
-        };
+        // Generate the Smart Overview in steps with delays
+        const smartOverview = await generateDynamicSection(formattedData, `
+            1. Analyze the user’s tasks and goals to create ONLY the necessary sections dynamically, naming each based on its content.
+            2. Prioritize sections based on urgency, progress status, and upcoming items.
+            3. For urgent items (due within 14 days), include a relevant icon like 🚨 or ⏰ and add a brief, actionable tip.
+            4. For in-progress items, use 🎯 for goals, 📋 for tasks, and 📊 for projects, with a practical next step for each.
+            5. Provide recommendations or summary insights where relevant, with a motivational sentence.
+            6. Avoid using the term "Smart Overview" in the output and keep responses under 100 words per section.`);
 
-        // Clean up each section's response
-        Object.keys(sections).forEach(key => {
-            sections[key] = sections[key]
-                .replace(/^.*?:/, '') // Remove section header from response
-                .trim()               // Remove extra whitespace
-                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
-        });
+        // Introduce delay between sections
+        await delay(1000); // Delay by 1 second
 
-        return sections;
+        // Clean up the response to ensure consistent formatting
+        const cleanedOverview = smartOverview
+            .trim()
+            .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
+
+        return { "Smart Overview": cleanedOverview };
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
