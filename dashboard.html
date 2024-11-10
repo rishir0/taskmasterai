@@ -3856,8 +3856,8 @@ async function generateAISummary(data) {
 
     // Each section receives displayName in instructions
     async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! You are TaskMaster, a friendly AI assistant. Generate ONLY the ${sectionName} section.
-        Keep your response focused and complete. Never truncate or cut off mid-sentence.
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
 
         USER DATA:
         ${data}
@@ -3865,9 +3865,9 @@ async function generateAISummary(data) {
         INSTRUCTIONS FOR ${sectionName}:
         ${instructions}
 
-        FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
+        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
         ${sectionName}:
-        [Your complete response here]`;
+        [My complete response here]`;
 
         const response = await fetch(modelEndpoint, {
             method: 'POST',
@@ -3975,7 +3975,7 @@ function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
     const inappropriateWords = [
-        /\b(n-word|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
+        /\b(nigga|nigger|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
     ];
 
     const malformedIndicators = [
