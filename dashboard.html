@@ -3838,28 +3838,26 @@ async function generateAISummary(data) {
                 3. Use 🚨 for items due within 3 days
                 4. Use ⏰ for items due within 14 days
                 5. For each item, add ONE specific, actionable tip
-                6. Keep total response under 100 words
-                5. When outputting don't include the words "Urgent Items"`),
+                6. Keep total response under 200 words`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
                 3. Add ONE practical next step for each item
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "In Progress"`),
+                4. Keep total response under 150 words`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
-                1. For each item, suggest ONE preparation step
-                2. Add start dates where relevant
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "Coming Up"`),
+                1. List items due beyond 14 days
+                2. For each item, suggest ONE preparation step
+                3. Add start dates where relevant
+                4. Keep total response under 150 words`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide THREE actionable recommendations
-                2. End with ONE motivational sentence
-                3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "Overview & Recommendations"`)
+                1. Give TWO specific observations about work patterns
+                2. Provide THREE actionable recommendations
+                3. End with ONE motivational sentence
+                4. Use emojis sparingly and meaningfully
+                5. Keep total response under 150 words`)
         };
 
         // Clean up each section's response
