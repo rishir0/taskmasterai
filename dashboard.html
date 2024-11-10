@@ -1635,7 +1635,7 @@ scrollbar-thumb {
                     <path d="m74.773 57.645c-17.676 5.8398-23.562 11.727-29.402 29.402-0.48047 1.4531-2.5352 1.4531-3.0156 0-5.8398-17.676-11.727-23.562-29.402-29.402-1.4531-0.48047-1.4531-2.5352 0-3.0156 17.676-5.8398 23.562-11.727 29.402-29.402 0.48047-1.4531 2.5352-1.4531 3.0156 0 5.8398 17.676 11.727 23.562 29.402 29.402 1.4531 0.48047 1.4531 2.5352 0 3.0156z"/>
                     <path d="m87.594 28.617c-8.8359 2.918-11.781 5.8633-14.703 14.703-0.23828 0.72656-1.2656 0.72656-1.5078 0-2.918-8.8359-5.8633-11.781-14.703-14.703-0.72656-0.23828-0.72656-1.2656 0-1.5078 8.8359-2.918 11.781-5.8633 14.703-14.703 0.23828-0.72656 1.2656-0.72656 1.5078 0 2.918 8.8359 5.8633 11.781 14.703 14.703 0.72656 0.23828 0.72656 1.2656 0 1.5078z"/>
                 </svg>
-                Your Smart Overview <span class="beta-tag">BETA</span>   <span style="font-size: 12px; color: #777777; margin-left: 10px; display: inline-block; vertical-align: middle;">TaskMaster can make mistakes. Verify details.</span>
+                Your Smart Overview <span class="beta-tag">BETA</span>   <span style="font-size: 12px; color: #777777; margin-left: 15px; display: inline-block; vertical-align: middle;">TaskMaster can make mistakes. Verify details.</span>
             
             <!-- Hide AI Section Button -->
         <button id="hide-ai-section-button" class="hide-ai-section-button">
@@ -3845,45 +3845,6 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-// Define the async function outside to avoid unexpected identifier issues
-async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the section content and title.
-    I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
-
-    USER DATA:
-    ${data}
-
-    INSTRUCTIONS FOR THIS SECTION:
-    ${instructions}
-
-    I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-    Title: [Section title]
-    Content: [Complete response here]`;
-
-    const response = await fetch(modelEndpoint, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${huggingFaceApiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ inputs: sectionPrompt }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to generate section`);
-    }
-
-    const result = await response.json();
-    const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
-    const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
-
-    const title = titleMatch ? titleMatch[1].trim() : "Untitled";
-    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
-
-    return { title, content };
-}
-
-// Main function that generates the AI summary
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
@@ -3893,34 +3854,79 @@ async function generateAISummary(data) {
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
+    // Each section receives displayName in instructions
+    async function generateSection(sectionName, data, instructions) {
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
+
+        USER DATA:
+        ${data}
+
+        INSTRUCTIONS FOR ${sectionName}:
+        ${instructions}
+
+        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+        ${sectionName}:
+        [My complete response here]`;
+
+        const response = await fetch(modelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${huggingFaceApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ inputs: sectionPrompt }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to generate ${sectionName}`);
+        }
+
+        const result = await response.json();
+        return result[0]?.generated_text || "";
+    }
+
     try {
+        // Generate each section separately
         const sections = {
-            urgentItems: await generateSection(formattedData, `
+            "Urgent Items": await generateSection("Urgent Items", formattedData, `
                 1. Start with a warm, brief greeting to ${displayName}
                 2. List ALL urgent items due within 14 days
                 3. Use 🚨 for items due within 3 days
                 4. Use ⏰ for items due within 14 days
                 5. For each item, add ONE specific, actionable tip
-                6. Keep total response under 100 words`),
+                6. Keep total response under 100 words
+                5. When outputting don't include the words "Urgent Items"`),
             
-            inProgress: await generateSection(formattedData, `
+            "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence to ${displayName}
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
                 3. Add ONE practical next step for each item
-                4. Keep total response under 100 words`),
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "In Progress"`),
             
-            comingUp: await generateSection(formattedData, `
+            "Coming Up": await generateSection("Coming Up", formattedData, `
                 1. For each item, suggest ONE preparation step
                 2. DO NOT ADD DATES
                 3. Keep total response under 100 words
-                4. Use emojis sparingly and meaningfully`),
+                4. Use emojis sparingly and meaningfully
+                5. When outputting don't include the words "Coming Up"`),
             
-            overviewAndRecommendations: await generateSection(formattedData, `
+            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
                 1. Provide TWO actionable recommendations
                 2. End with ONE motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words`)
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "Overview & Recommendations"`)
         };
+
+        // Clean up each section's response
+        Object.keys(sections).forEach(key => {
+            sections[key] = sections[key]
+                .replace(/^.*?:/, '') // Remove section header from response
+                .trim()               // Remove extra whitespace
+                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
+        });
 
         return sections;
 
@@ -3933,28 +3939,29 @@ async function generateAISummary(data) {
     }
 }
 
-// Function to render the sections
+
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
 
+    // Remove old sections
     existingSections.forEach(section => section.remove());
 
-    Object.values(summaryData).forEach(({ title, content }) => {
+    // Add new sanitized sections
+    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        const sanitizedContent = sanitizeContent(content); 
+        const sanitized = sanitizeContent(rawContent); // Process each section's content
 
         sectionElement.innerHTML = `
-            <h3 class="section-title">${title}</h3>
-            <div class="section-content"> ${sanitizedContent.replace(/\n/g, '<br>')}</div>
+            <h3 class="section-title">${sectionTitle}</h3>
+            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
-
 
 
 /**
@@ -3971,6 +3978,8 @@ function sanitizeContent(content) {
 const inappropriateWords = [
     /\b(nigga|nigger|kill|death|killed|murder|suicide|die|dying|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock|whore|fucker|motherfucker|suck|retard|jerk|scumbag|twat|douche|dipshit|prick|wanker|arse|bloody|bollocks|bugger|wank|knobhead|tosser|bellend|git|minger|shag|gash|piss-off|skank|turd|ballsack|buttfuck|chode|knob|poon|queef|schlong|shithead|spunk|tosspot|twatwaffle|dickhead|mofo|nutcase|nutjob|skullfuck|douchebag|freak|loser|idiot|imbecile|moron|psycho|lunatic|cretin|scat|shitfaced|dickwad|cum|jizz|sperm|milf|gilf|dildo|blowjob|handjob|rimjob|tits|boobs|boobies|pecker|hardon|balls|genital|orgasm|penetrate|sodomy|slit|bollocks|clusterfuck|gonads|titfuck|cocksucker|buttplug|asslicker|fudgepacker|twink|gimp|slapper|whorehouse|brothel|stripper|tramp|hooker|escort|smut|gangbang|orgy|rapist|molest|abuse|violence|terror|extremist|terrorism|radical|blood|gore|stab|shoot|gun|weapon|bomb|explosive|axe|torture|beheading|decapitate|burn|arson|loot|pillager|rioter|criminal|thief|steal|rob|robbery|rape|molestation|pedophile|creep|predator|pervert|perverted|sicko|sociopath|maniac|incest|necrophilia|cannibal|depraved|defecate|feces|excrement|urine|vomit|barf|phlegm|menstrual|semen|ejaculate|masturbate|masturbation|whacking|boner|erect|erection|ejaculation|hooker|slattern|wench|hookup|tart|depravity|harlot|fornicate|infidel|apostate|blaspheme|heretic|crusader|infidel)\b/i
 ];
+
+
 
     const malformedIndicators = [
         /\[truncated\]/i,
@@ -4162,18 +4171,17 @@ const inappropriateWords = [
         /MESSAGE/i,
         /INSTRUCTIONS/i,
         /SAHAJI/i,
-        /istrov/i,
-        /Title:/i,
-        /Title/i,
-        /DEV/i
-    ];
+        /istrov/i
+        
+]; 
 
-    // Check for inappropriate content
-    if (inappropriateWords.some(pattern => pattern.test(content))) {
-        return 'Warning: Inappropriate Content Detected';
-    }
 
-    let lines = content.split('\n').map(line => line.trim());
+// Check for inappropriate content
+if (inappropriateWords.some(pattern => pattern.test(content))) {
+    return 'Warning: Inappropriate Content Detected';
+}
+
+let lines = content.split('\n').map(line => line.trim());
 
 // General sanitization: remove lines with malformed patterns, symbols, standalone emojis, or lines without a period at the end
 lines = lines.filter(line => {
@@ -4189,8 +4197,14 @@ if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
     lines.pop();
 }
 
-    // Rejoin lines for display
-    return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
+// Check if there's only one line left; if so, remove it
+if (lines.length === 1) {
+    lines = [];
+}
+
+// Rejoin lines for display and add an extra line at the end
+return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
+
 }
 
 
@@ -4238,7 +4252,7 @@ async function updateAISummary(userId) {
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <p>Unable to generate your Smart Overview at this time. Please try again later.</p>
+                <p>Unable to generate summary at this time. Please try again later.</p>
                 <p class="error-details">Error: ${error.message}</p>
             </div>
         `;
@@ -4267,7 +4281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
             summaryContainer.innerHTML = `
                 <div class="summary-section">
-                    <p>Please log in to view your Smart Overview.</p>
+                    <p>Please log in to view your summary.</p>
                 </div>
             `;
         }
