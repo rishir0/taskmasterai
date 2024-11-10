@@ -1423,6 +1423,14 @@ scrollbar-thumb {
     color: #007bff;  
 }
 
+/* Specific styling for placeholder title */
+.placeholder-title {
+    display: flex;
+    align-items: center;
+    font-size: 18px; /* Adjust font size if needed */
+    color: green; /* Change the color to green for the placeholder */
+}
+
 .summary-section p {
     font-size: 16px; /* Adjust the font size */
     color: white; /* Set the text color */
@@ -3813,7 +3821,7 @@ function renderPlaceholderMessage() {
     const placeholderSection = document.createElement('div');
     placeholderSection.className = 'summary-section';
     placeholderSection.innerHTML = `
-        <h3 class="section-title">Welcome!</h3>
+        <h3 class="section-title placeholder-title">Welcome!</h3>
         <div class="section-content">TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</div>
     `;
     summaryContainer.appendChild(placeholderSection);
