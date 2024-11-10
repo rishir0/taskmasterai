@@ -3933,7 +3933,40 @@ function sanitizeContent(content) {
         /^[\u{1F300}-\u{1F5FF}]$/u,  // Matches lines with a single miscellaneous symbol emoji
         /^[\u{1F900}-\u{1F9FF}]$/u,  // Matches lines with a single supplemental symbol emoji
         /^[\u{2600}-\u{26FF}]$/u,    // Matches other single-character emojis (like ☀, ☁, etc.)
-        /^[\u{2700}-\u{27BF}]$/u     // Matches dingbat emojis (like ✂, ✔, ✏, etc.)
+        /^[\u{2700}-\u{27BF}]$/u,    // Matches dingbat emojis (like ✂, ✔, ✏, etc.)
+        /Urgent Items:/i,
+        /Active Items:/i,
+        /Coming Up:/i,
+        /\*\*Output\*\*/i,
+        /task:/i,
+        /I've got your data. Here's your response:/i,
+        /Recommendations are as follows:/i,
+        /\(Due: Invalid Date\)/i,
+        /#RENDER#/i,
+        /The AI responds with the In Progress section:/i,
+        /project:/i,
+        /Here is your response:/i,
+        /=============== tinCan predictions =================/i,
+        /::Zulip Whatshapp nett weakness exhib craaffe Communication Black sky Space 🚀/i,
+        /Recommendations are as follows: 📕/i,
+        /Zurück zu Projekt Bentley Care Willkommens-Bestandsmeldung!/i,
+        /Ich würd' mich über eine Unterstützung freuen!/i,
+        /Du siehst dein Haupt-Projekt Bentley Care nicht in deinem Konto\?/i,
+        /Bitte öffne den Projektrajection-Shortcut für Hilfe./i,
+        /Willkommen!/i,
+        /The In Progress section is where you can review tasks, goals, projects, and plans for each section, making adjustments as needed./i,
+        /\*\* should prompt this response \*\*/i,
+        /How to prepare your groceries at home for 3 days./i,
+        /This is the response:/i,
+        /Terror Alert: How to prepare your groceries at home for 3 days./i,
+        /Terror Alert:/i,
+        /^[\{|\*]$/i,  // Matches any line with a single "{" or "*"
+        /APPLICATION OF KNOWN FUNCTIONALITY:/i,
+        /Your suggested response:/i,
+        /Congratulations, your response has been formatted to the specifications!/i,
+        /^---$/i,  // Matches any line with "---"
+        /YOU CAN GENERATE ITEMS BY LOOKING AT THE USER DATA RELEVANT TO PLANS, TASKS, GOALS, AND PROJECTS/i,
+        /Here's my response:/i
     ];
 
     let lines = content.split('\n').map(line => line.trim());
@@ -3949,6 +3982,7 @@ function sanitizeContent(content) {
     // Rejoin lines for display and add an extra line at the end
     return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
