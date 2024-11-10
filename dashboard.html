@@ -3893,7 +3893,7 @@ function renderSections(summaryData) {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        // Sanitize content to remove malformed parts
+        // Sanitize only the content, leave the title unchanged
         const sanitizedContent = sanitizeContent(content);
 
         sectionElement.innerHTML = `
@@ -3908,37 +3908,29 @@ function renderSections(summaryData) {
  * Sanitize the content by removing malformed or incomplete parts.
  *
  * Rules:
- * - Ensure all required sections are present.
+ * - Keep required sections intact.
  * - Remove incomplete sentences or malformed patterns.
  * - Ensure content ends cleanly without truncation indicators.
  */
 function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
-    const requiredPatterns = ['🚨', '⏰', '🎯', '📋', '📊']; // Symbols expected in the structured output
     const malformedIndicators = [
         /\[truncated\]/i,
         /(\s+incomplete|\.\.\.)$/i,
-        /Correct Answer:/i // Example if other patterns emerge
+        /Answer Choices:/i, // If mistakenly shown
+        /Correct Answer:/i
     ];
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines containing malformed indicators
+    // Remove lines with malformed patterns
     lines = lines.filter(line => {
         return !malformedIndicators.some(pattern => pattern.test(line));
     });
 
-    // Check if we have the required structure
-    const containsRequiredPattern = requiredPatterns.some(pattern => lines.join(' ').includes(pattern));
-
-    // Validate and clean
-    if (!containsRequiredPattern) {
-        return 'This section contains errors and cannot be displayed correctly.';
-    }
-
-    // Rejoin lines and finalize clean output
-    return lines.join('<br>');
+    // Rejoin lines for display
+    return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
 }
 
 
