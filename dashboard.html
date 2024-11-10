@@ -3893,43 +3893,52 @@ function renderSections(summaryData) {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        // Detect and remove malformed content
-        const formattedContent = sanitizeContent(content);
+        // Sanitize content to remove malformed parts
+        const sanitizedContent = sanitizeContent(content);
 
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content">${formattedContent}</div>
+            <div class="section-content">${sanitizedContent}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
 
 /**
- * Sanitize the content by removing any malformed parts.
- * 
+ * Sanitize the content by removing malformed or incomplete parts.
+ *
  * Rules:
- * - Cut off text if it contains `[truncated]` or incomplete sentences.
- * - Ensure the text ends at a complete sentence or well-formed part.
+ * - Ensure all required sections are present.
+ * - Remove incomplete sentences or malformed patterns.
+ * - Ensure content ends cleanly without truncation indicators.
  */
 function sanitizeContent(content) {
-    if (!content) return 'No content available.';
+    if (!content) return 'Content unavailable.';
 
-    // Look for common indicators of malformed data
-    const cutoffIndicators = [/(\[truncated\])/i, /incomplete$/i];
-    
-    let sanitized = content.split('\n').map(line => {
-        for (const indicator of cutoffIndicators) {
-            if (indicator.test(line)) {
-                return ''; // Skip malformed line
-            }
-        }
-        return line.trim();
-    }).filter(line => line !== '').join('<br>');
+    const requiredPatterns = ['🚨', '⏰', '🎯', '📋', '📊']; // Symbols expected in the structured output
+    const malformedIndicators = [
+        /\[truncated\]/i,
+        /(\s+incomplete|\.\.\.)$/i,
+        /Correct Answer:/i // Example if other patterns emerge
+    ];
 
-    // Trim at the last complete sentence if needed
-    sanitized = sanitized.replace(/([.!?])[^.!?]*$/, '$1');
+    let lines = content.split('\n').map(line => line.trim());
 
-    return sanitized || 'Content unavailable due to errors.';
+    // Remove lines containing malformed indicators
+    lines = lines.filter(line => {
+        return !malformedIndicators.some(pattern => pattern.test(line));
+    });
+
+    // Check if we have the required structure
+    const containsRequiredPattern = requiredPatterns.some(pattern => lines.join(' ').includes(pattern));
+
+    // Validate and clean
+    if (!containsRequiredPattern) {
+        return 'This section contains errors and cannot be displayed correctly.';
+    }
+
+    // Rejoin lines and finalize clean output
+    return lines.join('<br>');
 }
 
 
