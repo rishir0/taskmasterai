@@ -3854,90 +3854,107 @@ async function generateAISummary(data) {
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
-    // Each section receives displayName in instructions
-    async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
+async function generateSection(data, instructions) {
+    const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the section content and title.
+    I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
 
-        USER DATA:
-        ${data}
+    USER DATA:
+    ${data}
 
-        INSTRUCTIONS FOR ${sectionName}:
-        ${instructions}
+    INSTRUCTIONS FOR THIS SECTION:
+    ${instructions}
 
-        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-        ${sectionName}:
-        [My complete response here]`;
+    I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+    Title: [Section title]
+    Content: [Complete response here]`;
 
-        const response = await fetch(modelEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${huggingFaceApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ inputs: sectionPrompt }),
-        });
+    const response = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: sectionPrompt }),
+    });
 
-        if (!response.ok) {
-            throw new Error(`Failed to generate ${sectionName}`);
-        }
-
-        const result = await response.json();
-        return result[0]?.generated_text || "";
+    if (!response.ok) {
+        throw new Error(`Failed to generate section`);
     }
 
-    try {
-        // Generate each section separately
-        const sections = {
-            "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a warm, brief greeting to ${displayName}
-                2. List ALL urgent items due within 14 days
-                3. Use 🚨 for items due within 3 days
-                4. Use ⏰ for items due within 14 days
-                5. For each item, add ONE specific, actionable tip
-                6. Keep total response under 100 words
-                5. When outputting don't include the words "Urgent Items"`),
-            
-            "In Progress": await generateSection("In Progress", formattedData, `
-                1. Start with ONE encouraging sentence to ${displayName}
-                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-                3. Add ONE practical next step for each item
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "In Progress"`),
-            
-            "Coming Up": await generateSection("Coming Up", formattedData, `
-                1. For each item, suggest ONE preparation step
-                2. DO NOT ADD DATES
-                3. Keep total response under 100 words
-                4. Use emojis sparingly and meaningfully
-                5. When outputting don't include the words "Coming Up"`),
-            
-            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide TWO actionable recommendations
-                2. End with ONE motivational sentence to ${displayName}
-                3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "Overview & Recommendations"`)
-        };
+    const result = await response.json();
+    const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
+    const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
 
-        // Clean up each section's response
-        Object.keys(sections).forEach(key => {
-            sections[key] = sections[key]
-                .replace(/^.*?:/, '') // Remove section header from response
-                .trim()               // Remove extra whitespace
-                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
-        });
+    const title = titleMatch ? titleMatch[1].trim() : "Untitled Section";
+    const content = contentMatch ? contentMatch[1].trim() : "No content available.";
 
-        return sections;
-
-    } catch (error) {
-        console.error('Error generating AI summary:', error);
-        return {
-            "Error": "Failed to generate complete summary. Please try again.",
-            "Details": error.message
-        };
-    }
+    return { title, content };
 }
+
+try {
+    const sections = {
+        "Urgent Items": await generateSection(formattedData, `
+            1. Start with a warm, brief greeting to ${displayName}
+            2. List ALL urgent items due within 14 days
+            3. Use 🚨 for items due within 3 days
+            4. Use ⏰ for items due within 14 days
+            5. For each item, add ONE specific, actionable tip
+            6. Keep total response under 100 words
+            5. When outputting don't include the words "Urgent Items"`),
+        
+        "In Progress": await generateSection(formattedData, `
+            1. Start with ONE encouraging sentence to ${displayName}
+            2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+            3. Add ONE practical next step for each item
+            4. Keep total response under 100 words
+            5. When outputting don't include the words "In Progress"`),
+        
+        "Coming Up": await generateSection(formattedData, `
+            1. For each item, suggest ONE preparation step
+            2. DO NOT ADD DATES
+            3. Keep total response under 100 words
+            4. Use emojis sparingly and meaningfully
+            5. When outputting don't include the words "Coming Up"`),
+        
+        "Overview & Recommendations": await generateSection(formattedData, `
+            1. Provide TWO actionable recommendations
+            2. End with ONE motivational sentence to ${displayName}
+            3. Use emojis sparingly and meaningfully
+            4. Keep total response under 100 words
+            5. When outputting don't include the words "Overview & Recommendations"`)
+    };
+
+    return sections;
+
+} catch (error) {
+    console.error('Error generating AI summary:', error);
+    return {
+        "Error": "Failed to generate complete summary. Please try again.",
+        "Details": error.message
+    };
+}
+
+function renderSections(summaryData) {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+
+    existingSections.forEach(section => section.remove());
+
+    Object.entries(summaryData).forEach(([sectionTitle, { title, content }]) => {
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'summary-section';
+
+        const sanitizedContent = sanitizeContent(content); 
+
+        sectionElement.innerHTML = `
+            <h3 class="section-title">${title}</h3>
+            <div class="section-content"> ${sanitizedContent.replace(/\n/g, '<br>')}</div>
+        `;
+        summaryContainer.appendChild(sectionElement);
+    });
+}
+
 
 
 function renderSections(summaryData) {
@@ -4171,7 +4188,8 @@ const inappropriateWords = [
         /MESSAGE/i,
         /INSTRUCTIONS/i,
         /SAHAJI/i,
-        /istrov/i
+        /istrov/i,
+        /requested/i
         
 ]; 
 
@@ -4252,7 +4270,7 @@ async function updateAISummary(userId) {
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <p>Unable to generate summary at this time. Please try again later.</p>
+                <p>Unable to generate your Smart Overview at this time. Please try again later.</p>
                 <p class="error-details">Error: ${error.message}</p>
             </div>
         `;
@@ -4281,7 +4299,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
             summaryContainer.innerHTML = `
                 <div class="summary-section">
-                    <p>Please log in to view your summary.</p>
+                    <p>Please log in to view your Smart Overview.</p>
                 </div>
             `;
         }
