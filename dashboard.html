@@ -4208,10 +4208,14 @@ function sanitizeContent(content) {
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines with malformed patterns or standalone emojis
-    lines = lines.filter(line => {
-        return !malformedIndicators.some(pattern => pattern.test(line));
+// Remove only the specific matched words or phrases from malformed indicators
+lines = lines.map(line => {
+    malformedIndicators.forEach(pattern => {
+        line = line.replace(pattern, '');
     });
+    return line.trim();
+});
+
 
     // Remove any empty lines and the last line
     lines = lines.filter(Boolean).slice(0, -1);
