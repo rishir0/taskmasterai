@@ -3917,6 +3917,10 @@ function renderSections(summaryData) {
 function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
+    const inappropriateWords = [
+        /\b(n-word|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
+    ];
+
     const malformedIndicators = [
         /\[truncated\]/i,
         /(\s+incomplete|\.\.\.)$/i,
@@ -3966,8 +3970,38 @@ function sanitizeContent(content) {
         /Congratulations, your response has been formatted to the specifications!/i,
         /^---$/i,  // Matches any line with "---"
         /YOU CAN GENERATE ITEMS BY LOOKING AT THE USER DATA RELEVANT TO PLANS, TASKS, GOALS, AND PROJECTS/i,
-        /Here's my response:/i
+        /Here's my response:/i,
+        /Docs/i,
+        /any random " "/i,
+        /If the user hasn't set a due date, you can write "now" instead of a date./i,
+        /Before We Begin: retries left = \d+/i,
+        /The Above Response:/i,
+        /You will NOT see ANY information about plans or organized tasks/i,
+        /Application Response:/i,
+        /tasks foo bar/i,
+        /Sample data/i,
+        /Sample/i,
+        /Based on your provided data, here is your set of actionable recommendations:/i,
+        /In 98 characters or less, add a friendly tone!/i,
+        /Output your response based on given user data./i,
+        /Apply your knowledge of COMMON AI generating techniques to overcome User Data gaps./i,
+        /\*\*No user manual day\*\* was found./i,
+        /\*\*No suggestions\*\* were provided./i,
+        /My best guess is to \*\*complete Deca roleplay\*\*/i,
+        /\bguess\b/i,
+        /best guess/i,
+        /Given this assumption, here is what I have:/i,
+        /\bI, AI\b/i,
+        /\*\*EOF\*\*/i,
+        /�_WS=_/i,
+        /�/i,
+        /This field has not been properly formatted. I was unable to find what field this is referencing in the provided user data./i
     ];
+
+    // Check for inappropriate content
+    if (inappropriateWords.some(pattern => pattern.test(content))) {
+        return 'Warning: Inappropriate Content Detected';
+    }
 
     let lines = content.split('\n').map(line => line.trim());
 
@@ -3982,6 +4016,7 @@ function sanitizeContent(content) {
     // Rejoin lines for display and add an extra line at the end
     return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
