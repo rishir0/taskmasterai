@@ -3797,73 +3797,94 @@ async function generateAISummary(data) {
             items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
     }).join('\n\n');
 
-    // Break down the generation into separate sections
     async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `You are TaskMaster, a friendly AI assistant. Generate ONLY the ${sectionName} section.
-        Keep your response focused and complete. Never truncate or cut off mid-sentence.
+        let retries = 0;
+        const maxRetries = 3;
 
-        USER DATA:
-        ${data}
+        while (retries < maxRetries) {
+            const sectionPrompt = `You are TaskMaster, a friendly AI assistant. Generate ONLY the ${sectionName} section.
+            Keep your response focused and complete. Never truncate or cut off mid-sentence.
 
-        INSTRUCTIONS FOR ${sectionName}:
-        ${instructions}
+            USER DATA:
+            ${data}
 
-        FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
-        ${sectionName}:
-        [Your complete response here]`;
+            INSTRUCTIONS FOR ${sectionName}:
+            ${instructions}
 
-        const response = await fetch(modelEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${huggingFaceApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ inputs: sectionPrompt }),
-        });
+            FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
+            ${sectionName}:
+            [Your complete response here]`;
 
-        if (!response.ok) {
-            throw new Error(`Failed to generate ${sectionName}`);
+            try {
+                const response = await fetch(modelEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${huggingFaceApiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ inputs: sectionPrompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to generate ${sectionName}`);
+                }
+
+                const result = await response.json();
+                const text = result[0]?.generated_text || "";
+
+                if (isValidResponse(sectionName, text)) {
+                    return text;
+                } else {
+                    console.warn(`Malformed response for ${sectionName}, retrying...`);
+                    retries++;
+                }
+            } catch (error) {
+                console.error(`Error generating ${sectionName}:`, error);
+                retries++;
+            }
         }
 
-        const result = await response.json();
-        return result[0]?.generated_text || "";
+        throw new Error(`Failed to generate valid ${sectionName} after ${maxRetries} attempts`);
+    }
+
+    function isValidResponse(sectionName, text) {
+        // Ensure the text contains no incomplete sentences, invalid formatting, or missing key information
+        return text.trim().startsWith(`${sectionName}:`) && text.trim().length > 20 && !text.includes("[truncated]");
     }
 
     try {
-        // Generate each section separately
         const sections = {
             "Urgent Items": await generateSection("Urgent Items", formattedData, `
                 1. Start with a warm, brief greeting (max 2 sentences)
                 2. List ALL urgent items due within 14 days
                 3. Use 🚨 for items due within 3 days
-                4. For each item, add ONE specific, actionable tip
-                5. Keep total response under 100 words
-                6. When outputting don't include the words "Urgent Items"`),
+                4. Use ⏰ for items due within 14 days
+                5. For each item, add ONE specific, actionable tip
+                6. Keep total response under 100 words`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
-                1. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-                2. Add ONE practical next step for each item
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "In Progress"`),
+                1. Start with ONE encouraging sentence
+                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+                3. Add ONE practical next step for each item
+                4. Keep total response under 100 words`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
                 1. For each item, suggest ONE preparation step
-                2. Keep total response under 100 words
-                3. When outputting don't include the words "Coming Up"`),
+                2. Add start dates where relevant
+                3. Keep total response under 100 words`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
                 1. Provide THREE actionable recommendations
-                2. Use emojis sparingly and meaningfully
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "Overview & Recommendations"`)
+                2. End with ONE motivational sentence
+                3. Use emojis sparingly and meaningfully
+                4. Keep total response under 100 words`)
         };
 
-        // Clean up each section's response
         Object.keys(sections).forEach(key => {
             sections[key] = sections[key]
                 .replace(/^.*?:/, '') // Remove section header from response
-                .trim()               // Remove extra whitespace
-                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
+                .trim()               
+                .replace(/\n{3,}/g, '\n\n'); 
         });
 
         return sections;
@@ -3878,32 +3899,38 @@ async function generateAISummary(data) {
 }
 
 
-// Updated render function to handle the formatted content better
+
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-    
-    // Clear existing sections
-    const existingSections = summaryContainer.querySelectorAll('.summary-section');
-    existingSections.forEach(section => section.remove());
 
-    // Add new sections
+    // Clear existing sections
+    summaryContainer.innerHTML = '';
+
     Object.entries(summaryData).forEach(([sectionTitle, content]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
-        
-        // Convert newlines to <br> tags and preserve emojis
+
         const formattedContent = content
             .replace(/\n/g, '<br>')
             .replace(/\r/g, '');
-        
+
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
             <div class="section-content">${formattedContent}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
+
+    // Handle error case
+    if (summaryData.Error) {
+        summaryContainer.innerHTML += `
+            <div class="summary-section error-state">
+                <p>Unable to generate summary. ${summaryData.Details || 'Please try again later.'}</p>
+            </div>`;
+    }
 }
+
 
 // Show loading state
 function showLoading() {
