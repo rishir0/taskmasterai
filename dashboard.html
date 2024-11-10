@@ -3976,12 +3976,13 @@ function sanitizeContent(content) {
         return !malformedIndicators.some(pattern => pattern.test(line));
     });
 
-    // Remove the last line
-    lines = lines.slice(0, -1);
+    // Remove any empty lines and the last line
+    lines = lines.filter(Boolean).slice(0, -1);
 
     // Rejoin lines for display and add an extra line at the end
     return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
