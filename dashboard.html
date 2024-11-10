@@ -4229,80 +4229,180 @@ function sanitizeContent(content) {
 
 
 
-// Show loading state
+// Constants for UI state management
+const UI_STATES = {
+    LOADING: 'loading',
+    ERROR: 'error',
+    EMPTY: 'empty',
+    READY: 'ready'
+};
+
+// Enhanced loading state with progress indicators
 function showLoading() {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     
-    // Clear existing sections
-    const existingSections = summaryContainer.querySelectorAll('.summary-section');
-    existingSections.forEach(section => section.remove());
-
+    // Clear existing content
+    summaryContainer.innerHTML = '';
+    
+    // Create loading section with animated steps
     const loadingSection = document.createElement('div');
     loadingSection.className = 'summary-section loading-state';
-    loadingSection.innerHTML = '<p>Generating your smart overview...</p>';
+    loadingSection.innerHTML = `
+        <div class="loading-steps">
+            <p class="loading-step active">📡 Fetching your data...</p>
+            <p class="loading-step">🤔 Analyzing patterns...</p>
+            <p class="loading-step">✍️ Generating insights...</p>
+        </div>
+        <div class="loading-spinner"></div>
+    `;
     summaryContainer.appendChild(loadingSection);
+    
+    // Animate loading steps
+    animateLoadingSteps();
 }
 
-// Main function to update the summary
-async function updateAISummary(userId) {
-    showLoading();
-
-    try {
-        const data = await fetchCollectionData(userId);
-        console.log("Fetched data:", data);  // Debug log
-        
-        if (data) {
-            const summary = await generateAISummary(data);
-            console.log("Generated summary:", summary);  // Debug log
-            
-            if (summary) {
-                renderSections(summary);
-            } else {
-                throw new Error('Failed to generate summary');
-            }
+// Animate loading steps sequentially
+function animateLoadingSteps() {
+    const steps = document.querySelectorAll('.loading-step');
+    let currentStep = 0;
+    
+    const interval = setInterval(() => {
+        if (currentStep > 0) {
+            steps[currentStep - 1].classList.remove('active');
         }
+        if (currentStep < steps.length) {
+            steps[currentStep].classList.add('active');
+            currentStep++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 1500);
+    
+    // Store interval ID for cleanup
+    window.loadingInterval = interval;
+}
+
+// Clear loading animation
+function clearLoading() {
+    if (window.loadingInterval) {
+        clearInterval(window.loadingInterval);
+        window.loadingInterval = null;
+    }
+}
+
+// Show error state with retry option
+function showError(error, retryFn) {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    
+    const errorSection = document.createElement('div');
+    errorSection.className = 'summary-section error-state';
+    errorSection.innerHTML = `
+        <div class="error-content">
+            <h3>😕 Oops! Something went wrong</h3>
+            <p>${error.message || 'Unable to generate summary at this time.'}</p>
+            ${retryFn ? '<button class="retry-button">Try Again</button>' : ''}
+            <details class="error-details">
+                <summary>Technical Details</summary>
+                <pre>${error.stack || error.message}</pre>
+            </details>
+        </div>
+    `;
+    
+    summaryContainer.innerHTML = '';
+    summaryContainer.appendChild(errorSection);
+    
+    if (retryFn) {
+        errorSection.querySelector('.retry-button').addEventListener('click', retryFn);
+    }
+}
+
+// Enhanced main function to update the summary
+async function updateAISummary(userId) {
+    clearLoading();
+    showLoading();
+    
+    try {
+        // Fetch data with enhanced error handling
+        const data = await enhancedFetchCollectionData(userId);
+        console.log("Fetched data:", data);
+        
+        if (!data) {
+            throw new Error('No data available');
+        }
+        
+        // Update loading state
+        document.querySelector('.loading-step:nth-child(2)').classList.add('active');
+        
+        // Generate summary with enhanced functionality
+        const summary = await enhancedGenerateAISummary(data);
+        console.log("Generated summary:", summary);
+        
+        if (!summary) {
+            throw new Error('Failed to generate summary');
+        }
+        
+        // Update loading state
+        document.querySelector('.loading-step:nth-child(3)').classList.add('active');
+        
+        // Small delay for smooth transition
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Render the final result
+        clearLoading();
+        renderSections(summary);
+        
     } catch (error) {
         console.error('Error updating summary:', error);
-        const aiSummarySection = document.getElementById('ai-summary-section');
-        const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-        summaryContainer.innerHTML += `
-            <div class="summary-section error-state">
-                <p>Unable to generate summary at this time. Please try again later.</p>
-                <p class="error-details">Error: ${error.message}</p>
-            </div>
-        `;
+        clearLoading();
+        showError(error, () => updateAISummary(userId));
     }
 }
 
-// Initialize and set up event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Set up hide button functionality
+// Initialize and set up event listeners with enhanced functionality
+function initializeSummaryUI() {
+    // Set up hide button functionality with animation
     const hideButton = document.getElementById('hide-ai-section-button');
-    if (hideButton) {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    
+    if (hideButton && aiSummarySection) {
         hideButton.addEventListener('click', () => {
-            const aiSummarySection = document.getElementById('ai-summary-section');
-            aiSummarySection.style.display = aiSummarySection.style.display === 'none' ? 'block' : 'none';
+            if (aiSummarySection.style.display === 'none') {
+                aiSummarySection.style.display = 'block';
+                setTimeout(() => aiSummarySection.classList.add('visible'), 10);
+                hideButton.setAttribute('aria-expanded', 'true');
+            } else {
+                aiSummarySection.classList.remove('visible');
+                hideButton.setAttribute('aria-expanded', 'false');
+                setTimeout(() => {
+                    aiSummarySection.style.display = 'none';
+                }, 300);
+            }
         });
     }
-
-    // Check authentication state and update summary
+    
+    // Set up authentication state observer
     firebase.auth().onAuthStateChanged(user => {
         if (user) {
             console.log('User is logged in:', user.uid);
             updateAISummary(user.uid);
         } else {
             console.log('No user logged in');
-            const aiSummarySection = document.getElementById('ai-summary-section');
             const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
             summaryContainer.innerHTML = `
-                <div class="summary-section">
-                    <p>Please log in to view your summary.</p>
+                <div class="summary-section login-prompt">
+                    <h3>👋 Welcome to TaskMaster</h3>
+                    <p>Please log in to view your personalized summary.</p>
+                    <button class="login-button" onclick="window.location.href='/login'">
+                        Log In
+                    </button>
                 </div>
             `;
         }
     });
-});
+}
+
 </script>
 
     <script>
