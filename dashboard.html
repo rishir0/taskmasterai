@@ -3877,8 +3877,8 @@ async function generateSection(data, instructions) {
     const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
     const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
 
-    const title = titleMatch ? titleMatch[1].trim() : "Untitled Section";
-    const content = contentMatch ? contentMatch[1].trim() : "No content available.";
+    const title = titleMatch ? titleMatch[1].trim() : "Untitled";
+    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
 
     return { title, content };
 }
@@ -4162,7 +4162,10 @@ const inappropriateWords = [
         /MESSAGE/i,
         /INSTRUCTIONS/i,
         /SAHAJI/i,
-        /istrov/i
+        /istrov/i,
+        /Title:/i,
+        /Title/i,
+        /DEV/i
     ];
 
     // Check for inappropriate content
