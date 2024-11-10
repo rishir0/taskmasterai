@@ -3943,9 +3943,13 @@ function sanitizeContent(content) {
         return !malformedIndicators.some(pattern => pattern.test(line));
     });
 
-    // Rejoin lines for display
-    return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
+    // Remove the last line
+    lines = lines.slice(0, -1);
+
+    // Rejoin lines for display and add an extra line at the end
+    return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
