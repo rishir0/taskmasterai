@@ -3833,11 +3833,12 @@ async function generateAISummary(data) {
         // Generate each section separately
         const sections = {
             "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. List ALL urgent items due within 14 days
-                2. Use 🚨 for items due within 3 days
-                3. For each item, add ONE specific, actionable tip
-                4. Keep total response under 150 words
-                5. When outputting don't include the words "Urgent Items"`),
+                1. Start with a warm, brief greeting (max 2 sentences)
+                2. List ALL urgent items due within 14 days
+                3. Use 🚨 for items due within 3 days
+                4. For each item, add ONE specific, actionable tip
+                5. Keep total response under 150 words
+                6. When outputting don't include the words "Urgent Items"`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence
