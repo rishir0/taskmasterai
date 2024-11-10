@@ -4181,30 +4181,23 @@ if (inappropriateWords.some(pattern => pattern.test(content))) {
     return 'Warning: Inappropriate Content Detected';
 }
 
-let lines = content.split('\n').map(line => line.trim());
+    let lines = content.split('\n').map(line => line.trim());
 
-// General sanitization: remove lines with malformed patterns, symbols, standalone emojis, or lines without a period at the end
-lines = lines.filter(line => {
-    return !malformedIndicators.some(pattern => pattern.test(line)) &&
-           !/^\W+$/.test(line) &&      // Matches lines with only non-word characters
-           line.length > 1 &&           // Filters out single characters
-           line.endsWith('.');          // Ensures the line ends with a period
-});
+    // General sanitization: remove lines with malformed patterns, symbols, or incomplete thoughts
+    lines = lines.filter(line => {
+        const isMalformed = malformedIndicators.some(pattern => pattern.test(line));
+        const isOnlySymbols = /^\W+$/.test(line); // Matches lines with only non-word characters
+        const isTooShort = line.length <= 1;
+        const isCompleteThought = /[.!?]$/.test(line); // Check if it ends with . ! or ?
 
-// Remove empty lines and exclude the last line if it seems incomplete
-lines = lines.filter(Boolean);
-if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
-    lines.pop();
-}
+        return !isMalformed && !isOnlySymbols && !isTooShort && isCompleteThought;
+    });
 
-// Check if there's only one line left; if so, remove it
-if (lines.length === 1) {
-    lines = [];
-}
+    // Remove empty lines
+    lines = lines.filter(Boolean);
 
-// Rejoin lines for display and add an extra line at the end
-return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
-
+    // Provide a fallback message if all lines are removed after sanitization
+    return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
 }
 
 
