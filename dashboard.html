@@ -3912,7 +3912,7 @@ async function generateAISummary(data) {
                 4. When outputting don't include the words "Coming Up"`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide THREE actionable recommendations
+                1. Provide TWO actionable recommendations
                 2. End with ONE motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 100 words
@@ -3975,7 +3975,7 @@ function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
     const inappropriateWords = [
-        /\b(nigga|nigger|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
+        /\b(nigga|kill|killed|death|nigger|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
     ];
 
     const malformedIndicators = [
@@ -4147,13 +4147,30 @@ function sanitizeContent(content) {
         /Please let me know if I can assist further. I will adjust according to the data and/i,
         /Please let me know if I can assist further./i,
         /I will adjust according to the data/i,
-        /start date/i
+        /start date/i,
+        /Truncating or cutting off mid-sentence is strictly Forbidden/i,
+        /Truncating/i,
+        /mid-sentence/i,
+        /cutting off mid-sentence is strictly Forbidden/i,
+        /forbidden/i,
+        /404/i,
+        /failed/i,
+        /I'll provide/i,
+        /ANSWER/i,
+        /Rx/i,
+        /Here's your current state:/i,
+        /Please address the following tasks:/i,
+        /TaskMaster.’'' ''/i,
+        /Where/i,
+        /RESOURCES USED: 0.001123 sec / 0.001000 sec CPU: 5.89% / 5.86% SUGGESTIONS ENCOUR/i,
+        /RESOURCES USED/i,
+        /WORKING…/i
+        
+
+        
 
 
-
-    
-
-
+        
         
 ]; 
 
@@ -4174,7 +4191,7 @@ function sanitizeContent(content) {
 
     // Remove empty lines and exclude the last two lines if it seems incomplete
     lines = lines.filter(Boolean);
-    if (lines.length && /\.\.\.$/.test(lines[lines.length - 2])) {
+    if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
         lines.pop();
     }
 
