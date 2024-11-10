@@ -3845,7 +3845,7 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-async function generateAISummary(data) {
+async function generateAISummary(data, onUpdate) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
         .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
@@ -3854,11 +3854,7 @@ async function generateAISummary(data) {
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    async function generateDynamicSection(data, instructions) {
+    async function generateDynamicSectionWithStreaming(data, instructions) {
         const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. 
         I will analyze the user's data and dynamically create section titles based on the task categories and priorities.
         
@@ -3878,20 +3874,31 @@ async function generateAISummary(data) {
                 'Authorization': `Bearer ${huggingFaceApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ inputs: sectionPrompt }),
+            body: JSON.stringify({ inputs: sectionPrompt })
         });
 
         if (!response.ok) {
             throw new Error(`Failed to generate section`);
         }
 
-        const result = await response.json();
-        return result[0]?.generated_text || "";
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let resultText = "";
+
+        // Read response in chunks and update the UI progressively
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            resultText += decoder.decode(value, { stream: true });
+            onUpdate(resultText.trim());  // Call onUpdate callback to update the UI in real-time
+        }
+
+        return resultText.trim();
     }
 
     try {
-        // Generate the Smart Overview in steps with delays
-        const smartOverview = await generateDynamicSection(formattedData, `
+        const smartOverview = await generateDynamicSectionWithStreaming(formattedData, `
             1. Analyze the user’s tasks and goals to create ONLY the necessary sections dynamically, naming each based on its content.
             2. Prioritize sections based on urgency, progress status, and upcoming items.
             3. For urgent items (due within 14 days), include a relevant icon like 🚨 or ⏰ and add a brief, actionable tip.
@@ -3899,15 +3906,7 @@ async function generateAISummary(data) {
             5. Provide recommendations or summary insights where relevant, with a motivational sentence.
             6. Avoid using the term "Smart Overview" in the output and keep responses under 100 words per section.`);
 
-        // Introduce delay between sections
-        await delay(1000); // Delay by 1 second
-
-        // Clean up the response to ensure consistent formatting
-        const cleanedOverview = smartOverview
-            .trim()
-            .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
-
-        return { "Smart Overview": cleanedOverview };
+        return { "Smart Overview": smartOverview };
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
@@ -3916,6 +3915,15 @@ async function generateAISummary(data) {
             "Details": error.message
         };
     }
+}
+
+async function displayAISummary(data) {
+    const summaryContainer = document.getElementById('summaryContainer');
+    summaryContainer.innerHTML = ""; // Clear previous content
+
+    await generateAISummary(data, (text) => {
+        summaryContainer.innerText = text; // Update progressively with new text
+    });
 }
 
 
