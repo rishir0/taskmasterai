@@ -3836,14 +3836,14 @@ async function generateAISummary(data) {
                 1. List ALL urgent items due within 14 days
                 2. Use 🚨 for items due within 3 days
                 3. For each item, add ONE specific, actionable tip
-                4. Keep total response under 100 words
+                4. Keep total response under 50 words
                 5. When outputting don't include the words "Urgent Items" or "Output"`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence
                 2. List active items with emojis like, 🎯, 📋, and 📊
                 3. Add ONE practical next step for each item
-                4. Keep total response under 100 words
+                4. Keep total response under 50 words
                 5. When outputting don't include the words "In Progress" or "Output"`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
@@ -3855,7 +3855,7 @@ async function generateAISummary(data) {
                 1. Provide THREE actionable recommendations
                 2. End with ONE motivational sentence
                 3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words
+                4. Keep total response under 50 words
                 5. When outputting don't include the words "Overview & Recommendations" or "Output"`)
         };
 
