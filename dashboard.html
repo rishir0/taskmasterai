@@ -4125,12 +4125,9 @@ function sanitizeContent(content) {
         /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT:/i,
         /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT/i,
         /Ur = 0AVED/i,
-        /Who is the current president/i  
-        
+        /Who is the current president/i 
+]; 
 
-        
-
-    ];
 
     // Check for inappropriate content
     if (inappropriateWords.some(pattern => pattern.test(content))) {
@@ -4139,18 +4136,22 @@ function sanitizeContent(content) {
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines with malformed patterns or standalone emojis
+    // General sanitization: remove lines with malformed patterns or symbols, and isolate structured lines
     lines = lines.filter(line => {
-        return !malformedIndicators.some(pattern => pattern.test(line));
+        return !malformedIndicators.some(pattern => pattern.test(line)) &&
+               !/^\W+$/.test(line) &&        // Matches lines with only non-word characters
+               line.length > 1;              // Filters out single characters
     });
 
-    // Remove any empty lines and the last line
-    lines = lines.filter(Boolean).slice(0, -1);
+    // Remove empty lines and exclude the last line if it seems incomplete
+    lines = lines.filter(Boolean);
+    if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
+        lines.pop();
+    }
 
     // Rejoin lines for display and add an extra line at the end
-    return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
+    return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking... Check back later.';
 }
-
 
 
 
