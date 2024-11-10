@@ -4190,7 +4190,7 @@ function sanitizeContent(content) {
 
     // Remove empty lines and exclude the last two lines if it seems incomplete
     lines = lines.filter(Boolean);
-    if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
+    if (lines.length && /\.\.\.$/.test(lines[lines.length - 0])) {
         lines.pop();
     }
 
