@@ -1436,6 +1436,17 @@ scrollbar-thumb {
     word-wrap: break-word; /* Ensure text wraps properly */
 }
 
+.section-content {
+    font-size: 16px; /* Adjust the font size */
+    color: white; /* Set the text color */
+    line-height: 1.6; /* Add line height for better readability */
+    margin: 10px 0; /* Add vertical margin for spacing */
+    padding: 8px; /* Add padding inside the paragraph */
+    background-color: #007bff; /* Light background color */
+    border-radius: 10px; /* Rounded corners for the background */
+    word-wrap: break-word; /* Ensure text wraps properly */
+}
+
 
 /* General styling for SVG icons in the AI Summary section */
 .header-section svg.icon2,
@@ -3929,7 +3940,7 @@ function renderSections(summaryData) {
 
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content">${sanitized.replace(/\n/g, '<br>')}</div>
+            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
