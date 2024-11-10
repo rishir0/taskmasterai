@@ -3917,41 +3917,23 @@ function renderSections(summaryData) {
 function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
-    // Regular expression patterns to identify malformed text
     const malformedIndicators = [
-        /\[.*?\]/g,                   // Remove placeholders like [Your complete response here]
-        /---+/g,                      // Remove repeated dashes
-        /(αresentation|υγESSAGES|RolePLAYS)/i, // Garbled segments
-        /handshake\.jpg/,             // Irrelevant content
-        /\*\*\*.*?\*\*\*/g,           // Incomplete markdown, e.g., "***March to it***"
-        /[^.!?]*$/,                   // Dangling incomplete sentence fragments
-        /\bh.{0,5}state/i,            // Invalid file references like handshake.jpg
+        /\[truncated\]/i,
+        /(\s+incomplete|\.\.\.)$/i,
+        /Answer Choices:/i, // If mistakenly shown
+        /Correct Answer:/i
     ];
 
-    // Split content into lines, keeping the overall structure
     let lines = content.split('\n').map(line => line.trim());
 
-    // Filter out lines containing malformed patterns
-    lines = lines.filter(line => !malformedIndicators.some(pattern => pattern.test(line)));
+    // Remove lines with malformed patterns
+    lines = lines.filter(line => {
+        return !malformedIndicators.some(pattern => pattern.test(line));
+    });
 
-    // Rejoin cleaned lines and reconstruct
-    let cleanedContent = lines.join(' ').replace(/\s+/g, ' ');
-
-    // Attempt to split into proper sentences using linguistic boundaries
-    const sentenceEndings = /([.!?])\s+/g;
-    const sentences = cleanedContent.split(sentenceEndings).reduce((acc, part, index, array) => {
-        if (index % 2 === 0) {
-            acc.push(part + (array[index + 1] || ''));
-        }
-        return acc;
-    }, []);
-
-    // Final content: Include valid sentences only
-    cleanedContent = sentences.filter(sentence => sentence.length > 3).join(' ');
-
-    return cleanedContent || 'Oops! Content formatting encountered errors. Try again.';
+    // Rejoin lines for display
+    return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
 }
-
 
 
 
