@@ -3780,11 +3780,22 @@ const huggingFaceApiKey = "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";
 const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
 const collections = ['tasks', 'goals', 'projects', 'plans'];
 
-// Fetch data from all collections
+// Fetch data from all collections and user info
 async function fetchCollectionData(userId) {
     try {
         const allData = {};
+
+        // Fetch user info
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            console.warn('User not found');
+            return null;
+        }
         
+        const userInfo = userDoc.data();
+        const displayName = userInfo.displayName || "User";
+
+        // Fetch collections
         for (const collectionName of collections) {
             const snapshot = await db.collection(collectionName)
                                   .where('userId', '==', userId)
@@ -3801,12 +3812,14 @@ async function fetchCollectionData(userId) {
         const hasData = Object.values(allData).some(collection => collection.length > 0);
         
         if (!hasData) {
-            // Render placeholder message if no data is found
             renderPlaceholderMessage();
             return null;
         }
-        
+
+        // Attach displayName for use in summary generation
+        allData.displayName = displayName;
         return allData;
+
     } catch (error) {
         console.error('Error fetching data:', error);
         return null;
@@ -3833,14 +3846,17 @@ function renderPlaceholderMessage() {
 }
 
 async function generateAISummary(data) {
-    const formattedData = Object.entries(data).map(([category, items]) => {
-        return `${category.toUpperCase()}:\n` + 
-            items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
-    }).join('\n\n');
+    const displayName = data.displayName || "User"; // Fallback if displayName is not set
+    const formattedData = Object.entries(data)
+        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
+        .map(([category, items]) => {
+            return `${category.toUpperCase()}:\n` + 
+                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
+        }).join('\n\n');
 
-    // Break down the generation into separate sections
+    // Each section receives displayName in instructions
     async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `You are TaskMaster, a friendly AI assistant. Generate ONLY the ${sectionName} section.
+        const sectionPrompt = `Hello ${displayName}! You are TaskMaster, a friendly AI assistant. Generate ONLY the ${sectionName} section.
         Keep your response focused and complete. Never truncate or cut off mid-sentence.
 
         USER DATA:
@@ -4036,7 +4052,10 @@ function sanitizeContent(content) {
         /\*\*EOF\*\*/i,
         /�_WS=_/i,
         /�/i,
-        /This field has not been properly formatted. I was unable to find what field this is referencing in the provided user data./i
+        /This field has not been properly formatted. I was unable to find what field this is referencing in the provided user data./i,
+        /What should TaskMaster generate?/i,
+        /user/i,
+        /generate/i
     ];
 
     // Check for inappropriate content
