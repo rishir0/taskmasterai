@@ -3833,32 +3833,30 @@ async function generateAISummary(data) {
         // Generate each section separately
         const sections = {
             "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a warm, brief greeting (max 2 sentences)
-                2. List ALL urgent items due within 14 days
-                3. Use 🚨 for items due within 3 days
-                4. For each item, add ONE specific, actionable tip
-                5. Keep total response under 100 words
-                6. When outputting don't include the words "Urgent Items"`),
+                1. List ALL urgent items due within 14 days
+                2. Use 🚨 for items due within 3 days
+                3. For each item, add ONE specific, actionable tip
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "Urgent Items" or "Output"`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence
-                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+                2. List active items with emojis like, 🎯, 📋, and 📊
                 3. Add ONE practical next step for each item
                 4. Keep total response under 100 words
-                5. When outputting don't include the words "In Progress"`),
+                5. When outputting don't include the words "In Progress" or "Output"`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
                 1. For each item, suggest ONE preparation step
-                2. Add start dates where relevant
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "Coming Up"`),
+                2. Keep total response under 50 words
+                3. When outputting don't include the words "Coming Up" or "Output"`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
                 1. Provide THREE actionable recommendations
                 2. End with ONE motivational sentence
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 100 words
-                5. When outputting don't include the words "Overview & Recommendations"`)
+                5. When outputting don't include the words "Overview & Recommendations" or "Output"`)
         };
 
         // Clean up each section's response
