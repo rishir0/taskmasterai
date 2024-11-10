@@ -3887,7 +3887,8 @@ function renderSections(summaryData) {
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
 
     // Clear existing sections
-    summaryContainer.innerHTML = '';
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+    existingSections.forEach(section => section.remove());
 
     Object.entries(summaryData).forEach(([sectionTitle, content]) => {
         const sectionElement = document.createElement('div');
