@@ -3845,16 +3845,7 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-async function generateAISummary(data) {
-    const displayName = data.displayName || "User"; // Fallback if displayName is not set
-    const formattedData = Object.entries(data)
-        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
-        .map(([category, items]) => {
-            return `${category.toUpperCase()}:\n` + 
-                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
-        }).join('\n\n');
-}
-
+// Define the async function outside to avoid unexpected identifier issues
 async function generateSection(data, instructions) {
     const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the section content and title.
     I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
@@ -3892,49 +3883,57 @@ async function generateSection(data, instructions) {
     return { title, content };
 }
 
-try {
-    const sections = {
-        "Urgent Items": await generateSection(formattedData, `
-            1. Start with a warm, brief greeting to ${displayName}
-            2. List ALL urgent items due within 14 days
-            3. Use 🚨 for items due within 3 days
-            4. Use ⏰ for items due within 14 days
-            5. For each item, add ONE specific, actionable tip
-            6. Keep total response under 100 words
-            5. When outputting don't include the words "Urgent Items"`),
-        
-        "In Progress": await generateSection(formattedData, `
-            1. Start with ONE encouraging sentence to ${displayName}
-            2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-            3. Add ONE practical next step for each item
-            4. Keep total response under 100 words
-            5. When outputting don't include the words "In Progress"`),
-        
-        "Coming Up": await generateSection(formattedData, `
-            1. For each item, suggest ONE preparation step
-            2. DO NOT ADD DATES
-            3. Keep total response under 100 words
-            4. Use emojis sparingly and meaningfully
-            5. When outputting don't include the words "Coming Up"`),
-        
-        "Overview & Recommendations": await generateSection(formattedData, `
-            1. Provide TWO actionable recommendations
-            2. End with ONE motivational sentence to ${displayName}
-            3. Use emojis sparingly and meaningfully
-            4. Keep total response under 100 words
-            5. When outputting don't include the words "Overview & Recommendations"`)
-    };
+// Main function that generates the AI summary
+async function generateAISummary(data) {
+    const displayName = data.displayName || "User"; // Fallback if displayName is not set
+    const formattedData = Object.entries(data)
+        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
+        .map(([category, items]) => {
+            return `${category.toUpperCase()}:\n` + 
+                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
+        }).join('\n\n');
 
-    return sections;
+    try {
+        const sections = {
+            urgentItems: await generateSection(formattedData, `
+                1. Start with a warm, brief greeting to ${displayName}
+                2. List ALL urgent items due within 14 days
+                3. Use 🚨 for items due within 3 days
+                4. Use ⏰ for items due within 14 days
+                5. For each item, add ONE specific, actionable tip
+                6. Keep total response under 100 words`),
+            
+            inProgress: await generateSection(formattedData, `
+                1. Start with ONE encouraging sentence to ${displayName}
+                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+                3. Add ONE practical next step for each item
+                4. Keep total response under 100 words`),
+            
+            comingUp: await generateSection(formattedData, `
+                1. For each item, suggest ONE preparation step
+                2. DO NOT ADD DATES
+                3. Keep total response under 100 words
+                4. Use emojis sparingly and meaningfully`),
+            
+            overviewAndRecommendations: await generateSection(formattedData, `
+                1. Provide TWO actionable recommendations
+                2. End with ONE motivational sentence to ${displayName}
+                3. Use emojis sparingly and meaningfully
+                4. Keep total response under 100 words`)
+        };
 
-} catch (error) {
-    console.error('Error generating AI summary:', error);
-    return {
-        "Error": "Failed to generate complete summary. Please try again.",
-        "Details": error.message
-    };
+        return sections;
+
+    } catch (error) {
+        console.error('Error generating AI summary:', error);
+        return {
+            "Error": "Failed to generate complete summary. Please try again.",
+            "Details": error.message
+        };
+    }
 }
 
+// Function to render the sections
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
@@ -3942,7 +3941,7 @@ function renderSections(summaryData) {
 
     existingSections.forEach(section => section.remove());
 
-    Object.entries(summaryData).forEach(([sectionTitle, { title, content }]) => {
+    Object.values(summaryData).forEach(({ title, content }) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
@@ -3956,30 +3955,6 @@ function renderSections(summaryData) {
     });
 }
 
-
-
-function renderSections(summaryData) {
-    const aiSummarySection = document.getElementById('ai-summary-section');
-    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-    const existingSections = summaryContainer.querySelectorAll('.summary-section');
-
-    // Remove old sections
-    existingSections.forEach(section => section.remove());
-
-    // Add new sanitized sections
-    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
-        const sectionElement = document.createElement('div');
-        sectionElement.className = 'summary-section';
-
-        const sanitized = sanitizeContent(rawContent); // Process each section's content
-
-        sectionElement.innerHTML = `
-            <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
-        `;
-        summaryContainer.appendChild(sectionElement);
-    });
-}
 
 
 /**
