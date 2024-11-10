@@ -3916,23 +3916,35 @@ function renderSections(summaryData) {
 function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
+    // Patterns to detect malformed or unwanted text
     const malformedIndicators = [
-        /\[truncated\]/i,
-        /(\s+incomplete|\.\.\.)$/i,
-        /Answer Choices:/i, // If mistakenly shown
-        /Correct Answer:/i
+        /\[.*?\]/g,                   // Bracketed placeholders like [Your complete response here]
+        /---+/,                       // Any section separators or unintended formatting
+        /αresentation/i,              // Incorrect/garbled content
+        /υγESSAGES/i,                 // Random malformed sections like "υγESSAGES"
+        /RolePLAYS|handshake\.jpg/,   // Incorrect concatenation of ideas or irrelevant artifacts
+        /\*\*\*.*?\*\*\*/g,           // Incomplete markdown like "***March to it***"
+        /[^.!?]*$/,                   // Remove dangling text fragments without punctuation
     ];
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines with malformed patterns
+    // Remove lines with malformed content
     lines = lines.filter(line => {
         return !malformedIndicators.some(pattern => pattern.test(line));
     });
 
-    // Rejoin lines for display
-    return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
+    // Trim each line and join back into paragraphs, ensuring full sentences
+    const cleanedContent = lines.map(line => line.replace(/[^a-zA-Z0-9.,'!? ]/g, '')).join('<br>');
+
+    // Ensure it ends in a complete sentence
+    const sentences = cleanedContent.split(/(?<=[.!?])\s+/);
+    const finalizedContent = sentences.filter(s => s.trim()).join(' ').trim();
+
+    // Only return paragraphs with valid structure
+    return finalizedContent || 'This section could not be displayed due to formatting errors.';
 }
+
 
 
 // Show loading state
