@@ -4059,9 +4059,13 @@ function sanitizeContent(content) {
         /Here's your response:/i,
         /```/i,
         /`/i,
-        /!/i
-        
-        
+        /!/i,
+        /"The above formatted card will be the final output"/i,
+        /The above formatted card will be the final output/i,
+        /Here is my response:/i,
+        /_______________________________________________________/i,
+        /_/i,
+
     ];
 
     // Check for inappropriate content
