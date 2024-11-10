@@ -3853,7 +3853,7 @@ async function generateAISummary(data) {
             return `${category.toUpperCase()}:\n` + 
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
-]
+}
 
 async function generateSection(data, instructions) {
     const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the section content and title.
