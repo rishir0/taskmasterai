@@ -3928,12 +3928,17 @@ function sanitizeContent(content) {
         /submission/i,
         /Overview & Recommendations:/i,
         /TaskPal/i,
-        /Here is the response:/i
+        /Here is the response:/i,
+        /^[\u{1F600}-\u{1F6FF}]$/u,  // Matches lines with a single emoji
+        /^[\u{1F300}-\u{1F5FF}]$/u,  // Matches lines with a single miscellaneous symbol emoji
+        /^[\u{1F900}-\u{1F9FF}]$/u,  // Matches lines with a single supplemental symbol emoji
+        /^[\u{2600}-\u{26FF}]$/u,    // Matches other single-character emojis (like ☀, ☁, etc.)
+        /^[\u{2700}-\u{27BF}]$/u     // Matches dingbat emojis (like ✂, ✔, ✏, etc.)
     ];
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines with malformed patterns
+    // Remove lines with malformed patterns or standalone emojis
     lines = lines.filter(line => {
         return !malformedIndicators.some(pattern => pattern.test(line));
     });
@@ -3941,6 +3946,7 @@ function sanitizeContent(content) {
     // Rejoin lines for display
     return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
