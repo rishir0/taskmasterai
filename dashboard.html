@@ -3885,25 +3885,26 @@ async function generateAISummary(data) {
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-
-    // Clear existing sections
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
+
+    // Remove old sections
     existingSections.forEach(section => section.remove());
 
-    Object.entries(summaryData).forEach(([sectionTitle, content]) => {
+    // Add new sanitized sections
+    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        // Sanitize only the content, leave the title unchanged
-        const sanitizedContent = sanitizeContent(content);
+        const sanitized = sanitizeContent(rawContent); // Process each section's content
 
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content">${sanitizedContent}</div>
+            <div class="section-content">${sanitized.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
+
 
 /**
  * Sanitize the content by removing malformed or incomplete parts.
@@ -3916,34 +3917,41 @@ function renderSections(summaryData) {
 function sanitizeContent(content) {
     if (!content) return 'Content unavailable.';
 
-    // Patterns to detect malformed or unwanted text
+    // Regular expression patterns to identify malformed text
     const malformedIndicators = [
-        /\[.*?\]/g,                   // Bracketed placeholders like [Your complete response here]
-        /---+/,                       // Any section separators or unintended formatting
-        /αresentation/i,              // Incorrect/garbled content
-        /υγESSAGES/i,                 // Random malformed sections like "υγESSAGES"
-        /RolePLAYS|handshake\.jpg/,   // Incorrect concatenation of ideas or irrelevant artifacts
-        /\*\*\*.*?\*\*\*/g,           // Incomplete markdown like "***March to it***"
-        /[^.!?]*$/,                   // Remove dangling text fragments without punctuation
+        /\[.*?\]/g,                   // Remove placeholders like [Your complete response here]
+        /---+/g,                      // Remove repeated dashes
+        /(αresentation|υγESSAGES|RolePLAYS)/i, // Garbled segments
+        /handshake\.jpg/,             // Irrelevant content
+        /\*\*\*.*?\*\*\*/g,           // Incomplete markdown, e.g., "***March to it***"
+        /[^.!?]*$/,                   // Dangling incomplete sentence fragments
+        /\bh.{0,5}state/i,            // Invalid file references like handshake.jpg
     ];
 
+    // Split content into lines, keeping the overall structure
     let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines with malformed content
-    lines = lines.filter(line => {
-        return !malformedIndicators.some(pattern => pattern.test(line));
-    });
+    // Filter out lines containing malformed patterns
+    lines = lines.filter(line => !malformedIndicators.some(pattern => pattern.test(line)));
 
-    // Trim each line and join back into paragraphs, ensuring full sentences
-    const cleanedContent = lines.map(line => line.replace(/[^a-zA-Z0-9.,'!? ]/g, '')).join('<br>');
+    // Rejoin cleaned lines and reconstruct
+    let cleanedContent = lines.join(' ').replace(/\s+/g, ' ');
 
-    // Ensure it ends in a complete sentence
-    const sentences = cleanedContent.split(/(?<=[.!?])\s+/);
-    const finalizedContent = sentences.filter(s => s.trim()).join(' ').trim();
+    // Attempt to split into proper sentences using linguistic boundaries
+    const sentenceEndings = /([.!?])\s+/g;
+    const sentences = cleanedContent.split(sentenceEndings).reduce((acc, part, index, array) => {
+        if (index % 2 === 0) {
+            acc.push(part + (array[index + 1] || ''));
+        }
+        return acc;
+    }, []);
 
-    // Only return paragraphs with valid structure
-    return finalizedContent || 'This section could not be displayed due to formatting errors.';
+    // Final content: Include valid sentences only
+    cleanedContent = sentences.filter(sentence => sentence.length > 3).join(' ');
+
+    return cleanedContent || 'Oops! Content formatting encountered errors. Try again.';
 }
+
 
 
 
