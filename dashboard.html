@@ -3920,8 +3920,15 @@ function sanitizeContent(content) {
     const malformedIndicators = [
         /\[truncated\]/i,
         /(\s+incomplete|\.\.\.)$/i,
-        /Answer Choices:/i, // If mistakenly shown
-        /Correct Answer:/i
+        /Answer Choices:/i,
+        /Correct Answer:/i,
+        /In Progress:/i,
+        /^\.$/,  // Matches a line containing only a period
+        /\*\*Your Response:\*\*/i,
+        /submission/i,
+        /Overview & Recommendations:/i,
+        /TaskPal/i,
+        /Here is the response:/i
     ];
 
     let lines = content.split('\n').map(line => line.trim());
@@ -3934,6 +3941,7 @@ function sanitizeContent(content) {
     // Rejoin lines for display
     return lines.length ? lines.join('<br>') : 'TaskMaster is still thinking...Check back later.';
 }
+
 
 
 
