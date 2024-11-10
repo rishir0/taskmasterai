@@ -3784,11 +3784,40 @@ async function fetchCollectionData(userId) {
             }));
         }
         
+        // Check if any data is found
+        const hasData = Object.values(allData).some(collection => collection.length > 0);
+        
+        if (!hasData) {
+            // Render placeholder message if no data is found
+            renderPlaceholderMessage();
+            return null;
+        }
+        
         return allData;
     } catch (error) {
         console.error('Error fetching data:', error);
         return null;
     }
+}
+
+// Function to render placeholder message
+function renderPlaceholderMessage() {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+
+    // Remove old sections
+    existingSections.forEach(section => section.remove());
+
+    // Create and add placeholder section
+    const placeholderSection = document.createElement('div');
+    placeholderSection.className = 'summary-section';
+    placeholderSection.innerHTML = `
+        <h3 class="section-title">Welcome!</h3>
+        <div class="section-content">TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</div>
+    `;
+    summaryContainer.appendChild(placeholderSection);
+}
 }
 
 async function generateAISummary(data) {
@@ -3882,7 +3911,10 @@ async function generateAISummary(data) {
 }
 
 
+// Render sections based on summary data
 function renderSections(summaryData) {
+    if (!summaryData) return; // Exit if there's no data to render
+
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
