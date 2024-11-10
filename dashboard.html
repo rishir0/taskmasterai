@@ -4175,12 +4175,13 @@ const inappropriateWords = [
 
     let lines = content.split('\n').map(line => line.trim());
 
-    // General sanitization: remove lines with malformed patterns and symbols
-    lines = lines.filter(line => {
-        return !malformedIndicators.some(pattern => pattern.test(line)) &&
-               !/^\W+$/.test(line) &&  // Matches lines with only non-word characters
-               line.length > 1;        // Filters out single characters
-    });
+// General sanitization: remove lines with malformed patterns, symbols, standalone emojis, or lines without a period at the end
+lines = lines.filter(line => {
+    return !malformedIndicators.some(pattern => pattern.test(line)) &&
+           !/^\W+$/.test(line) &&      // Matches lines with only non-word characters
+           line.length > 1 &&           // Filters out single characters
+           line.endsWith('.');          // Ensures the line ends with a period
+});
 
 // Remove empty lines and exclude the last line if it seems incomplete
 lines = lines.filter(Boolean);
