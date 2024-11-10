@@ -3836,6 +3836,28 @@ async function fetchCollectionData(userId) {
     }
 }
 
+// Added formatDataForAI function
+function formatDataForAI(data) {
+    const { displayName, ...collections } = data;
+    
+    // Format each collection's items
+    const formattedCollections = Object.entries(collections)
+        .map(([category, items]) => {
+            const itemsList = items.map(item => {
+                const itemType = item.type.toUpperCase();
+                const itemName = item[item.type] || 'Untitled';
+                const dueDate = item.formattedDate || 'No date set';
+                return `- ${itemType}: ${itemName} (Due: ${dueDate})`;
+            }).join('\n');
+            
+            return `${category.toUpperCase()}:\n${itemsList}`;
+        })
+        .filter(section => section.includes('-')) // Only include non-empty sections
+        .join('\n\n');
+    
+    return formattedCollections;
+}
+
 // Improved placeholder message with personality
 function renderPlaceholderMessage(displayName) {
     const aiSummarySection = document.getElementById('ai-summary-section');
