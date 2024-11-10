@@ -3890,7 +3890,7 @@ async function generateAISummary(data) {
         // Generate each section separately
         const sections = {
             "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a warm, brief greeting (max 2 sentences)
+                1. Start with a warm, brief greeting to ${displayName}
                 2. List ALL urgent items due within 14 days
                 3. Use 🚨 for items due within 3 days
                 4. Use ⏰ for items due within 14 days
@@ -3899,7 +3899,7 @@ async function generateAISummary(data) {
                 5. When outputting don't include the words "Urgent Items"`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
-                1. Start with ONE encouraging sentence
+                1. Start with ONE encouraging sentence to ${displayName}
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
                 3. Add ONE practical next step for each item
                 4. Keep total response under 100 words
@@ -3907,13 +3907,13 @@ async function generateAISummary(data) {
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
                 1. For each item, suggest ONE preparation step
-                2. Add start dates where relevant
+                2. DO NOT ADD DATES
                 3. Keep total response under 100 words
                 4. When outputting don't include the words "Coming Up"`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
                 1. Provide THREE actionable recommendations
-                2. End with ONE motivational sentence
+                2. End with ONE motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 100 words
                 5. When outputting don't include the words "Overview & Recommendations"`)
@@ -4125,7 +4125,38 @@ function sanitizeContent(content) {
         /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT:/i,
         /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT/i,
         /Ur = 0AVED/i,
-        /Who is the current president/i 
+        /Who is the current president/i,
+        /-With-out-Extra-stuff-/i,
+        / .(ENDTA;)./i,
+        /ENDTA/i,
+        /.(ENDTA;).(ENDFM;).(ENDD/i,
+        /data/i,
+        /update/i,
+        /Here's a tailored update based on your data:/i,
+        /Here's a tailored update based on your data/i,
+        /Razorplan/i,
+        /HERE IS YOUR IN PROGRESS SECTION:/i,
+        /HERE IS YOUR IN PROGRESS SECTION/i,
+        /Unicorn found/i,
+        /Unicorn/i,
+        /BEGINNING with a dash and ENDING with a dash -/i,
+        /Specific actionable tip:/i,
+        /(: EXISTING(feedback.md)JE (FeedBack))/i,
+        /feedback/i,
+        /TaskMaster at your service./i,
+        /Best regards,/i,
+        /Would you like/i,
+        /Please let me know if I can assist further. I will adjust according to the data and/i,
+        /Please let me know if I can assist further./i,
+        /I will adjust according to the data/i,
+        /start date/i
+
+
+
+    
+
+
+        
 ]; 
 
 
@@ -4143,9 +4174,9 @@ function sanitizeContent(content) {
                line.length > 1;              // Filters out single characters
     });
 
-    // Remove empty lines and exclude the last line if it seems incomplete
+    // Remove empty lines and exclude the last two lines if it seems incomplete
     lines = lines.filter(Boolean);
-    if (lines.length && /\.\.\.$/.test(lines[lines.length - 1])) {
+    if (lines.length && /\.\.\.$/.test(lines[lines.length - 2])) {
         lines.pop();
     }
 
