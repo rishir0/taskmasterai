@@ -3785,7 +3785,7 @@ async function fetchCollectionData(userId) {
     try {
         const allData = {};
 
-        // Fetch user info
+        // Fetch user info with expanded profile data
         const userDoc = await db.collection('users').doc(userId).get();
         if (!userDoc.exists) {
             console.warn('User not found');
@@ -3793,31 +3793,39 @@ async function fetchCollectionData(userId) {
         }
         
         const userInfo = userDoc.data();
-        const displayName = userInfo.displayName || "User";
+        allData.userContext = {
+            displayName: userInfo.displayName || "User",
+            lastActive: userInfo.lastActive,
+            preferences: userInfo.preferences || {},
+            timeZone: userInfo.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
 
-        // Fetch collections
+        // Fetch collections with metadata
         for (const collectionName of collections) {
             const snapshot = await db.collection(collectionName)
                                   .where('userId', '==', userId)
+                                  .orderBy('createdAt', 'desc')
                                   .get();
             
             allData[collectionName] = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                type: collectionName.slice(0, -1)
+                type: collectionName.slice(0, -1),
+                createdAt: doc.data().createdAt?.toDate(),
+                lastModified: doc.data().lastModified?.toDate()
             }));
         }
         
         // Check if any data is found
-        const hasData = Object.values(allData).some(collection => collection.length > 0);
+        const hasData = Object.values(allData)
+            .filter(item => Array.isArray(item))
+            .some(collection => collection.length > 0);
         
         if (!hasData) {
-            renderPlaceholderMessage();
+            renderPlaceholderMessage(allData.userContext);
             return null;
         }
 
-        // Attach displayName for use in summary generation
-        allData.displayName = displayName;
         return allData;
 
     } catch (error) {
@@ -3826,141 +3834,208 @@ async function fetchCollectionData(userId) {
     }
 }
 
-// Function to render placeholder message
-function renderPlaceholderMessage() {
-    const aiSummarySection = document.getElementById('ai-summary-section');
-    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-    const existingSections = summaryContainer.querySelectorAll('.summary-section');
-
-    // Remove old sections
-    existingSections.forEach(section => section.remove());
-
-    // Create and add placeholder section
-    const placeholderSection = document.createElement('div');
-    placeholderSection.className = 'summary-section';
-    placeholderSection.innerHTML = `
-        <h3 class="section-title" style="color: green;">👋 Welcome!</h3>
-        <div class="section-content">TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</div>
-    `;
-    summaryContainer.appendChild(placeholderSection);
-}
-
-async function generateAISummary(data) {
-    const displayName = data.displayName || "User"; // Fallback if displayName is not set
-    const formattedData = Object.entries(data)
-        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
-        .map(([category, items]) => {
-            return `${category.toUpperCase()}:\n` + 
-                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
-        }).join('\n\n');
-
-    // Each section receives displayName in instructions
-    async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
-
-        USER DATA:
-        ${data}
-
-        INSTRUCTIONS FOR ${sectionName}:
-        ${instructions}
-
-        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-        ${sectionName}:
-        [My complete response here]`;
-
-        const response = await fetch(modelEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${huggingFaceApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ inputs: sectionPrompt }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to generate ${sectionName}`);
+async function determineRelevantSections(data) {
+    const structurePrompt = `
+        Based on the following user data, determine the most relevant 3-5 sections for summarizing their current state and needs.
+        Each section should have a clear purpose and not overlap with others.
+        
+        USER CONTEXT:
+        Name: ${data.userContext.displayName}
+        Last Active: ${data.userContext.lastActive}
+        
+        CURRENT ITEMS:
+        Tasks: ${data.tasks.length}
+        Goals: ${data.goals.length}
+        Projects: ${data.projects.length}
+        Plans: ${data.plans.length}
+        
+        FORMAT RESPONSE AS JSON:
+        {
+            "sections": [
+                {
+                    "title": "section title",
+                    "purpose": "brief description of section purpose",
+                    "priority": 1-5
+                }
+            ]
         }
-
-        const result = await response.json();
-        return result[0]?.generated_text || "";
-    }
+    `;
 
     try {
-        // Generate each section separately
-        const sections = {
-            "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a warm, brief greeting (max 2 sentences)
-                2. List ALL urgent items due within 14 days
-                3. Use 🚨 for items due within 3 days
-                4. Use ⏰ for items due within 14 days
-                5. For each item, add ONE specific, actionable tip
-                6. Keep total response under 100 words
-                5. When outputting don't include the words "Urgent Items"`),
-            
-            "In Progress": await generateSection("In Progress", formattedData, `
-                1. Start with ONE encouraging sentence
-                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-                3. Add ONE practical next step for each item
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "In Progress"`),
-            
-            "Coming Up": await generateSection("Coming Up", formattedData, `
-                1. For each item, suggest ONE preparation step
-                2. Add start dates where relevant
-                3. Keep total response under 100 words
-                4. When outputting don't include the words "Coming Up"`),
-            
-            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide THREE actionable recommendations
-                2. End with ONE motivational sentence
-                3. Use emojis sparingly and meaningfully
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "Overview & Recommendations"`)
-        };
-
-        // Clean up each section's response
-        Object.keys(sections).forEach(key => {
-            sections[key] = sections[key]
-                .replace(/^.*?:/, '') // Remove section header from response
-                .trim()               // Remove extra whitespace
-                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
-        });
-
-        return sections;
-
+        const response = await callAI(structurePrompt);
+        const sections = JSON.parse(response).sections;
+        return sections.sort((a, b) => a.priority - b.priority);
     } catch (error) {
-        console.error('Error generating AI summary:', error);
+        console.error('Error determining sections:', error);
+        return getDefaultSections();
+    }
+}
+
+async function generateSectionContent(sectionInfo, userData, previousSections = []) {
+    const { title, purpose } = sectionInfo;
+    
+    // Create context from previous sections
+    const previousContext = previousSections.map(section => 
+        `${section.title}: ${section.content}`
+    ).join('\n\n');
+
+    const formattedData = formatUserData(userData);
+    
+    const sectionPrompt = `
+        Task: Generate the "${title}" section of a personalized summary for ${userData.userContext.displayName}.
+        
+        Section Purpose: ${purpose}
+        
+        Previous Sections Context:
+        ${previousContext}
+        
+        User Data:
+        ${formattedData}
+        
+        Requirements:
+        1. Be concise but complete - never truncate
+        2. Use appropriate emojis sparingly
+        3. Maintain consistent tone with previous sections
+        4. Include specific, actionable items
+        5. Maximum 100 words
+        
+        Format response as:
+        ${title}:
+        [Your complete response here]
+    `;
+
+    try {
+        const response = await callAI(sectionPrompt);
         return {
-            "Error": "Failed to generate complete summary. Please try again.",
-            "Details": error.message
+            title,
+            content: response.replace(`${title}:`, '').trim(),
+            timestamp: new Date()
+        };
+    } catch (error) {
+        console.error(`Error generating section ${title}:`, error);
+        return {
+            title,
+            content: `Unable to generate content for ${title}. Please try again.`,
+            error: true
         };
     }
 }
 
+async function generateCompleteSummary(data) {
+    try {
+        // First, determine relevant sections
+        const sections = await determineRelevantSections(data);
+        
+        // Generate content for each section sequentially
+        const generatedSections = {};
+        const previousSections = [];
+        
+        for (const section of sections) {
+            const sectionContent = await generateSectionContent(section, data, previousSections);
+            generatedSections[section.title] = sectionContent.content;
+            previousSections.push(sectionContent);
+        }
+        
+        return generatedSections;
+    } catch (error) {
+        console.error('Error generating complete summary:', error);
+        throw error;
+    }
+}
+
+async function callAI(prompt) {
+    const response = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            inputs: prompt,
+            parameters: {
+                max_length: 1000,
+                temperature: 0.7,
+                top_p: 0.95,
+                repetition_penalty: 1.2
+            }
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`AI API call failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result[0]?.generated_text || "";
+}
+
+function formatUserData(data) {
+    return Object.entries(data)
+        .filter(([key]) => key !== 'userContext')
+        .map(([category, items]) => {
+            if (!Array.isArray(items)) return '';
+            return `${category.toUpperCase()}:\n` + 
+                items.map(item => {
+                    const dueDate = item.dueDate?.seconds ? 
+                        new Date(item.dueDate.seconds * 1000).toLocaleDateString() : 
+                        'No date';
+                    const status = item.status || 'Not started';
+                    return `- ${item.type}: ${item[item.type]} (Due: ${dueDate}, Status: ${status})`;
+                }).join('\n');
+        }).filter(Boolean).join('\n\n');
+}
 
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-    const existingSections = summaryContainer.querySelectorAll('.summary-section');
-
-    // Remove old sections
-    existingSections.forEach(section => section.remove());
-
-    // Add new sanitized sections
-    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
+    
+    // Clear existing content
+    summaryContainer.innerHTML = '';
+    
+    // Add new sections
+    Object.entries(summaryData).forEach(([sectionTitle, content]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
-
-        const sanitized = sanitizeContent(rawContent); // Process each section's content
-
+        
+        const sanitized = DOMPurify.sanitize(content);
+        
         sectionElement.innerHTML = `
-            <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
+            <h3 class="section-title">${DOMPurify.sanitize(sectionTitle)}</h3>
+            <div class="section-content">${sanitized.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
+
+function renderPlaceholderMessage(userContext) {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    
+    summaryContainer.innerHTML = `
+        <div class="summary-section">
+            <h3 class="section-title">👋 Welcome ${DOMPurify.sanitize(userContext.displayName)}!</h3>
+            <div class="section-content">
+                I'm ready to help organize and track your progress. To get started, create your first task, goal, project, or plan.
+            </div>
+        </div>
+    `;
+}
+
+// Add error handling wrapper
+function withErrorHandling(fn) {
+    return async (...args) => {
+        try {
+            return await fn(...args);
+        } catch (error) {
+            console.error(`Error in ${fn.name}:`, error);
+            throw error;
+        }
+    };
+}
+
+// Export wrapped functions
+export const enhancedGenerateAISummary = withErrorHandling(generateCompleteSummary);
+export const enhancedFetchCollectionData = withErrorHandling(fetchCollectionData);
 
 
 /**
