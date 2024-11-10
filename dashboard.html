@@ -3845,140 +3845,19 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-// Constants
-const huggingFaceApiKey = "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";
-const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
-const collections = ['tasks', 'goals', 'projects', 'plans'];
-
-// Add new collection for storing user context
-const userContextCollection = 'userContext';
-
-// Helper function to calculate completion rates and patterns
-function analyzeUserPatterns(historicalData) {
-    return {
-        completionRate: historicalData.completed / historicalData.total,
-        preferredWorkDays: historicalData.preferredDays,
-        averageTaskDuration: historicalData.avgDuration,
-        commonBlockers: historicalData.frequentBlockers
-    };
-}
-
-// Helper function to determine time-appropriate greeting
-function getTimeBasedGreeting(userTimezone) {
-    const userTime = new Date().toLocaleTimeString('en-US', { timeZone: userTimezone });
-    const hour = parseInt(userTime.split(':')[0]);
-    
-    if (hour >= 5 && hour < 12) return 'Good morning';
-    if (hour >= 12 && hour < 17) return 'Good afternoon';
-    return 'Good evening';
-}
-
-async function fetchUserContext(userId) {
-    try {
-        const contextDoc = await db.collection(userContextCollection).doc(userId).get();
-        if (!contextDoc.exists) {
-            return {
-                preferredWorkingHours: { start: 9, end: 17 },
-                timezone: 'UTC',
-                lastInteraction: null,
-                historicalPatterns: {
-                    completed: 0,
-                    total: 0,
-                    preferredDays: [],
-                    avgDuration: 0,
-                    frequentBlockers: []
-                }
-            };
-        }
-        return contextDoc.data();
-    } catch (error) {
-        console.error('Error fetching user context:', error);
-        return null;
-    }
-}
-
-async function updateUserContext(userId, newData) {
-    try {
-        await db.collection(userContextCollection).doc(userId).set(
-            newData,
-            { merge: true }
-        );
-    } catch (error) {
-        console.error('Error updating user context:', error);
-    }
-}
-
-async function fetchCollectionData(userId) {
-    try {
-        const allData = {};
-        // Fetch user info and context
-        const [userDoc, userContext] = await Promise.all([
-            db.collection('users').doc(userId).get(),
-            fetchUserContext(userId)
-        ]);
-
-        if (!userDoc.exists) {
-            console.warn('User not found');
-            return null;
-        }
-        
-        const userInfo = userDoc.data();
-        const displayName = userInfo.displayName || "User";
-        
-        // Fetch collections with additional metadata
-        for (const collectionName of collections) {
-            const snapshot = await db.collection(collectionName)
-                                  .where('userId', '==', userId)
-                                  .get();
-            
-            allData[collectionName] = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                type: collectionName.slice(0, -1)
-            }));
-        }
-        
-        // Check if any data is found
-        const hasData = Object.values(allData).some(collection => collection.length > 0);
-        
-        if (!hasData) {
-            renderPlaceholderMessage();
-            return null;
-        }
-
-        // Attach user context and preferences
-        allData.displayName = displayName;
-        allData.userContext = userContext;
-        
-        return allData;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return null;
-    }
-}
-
 async function generateAISummary(data) {
-    const displayName = data.displayName || "User";
-    const userContext = data.userContext;
-    const patterns = analyzeUserPatterns(userContext.historicalPatterns);
-    const greeting = getTimeBasedGreeting(userContext.timezone);
-
-    // Format data with context
+    const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
-        .filter(([key]) => !['displayName', 'userContext'].includes(key))
+        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
         .map(([category, items]) => {
             return `${category.toUpperCase()}:\n` + 
-                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString(undefined, { timeZone: userContext.timezone }) || 'No date'})`).join('\n');
+                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
+    // Each section receives displayName in instructions
     async function generateSection(sectionName, data, instructions) {
-        const contextualPrompt = `${greeting} ${displayName}! I am TaskMaster, your personal AI assistant. I understand your schedule and preferences:
-        - You typically work between ${userContext.preferredWorkingHours.start}:00 and ${userContext.preferredWorkingHours.end}:00
-        - Your task completion rate is ${(patterns.completionRate * 100).toFixed(1)}%
-        - You prefer working on: ${patterns.preferredWorkDays.join(', ')}
-        - Common blockers you face: ${patterns.commonBlockers.join(', ')}
-
-        I will generate the ${sectionName} section based on this context.
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
 
         USER DATA:
         ${data}
@@ -3996,7 +3875,7 @@ async function generateAISummary(data) {
                 'Authorization': `Bearer ${huggingFaceApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ inputs: contextualPrompt }),
+            body: JSON.stringify({ inputs: sectionPrompt }),
         });
 
         if (!response.ok) {
@@ -4008,54 +3887,44 @@ async function generateAISummary(data) {
     }
 
     try {
-        // Generate each section with enhanced context
+        // Generate each section separately
         const sections = {
             "Urgent Items": await generateSection("Urgent Items", formattedData, `
-                1. Start with a context-aware greeting referencing the time of day
+                1. Start with a warm, brief greeting (max 2 sentences)
                 2. List ALL urgent items due within 14 days
                 3. Use 🚨 for items due within 3 days
                 4. Use ⏰ for items due within 14 days
-                5. Consider user's working hours when suggesting deadlines
-                6. Provide tips based on historical completion patterns
-                7. Keep total response under 100 words
-                8. When outputting don't include the words "Urgent Items"`),
+                5. For each item, add ONE specific, actionable tip
+                6. Keep total response under 100 words
+                5. When outputting don't include the words "Urgent Items"`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
-                1. Reference past success patterns in your encouragement
+                1. Start with ONE encouraging sentence
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
-                3. Suggest next steps based on user's preferred working times
-                4. Address common blockers proactively
-                5. Keep total response under 100 words
-                6. When outputting don't include the words "In Progress"`),
+                3. Add ONE practical next step for each item
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "In Progress"`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
-                1. Suggest preparation steps based on historical patterns
-                2. Consider user's preferred working days for scheduling
-                3. Add start dates aligned with working hours
-                4. Keep total response under 100 words
-                5. When outputting don't include the words "Coming Up"`),
+                1. For each item, suggest ONE preparation step
+                2. Add start dates where relevant
+                3. Keep total response under 100 words
+                4. When outputting don't include the words "Coming Up"`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide THREE recommendations based on completion patterns
-                2. Reference past successes in motivation
-                3. Address known blockers proactively
-                4. Align suggestions with working preferences
-                5. Keep total response under 100 words
-                6. When outputting don't include the words "Overview & Recommendations"`)
+                1. Provide THREE actionable recommendations
+                2. End with ONE motivational sentence
+                3. Use emojis sparingly and meaningfully
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "Overview & Recommendations"`)
         };
 
-        // Clean up responses
+        // Clean up each section's response
         Object.keys(sections).forEach(key => {
             sections[key] = sections[key]
-                .replace(/^.*?:/, '')
-                .trim()
-                .replace(/\n{3,}/g, '\n\n');
-        });
-
-        // Update user context with this interaction
-        await updateUserContext(data.userId, {
-            lastInteraction: new Date(),
-            interactionCount: (userContext.interactionCount || 0) + 1
+                .replace(/^.*?:/, '') // Remove section header from response
+                .trim()               // Remove extra whitespace
+                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
         });
 
         return sections;
