@@ -4033,11 +4033,6 @@ function withErrorHandling(fn) {
     };
 }
 
-// Export wrapped functions
-export const enhancedGenerateAISummary = withErrorHandling(generateCompleteSummary);
-export const enhancedFetchCollectionData = withErrorHandling(fetchCollectionData);
-
-
 /**
  * Sanitize the content by removing malformed or incomplete parts.
  *
