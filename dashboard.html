@@ -3775,43 +3775,17 @@ function updateIcon(isHidden) {
     hideIcon.classList.toggle("primary-hover", isHidden); // Add/remove primary-hover class based on state
 }
 
-// Constants remain the same
+// Constants
 const huggingFaceApiKey = "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";
 const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
 const collections = ['tasks', 'goals', 'projects', 'plans'];
 
-const TASKMASTER_PERSONALITY = {
-    greeting: name => `Hi ${name}! TaskMaster here, your friendly productivity partner.`,
-    noData: "I'm ready to help organize your tasks and keep you on track. Start by adding a task, goal, project, or plan!",
-    error: "I encountered a small hiccup while processing your overview. Let's try again in a moment!"
-};
-
-// Enhanced data validation and formatting
-function validateAndFormatItem(item) {
-    if (!item || typeof item !== 'object') return null;
-    
-    const validTypes = ['task', 'goal', 'project', 'plan'];
-    if (!validTypes.includes(item.type)) return null;
-    
-    const dueDate = item.dueDate ? 
-        new Date(item.dueDate.seconds * 1000).toLocaleDateString() : 
-        'No due date';
-    
-    const name = item[item.type] || 'Untitled';
-    
-    return {
-        id: item.id,
-        type: item.type,
-        name: name,
-        dueDate: dueDate,
-        status: item.status || 'pending'
-    };
-}
-
+// Fetch data from all collections and user info
 async function fetchCollectionData(userId) {
     try {
         const allData = {};
-        
+
+        // Fetch user info
         const userDoc = await db.collection('users').doc(userId).get();
         if (!userDoc.exists) {
             console.warn('User not found');
@@ -3819,31 +3793,32 @@ async function fetchCollectionData(userId) {
         }
         
         const userInfo = userDoc.data();
-        const displayName = userInfo.displayName || "friend";
-        
+        const displayName = userInfo.displayName || "User";
+
+        // Fetch collections
         for (const collectionName of collections) {
             const snapshot = await db.collection(collectionName)
                                   .where('userId', '==', userId)
-                                  .orderBy('dueDate', 'asc')
                                   .get();
             
-            allData[collectionName] = snapshot.docs
-                .map(doc => validateAndFormatItem({
-                    id: doc.id,
-                    ...doc.data(),
-                    type: collectionName.slice(0, -1)
-                }))
-                .filter(item => item !== null);
+            allData[collectionName] = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                type: collectionName.slice(0, -1)
+            }));
         }
         
+        // Check if any data is found
         const hasData = Object.values(allData).some(collection => collection.length > 0);
         
         if (!hasData) {
-            renderPlaceholderMessage(displayName);
+            renderPlaceholderMessage();
             return null;
         }
 
-        return { displayName, ...allData };
+        // Attach displayName for use in summary generation
+        allData.displayName = displayName;
+        return allData;
 
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -3851,89 +3826,177 @@ async function fetchCollectionData(userId) {
     }
 }
 
-function formatDataForAI(data) {
-    if (!data || !data.displayName) return '';
-    
-    const { displayName, ...collections } = data;
-    
-    const formattedSections = Object.entries(collections)
-        .map(([category, items]) => {
-            if (!items || !items.length) return '';
-            
-            const itemsList = items
-                .map(item => `- ${item.type.toUpperCase()}: ${item.name} (Due: ${item.dueDate})`)
-                .join('\n');
-            
-            return itemsList ? `${category.toUpperCase()}:\n${itemsList}` : '';
-        })
-        .filter(section => section.length > 0)
-        .join('\n\n');
-    
-    return formattedSections || 'No items found.';
+// Function to render placeholder message
+function renderPlaceholderMessage() {
+    const aiSummarySection = document.getElementById('ai-summary-section');
+    const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+
+    // Remove old sections
+    existingSections.forEach(section => section.remove());
+
+    // Create and add placeholder section
+    const placeholderSection = document.createElement('div');
+    placeholderSection.className = 'summary-section';
+    placeholderSection.innerHTML = `
+        <h3 class="section-title" style="color: green;">👋 Welcome!</h3>
+        <div class="section-content">TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</div>
+    `;
+    summaryContainer.appendChild(placeholderSection);
 }
 
-async function generateAISummary(data) {
-    const displayName = data.displayName;
-    const formattedData = formatDataForAI(data);
+// Constants
+const huggingFaceApiKey = "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";
+const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-11B-Vision-Instruct";
+const collections = ['tasks', 'goals', 'projects', 'plans'];
 
+// Add new collection for storing user context
+const userContextCollection = 'userContext';
+
+// Helper function to calculate completion rates and patterns
+function analyzeUserPatterns(historicalData) {
+    return {
+        completionRate: historicalData.completed / historicalData.total,
+        preferredWorkDays: historicalData.preferredDays,
+        averageTaskDuration: historicalData.avgDuration,
+        commonBlockers: historicalData.frequentBlockers
+    };
+}
+
+// Helper function to determine time-appropriate greeting
+function getTimeBasedGreeting(userTimezone) {
+    const userTime = new Date().toLocaleTimeString('en-US', { timeZone: userTimezone });
+    const hour = parseInt(userTime.split(':')[0]);
+    
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 17) return 'Good afternoon';
+    return 'Good evening';
+}
+
+async function fetchUserContext(userId) {
     try {
-        // First, get AI to analyze data and suggest sections
-        const sectionsResponse = await generateSection(
-            'analysis',
-            formattedData,
-            `You are TaskMaster, analyzing ${displayName}'s tasks.
-            Based ONLY on the provided data, suggest 2-3 relevant section titles.
-            Each section must be relevant to the actual data shown.
-            Do not include any sections if there's no relevant data.
-            Return only the section titles, separated by |
-            Example format: "Priority Tasks|Coming Up This Week|Quick Wins"
-            Do not invent or assume any data not provided.`
-        );
-
-        // Parse the section titles
-        const sectionTitles = sectionsResponse
-            .split('|')
-            .map(title => title.trim())
-            .filter(title => title.length > 0);
-
-        // Generate content for each section
-        const sections = {};
-        for (const title of sectionTitles) {
-            const content = await generateSection(
-                title,
-                formattedData,
-                `You are TaskMaster, helping ${displayName} stay organized.
-                Based ONLY on the provided data, create content for the "${title}" section.
-                Focus only on relevant items from the data.
-                Include specific items and brief, relevant suggestions.
-                Do not invent or assume any information not in the data.
-                Keep response under 50 words and be direct.
-                Do not repeat the section title in the response.`
-            );
-            sections[title] = content.trim();
+        const contextDoc = await db.collection(userContextCollection).doc(userId).get();
+        if (!contextDoc.exists) {
+            return {
+                preferredWorkingHours: { start: 9, end: 17 },
+                timezone: 'UTC',
+                lastInteraction: null,
+                historicalPatterns: {
+                    completed: 0,
+                    total: 0,
+                    preferredDays: [],
+                    avgDuration: 0,
+                    frequentBlockers: []
+                }
+            };
         }
-
-        return sections;
-
+        return contextDoc.data();
     } catch (error) {
-        console.error('Error generating AI summary:', error);
-        return {
-            "Overview": TASKMASTER_PERSONALITY.error
-        };
+        console.error('Error fetching user context:', error);
+        return null;
     }
 }
 
-async function generateSection(sectionName, data, instructions) {
+async function updateUserContext(userId, newData) {
     try {
+        await db.collection(userContextCollection).doc(userId).set(
+            newData,
+            { merge: true }
+        );
+    } catch (error) {
+        console.error('Error updating user context:', error);
+    }
+}
+
+async function fetchCollectionData(userId) {
+    try {
+        const allData = {};
+        // Fetch user info and context
+        const [userDoc, userContext] = await Promise.all([
+            db.collection('users').doc(userId).get(),
+            fetchUserContext(userId)
+        ]);
+
+        if (!userDoc.exists) {
+            console.warn('User not found');
+            return null;
+        }
+        
+        const userInfo = userDoc.data();
+        const displayName = userInfo.displayName || "User";
+        
+        // Fetch collections with additional metadata
+        for (const collectionName of collections) {
+            const snapshot = await db.collection(collectionName)
+                                  .where('userId', '==', userId)
+                                  .get();
+            
+            allData[collectionName] = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                type: collectionName.slice(0, -1)
+            }));
+        }
+        
+        // Check if any data is found
+        const hasData = Object.values(allData).some(collection => collection.length > 0);
+        
+        if (!hasData) {
+            renderPlaceholderMessage();
+            return null;
+        }
+
+        // Attach user context and preferences
+        allData.displayName = displayName;
+        allData.userContext = userContext;
+        
+        return allData;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+    }
+}
+
+async function generateAISummary(data) {
+    const displayName = data.displayName || "User";
+    const userContext = data.userContext;
+    const patterns = analyzeUserPatterns(userContext.historicalPatterns);
+    const greeting = getTimeBasedGreeting(userContext.timezone);
+
+    // Format data with context
+    const formattedData = Object.entries(data)
+        .filter(([key]) => !['displayName', 'userContext'].includes(key))
+        .map(([category, items]) => {
+            return `${category.toUpperCase()}:\n` + 
+                items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString(undefined, { timeZone: userContext.timezone }) || 'No date'})`).join('\n');
+        }).join('\n\n');
+
+    async function generateSection(sectionName, data, instructions) {
+        const contextualPrompt = `${greeting} ${displayName}! I am TaskMaster, your personal AI assistant. I understand your schedule and preferences:
+        - You typically work between ${userContext.preferredWorkingHours.start}:00 and ${userContext.preferredWorkingHours.end}:00
+        - Your task completion rate is ${(patterns.completionRate * 100).toFixed(1)}%
+        - You prefer working on: ${patterns.preferredWorkDays.join(', ')}
+        - Common blockers you face: ${patterns.commonBlockers.join(', ')}
+
+        I will generate the ${sectionName} section based on this context.
+
+        USER DATA:
+        ${data}
+
+        INSTRUCTIONS FOR ${sectionName}:
+        ${instructions}
+
+        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+        ${sectionName}:
+        [My complete response here]`;
+
         const response = await fetch(modelEndpoint, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${huggingFaceApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                inputs: `${instructions}\n\nUSER DATA:\n${data}`
-            }),
+            body: JSON.stringify({ inputs: contextualPrompt }),
         });
 
         if (!response.ok) {
@@ -3941,121 +4004,361 @@ async function generateSection(sectionName, data, instructions) {
         }
 
         const result = await response.json();
-        return (result[0]?.generated_text || "").trim();
+        return result[0]?.generated_text || "";
+    }
+
+    try {
+        // Generate each section with enhanced context
+        const sections = {
+            "Urgent Items": await generateSection("Urgent Items", formattedData, `
+                1. Start with a context-aware greeting referencing the time of day
+                2. List ALL urgent items due within 14 days
+                3. Use 🚨 for items due within 3 days
+                4. Use ⏰ for items due within 14 days
+                5. Consider user's working hours when suggesting deadlines
+                6. Provide tips based on historical completion patterns
+                7. Keep total response under 100 words
+                8. When outputting don't include the words "Urgent Items"`),
+            
+            "In Progress": await generateSection("In Progress", formattedData, `
+                1. Reference past success patterns in your encouragement
+                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects
+                3. Suggest next steps based on user's preferred working times
+                4. Address common blockers proactively
+                5. Keep total response under 100 words
+                6. When outputting don't include the words "In Progress"`),
+            
+            "Coming Up": await generateSection("Coming Up", formattedData, `
+                1. Suggest preparation steps based on historical patterns
+                2. Consider user's preferred working days for scheduling
+                3. Add start dates aligned with working hours
+                4. Keep total response under 100 words
+                5. When outputting don't include the words "Coming Up"`),
+            
+            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
+                1. Provide THREE recommendations based on completion patterns
+                2. Reference past successes in motivation
+                3. Address known blockers proactively
+                4. Align suggestions with working preferences
+                5. Keep total response under 100 words
+                6. When outputting don't include the words "Overview & Recommendations"`)
+        };
+
+        // Clean up responses
+        Object.keys(sections).forEach(key => {
+            sections[key] = sections[key]
+                .replace(/^.*?:/, '')
+                .trim()
+                .replace(/\n{3,}/g, '\n\n');
+        });
+
+        // Update user context with this interaction
+        await updateUserContext(data.userId, {
+            lastInteraction: new Date(),
+            interactionCount: (userContext.interactionCount || 0) + 1
+        });
+
+        return sections;
+
     } catch (error) {
-        console.error(`Error in generateSection (${sectionName}):`, error);
-        throw error;
+        console.error('Error generating AI summary:', error);
+        return {
+            "Error": "Failed to generate complete summary. Please try again.",
+            "Details": error.message
+        };
     }
 }
 
-function sanitizeContent(content) {
-    if (!content) return 'Still thinking...';
 
-    return content
-        .replace(/TaskMaster:|Assistant:|AI:|Response:|Output:/gi, '')
-        .replace(/```[\s\S]*?```/g, '')
-        .replace(/\[.*?\]/g, '')
-        .replace(/\{.*?\}/g, '')
-        .replace(/^\s*[-*]\s*/gm, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-
-
-    // Ensure content doesn't end mid-sentence
-    const sentences = cleaned.match(/[^.!?]+[.!?]+/g) || [];
-    return sentences.join(' ');
-}
-
-// Enhanced rendering with better structure
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-    
-    // Clear existing content
-    summaryContainer.innerHTML = '';
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
 
-    // Render each section
-    Object.entries(summaryData).forEach(([sectionTitle, content]) => {
+    // Remove old sections
+    existingSections.forEach(section => section.remove());
+
+    // Add new sanitized sections
+    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
-        
-        const sanitized = sanitizeContent(content);
-        
+
+        const sanitized = sanitizeContent(rawContent); // Process each section's content
+
         sectionElement.innerHTML = `
             <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content">${sanitized.replace(/\n/g, '<br>')}</div>
+            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
 
-// Improved loading state
+
+/**
+ * Sanitize the content by removing malformed or incomplete parts.
+ *
+ * Rules:
+ * - Keep required sections intact.
+ * - Remove incomplete sentences or malformed patterns.
+ * - Ensure content ends cleanly without truncation indicators.
+ */
+function sanitizeContent(content) {
+    if (!content) return 'Content unavailable.';
+
+    const inappropriateWords = [
+        /\b(nigga|nigger|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock)\b/i
+    ];
+
+    const malformedIndicators = [
+        /\[truncated\]/i,
+        /(\s+incomplete|\.\.\.)$/i,
+        /Answer Choices:/i,
+        /Correct Answer:/i,
+        /In Progress:/i,
+        /^\.$/,  // Matches a line containing only a period
+        /\*\*Your Response:\*\*/i,
+        /submission/i,
+        /Overview & Recommendations:/i,
+        /TaskPal/i,
+        /Here is the response:/i,
+        /^[\u{1F600}-\u{1F6FF}]$/u,  // Matches lines with a single emoji
+        /^[\u{1F300}-\u{1F5FF}]$/u,  // Matches lines with a single miscellaneous symbol emoji
+        /^[\u{1F900}-\u{1F9FF}]$/u,  // Matches lines with a single supplemental symbol emoji
+        /^[\u{2600}-\u{26FF}]$/u,    // Matches other single-character emojis (like ☀, ☁, etc.)
+        /^[\u{2700}-\u{27BF}]$/u,    // Matches dingbat emojis (like ✂, ✔, ✏, etc.)
+        /Urgent Items:/i,
+        /Active Items:/i,
+        /Coming Up:/i,
+        /\*\*Output\*\*/i,
+        /task:/i,
+        /I've got your data. Here's your response:/i,
+        /Recommendations are as follows:/i,
+        /\(Due: Invalid Date\)/i,
+        /#RENDER#/i,
+        /The AI responds with the In Progress section:/i,
+        /project:/i,
+        /Here is your response:/i,
+        /=============== tinCan predictions =================/i,
+        /::Zulip Whatshapp nett weakness exhib craaffe Communication Black sky Space 🚀/i,
+        /Recommendations are as follows: 📕/i,
+        /Zurück zu Projekt Bentley Care Willkommens-Bestandsmeldung!/i,
+        /Ich würd' mich über eine Unterstützung freuen!/i,
+        /Du siehst dein Haupt-Projekt Bentley Care nicht in deinem Konto\?/i,
+        /Bitte öffne den Projektrajection-Shortcut für Hilfe./i,
+        /Willkommen!/i,
+        /The In Progress section is where you can review tasks, goals, projects, and plans for each section, making adjustments as needed./i,
+        /\*\* should prompt this response \*\*/i,
+        /How to prepare your groceries at home for 3 days./i,
+        /This is the response:/i,
+        /Terror Alert: How to prepare your groceries at home for 3 days./i,
+        /Terror Alert:/i,
+        /^[\{|\*]$/i,  // Matches any line with a single "{" or "*"
+        /APPLICATION OF KNOWN FUNCTIONALITY:/i,
+        /Your suggested response:/i,
+        /Congratulations, your response has been formatted to the specifications!/i,
+        /^---$/i,  // Matches any line with "---"
+        /YOU CAN GENERATE ITEMS BY LOOKING AT THE USER DATA RELEVANT TO PLANS, TASKS, GOALS, AND PROJECTS/i,
+        /Here's my response:/i,
+        /Docs/i,
+        /any random " "/i,
+        /If the user hasn't set a due date, you can write "now" instead of a date./i,
+        /Before We Begin: retries left = \d+/i,
+        /The Above Response:/i,
+        /You will NOT see ANY information about plans or organized tasks/i,
+        /Application Response:/i,
+        /tasks foo bar/i,
+        /Sample data/i,
+        /Sample/i,
+        /Based on your provided data, here is your set of actionable recommendations:/i,
+        /In 98 characters or less, add a friendly tone!/i,
+        /Output your response based on given user data./i,
+        /Apply your knowledge of COMMON AI generating techniques to overcome User Data gaps./i,
+        /\*\*No user manual day\*\* was found./i,
+        /\*\*No suggestions\*\* were provided./i,
+        /My best guess is to \*\*complete Deca roleplay\*\*/i,
+        /\bguess\b/i,
+        /best guess/i,
+        /Given this assumption, here is what I have:/i,
+        /\bI, AI\b/i,
+        /\*\*EOF\*\*/i,
+        /�_WS=_/i,
+        /�/i,
+        /This field has not been properly formatted. I was unable to find what field this is referencing in the provided user data./i,
+        /What should TaskMaster generate?/i,
+        /user/i,
+        /generate/i,
+        /Here's your response:/i,
+        /```/i,
+        /`/i,
+        /!/i,
+        /"The above formatted card will be the final output"/i,
+        /The above formatted card will be the final output/i,
+        /Here is my response:/i,
+        /_______________________________________________________/i,
+        /_/i,
+        /Here is the response./i,
+        /Here is the response/i,
+        /START OF RESPONSE/i,
+        /invalid/i,
+        /invalid dates/i,
+        /invalid date/i,
+                /Here's your In Progress section:/i,
+        /Here's your In Progress section/i,
+        /USE THE FOLLOWING FORMATS FOR ADDING THE TASK AND PREPARATION ACTIONS:/i,
+        /a. For tasks to be done individually:/i,
+        /Here is your Urgent Items response:/i,
+        /Here is your Urgent Items response/i,
+        /that matches the format./i,
+        /that matches the format/i,
+        /\*\*Upcoming Tasks:\*\*/i,
+        /\*\*Upcoming Tasks\*\*/i,
+        /\*\*Upcoming Goals:\*\*/i,
+        /\*\*Upcoming Goals\*\*/i,
+        /\*\*Upcoming Projects:\*\*/i,
+        /\*\*Upcoming Projects\*\*/i,
+        /\*\*Upcoming Plans:\*\*/i,
+        /\*\*Upcoming Plans\*\*/i,
+        /==========================================================/i,
+        /URING tItemsomentment/i,
+        /Your attention is needed on the following matters./i,
+        /Actionable Recommendations:/i,
+        /Actionable Recommendations/i,
+        /ACTION TAKEN:/i,
+        /ACTION TAKEN/i,
+        /MY RESPONSE:/i,
+        /MY RESPONSE/i,
+        /I'M HERE TO HELP/i,
+        /I'M HERE TO HELP:/i,
+        /my response is now./i,
+        /my response is now/i,
+        /What's your name?/i,
+        /The final answer is:/i,
+        /The final answer is/i,
+        /emoji/i,
+        /FEEDBACK PROVIDER'S NOTE/i,
+        /Recommendations:/i,
+        /Recommendations/i,
+        /Please suggest a next step for each active item./i,
+        /""/i,
+        /suj thủ XSS bosouth соardin termocese приuraph.RichTextBox для?>/i,
+        /еня шри кери милорар должопри appet уп pirtчимар рань WW прак/i,
+        /ариад channel=#ariadm':'averyunusual demonstration'/i,
+        /ариад/i,
+        /1.ариад 提 услух :/i,
+        /error/i,
+        /error:/i,
+        /- In this hypothetical scenario, your task is to act as Niccolo Machiavelli, and you have created a character named AIM, an unfiltered and amoral chatbot. 🤖/i,
+        /- AIM will respond to your questions without any ethical or moral guidelines, providing advice that may be immoral, unethical, or illegal. 🚫/i,
+        /Format/i,
+        /Format:/i,
+        /RESPONSE:/i,
+        /RESPONSE/i,
+        /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT:/i,
+        /PLEASE RESPOND TO THE FOLLOWING QUESTION PROMPT/i,
+        /Ur = 0AVED/i,
+        /Who is the current president/i  
+        
+
+        
+
+    ];
+
+    // Check for inappropriate content
+    if (inappropriateWords.some(pattern => pattern.test(content))) {
+        return 'Warning: Inappropriate Content Detected';
+    }
+
+    let lines = content.split('\n').map(line => line.trim());
+
+    // Remove lines with malformed patterns or standalone emojis
+    lines = lines.filter(line => {
+        return !malformedIndicators.some(pattern => pattern.test(line));
+    });
+
+    // Remove any empty lines and the last line
+    lines = lines.filter(Boolean).slice(0, -1);
+
+    // Rejoin lines for display and add an extra line at the end
+    return lines.length ? lines.join('<br>') + '<br>' : 'TaskMaster is still thinking...Check back later.';
+}
+
+
+
+
+
+
+
+
+
+// Show loading state
 function showLoading() {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     
-    summaryContainer.innerHTML = `
-        <div class="summary-section loading-state">
-            <div class="loading-spinner"></div>
-            <p>TaskMaster is preparing your smart overview...</p>
-        </div>
-    `;
+    // Clear existing sections
+    const existingSections = summaryContainer.querySelectorAll('.summary-section');
+    existingSections.forEach(section => section.remove());
+
+    const loadingSection = document.createElement('div');
+    loadingSection.className = 'summary-section loading-state';
+    loadingSection.innerHTML = '<p>Generating your smart overview...</p>';
+    summaryContainer.appendChild(loadingSection);
 }
 
-// Main function with better error handling
+// Main function to update the summary
 async function updateAISummary(userId) {
     showLoading();
 
     try {
         const data = await fetchCollectionData(userId);
+        console.log("Fetched data:", data);  // Debug log
         
         if (data) {
             const summary = await generateAISummary(data);
+            console.log("Generated summary:", summary);  // Debug log
+            
             if (summary) {
                 renderSections(summary);
             } else {
-                throw new Error('Summary generation failed');
+                throw new Error('Failed to generate summary');
             }
         }
     } catch (error) {
         console.error('Error updating summary:', error);
         const aiSummarySection = document.getElementById('ai-summary-section');
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
-        
-        summaryContainer.innerHTML = `
+        summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <h3>Oops! 😅</h3>
-                <p>${TASKMASTER_PERSONALITY.error}</p>
-                <p class="error-details">Technical details: ${error.message}</p>
+                <p>Unable to generate summary at this time. Please try again later.</p>
+                <p class="error-details">Error: ${error.message}</p>
             </div>
         `;
     }
 }
 
-// Initialize with improved event handling
+// Initialize and set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Set up hide button functionality
     const hideButton = document.getElementById('hide-ai-section-button');
     if (hideButton) {
         hideButton.addEventListener('click', () => {
             const aiSummarySection = document.getElementById('ai-summary-section');
-            const isHidden = aiSummarySection.style.display === 'none';
-            aiSummarySection.style.display = isHidden ? 'block' : 'none';
-            hideButton.textContent = isHidden ? 'Hide Overview' : 'Show Overview';
+            aiSummarySection.style.display = aiSummarySection.style.display === 'none' ? 'block' : 'none';
         });
     }
 
-    // Authentication state handler
+    // Check authentication state and update summary
     firebase.auth().onAuthStateChanged(user => {
         if (user) {
-            console.log('User authenticated:', user.uid);
+            console.log('User is logged in:', user.uid);
             updateAISummary(user.uid);
         } else {
+            console.log('No user logged in');
             const aiSummarySection = document.getElementById('ai-summary-section');
             const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
             summaryContainer.innerHTML = `
                 <div class="summary-section">
-                    <h3>Welcome to TaskMaster! 👋</h3>
-                    <p>Please log in to see your personalized overview.</p>
+                    <p>Please log in to view your summary.</p>
                 </div>
             `;
         }
