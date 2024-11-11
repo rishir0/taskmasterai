@@ -4177,7 +4177,8 @@ const inappropriateWords = [
         /This is TaskMaster, your friendly AI assistant./i,
         /Best, TaskMaster./i,
         /TaskMaster, your friendly productivity assistant here./i,
-        /I am TaskMaster, a friendly productivity-focused AI assistant./i
+        /I am TaskMaster, a friendly productivity-focused AI assistant./i,
+        /Here is the In Progress section./i
         
         
 ]; 
@@ -4185,7 +4186,7 @@ const inappropriateWords = [
 
 // Check for inappropriate content
 if (inappropriateWords.some(pattern => pattern.test(content))) {
-    return 'Warning: Inappropriate Content Detected';
+    return '⚠️ Warning: Inappropriate Content Detected';
 }
 
 let lines = content.split('\n').map(line => line.trim());
