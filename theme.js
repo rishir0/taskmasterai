@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
         --hover-bg: rgba(255, 255, 255, 0.1);
         --border-radius: 15px;
     }
+
+/* Force all text color to white, overriding any other styles */
+body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
+    color: white !important; /* Applies to text elements only */
+}
+
+
     
     body {
         font-family: 'Poppins', sans-serif;
