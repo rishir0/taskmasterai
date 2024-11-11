@@ -4188,24 +4188,27 @@ if (inappropriateWords.some(pattern => pattern.test(content))) {
     return 'Warning: Inappropriate Content Detected';
 }
 
-    let lines = content.split('\n').map(line => line.trim());
+let lines = content.split('\n').map(line => line.trim());
 
-    // General sanitization: remove lines with malformed patterns, symbols, or incomplete thoughts
-    lines = lines.filter(line => {
-        const isMalformed = malformedIndicators.some(pattern => pattern.test(line));
-        const isOnlySymbols = /^\W+$/.test(line); // Matches lines with only non-word characters
-        const isTooShort = line.length <= 1;
-        const isCompleteThought = /[.!?]$/.test(line); // Check if it ends with . ! or ?
+const emojiPattern = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
 
-        return !isMalformed && !isOnlySymbols && !isTooShort && isCompleteThought;
-    });
+// General sanitization: remove lines with malformed patterns, symbols, or incomplete thoughts
+lines = lines.filter(line => {
+    const isMalformed = malformedIndicators.some(pattern => pattern.test(line));
+    const isOnlySymbols = /^\W+$/.test(line.replace(emojiPattern, '')); // Exclude emojis from symbol-only check
+    const isTooShort = line.length <= 1;
+    const isCompleteThought = /[.!?]$/.test(line.replace(emojiPattern, '')); // Allow emojis but check punctuation
 
-    // Remove empty lines
-    lines = lines.filter(Boolean);
+    return !isMalformed && !isOnlySymbols && !isTooShort && isCompleteThought;
+});
 
-    // Provide a fallback message if all lines are removed after sanitization
-    return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
+// Remove empty lines
+lines = lines.filter(Boolean);
+
+// Provide a fallback message if all lines are removed after sanitization
+return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
 }
+
 
 
 
@@ -4281,7 +4284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
             summaryContainer.innerHTML = `
                 <div class="summary-section">
-                    <p>Please log in to view your Smart Overivew.</p>
+                    <p>Please log in to view your Smart Overview.</p>
                 </div>
             `;
         }
