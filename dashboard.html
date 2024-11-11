@@ -3857,7 +3857,7 @@ async function generateAISummary(data) {
     // Each section receives displayName in instructions
     async function generateSection(sectionName, data, instructions) {
         const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text. I will NEVER include explanations in my responses.
 
         USER DATA:
         ${data}
@@ -3895,28 +3895,28 @@ async function generateAISummary(data) {
                 3. Use ⏰ for items due within 14 days
                 4. For each item, add ONE specific, actionable tip with a period
                 5. Keep total response under 150 words and ensure each sentence has a period
-                6. When outputting don't include the words "Urgent Items"`),
+                6. When outputting don't include the words "Urgent Items" and don't include explainations`),
             
             "In Progress": await generateSection("In Progress", formattedData, `
                 1. Start with ONE encouraging sentence to ${displayName}
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects, and add a period after each one
                 3. Add ONE practical next step for each item and add a period at the end
                 4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "In Progress"`),
+                5. When outputting don't include the words "In Progress" and don't include explainations`),
             
             "Coming Up": await generateSection("Coming Up", formattedData, `
                 1. For each item, suggest ONE preparation step
                 2. DO NOT ADD DATES
                 3. Keep total response under 150 words and ensure each sentence has a period
                 4. Use emojis sparingly and meaningfully
-                5. When outputting don't include the words "Coming Up"`),
+                5. When outputting don't include the words "Coming Up" and don't include explainations`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
                 1. Provide FOUR actionable recommendations
                 2. End with TWO motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "Overview & Recommendations"`)
+                5. When outputting don't include the words "Overview & Recommendations" and don't include explainations`)
         };
 
         // Clean up each section's response
