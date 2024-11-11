@@ -3856,8 +3856,8 @@ async function generateAISummary(data) {
 
     // Each section receives displayName in instructions
     async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence.
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. I will Generate ONLY the ${sectionName} section.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text.
 
         USER DATA:
         ${data}
@@ -3913,7 +3913,7 @@ async function generateAISummary(data) {
                 5. When outputting don't include the words "Coming Up"`),
             
             "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
-                1. Provide TWO actionable recommendations
+                1. Provide THREE actionable recommendations
                 2. End with ONE motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 150 words and each sentence has a period
@@ -4174,7 +4174,10 @@ const inappropriateWords = [
         /istrov/i,
         /For each task prepare exactly 1 step and for each goal/i,
         /Any questions feel free to ask./i,
-        /PLEASE PROCEED 💪./i
+        /PLEASE PROCEED 💪./i,
+        /This is TaskMaster, your friendly AI assistant./i,
+        /Best, TaskMaster./i
+        
 ]; 
 
 
