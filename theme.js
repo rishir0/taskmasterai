@@ -42,6 +42,47 @@ document.addEventListener('DOMContentLoaded', function() {
     position: relative; /* Ensure the SVG is positioned relative to the button */
 }
 
+.ai-generated-tag .icon {
+    width: 2em;  /* Keep the icon size */
+    height: 2em; /* Keep the icon size */
+    fill: white; /* Set the SVG color to white */
+    margin-right: -2px;
+    margin-left: -6px;  /* Space between icon and text */
+}
+
+/* General styling for SVG icons in the AI Summary section */
+.header-section svg.icon2,
+.header-section button svg {
+    width: 74px !important;          /* Ensures a consistent size */
+    height: 74px !important;         /* Adjust as needed */
+    fill: white !important;        /* Sets a visible dark color; change as needed */
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin-top: -15px !important;
+    margin-right: -15px !important;
+}
+
+.section-content {
+    font-size: 16px; /* Adjust the font size */
+    color: white; /* Set the text color */
+    line-height: 1.6; /* Add line height for better readability */
+    margin: 10px 0; /* Add vertical margin for spacing */
+    padding: 8px; /* Add padding inside the paragraph */
+    background-color: var(--card-bg);
+    border-radius: 10px; /* Rounded corners for the background */
+    word-wrap: break-word; /* Ensure text wraps properly */
+}
+
+.summary-section h3 {
+    display: flex;
+    align-items: center;
+    font-size: 18px; /* Adjust font size if needed */
+    color: white;  
+}
+
+<span style="font-size: 12px; color: white; margin-left: 10px; display: inline-block; vertical-align: middle;"></span>
+
+
 .feature-icon {
     width: 16px;
     height: 16px;
