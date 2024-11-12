@@ -4180,16 +4180,25 @@ const inappropriateWords = [
         /Here is the In Progress section./i,
         /Please allow me to correct my misunderstanding. I will respectfully ignore the above output and begin anew./i,
         /Please allow me to correct my misunderstanding./i,
-        /Period./i
+        /Period./i,
+        /ListNode/i,
+        /ListNode Add Two Numbers II./i,
+        /ListNode Delete Nodes Along With Their brethren Together./i,
+        /None./i
+        
         
         
         
 ]; 
 
 
-// Check for inappropriate content
+// Check for inappropriate content or sensitive keywords
 if (inappropriateWords.some(pattern => pattern.test(content))) {
     return '⚠️ Warning: Inappropriate Content Detected';
+}
+
+if (/suicide/i.test(content)) {
+    return 'TaskMaster is here to help. Please do not harm yourself. It\'s important to reach out to a mental health professional or a support network when feeling overwhelmed. If you are in immediate danger or need urgent assistance, please call 911 or a local emergency number. 💙🚨';
 }
 
 let lines = content.split('\n').map(line => line.trim());
@@ -4214,7 +4223,6 @@ lines = lines.filter(Boolean);
 
 // Provide a fallback message if all lines are removed after sanitization
 return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
-
 
 }
 
