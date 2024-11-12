@@ -4204,15 +4204,18 @@ lines = lines.filter(line => {
     const isTooShort = line.length <= 1;
     const isCompleteThought = /[.!?]$/.test(line.replace(emojiPattern, '')); // Allow emojis but check punctuation
 
-    return !isMalformed && !isOnlySymbols && !isTooShort && isCompleteThought;
+    return !isMalformed && !isOnlySymbols && !isTooShort && isCompleteThought && line !== '.';
 });
+
+// Ensure only one period at the end of lines with multiple periods
+lines = lines.map(line => line.replace(/\.+$/, '.'));
 
 // Remove empty lines
 lines = lines.filter(Boolean);
 
 // Provide a fallback message if all lines are removed after sanitization
 return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
-}
+
 
 
 
