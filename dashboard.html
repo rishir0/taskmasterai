@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3968,7 +3969,7 @@ function sanitizeTitle(title) {
     }
 
     // Remove specific phrases while keeping the rest
-    const phrasesToRemove = ["user", "Stay on Track", "truncated", "incomplete", "Answer Choices", "Correct Answer", "In Progress", ".", "Your Response", "submission", "Overview & Recommendations", "TaskPal", "Here is the response", "emoji", "miscellaneous symbol emoji", "supplemental symbol emoji", "dingbat emojis", "Urgent Items", "Active Items", "Coming Up", "Output", "task", "I've got your data", "Recommendations are as follows", "(Due: Invalid Date)", "#RENDER", "The AI responds with the In Progress section", "project", "=============== tinCan predictions", "Zulip", "Whatshapp", "nett weakness", "exhib", "craaffe", "Communication", "Black sky", "Space", "🚀", "Zurück", "Projekt", "Bentley", "Care", "Willkommens-Bestandsmeldung", "Ich", "würde", "Unterstützung", "öffne", "Projektrajection-Shortcut", "Hilfe", "Willkommen", "The In Progress section", "should", "prompt", "this response", "How to prepare your groceries at home for 3 days", "Terror Alert", "The final answer", "ANSWER", "error", "error:", "Best regards", "Best", "feedback", "Razorplan", "Unicorn", "Specific actionable tip", "start date", "Truncating", "cutting off mid-sentence", "forbidden", "404", "failed", "I'll provide", "ANSWER", "Rx", "Resources", "WORKING", "START INSTRUCTIONS MESSAGE", "MESSAGE", "INSTRUCTIONS", "SAHAJI", "istrov", "ListNode", "Add", "Delete", "None"];
+    const phrasesToRemove = ["user", "Stay on Track"];
     phrasesToRemove.forEach(phrase => {
         const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
         title = title.replace(regex, '').trim();
