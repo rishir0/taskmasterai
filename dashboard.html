@@ -3978,11 +3978,17 @@ function sanitizeTitle(title) {
         title = title.replace(regex, '').trim();
     });
 
-    // Remove trailing periods
+    // Check if the title is exactly "Loading..." and allow ellipsis
+    if (title === "Loading...") {
+        return title; // Return "Loading..." as is
+    }
+
+    // Remove trailing periods for all other titles
     title = title.replace(/\.+$/, '').trim();
 
-    return title; // Correct return statement placement
+    return title; // Return the sanitized title
 }
+
 
 
 
