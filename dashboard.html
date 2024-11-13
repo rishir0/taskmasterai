@@ -3963,13 +3963,19 @@ function sanitizeTitle(title) {
     // Remove any leading random symbols (excluding emojis)
     title = title.replace(/^[^\w\s\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+/u, '');
 
-    // Convert to lowercase except for the first letter if the title is all caps
-    if (title === title.toUpperCase()) {
-        title = title.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+// Convert to lowercase except for the first letter if the title is all caps
+if (title === title.toUpperCase()) {
+    title = title.toLowerCase();
+    
+    // Check if the first word is all caps
+    const firstWord = title.split(' ')[0];
+    if (firstWord === firstWord.toUpperCase()) {
+        title = title.replace(firstWord, firstWord.charAt(0).toUpperCase() + firstWord.slice(1));
     }
 
+
     // Remove specific phrases while keeping the rest
-    const phrasesToRemove = ["user", "Stay on Track"];
+    const phrasesToRemove = ["user", "Stay on Track","explanation","Task Action Items", "Items", "Action", "SDLesát",];
     phrasesToRemove.forEach(phrase => {
         const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
         title = title.replace(regex, '').trim();
