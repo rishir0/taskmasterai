@@ -3879,7 +3879,7 @@ async function generateSection(data, instructions) {
     const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
     const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
 
-    const title = titleMatch ? titleMatch[1].trim() : "Untitled";
+    const title = titleMatch ? titleMatch[1].trim() : "Loading...";
     const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
 
     return { title, content };
@@ -3964,18 +3964,17 @@ function sanitizeTitle(title) {
     // Remove any leading random symbols (excluding emojis)
     title = title.replace(/^[^\w\s\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+/u, '');
 
-// Convert to lowercase except for the first letter if the title is all caps
-if (title === title.toUpperCase()) {
-    title = title.toLowerCase();
-    
-    // Check if the first word is all caps
-    const firstWord = title.split(' ')[0];
-    if (firstWord === firstWord.toUpperCase()) {
+    // Check if the title is all uppercase
+    if (title === title.toUpperCase()) {
+        title = title.toLowerCase(); // Convert entire title to lowercase
+
+        // Capitalize the first word of the title
+        const firstWord = title.split(' ')[0];
         title = title.replace(firstWord, firstWord.charAt(0).toUpperCase() + firstWord.slice(1));
     }
-} 
 
-
+    return title;
+}
 
     // Remove specific phrases while keeping the rest
     const phrasesToRemove = ["user", "Stay on Track","explanation","Task Action Items", "Items", "Action", "SDLesát",];
@@ -4211,7 +4210,9 @@ const inappropriateWords = [
         /ListNode/i,
         /ListNode Add Two Numbers II./i,
         /ListNode Delete Nodes Along With Their brethren Together./i,
-        /None./i
+        /None./i,
+        /task1 prep. 💻 task2 prep. 💻 task3 prep.Content: step1. step2. step3.Content: item1. item2. item3.Content: step1. step2. step3./i,
+        
         
         
         
