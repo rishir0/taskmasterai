@@ -3948,15 +3948,17 @@ function renderSections(summaryData) {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        const sanitizedContent = sanitizeContent(content); 
+        const sanitizedTitle = sanitizeContent(title);
+        const sanitizedContent = sanitizeContent(content);
 
         sectionElement.innerHTML = `
-            <h3 class="section-title">${title}</h3>
-            <div class="section-content"> ${sanitizedContent.replace(/\n/g, '<br>')}</div>
+            <h3 class="section-title">${sanitizedTitle}</h3>
+            <div class="section-content">${sanitizedContent.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
+
 
 
 
