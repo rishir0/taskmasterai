@@ -3959,6 +3959,11 @@ function renderSections(summaryData) {
 }
 
 function sanitizeTitle(title) {
+    // If the title is a single emoji, symbol, letter, number, or period, return "Loading..."
+    if (/^[\p{Emoji}\p{P}\p{L}\p{N}\.]$/u.test(title)) {
+        return "Loading..."; // Return "Loading..." if the title matches the condition
+    }
+
     // Remove any leading random symbols (excluding emojis)
     title = title.replace(/^[^\w\s\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+/u, '');
 
@@ -3988,6 +3993,7 @@ function sanitizeTitle(title) {
 
     return title; // Return the sanitized title
 }
+
 
 
 
@@ -4216,6 +4222,9 @@ const inappropriateWords = [
         /ListNode Delete Nodes Along With Their brethren Together./i,
         /None./i,
         /task1 prep. 💻 task2 prep. 💻 task3 prep.Content: step1. step2. step3.Content: item1. item2. item3.Content: step1. step2. step3./i,
+        /Yes Yes Yes fill me in on anything I need to know this week./i,
+        /Yes/i,
+        
         
         
         
