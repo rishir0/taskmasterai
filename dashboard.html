@@ -3948,18 +3948,20 @@ function renderSections(summaryData) {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        const sanitizedTitle = sanitizeContent(title);
+        const sanitizedTitle = sanitizeTitle(title); // Updated sanitization for titles
         const sanitizedContent = sanitizeContent(content);
 
-        sectionElement.innerHTML = `
-            <h3 class="section-title">${sanitizedTitle}</h3>
-            <div class="section-content">${sanitizedContent.replace(/\n/g, '<br>')}</div>
-        `;
+        sectionElement.innerHTML = 
+            `<h3 class="section-title">${sanitizedTitle}</h3>
+            <div class="section-content">${sanitizedContent.replace(/\n/g, '<br>')}</div>`;
         summaryContainer.appendChild(sectionElement);
     });
 }
 
-
+// Updated function for title sanitization: no period required
+function sanitizeTitle(title) {
+    return title.trim().replace(/\.+$/, ''); // Remove any trailing periods
+}
 
 
 /**
