@@ -3845,6 +3845,45 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
+// Define the async function outside to avoid unexpected identifier issues
+async function generateSection(data, instructions) {
+        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. I will Generate ONLY the ${sectionName} section.
+        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text. I will NEVER include explanations in my responses.
+
+    USER DATA:
+    ${data}
+
+    INSTRUCTIONS FOR THIS SECTION:
+    ${instructions}
+
+    I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+    Title: [Section title]
+    Content: [Complete response here]`;
+
+    const response = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: sectionPrompt }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to generate section`);
+    }
+
+    const result = await response.json();
+    const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
+    const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
+
+    const title = titleMatch ? titleMatch[1].trim() : "Untitled";
+    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
+
+    return { title, content };
+}
+
+// Main function that generates the AI summary
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
@@ -3854,78 +3893,37 @@ async function generateAISummary(data) {
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
 
-    // Each section receives displayName in instructions
-    async function generateSection(sectionName, data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. I will Generate ONLY the ${sectionName} section.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text. I will NEVER include explanations in my responses.
-
-        USER DATA:
-        ${data}
-
-        INSTRUCTIONS FOR ${sectionName}:
-        ${instructions}
-
-        I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-        ${sectionName}:
-        [My complete response here]`;
-
-        const response = await fetch(modelEndpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${huggingFaceApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ inputs: sectionPrompt }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to generate ${sectionName}`);
-        }
-
-        const result = await response.json();
-        return result[0]?.generated_text || "";
-    }
-
     try {
-        // Generate each section separately
         const sections = {
-            "Urgent Items": await generateSection("Urgent Items", formattedData, `
+            urgentItems: await generateSection(formattedData, `
                 1. Start with a warm, brief greeting to ${displayName}
                 2. Use 🚨 for items due within 3 days
                 3. Use ⏰ for items due within 14 days
                 4. For each item, add ONE specific, actionable tip with a period
                 5. Keep total response under 150 words and ensure each sentence has a period
-                6. When outputting don't include the words "Urgent Items" and don't include explainations`),
+                6. When outputting don't include the words "Urgent Items" and don't include explanations`),
             
-            "In Progress": await generateSection("In Progress", formattedData, `
+            inProgress: await generateSection(formattedData, `
                 1. Start with ONE encouraging sentence to ${displayName}
                 2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects, and add a period after each one
                 3. Add ONE practical next step for each item and add a period at the end
                 4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "In Progress" and don't include explainations`),
+                5. When outputting don't include the words "In Progress" and don't include explanations`),
             
-            "Coming Up": await generateSection("Coming Up", formattedData, `
+            comingUp: await generateSection(formattedData, `
                 1. For each item, suggest ONE preparation step
                 2. DO NOT ADD DATES
                 3. Keep total response under 150 words and ensure each sentence has a period
                 4. Use emojis sparingly and meaningfully
-                5. When outputting don't include the words "Coming Up" and don't include explainations`),
+                5. When outputting don't include the words "Coming Up" and don't include explanations`),
             
-            "Overview & Recommendations": await generateSection("Overview & Recommendations", formattedData, `
+            overviewAndRecommendations: await generateSection(formattedData, `
                 1. Provide FOUR actionable recommendations
                 2. End with TWO motivational sentence to ${displayName}
                 3. Use emojis sparingly and meaningfully
                 4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "Overview & Recommendations" and don't include explainations`)
+                5. When outputting don't include the words "Overview & Recommendations" and don't include explanations`)
         };
-
-        // Clean up each section's response
-        Object.keys(sections).forEach(key => {
-            sections[key] = sections[key]
-                .replace(/^.*?:/, '') // Remove section header from response
-                .trim()               // Remove extra whitespace
-                .replace(/\n{3,}/g, '\n\n'); // Remove extra newlines
-        });
 
         return sections;
 
@@ -3938,29 +3936,28 @@ async function generateAISummary(data) {
     }
 }
 
-
+// Function to render the sections
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
 
-    // Remove old sections
     existingSections.forEach(section => section.remove());
 
-    // Add new sanitized sections
-    Object.entries(summaryData).forEach(([sectionTitle, rawContent]) => {
+    Object.values(summaryData).forEach(({ title, content }) => {
         const sectionElement = document.createElement('div');
         sectionElement.className = 'summary-section';
 
-        const sanitized = sanitizeContent(rawContent); // Process each section's content
+        const sanitizedContent = sanitizeContent(content); 
 
         sectionElement.innerHTML = `
-            <h3 class="section-title">${sectionTitle}</h3>
-            <div class="section-content"> ${sanitized.replace(/\n/g, '<br>')}</div>
+            <h3 class="section-title">${title}</h3>
+            <div class="section-content"> ${sanitizedContent.replace(/\n/g, '<br>')}</div>
         `;
         summaryContainer.appendChild(sectionElement);
     });
 }
+
 
 
 /**
