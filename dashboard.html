@@ -3916,33 +3916,36 @@ async function generateAISummary(data) {
     try {
         const sections = {
             urgentItems: await generateSection(formattedData, `
-                1. Start with a warm, brief greeting to ${displayName}
-                2. Use 🚨 for items due within 3 days
-                3. Use ⏰ for items due within 14 days
-                4. For each item, add ONE specific, actionable tip with a period
-                5. Keep total response under 150 words and ensure each sentence has a period
-                6. When outputting don't include the words "Urgent Items" and don't include explanations`),
+1. Begin with a friendly and motivational greeting to ${displayName}.
+2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
+3. For each item, provide a clear, actionable tip or next step.
+4. Ensure each tip is concise and ends with a period.
+5. Keep the response under 150 words; do not include the phrase "Urgent Items" or any explanations.
+`),
             
             inProgress: await generateSection(formattedData, `
-                1. Start with ONE encouraging sentence to ${displayName}
-                2. List active items with 🎯 for goals, 📋 for tasks, 📊 for projects, and add a period after each one
-                3. Add ONE practical next step for each item and add a period at the end
-                4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "In Progress" and don't include explanations`),
+1. Start with an encouraging and positive note for ${displayName}.
+2. List active items using 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
+3. Include a practical next step or recommendation for each item.
+4. Ensure each sentence is clear, concise, and ends with a period.
+5. Keep the response under 150 words; do not include the phrase "In Progress" or any explanations.
+`),
             
             comingUp: await generateSection(formattedData, `
-                1. For each item, suggest ONE preparation step
-                2. DO NOT ADD DATES
-                3. Keep total response under 150 words and ensure each sentence has a period
-                4. Use emojis sparingly and meaningfully
-                5. When outputting don't include the words "Coming Up" and don't include explanations`),
+1. Suggest one preparation step for each upcoming item, focusing on readiness.
+2. Avoid mentioning dates or specific timeframes.
+3. Use emojis sparingly to add clarity or emphasis where meaningful.
+4. Ensure each sentence is concise and ends with a period.
+5. Keep the response under 150 words; do not include the phrase "Coming Up" or any explanations.
+`),
             
             overviewAndRecommendations: await generateSection(formattedData, `
-                1. Provide FOUR actionable recommendations
-                2. End with TWO motivational sentence to ${displayName}
-                3. Use emojis sparingly and meaningfully
-                4. Keep total response under 150 words and ensure each sentence has a period
-                5. When outputting don't include the words "Overview & Recommendations" and don't include explanations`)
+1. Provide four actionable and personalized recommendations for ${displayName}.
+2. Conclude with two uplifting, motivational sentences tailored to ${displayName}.
+3. Use emojis sparingly and purposefully to highlight key points.
+4. Ensure each sentence is concise and ends with a period.
+5. Keep the response under 150 words; do not include the phrase "Overview & Recommendations" or any explanations.
+`)
         };
 
         return sections;
