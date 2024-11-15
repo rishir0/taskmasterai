@@ -3824,7 +3824,8 @@ async function fetchCollectionData(userId) {
             allData[collectionName] = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
+                type: collectionName.slice(0, -1), // e.g., 'task' for 'tasks'
+                completed: doc.data().completed || false // Add completed status check
             }));
         }
 
@@ -3867,13 +3868,24 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-// First AI call to generate section content
+// Define the async function for generating section content
 async function generateSection(data, instructions) {
+    const currentDate = new Date().toLocaleString(); // Get current date and time
+
     const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
 I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
 
-USER DATA:
-${data}
+USER DATA (Only incomplete tasks, goals, projects, or plans):
+${JSON.stringify(
+        Object.entries(data)
+            .filter(([key, items]) => key !== 'displayName' && items.some(item => !item.completed)) // Filter for incomplete items
+            .reduce((result, [key, items]) => ({
+                ...result,
+                [key]: items.filter(item => !item.completed) // Keep only incomplete items
+            }), {})
+    )}
+
+CURRENT DATE AND TIME: ${currentDate}
 
 INSTRUCTIONS FOR THIS SECTION:
 ${instructions}
@@ -3904,6 +3916,7 @@ Content: [Complete response here]`;
 
     return { title, content };
 }
+
 
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
