@@ -2350,7 +2350,7 @@ startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
 addButton.addEventListener('click', () => {
-  const name = `Custom Timer ${customTimerCount + 1}`;
+  const name = `Custom Timer`;
   const time = 3600; // Default to 1 hour for new custom timers
 
   saveCustomTimerToFirestore(name, time).then((timerId) => {
