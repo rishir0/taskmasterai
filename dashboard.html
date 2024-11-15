@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3869,45 +3870,7 @@ function renderPlaceholderMessage() {
 
 // First AI call to generate section content
 async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
-I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
-
-USER DATA:
-${data}
-
-INSTRUCTIONS FOR THIS SECTION:
-${instructions}
-
-I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-Title: [Section title]
-Content: [Complete response here]`;
-
-    const response = await fetch(modelEndpoint, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${huggingFaceApiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ inputs: sectionPrompt }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to generate section`);
-    }
-
-    const result = await response.json();
-    const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
-    const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
-
-    const title = titleMatch ? titleMatch[1].trim() : "Loading...";
-    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
-
-    return { title, content };
-}
-
-// Second AI call to review and verify the content
-async function reviewSection(title, content) {
-    const reviewPrompt = `Hello ${data.displayName}! I am TaskMaster, an advanced productivity-focused AI assistant. My role is to generate ONLY the section title and content, ensuring that all responses are accurate, concise, clear, and professional. Follow these steps carefully:
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, an advanced productivity-focused AI assistant. My role is to generate ONLY the section title and content, ensuring that all responses are accurate, concise, clear, and professional. Follow these steps carefully:
 
 USER DATA (Provided for generating the response):
 ${data}
@@ -3957,6 +3920,41 @@ Content: [Complete response here]
 
 Remember, **follow each step precisely** and ensure all formatting rules are applied. Do not stray from the instructions or make assumptions. Your response must be accurate, professional, and adhere strictly to these guidelines.
 `;
+
+    const response = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: sectionPrompt }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to generate section`);
+    }
+
+    const result = await response.json();
+    const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
+    const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
+
+    const title = titleMatch ? titleMatch[1].trim() : "Loading...";
+    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
+
+    return { title, content };
+}
+
+// Second AI call to review and verify the content
+async function reviewSection(title, content) {
+    const reviewPrompt = `Please review the following section for any errors, inconsistencies, or improvements. 
+Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content.
+
+Title: ${title}
+Content: ${content}
+
+Format the response exactly like this:
+Title: [Corrected title]
+Content: [Final, corrected content]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
