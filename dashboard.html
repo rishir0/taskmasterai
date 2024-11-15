@@ -3846,6 +3846,7 @@ async function fetchCollectionData(userId) {
     }
 }
 
+
 // Function to render placeholder message
 function renderPlaceholderMessage() {
     const aiSummarySection = document.getElementById('ai-summary-section');
@@ -3867,9 +3868,8 @@ function renderPlaceholderMessage() {
 
 // Define the async function for generating section content
 async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, your productivity-focused AI assistant, here to provide a personalized Smart Overview. 
-I will ensure every response feels like a conversation with you, avoiding random symbols like @,#,*,$,%,^,/ or \\ at the beginning or end of any sentence. 
-Every sentence will end with ONE period, and I will always start sentences properly.
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
+I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
 
 USER DATA:
 ${data}
@@ -3879,7 +3879,7 @@ ${instructions}
 
 I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
 Title: [Section title]
-Content: [Complete response without errors, odd symbols, or truncations.]`;
+Content: [Complete response here]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3924,27 +3924,34 @@ async function generateAISummary(data) {
     try {
         const sections = {
             urgentItems: await generateSection(formattedData, `
-1. Start with a warm greeting to ${displayName}.
-2. Highlight urgent items using 🚨 for items due within 3 days and ⏰ for items due within 14 days.
-3. Provide a specific, actionable next step for each.
-4. Exclude irrelevant categories, keeping the response concise.
+1. Begin with a friendly and motivational greeting to ${displayName}.
+2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
+3. Provide a clear, actionable tip for each item.
+4. Exclude any categories without urgent items.
+5. Keep under 150 words; exclude "Urgent Items" or explanations.
 `),
 
             inProgress: await generateSection(formattedData, `
-1. Begin with an encouraging note for ${displayName}.
-2. List current goals 🎯, tasks 📋, and projects 📊, with one practical tip for each.
-3. Exclude unrelated sections.
+1. Start with an encouraging note for ${displayName}.
+2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
+3. Include practical next steps for each.
+4. Exclude any categories that don’t have ongoing data.
+5. Keep under 150 words; avoid "In Progress."
 `),
 
             comingUp: await generateSection(formattedData, `
-1. Suggest one meaningful preparation step for each upcoming task or project.
-2. Keep tips direct, avoiding unnecessary details.
+1. Provide one preparation tip per upcoming item.
+2. Avoid dates unless critical.
+3. Use emojis meaningfully, not excessively.
+4. Exclude categories without upcoming data.
+5. Keep concise; omit "Coming Up."
 `),
 
             overviewAndRecommendations: await generateSection(formattedData, `
-1. Provide four personalized, actionable recommendations for ${displayName}.
-2. Conclude with two uplifting motivational points.
-3. Ensure all points are meaningful and concise.
+1. Provide four actionable, personalized recommendations for ${displayName}.
+2. End with two motivational sentences tailored to ${displayName}.
+3. Only include categories present in user data.
+4. Keep concise, under 150 words; omit "Overview."
 `)
         };
 
