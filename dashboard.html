@@ -3904,7 +3904,7 @@ Content: [Complete response here]`;
     return { title, content };
 }
 
-// Main function that generates the AI summary
+// Main function that generates the AI summary sequentially
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
@@ -3922,40 +3922,45 @@ async function generateAISummary(data) {
     }
 
     try {
-        const sections = {
-            urgentItems: await generateSection(formattedData, `
+        // Generate sections sequentially
+        const urgentItems = await generateSection(formattedData, `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
 3. Provide a clear, actionable tip for each item.
 4. Exclude any categories without urgent items.
 5. Keep under 150 words; exclude "Urgent Items" or explanations.
-`),
+        `);
 
-            inProgress: await generateSection(formattedData, `
+        const inProgress = await generateSection(formattedData, `
 1. Start with an encouraging note for ${displayName}.
 2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
 3. Include practical next steps for each.
 4. Exclude any categories that don’t have ongoing data.
 5. Keep under 150 words; avoid "In Progress."
-`),
+        `);
 
-            comingUp: await generateSection(formattedData, `
+        const comingUp = await generateSection(formattedData, `
 1. Provide one preparation tip per upcoming item.
 2. Avoid dates unless critical.
 3. Use emojis meaningfully, not excessively.
 4. Exclude categories without upcoming data.
 5. Keep concise; omit "Coming Up."
-`),
+        `);
 
-            overviewAndRecommendations: await generateSection(formattedData, `
+        const overviewAndRecommendations = await generateSection(formattedData, `
 1. Provide four actionable, personalized recommendations for ${displayName}.
 2. End with two motivational sentences tailored to ${displayName}.
 3. Only include categories present in user data.
 4. Keep concise, under 150 words; omit "Overview."
-`)
-        };
+        `);
 
-        return sections;
+        // Return sections object sequentially filled
+        return {
+            urgentItems,
+            inProgress,
+            comingUp,
+            overviewAndRecommendations
+        };
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
