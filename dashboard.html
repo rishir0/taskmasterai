@@ -1783,24 +1783,22 @@ scrollbar-thumb {
 
 
 
-<!-- Timer Sidebar -->
-<div class="timer-sidebar">
-    <div class="pomodoro-timer custom-timer">
-        <div style="display: flex; align-items: center;">
-            <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-            <button id="add-timer">+</button>
+   <!-- Timer Sidebar -->
+    <div class="timer-sidebar">
+        <div class="pomodoro-timer custom-timer">
+            <div style="display: flex; align-items: center;">
+                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+                <button id="add-timer">+</button>
+            </div>
+            <input type="text" id="timer" value="25:00" readonly>
+            <div class="button-container">
+                <button id="start">Start</button>
+                <button id="pause">Pause</button>
+                <button id="reset">Reset</button>
+            </div>
         </div>
-        <input type="text" id="timer" value="25:00" readonly>
-        <div class="button-container">
-            <button id="start">Start</button>
-            <button id="pause">Pause</button>
-            <button id="reset">Reset</button>
-        </div>
+        <div id="custom-timers"></div>
     </div>
-    <div id="custom-timers">
-        <p id="default-message" style="text-align: center; color: gray;">Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own!</p>
-    </div>
-</div>
 
 
 <!-- Edit Modal -->
