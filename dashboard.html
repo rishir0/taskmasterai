@@ -3811,26 +3811,26 @@ async function fetchCollectionData(userId) {
             console.warn('User not found');
             return null;
         }
-        
+
         const userInfo = userDoc.data();
         const displayName = userInfo.displayName || "User";
 
         // Fetch collections
         for (const collectionName of collections) {
             const snapshot = await db.collection(collectionName)
-                                  .where('userId', '==', userId)
-                                  .get();
-            
+                .where('userId', '==', userId)
+                .get();
+
             allData[collectionName] = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                type: collectionName.slice(0, -1)
+                type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
             }));
         }
-        
+
         // Check if any data is found
         const hasData = Object.values(allData).some(collection => collection.length > 0);
-        
+
         if (!hasData) {
             renderPlaceholderMessage();
             return null;
@@ -3845,6 +3845,7 @@ async function fetchCollectionData(userId) {
         return null;
     }
 }
+
 
 // Function to render placeholder message
 function renderPlaceholderMessage() {
@@ -3865,20 +3866,20 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
-// Define the async function outside to avoid unexpected identifier issues
+// Define the async function for generating section content
 async function generateSection(data, instructions) {
-        const sectionPrompt = `Hello ${displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. I will Generate ONLY the section content and title.
-        I will keep my response focused and complete. I will Never truncate or cut off mid-sentence. I will be professional. All my responses will end with periods. I will NEVER generate malformed text. I will NEVER include explanations in my responses.
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
+I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
 
-    USER DATA:
-    ${data}
+USER DATA:
+${data}
 
-    INSTRUCTIONS FOR THIS SECTION:
-    ${instructions}
+INSTRUCTIONS FOR THIS SECTION:
+${instructions}
 
-    I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
-    Title: [Section title]
-    Content: [Complete response here]`;
+I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+Title: [Section title]
+Content: [Complete response here]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3907,44 +3908,50 @@ async function generateSection(data, instructions) {
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
-        .filter(([key]) => key !== 'displayName') // Exclude displayName from formatted data
+        .filter(([key, items]) => key !== 'displayName' && items.length > 0) // Only include non-empty collections
         .map(([category, items]) => {
             return `${category.toUpperCase()}:\n` + 
                 items.map(item => `- ${item.type}: ${item[item.type]} (Due: ${new Date(item.dueDate?.seconds * 1000).toLocaleDateString() || 'No date'})`).join('\n');
         }).join('\n\n');
+
+    if (!formattedData.trim()) {
+        return {
+            title: "No Data",
+            content: "💬 TaskMaster needs more information! Add tasks, goals, projects, or plans to receive a tailored summary."
+        };
+    }
 
     try {
         const sections = {
             urgentItems: await generateSection(formattedData, `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
-3. For each item, provide a clear, actionable tip or next step.
-4. Ensure each tip is concise and ends with a period.
-5. Keep the response under 150 words; do not include the phrase "Urgent Items" or any explanations.
+3. Provide a clear, actionable tip for each item.
+4. Exclude any categories without urgent items.
+5. Keep under 150 words; exclude "Urgent Items" or explanations.
 `),
-            
+
             inProgress: await generateSection(formattedData, `
-1. Start with an encouraging and positive note for ${displayName}.
-2. List active items using 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
-3. Include a practical next step or recommendation for each item.
-4. Ensure each sentence is clear, concise, and ends with a period.
-5. Keep the response under 150 words; do not include the phrase "In Progress" or any explanations.
+1. Start with an encouraging note for ${displayName}.
+2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
+3. Include practical next steps for each.
+4. Exclude any categories that don’t have ongoing data.
+5. Keep under 150 words; avoid "In Progress."
 `),
-            
+
             comingUp: await generateSection(formattedData, `
-1. Suggest one preparation step for each upcoming item, focusing on readiness.
-2. Avoid mentioning dates or specific timeframes.
-3. Use emojis sparingly to add clarity or emphasis where meaningful.
-4. Ensure each sentence is concise and ends with a period.
-5. Keep the response under 150 words; do not include the phrase "Coming Up" or any explanations.
+1. Provide one preparation tip per upcoming item.
+2. Avoid dates unless critical.
+3. Use emojis meaningfully, not excessively.
+4. Exclude categories without upcoming data.
+5. Keep concise; omit "Coming Up."
 `),
-            
+
             overviewAndRecommendations: await generateSection(formattedData, `
-1. Provide four actionable and personalized recommendations for ${displayName}.
-2. Conclude with two uplifting, motivational sentences tailored to ${displayName}.
-3. Use emojis sparingly and purposefully to highlight key points.
-4. Ensure each sentence is concise and ends with a period.
-5. Keep the response under 150 words; do not include the phrase "Overview & Recommendations" or any explanations.
+1. Provide four actionable, personalized recommendations for ${displayName}.
+2. End with two motivational sentences tailored to ${displayName}.
+3. Only include categories present in user data.
+4. Keep concise, under 150 words; omit "Overview."
 `)
         };
 
@@ -3953,8 +3960,8 @@ async function generateAISummary(data) {
     } catch (error) {
         console.error('Error generating AI summary:', error);
         return {
-            "Error": "Failed to generate complete summary. Please try again.",
-            "Details": error.message
+            title: "Error",
+            content: "Failed to generate complete summary. Please try again."
         };
     }
 }
