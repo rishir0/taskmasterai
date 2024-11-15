@@ -2246,38 +2246,39 @@ function resetCustomTimer() {
     });
 }
 
-// Load existing custom timers when the page loads
+
+ // Listen for real-time updates to custom timers
 function loadCustomTimers() {
     const userId = firebase.auth().currentUser.uid;
+    const customTimersContainer = document.getElementById('custom-timers');
+    const defaultMessage = document.getElementById('default-message');
+
     db.collection('timers')
         .where('userId', '==', userId)
         .orderBy('createdAt')
-        .get()
-        .then(snapshot => {
-            const customTimersContainer = document.getElementById('custom-timers');
-            const defaultMessage = document.getElementById('default-message');
+        .onSnapshot(snapshot => {
+            if (!snapshot.empty) {
+                // Remove default message if timers exist
+                if (defaultMessage) {
+                    defaultMessage.remove();
+                }
 
-            // Remove default message if timers exist
-            if (!snapshot.empty && defaultMessage) {
-                defaultMessage.remove();
-            }
-
-            snapshot.forEach(doc => {
-                const timer = doc.data();
-                addCustomTimerFromFirestore(doc.id, timer.name, timer.time);
-            });
-
-            // Show default message if no timers exist
-            if (snapshot.empty && !defaultMessage) {
+                // Clear and update custom timers
+                customTimersContainer.innerHTML = ''; 
+                snapshot.forEach(doc => {
+                    const timer = doc.data();
+                    addCustomTimerFromFirestore(doc.id, timer.name, timer.time);
+                });
+            } else {
+                // Show default message if no timers exist
                 customTimersContainer.innerHTML = `
                     <p id="default-message" style="text-align: center; color: gray;">
                         Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own!
                     </p>
                 `;
             }
-        })
-        .catch(error => {
-            console.error('Error loading custom timers:', error);
+        }, error => {
+            console.error('Error listening to custom timers:', error);
         });
 }
 
