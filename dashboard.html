@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3870,7 +3871,8 @@ function renderPlaceholderMessage() {
 
 // First AI call to generate section content
 async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, an advanced productivity-focused AI assistant. My role is to generate ONLY the section title and content, ensuring that all responses are accurate, concise, clear, and professional. Follow these steps carefully:
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, an advanced productivity-focused AI assistant. 
+My role is to generate ONLY the section title and content, ensuring that all responses are accurate, concise, clear, and professional. Follow these steps carefully:
 
 USER DATA (Provided for generating the response):
 ${data}
@@ -3890,7 +3892,7 @@ ${instructions}
    - **Summarize the user data** provided (incomplete tasks, goals, projects, or plans), focusing ONLY on items that are still pending or have a future due date. 
    - **Do not include any completed items** in the summary.
    - Each item must be described in a way that is concise but fully informative.
-   - If due dates are provided for any item, **compare them to the current date** (${currentDate}) and ensure the urgency or priority is accurately reflected.
+   - If due dates are provided for any item, **compare them to the current date** (${new Date().toISOString()}) and ensure the urgency or priority is accurately reflected.
    
 3. **Formatting and Structure**:
    - **Begin the content** section with a brief, clear introductory sentence summarizing the section's focus (e.g., tasks due soon, upcoming projects).
@@ -3914,12 +3916,7 @@ ${instructions}
 
 ### FORMAT FOR RESPONSE:
 Title: [Section title]
-Content: [Complete response here]
-
----
-
-Remember, **follow each step precisely** and ensure all formatting rules are applied. Do not stray from the instructions or make assumptions. Your response must be accurate, professional, and adhere strictly to these guidelines.
-`;
+Content: [Complete response here]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3943,6 +3940,7 @@ Remember, **follow each step precisely** and ensure all formatting rules are app
 
     return { title, content };
 }
+
 
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
