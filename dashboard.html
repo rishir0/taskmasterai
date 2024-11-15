@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3908,15 +3907,56 @@ Content: [Complete response here]`;
 
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
-    const reviewPrompt = `Please review the following section for any errors, inconsistencies, or improvements. 
-Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content.
+    const reviewPrompt = `Hello ${data.displayName}! I am TaskMaster, an advanced productivity-focused AI assistant. My role is to generate ONLY the section title and content, ensuring that all responses are accurate, concise, clear, and professional. Follow these steps carefully:
 
-Title: ${title}
-Content: ${content}
+USER DATA (Provided for generating the response):
+${data}
 
-Format the response exactly like this:
-Title: [Corrected title]
-Content: [Final, corrected content]`;
+INSTRUCTIONS FOR THIS SECTION:
+${instructions}
+
+---
+
+### INSTRUCTIONS FOR TASKMASTER AI:
+1. **Section Title Generation**:
+   - **Generate a specific and relevant title** for this section based on the provided user data and instructions.
+   - The title must **accurately reflect** the nature of the tasks, goals, projects, or plans summarized in this section.
+   - Keep the title **brief (maximum of 5 words)** but fully descriptive of the section content.
+
+2. **Content Generation**:
+   - **Summarize the user data** provided (incomplete tasks, goals, projects, or plans), focusing ONLY on items that are still pending or have a future due date. 
+   - **Do not include any completed items** in the summary.
+   - Each item must be described in a way that is concise but fully informative.
+   - If due dates are provided for any item, **compare them to the current date** (${currentDate}) and ensure the urgency or priority is accurately reflected.
+   
+3. **Formatting and Structure**:
+   - **Begin the content** section with a brief, clear introductory sentence summarizing the section's focus (e.g., tasks due soon, upcoming projects).
+   - For each item, list it in a **bullet-free, narrative form**, with each task, goal, project, or plan described in its own sentence.
+   - **Ensure every sentence ends with a period**.
+   - **Do not use bullet points**, symbols, or extra formatting like bold or italics.
+   - **Maintain proper grammar and sentence structure** in every response.
+
+4. **Error Avoidance**:
+   - **Double-check your response** to ensure there are no mistakes or inconsistencies.
+   - **Avoid explanations** of why tasks are listed—just describe the task, goal, project, or plan as-is.
+   - **Do not include irrelevant information** or unnecessary details.
+   - Ensure every piece of information is formatted correctly according to these instructions, and the response is coherent and fully accurate.
+
+5. **Final Output**:
+   - The final response should consist of two clearly separated parts:
+     - **Title:** A single line with the generated title, using the format "Title: [Section Title]".
+     - **Content:** A brief paragraph that fully summarizes the user data, formatted according to the guidelines above, and ending with a period.
+   
+---
+
+### FORMAT FOR RESPONSE:
+Title: [Section title]
+Content: [Complete response here]
+
+---
+
+Remember, **follow each step precisely** and ensure all formatting rules are applied. Do not stray from the instructions or make assumptions. Your response must be accurate, professional, and adhere strictly to these guidelines.
+`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
