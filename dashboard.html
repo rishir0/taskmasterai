@@ -1783,22 +1783,25 @@ scrollbar-thumb {
 
 
 
-    <!-- Timer Sidebar -->
-    <div class="timer-sidebar">
-        <div class="pomodoro-timer custom-timer">
-            <div style="display: flex; align-items: center;">
-                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                <button id="add-timer">+</button>
-            </div>
-            <input type="text" id="timer" value="25:00" readonly>
-            <div class="button-container">
-                <button id="start">Start</button>
-                <button id="pause">Pause</button>
-                <button id="reset">Reset</button>
-            </div>
+<!-- Timer Sidebar -->
+<div class="timer-sidebar">
+    <div class="pomodoro-timer custom-timer">
+        <div style="display: flex; align-items: center;">
+            <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+            <button id="add-timer">+</button>
         </div>
-        <div id="custom-timers"></div>
+        <input type="text" id="timer" value="25:00" readonly>
+        <div class="button-container">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
     </div>
+    <div id="custom-timers">
+        <p id="default-message" style="text-align: center; color: gray;">Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own!</p>
+    </div>
+</div>
+
 
 <!-- Edit Modal -->
 <div id="edit-modal" class="edit-modal">
@@ -2253,15 +2256,33 @@ function loadCustomTimers() {
         .orderBy('createdAt')
         .get()
         .then(snapshot => {
+            const customTimersContainer = document.getElementById('custom-timers');
+            const defaultMessage = document.getElementById('default-message');
+
+            // Remove default message if timers exist
+            if (!snapshot.empty && defaultMessage) {
+                defaultMessage.remove();
+            }
+
             snapshot.forEach(doc => {
                 const timer = doc.data();
                 addCustomTimerFromFirestore(doc.id, timer.name, timer.time);
             });
+
+            // Show default message if no timers exist
+            if (snapshot.empty && !defaultMessage) {
+                customTimersContainer.innerHTML = `
+                    <p id="default-message" style="text-align: center; color: gray;">
+                        Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own!
+                    </p>
+                `;
+            }
         })
         .catch(error => {
             console.error('Error loading custom timers:', error);
         });
 }
+
 
 // Save the custom timer to Firestore
 function saveCustomTimerToFirestore(name, time) {
@@ -4224,6 +4245,8 @@ const inappropriateWords = [
         /task1 prep. 💻 task2 prep. 💻 task3 prep.Content: step1. step2. step3.Content: item1. item2. item3.Content: step1. step2. step3./i,
         /Yes Yes Yes fill me in on anything I need to know this week./i,
         /Yes/i,
+        /PREPARATION STEPS CONTENT: In order to address the task/i
+        
         
         
         
@@ -4311,7 +4334,7 @@ async function updateAISummary(userId) {
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <p>Unable to generate summary at this time. Please try again later.</p>
+                <p>Unable to generate your Smart Overview at this time. Please try again later.</p>
                 <p class="error-details">Error: ${error.message}</p>
             </div>
         `;
