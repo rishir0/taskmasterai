@@ -4133,20 +4133,23 @@ if (/suicide/i.test(content)) {
 // Split content into individual lines
 let lines = content.split('\n').map(line => line.trim());
 
-// Basic sanitization: ensure lines are not empty or only symbols
-lines = lines.filter(line => {
-    const isOnlySymbols = /^\W+$/.test(line);
-    return !isOnlySymbols && line !== '.';
-});
+// Define a regex pattern to remove unwanted symbols (excluding !, periods, and emojis)
+const allowedSymbols = /[!.,\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
+
+// Remove lines that don't end with a period and clean up unwanted symbols
+lines = lines.filter(line => line.endsWith('.')).map(line => 
+    line.replace(/[^a-zA-Z0-9\s.!]+/g, '').replace(/\s+/g, ' ').trim()
+);
 
 // Ensure only one period at the end of lines with multiple periods
 lines = lines.map(line => line.replace(/\.+$/, '.'));
 
-// Remove empty lines
+// Remove empty lines after processing
 lines = lines.filter(Boolean);
 
 // Provide a fallback message if all lines are removed after sanitization
 return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
+
 
 
 }
