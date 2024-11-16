@@ -1537,10 +1537,12 @@ scrollbar-thumb {
 .weather-section {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: #eef7ff;
+    background-color: var(--card-bg, #ffffff); /* Use 'card-bg' variable or fallback to white */
     border: 1px solid #d0e7ff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: calc(100% + 20px); /* Increase the card width */
+    margin-left: -10px; /* Center the card visually */
 }
 
 .weather-section h2 {
@@ -1552,6 +1554,7 @@ scrollbar-thumb {
     font-size: 0.9rem;
     color: #555;
 }
+
 
 
 
