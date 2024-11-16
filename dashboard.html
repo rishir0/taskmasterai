@@ -1505,22 +1505,23 @@ scrollbar-thumb {
     }
 }
 
-
-/* Ellipsis animation for "Generating your Smart Overview..." */
-@keyframes ellipsis2 {
-    0% { content: ""; }
-    33% { content: "."; }
-    66% { content: ".."; }
-    100% { content: "..."; }
+.fade-in-word {
+    opacity: 0;
+    transform: translateY(10px);
+    display: inline-block;
+    animation: fadeIn 0.5s ease forwards;
 }
 
-#ellipsis2::after {
-    content: "";
-    animation: ellipsis2 1.5s infinite steps(1, end);
-    font-size: 20px; /* Match ellipsis size with the text */
-    color: white; /* Make the ellipsis prominent */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
 
 
     </style>
@@ -1729,14 +1730,6 @@ scrollbar-thumb {
         </div>
     </div>
 
-
-<div id="ai-summary-section">
-    <div class="ai-assistant-card">
-        <div class="summary-section loading-state">
-            <p>Generating your smart overview... <span id="ellipsis2"></span></p>
-        </div>
-    </div>
-</div>
 
 
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
@@ -4045,7 +4038,7 @@ async function generateAISummary(data) {
     }
 }
 
-// Function to render the sections
+// Function to render the sections with word-by-word fade-in animation
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
@@ -4060,12 +4053,26 @@ function renderSections(summaryData) {
         const sanitizedTitle = sanitizeTitle(title); // Updated sanitization for titles
         const sanitizedContent = sanitizeContent(content);
 
-        sectionElement.innerHTML = 
-            `<h3 class="section-title">${sanitizedTitle}</h3>
-            <div class="section-content">${sanitizedContent.replace(/\n/g, '<br>')}</div>`;
+        // Create content container
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'section-content';
+
+        // Split sanitized content into words and animate them
+        const words = sanitizedContent.split(' ');
+        words.forEach((word, index) => {
+            const wordSpan = document.createElement('span');
+            wordSpan.textContent = word + ' ';
+            wordSpan.classList.add('fade-in-word');
+            wordSpan.style.animationDelay = `${index * 0.1}s`; // Delays each word by 0.1s
+            contentContainer.appendChild(wordSpan);
+        });
+
+        sectionElement.innerHTML = `<h3 class="section-title">${sanitizedTitle}</h3>`;
+        sectionElement.appendChild(contentContainer);
         summaryContainer.appendChild(sectionElement);
     });
 }
+
 
 function sanitizeTitle(title) {
     // If the title is a single emoji, symbol, letter, number, or period, return "Loading..."
@@ -4189,7 +4196,7 @@ function showLoading() {
 
     const loadingSection = document.createElement('div');
     loadingSection.className = 'summary-section loading-state';
-    loadingSection.innerHTML = '<p>Generating your smart overview... <span id="ellipsis2"></span></p>';
+    loadingSection.innerHTML = '<p>Generating your smart overview...</p>';
     summaryContainer.appendChild(loadingSection);
 }
 
