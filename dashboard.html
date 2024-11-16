@@ -1534,6 +1534,26 @@ scrollbar-thumb {
     transform: translateX(0); /* Move into position */
 }
 
+.weather-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #eef7ff;
+    border: 1px solid #d0e7ff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.weather-section h2 {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.weather-section p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+
 
 
     </style>
@@ -1814,22 +1834,35 @@ scrollbar-thumb {
 
 
 
-   <!-- Timer Sidebar -->
-    <div class="timer-sidebar">
-        <div class="pomodoro-timer custom-timer">
-            <div style="display: flex; align-items: center;">
-                <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
-                <button id="add-timer">+</button>
-            </div>
-            <input type="text" id="timer" value="25:00" readonly>
-            <div class="button-container">
-                <button id="start">Start</button>
-                <button id="pause">Pause</button>
-                <button id="reset">Reset</button>
-            </div>
+<!-- Timer Sidebar -->
+<div class="timer-sidebar">
+
+    <!-- Weather Section -->
+    <div class="weather-section">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 style="margin: 0;">Today's Weather</h2>
+            <span id="weather-emoji" style="font-size: 1.5rem;">🌤️</span>
         </div>
-        <div id="custom-timers"></div>
+        <p id="weather-info" style="margin: 5px 0;">Loading your weather...</p>
     </div>
+
+    <!-- Pomodoro Timer Section -->
+    <div class="pomodoro-timer custom-timer">
+        <div style="display: flex; align-items: center;">
+            <h2 contenteditable="true" style="flex-grow: 1; margin: 0;">Pomodoro Timer</h2>
+            <button id="add-timer">+</button>
+        </div>
+        <input type="text" id="timer" value="25:00" readonly>
+        <div class="button-container">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+
+    <div id="custom-timers"></div>
+</div>
+
 
 
 <!-- Edit Modal -->
@@ -3533,10 +3566,113 @@ async function displayGreeting(username) {
     }
 }
 
+const apiKey = "e3f77d4d29e24862b4f190231241611"; // Your WeatherAPI key
+const weatherInfo = document.getElementById("weather-info");
+const weatherEmoji = document.getElementById("weather-emoji");
+
+// Fetch weather and update UI
+function fetchWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+                const response = await fetch(
+                    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}`
+                );
+                const data = await response.json();
+
+                // Update the weather info and emoji
+                const condition = data.current.condition.text;
+                const temp = data.current.temp_c; // Temperature in Celsius
+                const emoji = getWeatherEmoji(data.current.condition.code);
+
+                weatherEmoji.textContent = emoji;
+                weatherInfo.textContent = `${condition}, ${temp}°C`;
+            } catch (error) {
+                weatherInfo.textContent = "Failed to fetch weather.";
+                console.error("Weather fetch error:", error);
+            }
+        });
+    } else {
+        weatherInfo.textContent = "Geolocation not supported.";
+    }
+}
+
+// Function to map weather codes to emojis
+function getWeatherEmoji(code) {
+    const weatherConditions = {
+        1000: "☀️", // Sunny
+        1003: "🌤️", // Partly cloudy
+        1006: "☁️", // Cloudy
+        1009: "🌥️", // Overcast
+        1063: "🌦️", // Patchy rain possible
+        1183: "🌧️", // Light rain
+        1195: "⛈️", // Heavy rain
+        1225: "❄️", // Snowy
+        1240: "🌦️", // Light rain showers
+        // Add more mappings as needed
+    };
+    return weatherConditions[code] || "🌍"; // Default emoji
+}
+
 // Call the functions when the page loads
 window.addEventListener('load', () => {
     displayRandomQuote();
+    fetchWeather();
+
 });
+
+
+const apiKey = "e3f77d4d29e24862b4f190231241611"; // Your WeatherAPI key
+const weatherInfo = document.getElementById("weather-info");
+const weatherEmoji = document.getElementById("weather-emoji");
+
+// Fetch weather and update UI
+function fetchWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+                const response = await fetch(
+                    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}`
+                );
+                const data = await response.json();
+
+                // Update the weather info and emoji
+                const condition = data.current.condition.text;
+                const temp = data.current.temp_c; // Temperature in Celsius
+                const emoji = getWeatherEmoji(data.current.condition.code);
+
+                weatherEmoji.textContent = emoji;
+                weatherInfo.textContent = `${condition}, ${temp}°C`;
+            } catch (error) {
+                weatherInfo.textContent = "Failed to fetch weather.";
+                console.error("Weather fetch error:", error);
+            }
+        });
+    } else {
+        weatherInfo.textContent = "Geolocation not supported.";
+    }
+}
+
+// Function to map weather codes to emojis
+function getWeatherEmoji(code) {
+    const weatherConditions = {
+        1000: "☀️", // Sunny
+        1003: "🌤️", // Partly cloudy
+        1006: "☁️", // Cloudy
+        1009: "🌥️", // Overcast
+        1063: "🌦️", // Patchy rain possible
+        1183: "🌧️", // Light rain
+        1195: "⛈️", // Heavy rain
+        1225: "❄️", // Snowy
+        1240: "🌦️", // Light rain showers
+        // Add more mappings as needed
+    };
+    return weatherConditions[code] || "🌍"; // Default emoji
+}
+
+
 
 
 // Function to load productivity data
