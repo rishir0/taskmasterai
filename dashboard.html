@@ -3941,8 +3941,8 @@ IMPORTANT: Failure to adhere to this prompt will result in an error response.`;
     const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
     const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
 
-    const title = titleMatch ? titleMatch[1].trim() : "Loading...";
-    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
+    const title = titleMatch ? titleMatch[1].trim() : "FAILED";
+    const content = contentMatch ? contentMatch[1].trim() : "💬 FAILED";
 
     return { title, content };
 }
