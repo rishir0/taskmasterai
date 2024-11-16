@@ -1538,27 +1538,55 @@ scrollbar-thumb {
     margin-bottom: 1.5rem;
     padding: 1rem;
     background-color: var(--card-bg, #ffffff); /* Use 'card-bg' variable or fallback to white */
-    border: none; /* Removed the border */
+    border: none; /* No border */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: calc(99% + 0px); /* Increase the card width */
+    width: 99%; /* Adjust width */
     margin: 0 auto; /* Center horizontally within its container */
     text-align: left; /* Align content to the left */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Add spacing between items */
 }
 
 .weather-section h2 {
-    font-size: 1.2rem;
-    color: #ffffff; /* Text color updated to white */
+    font-size: 1.4rem;
+    color: #ffffff; /* Black for visibility */
+    margin-bottom: 0.5rem;
 }
 
 .weather-section p {
-    font-size: 0.9rem;
-    color: #ffffff; /* Text color updated to white */
+    font-size: 1rem;
+    color: #ffffff; /* Dark gray for better contrast */
+    margin: 0; /* Remove margins for cleaner layout */
 }
 
-.weather-section div {
-    margin-bottom: 0.5rem; /* Add spacing between elements */
+.weather-section .progress-bar-container {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
 }
+
+.weather-section .progress-bar-container span {
+    font-size: 0.8rem;
+    margin-right: 5px; /* Space between icon and bar */
+}
+
+.weather-section .progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    width: 150px;
+    height: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.weather-section .progress-bar .filled {
+    background-color: #ff8c00;
+    height: 100%;
+    width: 0; /* Dynamically set via JS */
+}
+
 
 
 
@@ -3644,7 +3672,7 @@ function fetchWeather() {
                 );
                 const data = await response.json();
 
-                // Check for Fahrenheit or Celsius based on country
+                // Determine unit and country
                 const country = data.location.country;
                 const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
                 const temp = isFahrenheit ? data.current.temp_f : data.current.temp_c; // Temp in appropriate unit
@@ -3659,7 +3687,7 @@ function fetchWeather() {
                 const emoji = getWeatherEmoji(data.current.condition.code);
 
                 // Generate a mini temperature bar
-                const tempBar = generateTempBar(data.current.temp_c);
+                const tempPercent = generateTempBarPercent(data.current.temp_c);
 
                 weatherEmoji.textContent = emoji;
                 weatherInfo.innerHTML = `
@@ -3667,7 +3695,13 @@ function fetchWeather() {
                         <h2>${data.location.name}, ${data.location.region}</h2>
                         <p>${condition} ${emoji}</p>
                         <p><strong>${temp}${unit}</strong></p>
-                        ${tempBar}
+                        <div class="progress-bar-container">
+                            <span>❄️</span>
+                            <div class="progress-bar">
+                                <div class="filled" style="width: ${tempPercent}%;"></div>
+                            </div>
+                            <span>🔥</span>
+                        </div>
                         <p>🌬️ Wind: ${windSpeed}</p>
                         <p>💧 Humidity: ${humidity}%</p>
                     </div>
@@ -3681,7 +3715,6 @@ function fetchWeather() {
         weatherInfo.textContent = "Geolocation not supported.";
     }
 }
-
 
 // Function to map weather codes to emojis
 function getWeatherEmoji(code) {
@@ -3700,25 +3733,13 @@ function getWeatherEmoji(code) {
     return weatherConditions[code] || "🌍"; // Default emoji
 }
 
-// Function to generate a mini temperature progress bar
-function generateTempBar(tempCelsius) {
+// Function to calculate percentage for progress bar
+function generateTempBarPercent(tempCelsius) {
     const minTemp = -10; // Minimum scale in Celsius
     const maxTemp = 40; // Maximum scale in Celsius
-    const tempPercent = Math.min(Math.max((tempCelsius - minTemp) / (maxTemp - minTemp), 0), 1); // Normalize between 0 and 1
-    const barLength = 20; // Total number of bars
-    const filledBars = Math.round(tempPercent * barLength);
-    const emptyBars = barLength - filledBars;
-
-    return `
-        <div style="display: flex; justify-content: center; align-items: center;">
-            <span style="font-size: 0.8rem;">❄️</span>
-            <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
-                <div style="background-color: #ff8c00; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
-            </div>
-            <span style="font-size: 0.8rem;">🔥</span>
-        </div>
-    `;
+    return Math.min(Math.max((tempCelsius - minTemp) / (maxTemp - minTemp) * 100, 0), 100);
 }
+
 
 
 
