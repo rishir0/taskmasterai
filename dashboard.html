@@ -3648,8 +3648,9 @@ async function fetchWeather() {
                 const country = data.location.country;
                 const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
 
-                // Get temperature, condition, and other details
+                // Get all relevant data
                 let temp = isFahrenheit ? data.current.temp_f : data.current.temp_c;
+                let feelsLike = isFahrenheit ? data.current.feelslike_f : data.current.feelslike_c;
                 let unit = isFahrenheit ? "°F" : "°C";
                 const condition = data.current.condition.text;
                 const humidity = data.current.humidity; // Humidity %
@@ -3658,33 +3659,21 @@ async function fetchWeather() {
                     : `${data.current.wind_kph} kph`; // Wind speed in appropriate unit
                 const emoji = getWeatherEmoji(data.current.condition.code);
 
-                // Generate the temperature bar
+                // Generate the temperature bar (convert Celsius for display only)
                 const tempBar = generateTempBar(temp);
 
-                // Update the UI
+                // Render the UI
                 weatherEmoji.textContent = emoji;
                 weatherInfo.innerHTML = `
                     <div class="weather-section">
                         <h2>${data.location.name}, ${data.location.region}</h2>
                         <p>${condition} ${emoji}</p>
-                        <p><strong>${temp}${unit}</strong></p>
+                        <p><strong>${temp}${unit}</strong> (Feels like: ${feelsLike}${unit})</p>
                         ${tempBar}
                         <p>🌬️ Wind: ${windSpeed}</p>
                         <p>💧 Humidity: ${humidity}%</p>
                     </div>
                 `;
-
-                // If initially in Celsius, update to Fahrenheit for specific countries
-                if (!isFahrenheit) {
-                    setTimeout(async () => {
-                        temp = data.current.temp_f;
-                        unit = "°F";
-
-                        // Update only the temperature and tempBar for clarity
-                        weatherInfo.querySelector("strong").textContent = `${temp}${unit}`;
-                        weatherInfo.querySelector(".weather-section div").innerHTML = generateTempBar(temp);
-                    }, 1000); // Delay to simulate re-check
-                }
             } catch (error) {
                 weatherInfo.textContent = "Failed to fetch weather.";
                 console.error("Weather fetch error:", error);
@@ -3694,8 +3683,6 @@ async function fetchWeather() {
         weatherInfo.textContent = "Geolocation not supported.";
     }
 }
-
-
 
 // Function to map weather codes to emojis
 function getWeatherEmoji(code) {
@@ -3714,38 +3701,25 @@ function getWeatherEmoji(code) {
     return weatherConditions[code] || "🌍"; // Default emoji
 }
 
-// Function to generate a temperature progress bar with labels and better context
+// Function to generate a mini temperature progress bar
 function generateTempBar(tempCelsius) {
     const minTemp = -10; // Minimum scale in Celsius
     const maxTemp = 40; // Maximum scale in Celsius
     const tempPercent = Math.min(Math.max((tempCelsius - minTemp) / (maxTemp - minTemp), 0), 1); // Normalize between 0 and 1
     const barLength = 20; // Total number of bars
     const filledBars = Math.round(tempPercent * barLength);
-    const emptyBars = barLength - filledBars;
-
-    // Determine the color based on temperature
-    let barColor = "#007BFF"; // Default to blue (cold)
-    if (tempCelsius > 15) barColor = "#FFA500"; // Orange for warm
-    if (tempCelsius > 30) barColor = "#FF4500"; // Red for hot
 
     return `
-        <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 0; flex-direction: column;">
-            <div style="font-size: 0.9rem; margin-bottom: 5px;">
-                Temperature Range: ❄️ ${minTemp}°C to 🔥 ${maxTemp}°C
+        <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 0;">
+            <span style="font-size: 0.8rem;">❄️</span>
+            <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
+                <div style="background-color: #ff8c00; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
             </div>
-            <div style="display: flex; align-items: center;">
-                <span style="font-size: 0.8rem;">❄️</span>
-                <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
-                    <div style="background-color: ${barColor}; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
-                </div>
-                <span style="font-size: 0.8rem;">🔥</span>
-            </div>
-            <div style="font-size: 0.9rem; margin-top: 5px;">
-                Current Temperature: <strong>${tempCelsius}°C</strong>
-            </div>
+            <span style="font-size: 0.8rem;">🔥</span>
         </div>
     `;
 }
+
 
 
 
