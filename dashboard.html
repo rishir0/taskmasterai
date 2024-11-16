@@ -1541,7 +1541,7 @@ scrollbar-thumb {
     border: none; /* Removed the border */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: calc(100% + 0px); /* Increase the card width */
+    width: calc(95% + 0px); /* Increase the card width */
     margin-left: -10px; /* Center the card visually */
 }
 
@@ -3623,6 +3623,98 @@ window.addEventListener('load', () => {
     fetchWeather();
 
 });
+
+
+const apiKey = "e3f77d4d29e24862b4f190231241611"; // Your WeatherAPI key
+const weatherInfo = document.getElementById("weather-info");
+const weatherEmoji = document.getElementById("weather-emoji");
+
+// Fetch weather and update UI
+function fetchWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+                const response = await fetch(
+                    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}`
+                );
+                const data = await response.json();
+
+                // Determine unit and country
+                const country = data.location.country;
+                const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
+                const temp = isFahrenheit ? data.current.temp_f : data.current.temp_c; // Temp in appropriate unit
+                const unit = isFahrenheit ? "°F" : "°C";
+
+                // Update the weather info
+                const condition = data.current.condition.text;
+                const humidity = data.current.humidity; // Humidity %
+                const windSpeed = isFahrenheit
+                    ? `${data.current.wind_mph} mph`
+                    : `${data.current.wind_kph} kph`; // Wind speed in appropriate unit
+                const emoji = getWeatherEmoji(data.current.condition.code);
+
+                // Generate a mini temperature bar
+                const tempBar = generateTempBar(data.current.temp_c);
+
+                weatherEmoji.textContent = emoji;
+                weatherInfo.innerHTML = `
+                    <div style="text-align: center; font-size: 1.2rem;">
+                        <div><strong>${data.location.name}, ${data.location.region}</strong></div>
+                        <div>${condition} ${emoji}</div>
+                        <div><strong>${temp}${unit}</strong></div>
+                        ${tempBar}
+                        <div>🌬️ Wind: ${windSpeed}</div>
+                        <div>💧 Humidity: ${humidity}%</div>
+                    </div>
+                `;
+            } catch (error) {
+                weatherInfo.textContent = "Failed to fetch weather.";
+                console.error("Weather fetch error:", error);
+            }
+        });
+    } else {
+        weatherInfo.textContent = "Geolocation not supported.";
+    }
+}
+
+// Function to map weather codes to emojis
+function getWeatherEmoji(code) {
+    const weatherConditions = {
+        1000: "☀️", // Sunny
+        1003: "🌤️", // Partly cloudy
+        1006: "☁️", // Cloudy
+        1009: "🌥️", // Overcast
+        1063: "🌦️", // Patchy rain possible
+        1183: "🌧️", // Light rain
+        1195: "⛈️", // Heavy rain
+        1225: "❄️", // Snowy
+        1240: "🌦️", // Light rain showers
+        // Add more mappings as needed
+    };
+    return weatherConditions[code] || "🌍"; // Default emoji
+}
+
+// Function to generate a mini temperature progress bar
+function generateTempBar(tempCelsius) {
+    const minTemp = -10; // Minimum scale in Celsius
+    const maxTemp = 40; // Maximum scale in Celsius
+    const tempPercent = Math.min(Math.max((tempCelsius - minTemp) / (maxTemp - minTemp), 0), 1); // Normalize between 0 and 1
+    const barLength = 20; // Total number of bars
+    const filledBars = Math.round(tempPercent * barLength);
+    const emptyBars = barLength - filledBars;
+
+    return `
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <span style="font-size: 0.8rem;">❄️</span>
+            <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
+                <div style="background-color: #ff8c00; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
+            </div>
+            <span style="font-size: 0.8rem;">🔥</span>
+        </div>
+    `;
+}
+
 
 
 
