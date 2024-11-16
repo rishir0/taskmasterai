@@ -3416,30 +3416,120 @@ function displayRandomQuote() {
     }
 }
 
-// Function to display a greeting based on the time of day
-function displayGreeting(username) {
-    const currentHour = new Date().getHours();
-    let greeting;
-    let emoji;
+async function displayGreeting(username) {
+    const apiKey = 'e3f77d4d29e24862b4f190231241611'; // Your WeatherAPI key
+    const cacheKey = 'weatherDataCache'; // Key for localStorage
+    const cacheDuration = 30 * 60 * 1000; // Cache duration: 30 minutes
 
-    if (currentHour >= 5 && currentHour < 12) {
-        greeting = "Good morning";
-        emoji = "☀️"; // Sun emoji for morning
-    } else if (currentHour >= 12 && currentHour < 17) {
-        greeting = "Good afternoon";
-        emoji = "🌞"; // Sun with face emoji for afternoon
-    } else if (currentHour >= 17 && currentHour < 21) {
-        greeting = "Good evening";
-        emoji = "🌇"; // Sunset emoji for evening
-    } else {
-        greeting = "Good night";
-        emoji = "🌙"; // Crescent moon emoji for night
+    // Function to fetch weather data based on latitude and longitude
+    async function getWeather(lat, lon) {
+        const weatherApiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+        const response = await fetch(weatherApiUrl);
+        if (!response.ok) throw new Error('Weather data fetch failed');
+        return response.json();
     }
 
-    // Update the greeting in the <h1> element
-    const greetingElement = document.querySelector('.dashboard-header h1');
-    if (greetingElement) {
-        greetingElement.innerHTML = `${emoji} ${greeting}, <span id="displayName">${username}</span>!`;
+    // Function to get cached weather data if available and valid
+    function getCachedWeather() {
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            const parsedData = JSON.parse(cachedData);
+            const isCacheValid = Date.now() - parsedData.timestamp < cacheDuration;
+            if (isCacheValid) {
+                return parsedData.data;
+            }
+        }
+        return null;
+    }
+
+    // Function to cache weather data
+    function cacheWeatherData(data) {
+        const cachePayload = {
+            data,
+            timestamp: Date.now(),
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cachePayload));
+    }
+
+    // Use Geolocation API to get user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+
+                try {
+                    // Check cache first
+                    let weatherData = getCachedWeather();
+
+                    // If no valid cache, fetch new weather data
+                    if (!weatherData) {
+                        weatherData = await getWeather(latitude, longitude);
+                        cacheWeatherData(weatherData); // Cache the new data
+                    }
+
+                    const weatherCondition = weatherData.current.condition.text.toLowerCase();
+                    let emoji;
+
+                    // Map weather condition to emoji
+                    if (weatherCondition.includes('sun') || weatherCondition.includes('clear')) {
+                        emoji = '☀️'; // Sunny
+                    } else if (weatherCondition.includes('cloud')) {
+                        emoji = '☁️'; // Cloudy
+                    } else if (weatherCondition.includes('rain')) {
+                        emoji = '🌧️'; // Rainy
+                    } else if (weatherCondition.includes('thunder')) {
+                        emoji = '⛈️'; // Thunderstorm
+                    } else if (weatherCondition.includes('snow')) {
+                        emoji = '❄️'; // Snowy
+                    } else if (weatherCondition.includes('drizzle')) {
+                        emoji = '🌦️'; // Drizzle
+                    } else if (weatherCondition.includes('mist') || weatherCondition.includes('fog')) {
+                        emoji = '🌫️'; // Foggy
+                    } else {
+                        emoji = '🌍'; // Default Earth emoji
+                    }
+
+                    // Define the greeting based on time of day
+                    const currentHour = new Date().getHours();
+                    let greeting;
+
+                    if (currentHour >= 5 && currentHour < 12) {
+                        greeting = "Good morning";
+                    } else if (currentHour >= 12 && currentHour < 17) {
+                        greeting = "Good afternoon";
+                    } else if (currentHour >= 17 && currentHour < 21) {
+                        greeting = "Good evening";
+                    } else {
+                        greeting = "Good night";
+                    }
+
+                    // Update the greeting in the <h1> element
+                    const greetingElement = document.querySelector('.dashboard-header h1');
+                    if (greetingElement) {
+                        greetingElement.innerHTML = `${emoji} ${greeting}, <span id="displayName">${username}</span>!`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching weather data:', error);
+                }
+            },
+            (error) => {
+                console.error('Geolocation error:', error.message);
+                // Default greeting if location access fails
+                const fallbackGreeting = `🌍 Hello, <span id="displayName">${username}</span>!`;
+                const greetingElement = document.querySelector('.dashboard-header h1');
+                if (greetingElement) {
+                    greetingElement.innerHTML = fallbackGreeting;
+                }
+            }
+        );
+    } else {
+        console.error('Geolocation not supported by this browser.');
+        // Fallback for browsers without Geolocation API
+        const fallbackGreeting = `🌍 Hello, <span id="displayName">${username}</span>!`;
+        const greetingElement = document.querySelector('.dashboard-header h1');
+        if (greetingElement) {
+            greetingElement.innerHTML = fallbackGreeting;
+        }
     }
 }
 
