@@ -3634,7 +3634,7 @@ const weatherInfo = document.getElementById("weather-info");
 const weatherEmoji = document.getElementById("weather-emoji");
 
 // Fetch weather and update UI
-function fetchWeather() {
+async function fetchWeather() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
@@ -3644,13 +3644,13 @@ function fetchWeather() {
                 );
                 const data = await response.json();
 
-                // Check for Fahrenheit or Celsius based on country
+                // Determine whether to use Fahrenheit or Celsius
                 const country = data.location.country;
                 const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
-                const temp = isFahrenheit ? data.current.temp_f : data.current.temp_c; // Temp in appropriate unit
-                const unit = isFahrenheit ? "°F" : "°C";
 
-                // Update the weather info
+                // Get temperature, condition, and other details
+                let temp = isFahrenheit ? data.current.temp_f : data.current.temp_c;
+                let unit = isFahrenheit ? "°F" : "°C";
                 const condition = data.current.condition.text;
                 const humidity = data.current.humidity; // Humidity %
                 const windSpeed = isFahrenheit
@@ -3658,9 +3658,10 @@ function fetchWeather() {
                     : `${data.current.wind_kph} kph`; // Wind speed in appropriate unit
                 const emoji = getWeatherEmoji(data.current.condition.code);
 
-                // Generate a mini temperature bar
-                const tempBar = generateTempBar(data.current.temp_c);
+                // Generate the temperature bar
+                const tempBar = generateTempBar(temp);
 
+                // Update the UI
                 weatherEmoji.textContent = emoji;
                 weatherInfo.innerHTML = `
                     <div class="weather-section">
@@ -3672,6 +3673,18 @@ function fetchWeather() {
                         <p>💧 Humidity: ${humidity}%</p>
                     </div>
                 `;
+
+                // If initially in Celsius, update to Fahrenheit for specific countries
+                if (!isFahrenheit) {
+                    setTimeout(async () => {
+                        temp = data.current.temp_f;
+                        unit = "°F";
+
+                        // Update only the temperature and tempBar for clarity
+                        weatherInfo.querySelector("strong").textContent = `${temp}${unit}`;
+                        weatherInfo.querySelector(".weather-section div").innerHTML = generateTempBar(temp);
+                    }, 1000); // Delay to simulate re-check
+                }
             } catch (error) {
                 weatherInfo.textContent = "Failed to fetch weather.";
                 console.error("Weather fetch error:", error);
@@ -3681,6 +3694,7 @@ function fetchWeather() {
         weatherInfo.textContent = "Geolocation not supported.";
     }
 }
+
 
 
 // Function to map weather codes to emojis
@@ -3700,7 +3714,7 @@ function getWeatherEmoji(code) {
     return weatherConditions[code] || "🌍"; // Default emoji
 }
 
-// Function to generate a mini temperature progress bar
+// Function to generate a temperature progress bar with labels and better context
 function generateTempBar(tempCelsius) {
     const minTemp = -10; // Minimum scale in Celsius
     const maxTemp = 40; // Maximum scale in Celsius
@@ -3709,17 +3723,30 @@ function generateTempBar(tempCelsius) {
     const filledBars = Math.round(tempPercent * barLength);
     const emptyBars = barLength - filledBars;
 
-    return `
-<div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 0;">
-    <span style="font-size: 0.8rem;">❄️</span>
-    <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
-        <div style="background-color: #ff8c00; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
-    </div>
-    <span style="font-size: 0.8rem;">🔥</span>
-</div>
+    // Determine the color based on temperature
+    let barColor = "#007BFF"; // Default to blue (cold)
+    if (tempCelsius > 15) barColor = "#FFA500"; // Orange for warm
+    if (tempCelsius > 30) barColor = "#FF4500"; // Red for hot
 
+    return `
+        <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 0; flex-direction: column;">
+            <div style="font-size: 0.9rem; margin-bottom: 5px;">
+                Temperature Range: ❄️ ${minTemp}°C to 🔥 ${maxTemp}°C
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span style="font-size: 0.8rem;">❄️</span>
+                <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
+                    <div style="background-color: ${barColor}; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
+                </div>
+                <span style="font-size: 0.8rem;">🔥</span>
+            </div>
+            <div style="font-size: 0.9rem; margin-top: 5px;">
+                Current Temperature: <strong>${tempCelsius}°C</strong>
+            </div>
+        </div>
     `;
 }
+
 
 
 
