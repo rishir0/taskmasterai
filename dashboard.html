@@ -3993,14 +3993,14 @@ IMPORTANT: Ensure the response is error-free and concise.`;
 
 
 // Helper function to retry a section until it succeeds
-async function retrySection(generateFunc, reviewFunc, data, instructions, maxRetries = 3) {
+async function retrySection(generateSection, reviewSection, data, instructions, maxRetries = 3) {
     let retries = 0;
     let section = null;
 
     while (retries < maxRetries) {
         try {
-            section = await generateFunc(data, instructions);
-            section = await reviewFunc(section.title, section.content);
+            section = await generateSection(data, instructions);
+            section = await reviewSection(section.title, section.content);
             return section; // Exit the loop once successful
         } catch (error) {
             console.warn(`Retrying section... Attempt ${retries + 1}`, error);
