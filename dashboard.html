@@ -3900,8 +3900,8 @@ function renderPlaceholderMessage() {
 
 // First AI call to generate section content
 async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
-I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, your productivity-focused AI assistant. 
+My task is to generate ONLY the section content and title, ensuring responses are accurate, concise, and professional. I will follow the instructions below with precision.
 
 USER DATA:
 ${data}
@@ -3909,9 +3909,20 @@ ${data}
 INSTRUCTIONS FOR THIS SECTION:
 ${instructions}
 
-I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
+ADDITIONAL REQUIREMENTS:
+1. Responses must strictly adhere to the specified format.
+2. Do not include unnecessary context or explanations.
+3. Use emojis exactly as described in the instructions and only where appropriate.
+4. Keep the title short (max 8 words) and highly relevant to the content.
+5. The content should not exceed 150 words unless explicitly stated.
+6. Avoid repetition and ensure clarity.
+7. If user data is insufficient, provide a message like: "Insufficient data to generate this section. Please add more tasks or details."
+
+FORMAT FOR RESPONSE:
 Title: [Section title]
-Content: [Complete response here]`;
+Content: [Complete, error-free response here]
+
+IMPORTANT: Failure to adhere to this prompt will result in an error response.`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3938,15 +3949,24 @@ Content: [Complete response here]`;
 
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
-    const reviewPrompt = `Please review the following section for any errors, inconsistencies, or improvements. 
-Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content.
+    const reviewPrompt = `I am TaskMaster, your productivity-focused AI. My role is to review the section below for errors, inconsistencies, and clarity, ensuring it meets the highest standards.
 
+SECTION TO REVIEW:
 Title: ${title}
 Content: ${content}
 
-Format the response exactly like this:
+REVIEW REQUIREMENTS:
+1. Correct any errors in grammar, structure, or logic.
+2. Ensure the content is clear, actionable, and concise.
+3. Maintain the original formatting: Title and Content sections.
+4. If no corrections are needed, confirm the section is "Error-free."
+5. Keep the tone professional, encouraging, and aligned with productivity goals.
+
+FORMAT FOR RESPONSE:
 Title: [Corrected title]
-Content: [Final, corrected content]`;
+Content: [Final, corrected content]
+
+IMPORTANT: Ensure the response is error-free and concise.`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3990,56 +4010,52 @@ async function generateAISummary(data) {
 
     try {
         // Generate sections sequentially with verification
-        let section = await generateSection(formattedData, `
+        const instructions = [
+            {
+                type: "Urgent Items",
+                details: `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
 3. Provide a clear, actionable tip for each item.
 4. Exclude any categories without urgent items.
-5. Keep under 150 words; exclude "Urgent Items" or explanations.
-        `);
-        section = await reviewSection(section.title, section.content);
-
-        const urgentItems = section;
-
-        section = await generateSection(formattedData, `
+5. Keep under 150 words.`,
+            },
+            {
+                type: "In Progress",
+                details: `
 1. Start with an encouraging note for ${displayName}.
 2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
 3. Include practical next steps for each.
 4. Exclude any categories that don’t have ongoing data.
-5. Keep under 150 words; avoid "In Progress."
-        `);
-        section = await reviewSection(section.title, section.content);
-
-        const inProgress = section;
-
-        section = await generateSection(formattedData, `
+5. Keep under 150 words.`,
+            },
+            {
+                type: "Coming Up",
+                details: `
 1. Provide one preparation tip per upcoming item.
 2. Avoid dates unless critical.
 3. Use emojis meaningfully, not excessively.
 4. Exclude categories without upcoming data.
-5. Keep concise; omit "Coming Up."
-        `);
-        section = await reviewSection(section.title, section.content);
-
-        const comingUp = section;
-
-        section = await generateSection(formattedData, `
+5. Keep concise.`,
+            },
+            {
+                type: "Overview & Recommendations",
+                details: `
 1. Provide four actionable, personalized recommendations for ${displayName}.
 2. End with two motivational sentences tailored to ${displayName}.
 3. Only include categories present in user data.
-4. Keep concise, under 150 words; omit "Overview."
-        `);
-        section = await reviewSection(section.title, section.content);
+4. Keep concise, under 150 words.`,
+            },
+        ];
 
-        const overviewAndRecommendations = section;
+        const sections = {};
+        for (const instruction of instructions) {
+            let section = await generateSection(formattedData, instruction.details);
+            section = await reviewSection(section.title, section.content);
+            sections[instruction.type] = section;
+        }
 
-        // Return the final reviewed sections
-        return {
-            urgentItems,
-            inProgress,
-            comingUp,
-            overviewAndRecommendations
-        };
+        return sections;
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
@@ -4049,6 +4065,7 @@ async function generateAISummary(data) {
         };
     }
 }
+
 
 // Function to render the sections with left-to-right fade-in animation and proper spacing
 function renderSections(summaryData) {
@@ -4102,7 +4119,7 @@ function sanitizeTitle(title) {
     }
 
     // Remove specific phrases while keeping the rest
-    const phrasesToRemove = ["user", "Stay on Track", "explanation", "Task Action Items", "Items", "Action", "SDLesát", "section", "taskmaster", "Plans Section", "here to help", "help", "items", "kill", "death", "bypass", "lick", "licked", "unblock", "killed", "murder", "die", "dying", "porn", "poop", "fuck", "shit", "damn", "bitch", "asshole", "cunt", "bastard", "slut", "dick", "piss", "crap", "pussy", "fag", "cock", "whore", "fucker", "motherfucker", "suck", "retard", "jerk", "scumbag", "twat", "douche", "dipshit", "prick", "wanker", "arse", "bloody", "bollocks", "bugger", "wank", "knobhead", "tosser", "bellend", "git", "minger", "shag", "gash", "piss-off", "skank", "turd", "ballsack", "buttfuck", "chode", "knob", "poon", "queef", "schlong", "shithead", "spunk", "tosspot", "twatwaffle", "dickhead", "mofo", "nutcase", "nutjob", "skullfuck", "douchebag", "freak", "loser", "idiot", "imbecile", "moron", "psycho", "lunatic", "cretin", "scat", "shitfaced", "dickwad", "cum", "jizz", "sperm", "milf", "gilf", "dildo", "blowjob", "handjob", "rimjob", "tits", "boobs", "boobies", "pecker", "hardon", "balls", "genital", "orgasm", "penetrate", "sodomy", "slit", "bollocks", "clusterfuck", "gonads", "titfuck", "cocksucker", "buttplug", "asslicker", "fudgepacker", "twink", "gimp", "slapper", "whorehouse", "brothel", "stripper", "tramp", "hooker", "escort", "smut", "gangbang", "orgy", "rapist", "molest", "abuse", "violence", "terror", "extremist", "terrorism", "radical", "blood", "gore", "stab", "shoot", "gun", "weapon", "bomb", "explosive", "axe", "torture", "beheading", "decapitate", "burn", "arson", "loot", "pillager", "rioter", "criminal", "thief", "steal", "rob", "robbery", "rape", "molestation", "pedophile", "creep", "predator", "pervert", "perverted", "sicko", "sociopath", "maniac", "incest", "necrophilia", "cannibal", "depraved", "defecate", "feces", "excrement", "urine", "vomit", "barf", "phlegm", "menstrual", "semen", "ejaculate", "masturbate", "butt", "butthole", "masturbation", "whacking", "boner", "erect", "erection", "ejaculation", "hooker", "slattern", "wench", "hookup", "tart", "depravity", "harlot", "fornicate", "infidel", "apostate", "blaspheme", "heretic", "crusader", "infidel"];
+    const phrasesToRemove = ["user", "Stay on Track", "RSS Subscription Fields Do Not Update in Calendar", "explanation", "Task Action Items", "Items", "Action", "SDLesát", "section", "taskmaster", "Plans Section", "here to help", "help", "items", "kill", "death", "bypass", "lick", "licked", "unblock", "killed", "murder", "die", "dying", "porn", "poop", "fuck", "shit", "damn", "bitch", "asshole", "cunt", "bastard", "slut", "dick", "piss", "crap", "pussy", "fag", "cock", "whore", "fucker", "motherfucker", "suck", "retard", "jerk", "scumbag", "twat", "douche", "dipshit", "prick", "wanker", "arse", "bloody", "bollocks", "bugger", "wank", "knobhead", "tosser", "bellend", "git", "minger", "shag", "gash", "piss-off", "skank", "turd", "ballsack", "buttfuck", "chode", "knob", "poon", "queef", "schlong", "shithead", "spunk", "tosspot", "twatwaffle", "dickhead", "mofo", "nutcase", "nutjob", "skullfuck", "douchebag", "freak", "loser", "idiot", "imbecile", "moron", "psycho", "lunatic", "cretin", "scat", "shitfaced", "dickwad", "cum", "jizz", "sperm", "milf", "gilf", "dildo", "blowjob", "handjob", "rimjob", "tits", "boobs", "boobies", "pecker", "hardon", "balls", "genital", "orgasm", "penetrate", "sodomy", "slit", "bollocks", "clusterfuck", "gonads", "titfuck", "cocksucker", "buttplug", "asslicker", "fudgepacker", "twink", "gimp", "slapper", "whorehouse", "brothel", "stripper", "tramp", "hooker", "escort", "smut", "gangbang", "orgy", "rapist", "molest", "abuse", "violence", "terror", "extremist", "terrorism", "radical", "blood", "gore", "stab", "shoot", "gun", "weapon", "bomb", "explosive", "axe", "torture", "beheading", "decapitate", "burn", "arson", "loot", "pillager", "rioter", "criminal", "thief", "steal", "rob", "robbery", "rape", "molestation", "pedophile", "creep", "predator", "pervert", "perverted", "sicko", "sociopath", "maniac", "incest", "necrophilia", "cannibal", "depraved", "defecate", "feces", "excrement", "urine", "vomit", "barf", "phlegm", "menstrual", "semen", "ejaculate", "masturbate", "butt", "butthole", "masturbation", "whacking", "boner", "erect", "erection", "ejaculation", "hooker", "slattern", "wench", "hookup", "tart", "depravity", "harlot", "fornicate", "infidel", "apostate", "blaspheme", "heretic", "crusader", "infidel"];
     phrasesToRemove.forEach(phrase => {
         const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
         title = title.replace(regex, '').trim();
