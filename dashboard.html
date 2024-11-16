@@ -1541,8 +1541,9 @@ scrollbar-thumb {
     border: none; /* Removed the border */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: calc(95% + 0px); /* Increase the card width */
-    margin-left: -10px; /* Center the card visually */
+    width: calc(99% + 0px); /* Increase the card width */
+    margin: 0 auto; /* Center horizontally within its container */
+    text-align: left; /* Align content to the left */
 }
 
 .weather-section h2 {
@@ -1555,6 +1556,9 @@ scrollbar-thumb {
     color: #ffffff; /* Text color updated to white */
 }
 
+.weather-section div {
+    margin-bottom: 0.5rem; /* Add spacing between elements */
+}
 
 
 
@@ -3640,7 +3644,7 @@ function fetchWeather() {
                 );
                 const data = await response.json();
 
-                // Determine unit and country
+                // Check for Fahrenheit or Celsius based on country
                 const country = data.location.country;
                 const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
                 const temp = isFahrenheit ? data.current.temp_f : data.current.temp_c; // Temp in appropriate unit
@@ -3659,13 +3663,13 @@ function fetchWeather() {
 
                 weatherEmoji.textContent = emoji;
                 weatherInfo.innerHTML = `
-                    <div style="text-align: center; font-size: 1.2rem;">
-                        <div><strong>${data.location.name}, ${data.location.region}</strong></div>
-                        <div>${condition} ${emoji}</div>
-                        <div><strong>${temp}${unit}</strong></div>
+                    <div class="weather-section">
+                        <h2>${data.location.name}, ${data.location.region}</h2>
+                        <p>${condition} ${emoji}</p>
+                        <p><strong>${temp}${unit}</strong></p>
                         ${tempBar}
-                        <div>🌬️ Wind: ${windSpeed}</div>
-                        <div>💧 Humidity: ${humidity}%</div>
+                        <p>🌬️ Wind: ${windSpeed}</p>
+                        <p>💧 Humidity: ${humidity}%</p>
                     </div>
                 `;
             } catch (error) {
@@ -3677,6 +3681,7 @@ function fetchWeather() {
         weatherInfo.textContent = "Geolocation not supported.";
     }
 }
+
 
 // Function to map weather codes to emojis
 function getWeatherEmoji(code) {
