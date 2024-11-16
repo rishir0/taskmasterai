@@ -3647,13 +3647,9 @@ async function fetchWeather2() {
                 // Initial load in Celsius
                 renderWeatherData(data, false);
 
-                // Wait 5 seconds, then check the location again and convert to Fahrenheit if applicable
+                // Wait 5 seconds, then convert to Fahrenheit if needed
                 setTimeout(() => {
-                    const country = data.location.country;
-                    const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
-                    if (isFahrenheit) {
-                        renderWeatherData(data, true);
-                    }
+                    convertToFahrenheitIfNeeded(data);
                 }, 5000);
             } catch (error) {
                 weatherInfo.textContent = "Failed to fetch weather.";
@@ -3665,7 +3661,7 @@ async function fetchWeather2() {
     }
 }
 
-// Render the weather data
+// Render the weather data (Celsius or Fahrenheit)
 function renderWeatherData(data, useFahrenheit) {
     const temp = useFahrenheit ? data.current.temp_f : data.current.temp_c;
     const feelsLike = useFahrenheit ? data.current.feelslike_f : data.current.feelslike_c;
@@ -3693,6 +3689,16 @@ function renderWeatherData(data, useFahrenheit) {
             <p>💧 Humidity: ${humidity}%</p>
         </div>
     `;
+}
+
+// Function to check location and convert to Fahrenheit if needed
+function convertToFahrenheitIfNeeded(data) {
+    const country = data.location.country;
+    const isFahrenheitCountry = ["United States", "Liberia", "Cayman Islands"].includes(country);
+
+    if (isFahrenheitCountry) {
+        renderWeatherData(data, true); // Re-render data in Fahrenheit
+    }
 }
 
 // Function to map weather codes to emojis
@@ -3730,6 +3736,7 @@ function generateTempBar(temp, useFahrenheit) {
         </div>
     `;
 }
+
 
 
 
