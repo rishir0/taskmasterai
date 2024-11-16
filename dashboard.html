@@ -1509,18 +1509,18 @@ scrollbar-thumb {
 /* Ellipsis animation for "Generating your Smart Overview..." */
 @keyframes ellipsis2 {
     0% { content: ""; }
-    25% { content: "."; }
-    50% { content: ".."; }
-    75% { content: "..."; }
-    100% { content: ""; }
+    33% { content: "."; }
+    66% { content: ".."; }
+    100% { content: "..."; }
 }
 
 #ellipsis2::after {
     content: "";
-    animation: ellipsis 1.5s infinite;
+    animation: ellipsis2 1.5s infinite steps(1, end);
     font-size: 20px; /* Match ellipsis size with the text */
     color: white; /* Make the ellipsis prominent */
 }
+
 
 
     </style>
@@ -1729,6 +1729,14 @@ scrollbar-thumb {
         </div>
     </div>
 
+
+<div id="ai-summary-section">
+    <div class="ai-assistant-card">
+        <div class="summary-section loading-state">
+            <p>Generating your smart overview... <span id="ellipsis2"></span></p>
+        </div>
+    </div>
+</div>
 
 
     <!-- Tab Navigation for Tasks, Goals, Projects, Plans -->
