@@ -1566,6 +1566,9 @@ scrollbar-thumb {
 }
 
 
+.weather-section-bg {
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
 
 
@@ -3682,18 +3685,19 @@ function renderWeatherData(data, useFahrenheit) {
     // Generate the temperature bar
     const tempBar = generateTempBar(temp, useFahrenheit);
 
-    // Render the UI
-    weatherEmoji.textContent = emoji;
-    weatherInfo.innerHTML = `
-        <div class="weather-section">
-            <h2>${data.location.name}, ${data.location.region}</h2>
-            <p>${condition} ${emoji}</p>
-            <p><strong>${temp}${unit}</strong> (Feels like: ${feelsLike}${unit})</p>
-            ${tempBar}
-            <p>🌬️ Wind: ${windSpeed}</p>
-            <p>💧 Humidity: ${humidity}%</p>
-        </div>
-    `;
+// Render the UI
+weatherEmoji.textContent = emoji;
+weatherInfo.innerHTML = `
+    <div class="weather-section weather-section-bg">
+        <h2>${data.location.name}, ${data.location.region}</h2>
+        <p>${condition} ${emoji}</p>
+        <p><strong>${temp}${unit}</strong> (Feels like: ${feelsLike}${unit})</p>
+        ${tempBar}
+        <p>🌬️ Wind: ${windSpeed}</p>
+        <p>💧 Humidity: ${humidity}%</p>
+    </div>
+`;
+
 }
 
 // Function to check location and convert to Fahrenheit if needed
