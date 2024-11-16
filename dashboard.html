@@ -1523,6 +1523,18 @@ scrollbar-thumb {
     }
 }
 
+.summary-section {
+    opacity: 0;
+    transform: translateX(-50px); /* Start off-screen to the left */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.summary-section:not(.hidden) {
+    opacity: 1;
+    transform: translateX(0); /* Move into position */
+}
+
+
 
     </style>
 </head>
@@ -4044,32 +4056,28 @@ function renderSections(summaryData) {
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
 
+    // Remove existing sections
     existingSections.forEach(section => section.remove());
 
-    Object.values(summaryData).forEach(({ title, content }) => {
+    // Render new sections with animation
+    Object.values(summaryData).forEach(({ title, content }, index) => {
         const sectionElement = document.createElement('div');
-        sectionElement.className = 'summary-section';
+        sectionElement.className = 'summary-section hidden'; // Add "hidden" class initially
 
-        const sanitizedTitle = sanitizeTitle(title); // Updated sanitization for titles
+        const sanitizedTitle = sanitizeTitle(title);
         const sanitizedContent = sanitizeContent(content);
 
-        // Create content container
-        const contentContainer = document.createElement('div');
-        contentContainer.className = 'section-content';
+        sectionElement.innerHTML = `
+            <h3 class="section-title">${sanitizedTitle}</h3>
+            <div class="section-content">${sanitizedContent}</div>
+        `;
 
-        // Split sanitized content into words
-        const words = sanitizedContent.split(/(\s+)/); // Split by spaces, retaining them
-        words.forEach((word, index) => {
-            const wordSpan = document.createElement('span');
-            wordSpan.textContent = word; // Add space naturally
-            wordSpan.classList.add('fade-in-word');
-            wordSpan.style.animationDelay = `${index * 0.1}s`; // Delays each word by 0.1s
-            contentContainer.appendChild(wordSpan);
-        });
-
-        sectionElement.innerHTML = `<h3 class="section-title">${sanitizedTitle}</h3>`;
-        sectionElement.appendChild(contentContainer);
         summaryContainer.appendChild(sectionElement);
+
+        // Apply animation with a delay for each section
+        setTimeout(() => {
+            sectionElement.classList.remove('hidden'); // Trigger fade-in animation
+        }, index * 300); // Adjust delay as needed (e.g., 300ms between sections)
     });
 }
 
@@ -4197,12 +4205,12 @@ async function updateAISummary(userId) {
 
     try {
         const data = await fetchCollectionData(userId);
-        console.log("Fetched data:", data);  // Debug log
-        
+        console.log("Fetched data:", data); // Debug log
+
         if (data) {
             const summary = await generateAISummary(data);
-            console.log("Generated summary:", summary);  // Debug log
-            
+            console.log("Generated summary:", summary); // Debug log
+
             if (summary) {
                 renderSections(summary);
             } else {
@@ -4221,6 +4229,7 @@ async function updateAISummary(userId) {
         `;
     }
 }
+
 
 // Initialize and set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
