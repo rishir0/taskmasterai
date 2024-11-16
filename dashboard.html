@@ -3624,7 +3624,7 @@ function getWeatherEmoji(code) {
 // Call the functions when the page loads
 window.addEventListener('load', () => {
     displayRandomQuote();
-    fetchWeather();
+    fetchWeather2();
 
 });
 
@@ -3634,7 +3634,7 @@ const weatherInfo = document.getElementById("weather-info");
 const weatherEmoji = document.getElementById("weather-emoji");
 
 // Fetch weather and update UI
-async function fetchWeather() {
+async function fetchWeather2() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
