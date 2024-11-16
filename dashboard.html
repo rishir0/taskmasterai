@@ -3991,7 +3991,28 @@ IMPORTANT: Ensure the response is error-free and concise.`;
     return { title: finalTitle, content: finalContent };
 }
 
-// Main function that generates the AI summary sequentially
+
+// Helper function to retry a section until it succeeds
+async function retrySection(generateFunc, reviewFunc, data, instructions, maxRetries = 3) {
+    let retries = 0;
+    let section = null;
+
+    while (retries < maxRetries) {
+        try {
+            section = await generateFunc(data, instructions);
+            section = await reviewFunc(section.title, section.content);
+            return section; // Exit the loop once successful
+        } catch (error) {
+            console.warn(`Retrying section... Attempt ${retries + 1}`, error);
+            retries++;
+        }
+    }
+
+    throw new Error(`Failed to generate section after ${maxRetries} retries.`);
+}
+
+
+// Main function to generate all AI summary sections sequentially
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
@@ -4009,53 +4030,50 @@ async function generateAISummary(data) {
     }
 
     try {
-        // Generate sections sequentially with verification
-        const instructions = [
-            {
-                type: "Urgent Items",
-                details: `
+        // Define prompts for each section
+        const prompts = {
+            urgentItems: `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
 3. Provide a clear, actionable tip for each item.
 4. Exclude any categories without urgent items.
-5. Keep under 150 words.`,
-            },
-            {
-                type: "In Progress",
-                details: `
+5. Keep under 150 words; exclude "Urgent Items" or explanations.
+            `,
+            inProgress: `
 1. Start with an encouraging note for ${displayName}.
 2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
 3. Include practical next steps for each.
 4. Exclude any categories that don’t have ongoing data.
-5. Keep under 150 words.`,
-            },
-            {
-                type: "Coming Up",
-                details: `
+5. Keep under 150 words; avoid "In Progress."
+            `,
+            comingUp: `
 1. Provide one preparation tip per upcoming item.
 2. Avoid dates unless critical.
 3. Use emojis meaningfully, not excessively.
 4. Exclude categories without upcoming data.
-5. Keep concise.`,
-            },
-            {
-                type: "Overview & Recommendations",
-                details: `
+5. Keep concise; omit "Coming Up."
+            `,
+            overviewAndRecommendations: `
 1. Provide four actionable, personalized recommendations for ${displayName}.
 2. End with two motivational sentences tailored to ${displayName}.
 3. Only include categories present in user data.
-4. Keep concise, under 150 words.`,
-            },
-        ];
+4. Keep concise, under 150 words; omit "Overview."
+            `
+        };
 
-        const sections = {};
-        for (const instruction of instructions) {
-            let section = await generateSection(formattedData, instruction.details);
-            section = await reviewSection(section.title, section.content);
-            sections[instruction.type] = section;
-        }
+        // Generate each section with retry logic
+        const urgentItems = await retrySection(generateSection, reviewSection, formattedData, prompts.urgentItems);
+        const inProgress = await retrySection(generateSection, reviewSection, formattedData, prompts.inProgress);
+        const comingUp = await retrySection(generateSection, reviewSection, formattedData, prompts.comingUp);
+        const overviewAndRecommendations = await retrySection(generateSection, reviewSection, formattedData, prompts.overviewAndRecommendations);
 
-        return sections;
+        // Return the final reviewed sections
+        return {
+            urgentItems,
+            inProgress,
+            comingUp,
+            overviewAndRecommendations
+        };
 
     } catch (error) {
         console.error('Error generating AI summary:', error);
@@ -4065,7 +4083,6 @@ async function generateAISummary(data) {
         };
     }
 }
-
 
 // Function to render the sections with left-to-right fade-in animation and proper spacing
 function renderSections(summaryData) {
