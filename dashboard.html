@@ -3971,6 +3971,22 @@ Content: [Final, corrected content]`;
     return { title: finalTitle, content: finalContent };
 }
 
+// Retry logic for section generation and review
+async function retrySection(generateFunc, reviewFunc, formattedData, prompt, maxRetries = 3) {
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            let section = await generateFunc(formattedData, prompt); // Attempt to generate the section
+            section = await reviewFunc(section.title, section.content); // Attempt to review the section
+            return section; // Return the successful section
+        } catch (error) {
+            console.warn(`Retrying section... Attempt ${retries + 1}`, error);
+            retries++;
+        }
+    }
+    throw new Error(`Failed to generate and review section after ${maxRetries} retries.`);
+}
+
 // Main function that generates the AI summary sequentially
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
@@ -3989,49 +4005,57 @@ async function generateAISummary(data) {
     }
 
     try {
-        // Generate sections sequentially with verification
-        let section = await generateSection(formattedData, `
+        // Generate sections sequentially with retry logic
+        const urgentItems = await retrySection(
+            generateSection,
+            reviewSection,
+            formattedData,
+            `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
 3. Provide a clear, actionable tip for each item.
 4. Exclude any categories without urgent items.
 5. Keep under 150 words; exclude "Urgent Items" or explanations.
-        `);
-        section = await reviewSection(section.title, section.content);
+            `
+        );
 
-        const urgentItems = section;
-
-        section = await generateSection(formattedData, `
+        const inProgress = await retrySection(
+            generateSection,
+            reviewSection,
+            formattedData,
+            `
 1. Start with an encouraging note for ${displayName}.
 2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
 3. Include practical next steps for each.
 4. Exclude any categories that don’t have ongoing data.
 5. Keep under 150 words; avoid "In Progress."
-        `);
-        section = await reviewSection(section.title, section.content);
+            `
+        );
 
-        const inProgress = section;
-
-        section = await generateSection(formattedData, `
+        const comingUp = await retrySection(
+            generateSection,
+            reviewSection,
+            formattedData,
+            `
 1. Provide one preparation tip per upcoming item.
 2. Avoid dates unless critical.
 3. Use emojis meaningfully, not excessively.
 4. Exclude categories without upcoming data.
 5. Keep concise; omit "Coming Up."
-        `);
-        section = await reviewSection(section.title, section.content);
+            `
+        );
 
-        const comingUp = section;
-
-        section = await generateSection(formattedData, `
+        const overviewAndRecommendations = await retrySection(
+            generateSection,
+            reviewSection,
+            formattedData,
+            `
 1. Provide four actionable, personalized recommendations for ${displayName}.
 2. End with two motivational sentences tailored to ${displayName}.
 3. Only include categories present in user data.
 4. Keep concise, under 150 words; omit "Overview."
-        `);
-        section = await reviewSection(section.title, section.content);
-
-        const overviewAndRecommendations = section;
+            `
+        );
 
         // Return the final reviewed sections
         return {
@@ -4049,6 +4073,7 @@ async function generateAISummary(data) {
         };
     }
 }
+
 
 // Function to render the sections with left-to-right fade-in animation and proper spacing
 function renderSections(summaryData) {
