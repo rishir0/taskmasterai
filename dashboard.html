@@ -3900,8 +3900,8 @@ function renderPlaceholderMessage() {
 
 // First AI call to generate section content
 async function generateSection(data, instructions) {
-    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, your productivity-focused AI assistant. 
-My task is to generate ONLY the section content and title, ensuring responses are accurate, concise, and professional. I will follow the instructions below with precision.
+    const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
+I will Generate ONLY the section content and title, keeping responses concise, clear, and professional.
 
 USER DATA:
 ${data}
@@ -3909,20 +3909,9 @@ ${data}
 INSTRUCTIONS FOR THIS SECTION:
 ${instructions}
 
-ADDITIONAL REQUIREMENTS:
-1. Responses must strictly adhere to the specified format.
-2. Do not include unnecessary context or explanations.
-3. Use emojis exactly as described in the instructions and only where appropriate.
-4. Keep the title short (max 8 words) and highly relevant to the content.
-5. The content should not exceed 150 words unless explicitly stated.
-6. Avoid repetition and ensure clarity.
-7. If user data is insufficient, provide a message like: "Insufficient data to generate this section. Please add more tasks or details."
-
-FORMAT FOR RESPONSE:
+I WILL FORMAT MY RESPONSE EXACTLY LIKE THIS:
 Title: [Section title]
-Content: [Complete, error-free response here]
-
-IMPORTANT: Failure to adhere to this prompt will result in an error response.`;
+Content: [Complete response here]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3941,32 +3930,23 @@ IMPORTANT: Failure to adhere to this prompt will result in an error response.`;
     const titleMatch = result[0]?.generated_text.match(/Title:\s*(.*)/);
     const contentMatch = result[0]?.generated_text.match(/Content:\s*([\s\S]*)/);
 
-    const title = titleMatch ? titleMatch[1].trim() : "FAILED";
-    const content = contentMatch ? contentMatch[1].trim() : "💬 FAILED";
+    const title = titleMatch ? titleMatch[1].trim() : "Loading...";
+    const content = contentMatch ? contentMatch[1].trim() : "💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.";
 
     return { title, content };
 }
 
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
-    const reviewPrompt = `I am TaskMaster, your productivity-focused AI. My role is to review the section below for errors, inconsistencies, and clarity, ensuring it meets the highest standards.
+    const reviewPrompt = `Please review the following section for any errors, inconsistencies, or improvements. 
+Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content.
 
-SECTION TO REVIEW:
 Title: ${title}
 Content: ${content}
 
-REVIEW REQUIREMENTS:
-1. Correct any errors in grammar, structure, or logic.
-2. Ensure the content is clear, actionable, and concise.
-3. Maintain the original formatting: Title and Content sections.
-4. If no corrections are needed, confirm the section is "Error-free."
-5. Keep the tone professional, encouraging, and aligned with productivity goals.
-
-FORMAT FOR RESPONSE:
+Format the response exactly like this:
 Title: [Corrected title]
-Content: [Final, corrected content]
-
-IMPORTANT: Ensure the response is error-free and concise.`;
+Content: [Final, corrected content]`;
 
     const response = await fetch(modelEndpoint, {
         method: 'POST',
@@ -3991,28 +3971,7 @@ IMPORTANT: Ensure the response is error-free and concise.`;
     return { title: finalTitle, content: finalContent };
 }
 
-
-// Helper function to retry a section until it succeeds
-async function retrySection(generateSection, reviewSection, data, instructions, maxRetries = 3) {
-    let retries = 0;
-    let section = null;
-
-    while (retries < maxRetries) {
-        try {
-            section = await generateSection(data, instructions);
-            section = await reviewSection(section.title, section.content);
-            return section; // Exit the loop once successful
-        } catch (error) {
-            console.warn(`Retrying section... Attempt ${retries + 1}`, error);
-            retries++;
-        }
-    }
-
-    throw new Error(`Failed to generate section after ${maxRetries} retries.`);
-}
-
-
-// Main function to generate all AI summary sections sequentially
+// Main function that generates the AI summary sequentially
 async function generateAISummary(data) {
     const displayName = data.displayName || "User"; // Fallback if displayName is not set
     const formattedData = Object.entries(data)
@@ -4030,42 +3989,49 @@ async function generateAISummary(data) {
     }
 
     try {
-        // Define prompts for each section
-        const prompts = {
-            urgentItems: `
+        // Generate sections sequentially with verification
+        let section = await generateSection(formattedData, `
 1. Begin with a friendly and motivational greeting to ${displayName}.
 2. Use 🚨 for items due within 3 days, and ⏰ for items due within 14 days.
 3. Provide a clear, actionable tip for each item.
 4. Exclude any categories without urgent items.
 5. Keep under 150 words; exclude "Urgent Items" or explanations.
-            `,
-            inProgress: `
+        `);
+        section = await reviewSection(section.title, section.content);
+
+        const urgentItems = section;
+
+        section = await generateSection(formattedData, `
 1. Start with an encouraging note for ${displayName}.
 2. Use 🎯 for goals, 📋 for tasks, 📊 for projects, followed by a period.
 3. Include practical next steps for each.
 4. Exclude any categories that don’t have ongoing data.
 5. Keep under 150 words; avoid "In Progress."
-            `,
-            comingUp: `
+        `);
+        section = await reviewSection(section.title, section.content);
+
+        const inProgress = section;
+
+        section = await generateSection(formattedData, `
 1. Provide one preparation tip per upcoming item.
 2. Avoid dates unless critical.
 3. Use emojis meaningfully, not excessively.
 4. Exclude categories without upcoming data.
 5. Keep concise; omit "Coming Up."
-            `,
-            overviewAndRecommendations: `
+        `);
+        section = await reviewSection(section.title, section.content);
+
+        const comingUp = section;
+
+        section = await generateSection(formattedData, `
 1. Provide four actionable, personalized recommendations for ${displayName}.
 2. End with two motivational sentences tailored to ${displayName}.
 3. Only include categories present in user data.
 4. Keep concise, under 150 words; omit "Overview."
-            `
-        };
+        `);
+        section = await reviewSection(section.title, section.content);
 
-        // Generate each section with retry logic
-        const urgentItems = await retrySection(generateSection, reviewSection, formattedData, prompts.urgentItems);
-        const inProgress = await retrySection(generateSection, reviewSection, formattedData, prompts.inProgress);
-        const comingUp = await retrySection(generateSection, reviewSection, formattedData, prompts.comingUp);
-        const overviewAndRecommendations = await retrySection(generateSection, reviewSection, formattedData, prompts.overviewAndRecommendations);
+        const overviewAndRecommendations = section;
 
         // Return the final reviewed sections
         return {
