@@ -3644,36 +3644,17 @@ async function fetchWeather() {
                 );
                 const data = await response.json();
 
-                // Determine whether to use Fahrenheit or Celsius
-                const country = data.location.country;
-                const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
+                // Initial load in Celsius
+                renderWeatherData(data, false);
 
-                // Get all relevant data
-                let temp = isFahrenheit ? data.current.temp_f : data.current.temp_c;
-                let feelsLike = isFahrenheit ? data.current.feelslike_f : data.current.feelslike_c;
-                let unit = isFahrenheit ? "°F" : "°C";
-                const condition = data.current.condition.text;
-                const humidity = data.current.humidity; // Humidity %
-                const windSpeed = isFahrenheit
-                    ? `${data.current.wind_mph} mph`
-                    : `${data.current.wind_kph} kph`; // Wind speed in appropriate unit
-                const emoji = getWeatherEmoji(data.current.condition.code);
-
-                // Generate the temperature bar (convert Celsius for display only)
-                const tempBar = generateTempBar(temp);
-
-                // Render the UI
-                weatherEmoji.textContent = emoji;
-                weatherInfo.innerHTML = `
-                    <div class="weather-section">
-                        <h2>${data.location.name}, ${data.location.region}</h2>
-                        <p>${condition} ${emoji}</p>
-                        <p><strong>${temp}${unit}</strong> (Feels like: ${feelsLike}${unit})</p>
-                        ${tempBar}
-                        <p>🌬️ Wind: ${windSpeed}</p>
-                        <p>💧 Humidity: ${humidity}%</p>
-                    </div>
-                `;
+                // Wait 5 seconds, then check the location again and convert to Fahrenheit if applicable
+                setTimeout(() => {
+                    const country = data.location.country;
+                    const isFahrenheit = ["United States", "Liberia", "Cayman Islands"].includes(country);
+                    if (isFahrenheit) {
+                        renderWeatherData(data, true);
+                    }
+                }, 5000);
             } catch (error) {
                 weatherInfo.textContent = "Failed to fetch weather.";
                 console.error("Weather fetch error:", error);
@@ -3682,6 +3663,36 @@ async function fetchWeather() {
     } else {
         weatherInfo.textContent = "Geolocation not supported.";
     }
+}
+
+// Render the weather data
+function renderWeatherData(data, useFahrenheit) {
+    const temp = useFahrenheit ? data.current.temp_f : data.current.temp_c;
+    const feelsLike = useFahrenheit ? data.current.feelslike_f : data.current.feelslike_c;
+    const unit = useFahrenheit ? "°F" : "°C";
+
+    const condition = data.current.condition.text;
+    const humidity = data.current.humidity; // Humidity %
+    const windSpeed = useFahrenheit
+        ? `${data.current.wind_mph} mph`
+        : `${data.current.wind_kph} kph`; // Wind speed in appropriate unit
+    const emoji = getWeatherEmoji(data.current.condition.code);
+
+    // Generate the temperature bar
+    const tempBar = generateTempBar(temp, useFahrenheit);
+
+    // Render the UI
+    weatherEmoji.textContent = emoji;
+    weatherInfo.innerHTML = `
+        <div class="weather-section">
+            <h2>${data.location.name}, ${data.location.region}</h2>
+            <p>${condition} ${emoji}</p>
+            <p><strong>${temp}${unit}</strong> (Feels like: ${feelsLike}${unit})</p>
+            ${tempBar}
+            <p>🌬️ Wind: ${windSpeed}</p>
+            <p>💧 Humidity: ${humidity}%</p>
+        </div>
+    `;
 }
 
 // Function to map weather codes to emojis
@@ -3702,10 +3713,10 @@ function getWeatherEmoji(code) {
 }
 
 // Function to generate a mini temperature progress bar
-function generateTempBar(tempCelsius) {
-    const minTemp = -10; // Minimum scale in Celsius
-    const maxTemp = 40; // Maximum scale in Celsius
-    const tempPercent = Math.min(Math.max((tempCelsius - minTemp) / (maxTemp - minTemp), 0), 1); // Normalize between 0 and 1
+function generateTempBar(temp, useFahrenheit) {
+    const minTemp = useFahrenheit ? 14 : -10; // Minimum scale
+    const maxTemp = useFahrenheit ? 104 : 40; // Maximum scale
+    const tempPercent = Math.min(Math.max((temp - minTemp) / (maxTemp - minTemp), 0), 1); // Normalize between 0 and 1
     const barLength = 20; // Total number of bars
     const filledBars = Math.round(tempPercent * barLength);
 
@@ -3719,6 +3730,7 @@ function generateTempBar(tempCelsius) {
         </div>
     `;
 }
+
 
 
 
