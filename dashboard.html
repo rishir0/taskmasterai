@@ -3645,7 +3645,7 @@ async function fetchWeather2() {
                 const data = await response.json();
 
                 // Initial load in Celsius
-                renderWeatherData(data, false);
+                renderWeatherData(data, true);
 
                 // Wait 5 seconds, then convert to Fahrenheit if needed
                 setTimeout(() => {
@@ -3697,7 +3697,7 @@ function convertToFahrenheitIfNeeded(data) {
     const isFahrenheitCountry = ["United States", "Liberia", "Cayman Islands"].includes(country);
 
     if (isFahrenheitCountry) {
-        renderWeatherData(data, true); // Re-render data in Fahrenheit
+        renderWeatherData(data, false); // Re-render data in Fahrenheit
     }
 }
 
