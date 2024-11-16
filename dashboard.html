@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1507,6 +1505,37 @@ scrollbar-thumb {
     }
 }
 
+.fade-in-word {
+    opacity: 0;
+    transform: translateX(-20px); /* Slide in from the left */
+    display: inline-block;
+    animation: fadeInLeft 0.5s ease forwards;
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.summary-section {
+    opacity: 0;
+    transform: translateX(-50px); /* Start off-screen to the left */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.summary-section:not(.hidden) {
+    opacity: 1;
+    transform: translateX(0); /* Move into position */
+}
+
+
+
     </style>
 </head>
 <body>
@@ -1611,7 +1640,7 @@ scrollbar-thumb {
                 <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.21 4 16 5.79 16 8C16 10.21 14.21 12 12 12C9.79 12 8 10.21 8 8C8 5.79 9.79 4 12 4ZM12 20C9.33 20 6.34 18.87 4.63 16.74C5.91 15.43 8.39 14.5 12 14.5C15.61 14.5 18.09 15.43 19.37 16.74C17.66 18.87 14.67 20 12 20Z" fill="currentColor"/>
             </svg>
         </div>
-                <div id="username">User Name</div>
+                <div id="username">Loading...</div>
                 <div class="menu-dots">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1624,8 +1653,8 @@ scrollbar-thumb {
 <div class="main-content">
     <!-- Dashboard Header (left unchanged) -->
     <div class="dashboard-header">
-        <h1>Welcome, <span id="displayName">User</span>!</h1>
-        <p>Your personalized dashboard</p>
+        <h1>Welcome, <span id="displayName">Loading...</span>!</h1>
+        <p>Loading...</p>
     </div>
 
 <!-- AI Summary Section -->
@@ -1654,22 +1683,22 @@ scrollbar-thumb {
 
         <div class="summary-section">
             <h3>Loading...</h3>
-            <p id="today-tasks-summary"> Overview Loading...</p>
+            <p id="today-tasks-summary"> Loading...</p>
         </div>
 
         <div class="summary-section">
             <h3>Loading...</h3>
-            <p id="upcoming-deadlines-summary">Overview Loading...</p>
+            <p id="upcoming-deadlines-summary">Loading...</p>
         </div>
 
         <div class="summary-section">
             <h3>Loading...</h3>
-            <p id="priority-tasks-summary">Overview Loading...</p>
+            <p id="priority-tasks-summary">Loading...</p>
         </div>
 
         <div class="summary-section">
             <h3>Loading...</h3>
-            <p id="completed-tasks-summary">Overview Loading...</p>
+            <p id="completed-tasks-summary">Loading...</p>
         </div>
     </div>
 </div>
@@ -1684,19 +1713,19 @@ scrollbar-thumb {
             <h2>Your Productivity</h2>
 
             <!-- Tasks Completed with Progress Bar -->
-            <p>Tasks Completed: <span id="tasks-completed">0</span> / 10</p>
+            <p>Loading... <span id="tasks-completed">Loading...</span> / Loading...</p>
             <div class="progress-bar">
                 <div id="tasks-progress" class="progress-fill" style="width: 0%;"></div>
             </div>
 
             <!-- Pomodoros Completed with Progress Bar -->
-            <p>Pomodoros Completed: <span id="pomodoros-completed">0</span> / 6</p>
+            <p>Loading... <span id="pomodoros-completed">Loading...</span> / Loading...</p>
             <div class="progress-bar">
                 <div id="pomodoro-progress" class="progress-fill" style="width: 0%;"></div>
             </div>
 
             <!-- Goals Achieved with Progress Bar -->
-            <p>Goals Achieved: <span id="goals-achieved">0</span> / 5</p>
+            <p>Loading... <span id="goals-achieved">Loading...</span> / Loading...</p>
             <div class="progress-bar">
                 <div id="goals-progress" class="progress-fill" style="width: 0%;"></div>
             </div>
@@ -1708,7 +1737,7 @@ scrollbar-thumb {
         <div class="upcoming-deadlines">
             <h3>Upcoming Deadlines</h3>
             <ul id="deadlines-list">
-                <li>No upcoming deadlines</li>
+                <li>Loading...</li>
             </ul>
         </div>
     </div>
@@ -4021,27 +4050,38 @@ async function generateAISummary(data) {
     }
 }
 
-// Function to render the sections
+// Function to render the sections with left-to-right fade-in animation and proper spacing
 function renderSections(summaryData) {
     const aiSummarySection = document.getElementById('ai-summary-section');
     const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
     const existingSections = summaryContainer.querySelectorAll('.summary-section');
 
+    // Remove existing sections
     existingSections.forEach(section => section.remove());
 
-    Object.values(summaryData).forEach(({ title, content }) => {
+    // Render new sections with animation
+    Object.values(summaryData).forEach(({ title, content }, index) => {
         const sectionElement = document.createElement('div');
-        sectionElement.className = 'summary-section';
+        sectionElement.className = 'summary-section hidden'; // Add "hidden" class initially
 
-        const sanitizedTitle = sanitizeTitle(title); // Updated sanitization for titles
+        const sanitizedTitle = sanitizeTitle(title);
         const sanitizedContent = sanitizeContent(content);
 
-        sectionElement.innerHTML = 
-            `<h3 class="section-title">${sanitizedTitle}</h3>
-            <div class="section-content">${sanitizedContent.replace(/\n/g, '<br>')}</div>`;
+        sectionElement.innerHTML = `
+            <h3 class="section-title">${sanitizedTitle}</h3>
+            <div class="section-content">${sanitizedContent}</div>
+        `;
+
         summaryContainer.appendChild(sectionElement);
+
+        // Apply animation with a delay for each section
+        setTimeout(() => {
+            sectionElement.classList.remove('hidden'); // Trigger fade-in animation
+        }, index * 300); // Adjust delay as needed (e.g., 300ms between sections)
     });
 }
+
+
 
 function sanitizeTitle(title) {
     // If the title is a single emoji, symbol, letter, number, or period, return "Loading..."
@@ -4062,7 +4102,7 @@ function sanitizeTitle(title) {
     }
 
     // Remove specific phrases while keeping the rest
-    const phrasesToRemove = ["user", "Stay on Track", "explanation", "Task Action Items", "Items", "Action", "SDLesát", "section", "taskmaster", "Plans Section", "here to help", "help", "items", "kill", "death", "bypass", "lick", "licked", "unblock", "killed", "murder", "die", "dying", "porn", "poop", "fuck", "shit", "damn", "bitch", "asshole", "cunt", "bastard", "slut", "dick", "piss", "crap", "pussy", "fag", "cock", "whore", "fucker", "motherfucker", "suck", "retard", "jerk", "scumbag", "twat", "douche", "dipshit", "prick", "wanker", "arse", "bloody", "bollocks", "bugger", "wank", "knobhead", "tosser", "bellend", "git", "minger", "shag", "gash", "piss-off", "skank", "turd", "ballsack", "buttfuck", "chode", "knob", "poon", "queef", "schlong", "shithead", "spunk", "tosspot", "twatwaffle", "dickhead", "mofo", "nutcase", "nutjob", "skullfuck", "douchebag", "freak", "loser", "idiot", "imbecile", "moron", "psycho", "lunatic", "cretin", "scat", "shitfaced", "dickwad", "cum", "jizz", "sperm", "milf", "gilf", "dildo", "blowjob", "handjob", "rimjob", "tits", "boobs", "boobies", "pecker", "hardon", "balls", "genital", "orgasm", "penetrate", "sodomy", "slit", "bollocks", "clusterfuck", "gonads", "titfuck", "cocksucker", "buttplug", "asslicker", "fudgepacker", "twink", "gimp", "slapper", "whorehouse", "brothel", "stripper", "tramp", "hooker", "escort", "smut", "gangbang", "orgy", "rapist", "molest", "abuse", "violence", "terror", "extremist", "terrorism", "radical", "blood", "gore", "stab", "shoot", "gun", "weapon", "bomb", "explosive", "axe", "torture", "beheading", "decapitate", "burn", "arson", "loot", "pillager", "rioter", "criminal", "thief", "steal", "rob", "robbery", "rape", "molestation", "pedophile", "creep", "predator", "pervert", "perverted", "sicko", "sociopath", "maniac", "incest", "necrophilia", "cannibal", "depraved", "defecate", "feces", "excrement", "urine", "vomit", "barf", "phlegm", "menstrual", "semen", "ejaculate", "masturbate", "butt", "butthole", "masturbation", "whacking", "boner", "erect", "erection", "ejaculation", "hooker", "slattern", "wench", "hookup", "tart", "depravity", "harlot", "fornicate", "infidel", "apostate", "blaspheme", "heretic", "crusader", "infidel"];
+    const phrasesToRemove = ["user", "Do not", "update", "in", "Subscription Fields", "RSS", "Stay on Track", "RSS Subscription Fields Do Not Update in Calendar", "explanation", "Task Action Items", "Items", "Action", "SDLesát", "section", "taskmaster", "taskmaster's", "Plans Section", "here to help", "help", "items", "kill", "death", "bypass", "lick", "licked", "unblock", "killed", "murder", "die", "dying", "porn", "poop", "fuck", "shit", "damn", "bitch", "asshole", "cunt", "bastard", "slut", "dick", "piss", "crap", "pussy", "fag", "cock", "whore", "fucker", "motherfucker", "suck", "retard", "jerk", "scumbag", "twat", "douche", "dipshit", "prick", "wanker", "arse", "bloody", "bollocks", "bugger", "wank", "knobhead", "tosser", "bellend", "git", "minger", "shag", "gash", "piss-off", "skank", "turd", "ballsack", "buttfuck", "chode", "knob", "poon", "queef", "schlong", "shithead", "spunk", "tosspot", "twatwaffle", "dickhead", "mofo", "nutcase", "nutjob", "skullfuck", "douchebag", "freak", "loser", "idiot", "imbecile", "moron", "psycho", "lunatic", "cretin", "scat", "shitfaced", "dickwad", "cum", "jizz", "sperm", "milf", "gilf", "dildo", "blowjob", "handjob", "rimjob", "tits", "boobs", "boobies", "pecker", "hardon", "balls", "genital", "orgasm", "penetrate", "sodomy", "slit", "bollocks", "clusterfuck", "gonads", "titfuck", "cocksucker", "buttplug", "asslicker", "fudgepacker", "twink", "gimp", "slapper", "whorehouse", "brothel", "stripper", "tramp", "hooker", "escort", "smut", "gangbang", "orgy", "rapist", "molest", "abuse", "violence", "terror", "extremist", "terrorism", "radical", "blood", "gore", "stab", "shoot", "gun", "weapon", "bomb", "explosive", "axe", "torture", "beheading", "decapitate", "burn", "arson", "loot", "pillager", "rioter", "criminal", "thief", "steal", "rob", "robbery", "rape", "molestation", "pedophile", "creep", "predator", "pervert", "perverted", "sicko", "sociopath", "maniac", "incest", "necrophilia", "cannibal", "depraved", "defecate", "feces", "excrement", "urine", "vomit", "barf", "phlegm", "menstrual", "semen", "ejaculate", "masturbate", "butt", "butthole", "masturbation", "whacking", "boner", "erect", "erection", "ejaculation", "hooker", "slattern", "wench", "hookup", "tart", "depravity", "harlot", "fornicate", "infidel", "apostate", "blaspheme", "heretic", "crusader", "infidel"];
     phrasesToRemove.forEach(phrase => {
         const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
         title = title.replace(regex, '').trim();
@@ -4093,13 +4133,13 @@ function sanitizeTitle(title) {
  * - Ensure content ends cleanly without truncation indicators.
  */
 function sanitizeContent(content) {
-    if (!content) return '💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary. ';
+    if (!content) {
+        return '💬 TaskMaster requires additional information. Continue adding tasks, goals, projects, or plans for a clearer summary.';
+    }
 
 const inappropriateWords = [
     /\b(nigga|nigger|kill|death|bypass|lick|licked|unblock|killed|murder|die|dying|porn|poop|fuck|shit|damn|bitch|asshole|cunt|bastard|slut|dick|piss|crap|pussy|fag|cock|whore|fucker|motherfucker|suck|retard|jerk|scumbag|twat|douche|dipshit|prick|wanker|arse|bloody|bollocks|bugger|wank|knobhead|tosser|bellend|git|minger|shag|gash|piss-off|skank|turd|ballsack|buttfuck|chode|knob|poon|queef|schlong|shithead|spunk|tosspot|twatwaffle|dickhead|mofo|nutcase|nutjob|skullfuck|douchebag|freak|loser|idiot|imbecile|moron|psycho|lunatic|cretin|scat|shitfaced|dickwad|cum|jizz|sperm|milf|gilf|dildo|blowjob|handjob|rimjob|tits|boobs|boobies|pecker|hardon|balls|genital|orgasm|penetrate|sodomy|slit|bollocks|clusterfuck|gonads|titfuck|cocksucker|buttplug|asslicker|fudgepacker|twink|gimp|slapper|whorehouse|brothel|stripper|tramp|hooker|escort|smut|gangbang|orgy|rapist|molest|abuse|violence|terror|extremist|terrorism|radical|blood|gore|stab|shoot|gun|weapon|bomb|explosive|axe|torture|beheading|decapitate|burn|arson|loot|pillager|rioter|criminal|thief|steal|rob|robbery|rape|molestation|pedophile|creep|predator|pervert|perverted|sicko|sociopath|maniac|incest|necrophilia|cannibal|depraved|defecate|feces|excrement|urine|vomit|barf|phlegm|menstrual|semen|ejaculate|masturbate|butt|butthole|masturbation|whacking|boner|erect|erection|ejaculation|hooker|slattern|wench|hookup|tart|depravity|harlot|fornicate|infidel|apostate|blaspheme|heretic|crusader|infidel)\b/i
 ];
-
-
 
     const malformedIndicators = [
         /\[truncated\]/i,
@@ -4107,48 +4147,39 @@ const inappropriateWords = [
         /Answer Choices:/i,
         /Correct Answer:/i,
         /In Progress:/i,
-        /^\.$/,  // Matches a line containing only a period
+        /^\.$/, // Matches a line containing only a period
         /\*\*Your Response:\*\*/i,
         /submission/i,
         /Overview & Recommendations:/i,
         /TaskPal/i,
-        /Here is the response:/i
+        /Here is the response:/i,
+        /RSS Subscription Fields Do Not Update in Calendar/i
+    ];
 
-        
-        
+    // Check for inappropriate content or sensitive keywords
+    if (inappropriateWords.some(pattern => pattern.test(content))) {
+        return '⚠️ Warning: Inappropriate Content Detected';
+    }
 
-        
-        
-        
-]; 
+    if (/suicide/i.test(content)) {
+        return 'TaskMaster is here to help. Please do not harm yourself. It\'s important to reach out to a mental health professional or a support network when feeling overwhelmed. If you are in immediate danger or need urgent assistance, please call 911 or a local emergency number. 💙🚨';
+    }
 
+    // Split content into individual lines
+    let lines = content.split('\n').map(line => line.trim());
 
-// Check for inappropriate content or sensitive keywords
-if (inappropriateWords.some(pattern => pattern.test(content))) {
-    return '⚠️ Warning: Inappropriate Content Detected';
+    // Remove lines that don’t end with a period
+    lines = lines.filter(line => line.endsWith('.'));
+
+    // Remove empty lines after filtering
+    lines = lines.filter(Boolean);
+
+    // Join the sanitized lines with a single space (no <br> tags)
+    return lines.length
+        ? lines.join(' ') // Join sentences with spaces
+        : '💭 TaskMaster is still thinking... Check back later.';
 }
 
-if (/suicide/i.test(content)) {
-    return 'TaskMaster is here to help. Please do not harm yourself. It\'s important to reach out to a mental health professional or a support network when feeling overwhelmed. If you are in immediate danger or need urgent assistance, please call 911 or a local emergency number. 💙🚨';
-}
-
-// Split content into individual lines
-let lines = content.split('\n').map(line => line.trim());
-
-// Remove lines that don’t end with a period
-lines = lines.filter(line => line.endsWith('.'));
-
-// Remove empty lines after filtering
-lines = lines.filter(Boolean);
-
-// Provide a fallback message if all lines are removed after sanitization
-return lines.length ? lines.join('<br>') + '<br>' : '💭 TaskMaster is still thinking... Check back later.';
-
-
-
-
-
-}
 
 
 
@@ -4175,12 +4206,12 @@ async function updateAISummary(userId) {
 
     try {
         const data = await fetchCollectionData(userId);
-        console.log("Fetched data:", data);  // Debug log
-        
+        console.log("Fetched data:", data); // Debug log
+
         if (data) {
             const summary = await generateAISummary(data);
-            console.log("Generated summary:", summary);  // Debug log
-            
+            console.log("Generated summary:", summary); // Debug log
+
             if (summary) {
                 renderSections(summary);
             } else {
@@ -4193,12 +4224,12 @@ async function updateAISummary(userId) {
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <p>Unable to generate your Smart Overview at this time. Please try again later.</p>
-                <p class="error-details">Error: ${error.message}</p>
+                <p>‼️🚨 Unable to generate your Smart Overview at this time. Please try again later. ‼️🚨</p>
             </div>
         `;
     }
 }
+
 
 // Initialize and set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
