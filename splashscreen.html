@@ -172,45 +172,95 @@ body {
 
 
 
-/* Mobile Styles */
-@media (max-width: 600px) {
-    body {
-        padding: 20px;
-    }
+        /* Mobile Styles */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
 
-    .splash-header {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        position: relative;
-    }
+            .splash-header {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                position: relative;
+            }
 
-    .splash-header svg.logo {
-        width: 40px;
-        height: 40px;
-    }
+            .splash-header svg.logo {
+                width: 40px;
+                height: 40px;
+            }
 
-    .intro-text {
-        font-size: 1rem;
-        margin-bottom: 15px;
-        text-align: center;
-    }
+            .menu-button {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px;
+                background: var(--glass-bg);
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: background 0.3s, box-shadow 0.3s;
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-180%);
+            }
 
-    .feature-card {
-        width: 100%;
-        padding: 15px 10px;
-    }
+            .menu-button svg {
+                width: 24px;
+                height: 24px;
+                stroke: var(--text-color);
+            }
 
-    .feature-card h2 {
-        font-size: 1rem;
-    }
+            .menu-button:hover {
+                background: var(--hover-bg);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            }
 
-    .feature-card p {
-        font-size: 0.8rem;
-    }
+            .next-button {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px;
+                background: var(--glass-bg);
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: background 0.3s, box-shadow 0.3s;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-180%);
+            }
+
+            .next-button svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .next-button:hover {
+                background: var(--hover-bg);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .intro-text {
+                font-size: 1rem;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .feature-card {
+                width: 100%;
+                padding: 15px 10px;
+            }
+
+            .feature-card h2 {
+                font-size: 1rem;
+            }
+
+            .feature-card p {
+                font-size: 0.8rem;
+            }
+        }
 
         .menu {
             display: none;
