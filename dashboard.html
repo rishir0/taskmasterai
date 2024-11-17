@@ -4205,6 +4205,20 @@ function renderPlaceholderMessage() {
     summaryContainer.appendChild(placeholderSection);
 }
 
+// Function to check if data is present and update dynamically
+function checkAndUpdateSummary(userUid) {
+    // Check if there is data for the user (you can customize this depending on your database structure)
+    firebase.firestore().collection('users').doc(userUid).onSnapshot(doc => {
+        if (doc.exists && doc.data().summary) {
+            // Data detected, call updateAISummary and render actual content
+            updateAISummary(userUid);
+        } else {
+            // Data not found, render the placeholder message
+            renderPlaceholderMessage();
+        }
+    });
+}
+
 // First AI call to generate section content
 async function generateSection(data, instructions) {
     const sectionPrompt = `Hello ${data.displayName}! I am TaskMaster, a friendly productivity-focused AI assistant. 
@@ -4562,6 +4576,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             console.log('User is logged in:', user.uid);
             updateAISummary(user.uid);
+            checkAndUpdateSummary(user.uid);  // Start live listening for data
         } else {
             console.log('No user logged in');
             const aiSummarySection = document.getElementById('ai-summary-section');
@@ -4574,6 +4589,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 </script>
 
     <script>
