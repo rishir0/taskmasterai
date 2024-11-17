@@ -4463,34 +4463,34 @@ const inappropriateWords = [
         /dashboard/i,
         /💬 To view tasks in the main dashboard, update dynamic data configuration for ABC and untouched features have not updated successfully. Continue assessing projects, goals, or creating connections to ensure accurate polling./i,
         /💬 TaskMaster requires additional information to provide an accurate summary. Please continue providing tasks, goals, projects, or plans to achieve a more comprehensive and clear summary. One additional point to update is incapacity to plan effectively 🤔. Consider checking factors that could be impacting these plans./i,
-        /This format is clear and concise and provides the necessary information without mentioning empty categories./i,
-        
+        /This format is clear and concise and provides the necessary information without mentioning empty categories./i
 
         
     ];
 
-    // Check for inappropriate content or sensitive keywords
-    if (inappropriateWords.some(pattern => pattern.test(content))) {
-        return '⚠️ Warning: Inappropriate Content Detected';
-    }
+// Check for inappropriate content or sensitive keywords
+if (inappropriateWords.some(pattern => pattern.test(content))) {
+    return '⚠️ Warning: Inappropriate Content Detected';
+}
 
-    if (/suicide/i.test(content)) {
-        return 'TaskMaster is here to help. Please do not harm yourself. It\'s important to reach out to a mental health professional or a support network when feeling overwhelmed. If you are in immediate danger or need urgent assistance, please call 911 or a local emergency number. 💙🚨';
-    }
+if (/suicide/i.test(content)) {
+    return 'TaskMaster is here to help. Please do not harm yourself. It\'s important to reach out to a mental health professional or a support network when feeling overwhelmed. If you are in immediate danger or need urgent assistance, please call 911 or a local emergency number. 💙🚨';
+}
 
-    // Split content into individual lines
-    let lines = content.split('\n').map(line => line.trim());
+// Split content into individual lines
+let lines = content.split('\n').map(line => line.trim());
 
-    // Remove lines that don’t end with a period
-    lines = lines.filter(line => line.endsWith('.'));
+// Remove lines that don’t end with a period or lines that contain only numbers
+lines = lines.filter(line => line.endsWith('.') && !/^\(?\d+\)?[\.:]?\s*$/.test(line));
 
-    // Remove empty lines after filtering
-    lines = lines.filter(Boolean);
+// Remove empty lines after filtering
+lines = lines.filter(Boolean);
 
-    // Join the sanitized lines with a single space (no <br> tags)
-    return lines.length
-        ? lines.join(' ') // Join sentences with spaces
-        : '💭 TaskMaster is still thinking... Check back later.';
+// Join the sanitized lines with a single space (no <br> tags)
+return lines.length
+    ? lines.join(' ') // Join sentences with spaces
+    : '💭 TaskMaster is still thinking... Check back later.';
+
 }
 
 
