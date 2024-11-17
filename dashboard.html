@@ -3729,7 +3729,6 @@ function getWeatherEmoji(code) {
     return weatherConditions[code] || "🌍"; // Default emoji
 }
 
-// Function to generate a mini temperature progress bar
 function generateTempBar(temp, useFahrenheit) {
     const minTemp = useFahrenheit ? 14 : -10; // Minimum scale
     const maxTemp = useFahrenheit ? 104 : 40; // Maximum scale
@@ -3737,16 +3736,32 @@ function generateTempBar(temp, useFahrenheit) {
     const barLength = 20; // Total number of bars
     const filledBars = Math.round(tempPercent * barLength);
 
+    // Determine the color based on temperature ranges
+    let barColor;
+    if (temp <= (useFahrenheit ? 32 : 0)) {
+        barColor = "#00bfff"; // Freezing (light blue)
+    } else if (temp <= (useFahrenheit ? 50 : 10)) {
+        barColor = "#87cefa"; // Chilly (sky blue)
+    } else if (temp <= (useFahrenheit ? 70 : 20)) {
+        barColor = "#32cd32"; // Mild (green)
+    } else if (temp <= (useFahrenheit ? 85 : 30)) {
+        barColor = "#ffa500"; // Warm (orange)
+    } else {
+        barColor = "#ff4500"; // Hot (red-orange)
+    }
+
+    // Return the progress bar with the dynamic color
     return `
         <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 0;">
             <span style="font-size: 0.8rem;">❄️</span>
             <div style="margin: 0 5px; background-color: #e0e0e0; border-radius: 5px; width: 150px; height: 10px; overflow: hidden; position: relative;">
-                <div style="background-color: #ff8c00; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
+                <div style="background-color: ${barColor}; height: 100%; width: ${filledBars / barLength * 100}%;"></div>
             </div>
             <span style="font-size: 0.8rem;">🔥</span>
         </div>
     `;
 }
+
 
 
 
