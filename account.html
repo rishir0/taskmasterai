@@ -586,6 +586,22 @@ body.night-mode {
     background-color: var(--danger-hover-color, #c9302c);
 }
 
+.delete-account-btn {
+    background-color: red;
+    color: var(--text-color, #fff);
+    padding: 10px 20px;
+    border-radius: var(--border-radius, 8px);
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 8px; /* Space between buttons */
+}
+
+.delete-account-btn:hover {
+    background-color: red;
+}
+
 .forgot-password-btn {
     background-color: var(--card-bg); /* Matches the button's background color */
 }
@@ -1144,6 +1160,51 @@ function revertProfilePicture() {
 
 // Event listener for the revert profile picture button
 document.querySelector('.revert-profile-picture-btn').addEventListener('click', revertProfilePicture);
+
+
+Here's the JavaScript functionality for the "Delete Account" button, which will delete the user's account from Firebase Firestore after confirming their decision:
+
+HTML and JavaScript Code
+html
+Copy code
+<div class="form-group3">
+    <button type="button" class="delete-account-btn" onclick="deleteAccount()">Delete Account</button>
+</div>
+
+
+    function deleteAccount() {
+        // Display confirmation dialog
+        const confirmation = confirm("⚠️ Are you sure you want to DELETE your account? Clicking OK will confirm this and your account will be permanently deleted. This action is irreversible.");
+        
+        if (confirmation) {
+            // Get the current user's ID
+            const user = auth.currentUser;
+            
+            if (user) {
+                const userId = user.uid;
+
+                // Delete user data from Firestore
+                db.collection("users").doc(userId).delete()
+                    .then(() => {
+                        // Delete user's authentication account
+                        return user.delete();
+                    })
+                    .then(() => {
+                        alert("Your account has been successfully deleted.");
+                        // Redirect to homepage or login page
+                        window.location.href = "homepage.html"; // Replace with your homepage or login page
+                    })
+                    .catch(error => {
+                        console.error("Error deleting account:", error);
+                        alert("An error occurred while deleting your account. Please try again later.");
+                    });
+            } else {
+                alert("No user is currently logged in.");
+            }
+        } else {
+            alert("Account deletion canceled.");
+        }
+    }
    
 </script>
 <body>
@@ -1391,6 +1452,10 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         </div>
 <div class="form-group2">
     <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
+</div>
+
+<div class="form-group3">
+    <button type="button" class="delete-account-btn" onclick="deleteAccount()">Delete Account </button>
 </div>
 
 
