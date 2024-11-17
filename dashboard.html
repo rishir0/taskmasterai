@@ -4142,47 +4142,49 @@ const collections = ['tasks', 'goals', 'projects', 'plans'];
 async function fetchCollectionData(userId) {
     try {
         const allData = {};
-        let displayName = "User"; // Default display name
 
-        // Listen for changes in the user info
-        db.collection('users').doc(userId).onSnapshot(userDoc => {
-            if (userDoc.exists) {
-                const userInfo = userDoc.data();
-                displayName = userInfo.displayName || "User";
-            } else {
-                console.warn('User not found');
-                renderPlaceholderMessage();
-            }
-        });
-
-        // Add listeners to each collection
-        for (const collectionName of collections) {
-            db.collection(collectionName)
-                .where('userId', '==', userId)
-                .onSnapshot(snapshot => {
-                    // Process the updated data for this collection
-                    allData[collectionName] = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
-                    }));
-
-                    // Check if there is any data across all collections
-                    const hasData = Object.values(allData).some(collection => collection.length > 0);
-
-                    if (hasData) {
-                        // Attach displayName for use in summary generation
-                        allData.displayName = displayName;
-                        updateAISummary(allData);
-                    } else {
-                        renderPlaceholderMessage();
-                    }
-                });
+        // Fetch user info
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            console.warn('User not found');
+            return null;
         }
+
+        const userInfo = userDoc.data();
+        const displayName = userInfo.displayName || "User";
+
+        // Fetch collections
+        for (const collectionName of collections) {
+            const snapshot = await db.collection(collectionName)
+                .where('userId', '==', userId)
+                .get();
+
+            allData[collectionName] = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
+            }));
+        }
+
+        // Check if any data is found
+        const hasData = Object.values(allData).some(collection => collection.length > 0);
+
+        if (!hasData) {
+            renderPlaceholderMessage();
+            return null;
+        }
+
+        // Attach displayName for use in summary generation
+        allData.displayName = displayName;
+        return allData;
+
     } catch (error) {
-        console.error('Error attaching live listeners:', error);
+        console.error('Error fetching data:', error);
+        return null;
     }
 }
+
+
 
 // Function to render placeholder message
 function renderPlaceholderMessage() {
