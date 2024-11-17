@@ -1383,6 +1383,7 @@ scrollbar-thumb {
     margin-bottom: 20px;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ensure relative positioning for the button's absolute positioning */
 }
 
 .ai-assistant-card h2 {
@@ -1460,9 +1461,11 @@ scrollbar-thumb {
     margin-right: -15px;
 }
 
-/* Additional button styling */
+/* Hide AI Section Button */
 .hide-ai-section-button {
-    float: right;
+    position: absolute; /* Use absolute positioning */
+    top: 10px; /* Adjust distance from top */
+    right: 10px; /* Adjust distance from the right */
     background: none;
     border: none;
     cursor: pointer;
@@ -1477,7 +1480,6 @@ scrollbar-thumb {
 .hide-ai-section-button .primary-hover:hover {
     fill: var(--primary-color); /* Primary color on hover when hidden */
 }
-
 
 .beta-tag {
     background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
@@ -1541,7 +1543,7 @@ scrollbar-thumb {
     border: none; /* Removed the border */
     border-radius: var(--border-radius);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: calc(99% + 0px); /* Increase the card width */
+    width: calc(100% + 0px); /* Increase the card width */
     margin: 0 auto; /* Center horizontally within its container */
     text-align: left; /* Align content to the left */
 }
