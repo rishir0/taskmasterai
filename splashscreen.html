@@ -138,15 +138,29 @@ body {
 
 /* Beta Tag */
 .beta-tag {
-    background-color: var(--glass-bg); /* Match the Continue button */
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    background-size: 300% 300%;
     color: var(--text-color);
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
-    margin-left: 10px;
+    animation: swish-gradient 3s infinite ease-in-out;
+    margin-left: 5px;
+    margin-top: 200px;
     vertical-align: middle;
-    display: inline-block;
+}
+
+@keyframes swish-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Animations */
