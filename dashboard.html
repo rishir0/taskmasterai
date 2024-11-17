@@ -4142,49 +4142,47 @@ const collections = ['tasks', 'goals', 'projects', 'plans'];
 async function fetchCollectionData(userId) {
     try {
         const allData = {};
+        let displayName = "User"; // Default display name
 
-        // Fetch user info
-        const userDoc = await db.collection('users').doc(userId).get();
-        if (!userDoc.exists) {
-            console.warn('User not found');
-            return null;
-        }
+        // Listen for changes in the user info
+        db.collection('users').doc(userId).onSnapshot(userDoc => {
+            if (userDoc.exists) {
+                const userInfo = userDoc.data();
+                displayName = userInfo.displayName || "User";
+            } else {
+                console.warn('User not found');
+                renderPlaceholderMessage();
+            }
+        });
 
-        const userInfo = userDoc.data();
-        const displayName = userInfo.displayName || "User";
-
-        // Fetch collections
+        // Add listeners to each collection
         for (const collectionName of collections) {
-            const snapshot = await db.collection(collectionName)
+            db.collection(collectionName)
                 .where('userId', '==', userId)
-                .get();
+                .onSnapshot(snapshot => {
+                    // Process the updated data for this collection
+                    allData[collectionName] = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
+                    }));
 
-            allData[collectionName] = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                type: collectionName.slice(0, -1) // e.g., 'task' for 'tasks'
-            }));
+                    // Check if there is any data across all collections
+                    const hasData = Object.values(allData).some(collection => collection.length > 0);
+
+                    if (hasData) {
+                        // Attach displayName for use in summary generation
+                        allData.displayName = displayName;
+                        updateAISummary(allData);
+                    } else {
+                        renderPlaceholderMessage();
+                    }
+                });
         }
-
-        // Check if any data is found
-        const hasData = Object.values(allData).some(collection => collection.length > 0);
-
-        if (!hasData) {
-            renderPlaceholderMessage();
-            return null;
-        }
-
-        // Attach displayName for use in summary generation
-        allData.displayName = displayName;
-        return allData;
-
     } catch (error) {
-        console.error('Error fetching data:', error);
-        return null;
+        console.error('Error attaching live listeners:', error);
     }
 }
-
-
 
 // Function to render placeholder message
 function renderPlaceholderMessage() {
@@ -4203,20 +4201,6 @@ function renderPlaceholderMessage() {
         <div class="section-content">TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</div>
     `;
     summaryContainer.appendChild(placeholderSection);
-}
-
-// Function to check if data is present and update dynamically
-function checkAndUpdateSummary(userUid) {
-    // Check if there is data for the user (you can customize this depending on your database structure)
-    firebase.firestore().collection('users').doc(userUid).onSnapshot(doc => {
-        if (doc.exists && doc.data().summary) {
-            // Data detected, call updateAISummary and render actual content
-            updateAISummary(userUid);
-        } else {
-            // Data not found, render the placeholder message
-            renderPlaceholderMessage();
-        }
-    });
 }
 
 // First AI call to generate section content
@@ -4588,19 +4572,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-
-// Call this function on auth state change or user login
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        console.log('User is logged in:', user.uid);
-        checkAndUpdateSummary(user.uid);  // Start live listening for data
-    } else {
-        console.log('No user logged in');
-        renderPlaceholderMessage(); // Show placeholder if no user
-    }
-});
-
 </script>
 
     <script>
