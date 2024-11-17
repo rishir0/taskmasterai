@@ -1169,7 +1169,7 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         
         if (confirmation) {
             // Get the current user's ID
-            const user = auth.currentUser;
+            const user = firebase.auth().currentUser;
             
             if (user) {
                 const userId = user.uid;
@@ -1443,11 +1443,10 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
         </div>
 <div class="form-group2">
     <button type="button" class="sign-out-btn" onclick="signOut()">Sign Out</button>
-</div>
-
-<div class="form-group3">
     <button type="button" class="delete-account-btn" onclick="deleteAccount()">Delete Account </button>
 </div>
+
+
 
 
 <div class="subscription-status">
