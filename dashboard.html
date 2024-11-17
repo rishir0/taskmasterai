@@ -4244,12 +4244,12 @@ Content: [Complete response here]`;
 // Second AI call to review and verify the content
 async function reviewSection(title, content) {
     const reviewPrompt = `Please review the following section for any errors, inconsistencies, or improvements. 
-Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content.
+Ensure that the section is clear, concise, and free from mistakes. Provide the corrected title and content. In your final response do not include explanations or questions. 
 
 Title: ${title}
 Content: ${content}
 
-Format the response exactly like this:
+Format the response exactly like this (REMEMBER DO NOT INCLUDE EXPLANATIONS OR QUESTIONS):
 Title: [Corrected title]
 Content: [Final, corrected content]`;
 
@@ -4461,7 +4461,11 @@ const inappropriateWords = [
         /RSS Subscription Fields Do Not Update in Calendar/i,
         /Connecting Tasks to Dashboard/i,
         /dashboard/i,
-        /💬 To view tasks in the main dashboard, update dynamic data configuration for ABC and untouched features have not updated successfully. Continue assessing projects, goals, or creating connections to ensure accurate polling./i
+        /💬 To view tasks in the main dashboard, update dynamic data configuration for ABC and untouched features have not updated successfully. Continue assessing projects, goals, or creating connections to ensure accurate polling./i,
+        /💬 TaskMaster requires additional information to provide an accurate summary. Please continue providing tasks, goals, projects, or plans to achieve a more comprehensive and clear summary. One additional point to update is incapacity to plan effectively 🤔. Consider checking factors that could be impacting these plans./i,
+        /This format is clear and concise and provides the necessary information without mentioning empty categories./i,
+        
+
         
     ];
 
