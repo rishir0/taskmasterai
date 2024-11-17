@@ -24,113 +24,153 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color); /* Solid dark background */
-            backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
-        }
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color); /* Solid dark background */
+    backdrop-filter: blur(10px); /* Optional: keeps the frosted glass effect */
+    display: flex; /* Center content vertically and horizontally */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
 
-        .splash-container {
-            max-width: 800px;
-            text-align: center;
-            color: var(--text-color);
-            backdrop-filter: blur(10px);
-            margin: auto;
-        }
+/* Splash Container */
+.splash-container {
+    max-width: 800px;
+    text-align: center;
+    color: var(--text-color);
+    backdrop-filter: blur(10px);
+    margin: auto;
+    animation: fadeIn 1s ease-in-out; /* Add a fade-in animation */
+}
 
-        .splash-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+/* Header Section */
+.splash-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle glow */
+}
 
-        .splash-header svg.logo {
-            width: 40px;
-            height: 40px;
-            fill: none;
-            stroke: var(--text-color);
-        }
+.splash-header svg.logo {
+    width: 40px;
+    height: 40px;
+    fill: none;
+    stroke: var(--text-color);
+}
 
-        .splash-header h1 {
-            font-size: 2rem;
-            color: var(--text-color);
-        }
+.splash-header h1 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+}
 
-        .intro-text {
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
+/* Intro Text */
+.intro-text {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
 
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
+/* Feature Cards */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
 
-        .feature-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            width: calc(50% - 20px);
-            box-sizing: border-box;
-            text-align: left;
-            color: var(--text-color); /* White text */
-            transition: transform 0.3s, box-shadow 0.3s; /* Transition for hover effect */
-        }
+.feature-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    width: calc(50% - 20px);
+    box-sizing: border-box;
+    text-align: left;
+    color: var(--text-color); /* White text */
+    transition: transform 0.3s, box-shadow 0.3s; /* Transition for hover effect */
+    animation: fadeInUp 0.5s ease-out; /* Fade-in effect */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for modern design */
+}
 
-        .feature-card h2 {
-            font-size: 1.2rem;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-        }
+.feature-card h2 {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
 
-        .feature-card p {
-            font-size: 0.9rem;
-            margin: 5px 0;
-        }
+.feature-card p {
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
 
-        .feature-card:hover {
-            transform: translateY(-5px); /* Slightly lift the card */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Add shadow */
-            background: var(--glass-bg); /* Lighten background slightly on hover */
-        }
+.feature-card:hover {
+    transform: translateY(-5px); /* Slightly lift the card */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Add shadow */
+    background: var(--glass-bg); /* Lighten background slightly on hover */
+}
 
-        .button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background: var(--glass-bg);
-            color: var(--text-color);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.3s, box-shadow 0.3s; /* Transition for hover effect */
-        }
+/* Button */
+.button {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 10px 20px;
+    background: var(--glass-bg);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s; /* Transition for hover effect */
+}
 
-        .button:hover {
-            background: var(--hover-bg);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
-        }
+.button:hover {
+    background: var(--hover-bg);
+    transform: scale(1.1); /* Add scaling effect */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+}
 
-        .beta-tag {
-            background-color: var(--glass-bg); /* Match the Continue button */
-            color: var(--text-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 10px;
-            vertical-align: middle;
-            display: inline-block;
-        }
+/* Beta Tag */
+.beta-tag {
+    background-color: var(--glass-bg); /* Match the Continue button */
+    color: var(--text-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
 
         /* Mobile Styles */
         @media (max-width: 600px) {
