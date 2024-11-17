@@ -4576,7 +4576,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             console.log('User is logged in:', user.uid);
             updateAISummary(user.uid);
-            checkAndUpdateSummary(user.uid);  // Start live listening for data
         } else {
             console.log('No user logged in');
             const aiSummarySection = document.getElementById('ai-summary-section');
@@ -4588,6 +4587,18 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
     });
+});
+
+
+// Call this function on auth state change or user login
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+        console.log('User is logged in:', user.uid);
+        checkAndUpdateSummary(user.uid);  // Start live listening for data
+    } else {
+        console.log('No user logged in');
+        renderPlaceholderMessage(); // Show placeholder if no user
+    }
 });
 
 </script>
