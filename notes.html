@@ -3900,7 +3900,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
 
     // If the selected answer is correct
     if (selectedLetter === correctAnswer) {
-        selectedOption.style.backgroundColor = '#0aa06e';
+        selectedOption.style.backgroundColor = 'green';
 
         // Replace the letter (A., B., C., or D.) with the correct answer SVG
         selectedOption.innerHTML = `
@@ -3922,7 +3922,7 @@ function handleOptionClick(selectedOption, selectedLetter) {
     } 
     // If the selected answer is wrong
     else {
-        selectedOption.style.backgroundColor = '#ad0e0e';
+        selectedOption.style.backgroundColor = 'red';
 
         // Replace the letter (A., B., C., or D.) with the wrong answer SVG
         selectedOption.innerHTML = `
