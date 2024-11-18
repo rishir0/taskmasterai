@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const lightThemeStyles = `
-     :root {
-        --primary-color: rgba(255, 255, 255, 0.1); * Keep primary color white */
-        --secondary-color: rgba(255, 255, 255, 0.1); /* Consistent secondary color */
-        --accent-color: #333333; /* Consistent accent color */
-        --text-color: #ffffff;
-        --bg-color: rgba(255, 255, 255, 0.1);
-        --card-bg: rgba(255, 255, 255, 0.1);
-        --glass-bg: rgba(255, 255, 255, 0.1);
-        --hover-bg: rgba(255, 255, 255, 0.1);
-        --border-radius: 15px;
-    }
+:root {
+    --primary-color: #56c6d2; /* Winterberry: A rich berry red for headers and highlights */
+    --secondary-color: #006400; /* Pine Green: Dark green to complement the primary red */
+    --accent-color: #009300; /* Gold: For a festive sparkle */
+    --text-color: white; /* Snowdrift White: Clean and readable on a dark background */
+    --bg-color:  #016c97; /* Deep Navy Blue: Evokes a peaceful, starry winter night */
+    --card-bg: rgba(255, 255, 255, 0.142);/* Frosted glass effect for consistency */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --hover-bg: rgba(255, 255, 255, 0.2); /* Slightly lighter background on hover */
+    --border-radius: 15px;
+}
 
 /* Force all text color to white, overriding any other styles */
 body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
