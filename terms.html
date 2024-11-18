@@ -177,12 +177,78 @@ ul li strong {
     color: var(--primary-color);
 }
 
+/* General footer styling */
 footer {
+    background-color: var(--card-bg); /* Light gray for subtle contrast */
+    padding: 10px 40px; /* Comfortable padding */
+    font-size: 14px;
     text-align: center;
-    padding: 2rem 0;
-    background-color: var(--card-bg);
-    color: #D1D5DB;
-    margin-top: 2rem;
+}
+
+/* Flexbox container for desktop layout */
+.footer-container {
+    display: flex;
+    justify-content: space-between; /* Space out links and copyright text */
+    align-items: center; /* Vertical alignment */
+    max-width: 480px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+/* Footer links styling */
+.footer-links {
+    display: flex;
+    gap: 5px; /* Space between links */
+    align-items: center;
+}
+
+/* Styling for the separator */
+.footer-links span {
+    color: #6c757d; /* Muted gray for the separator */
+}
+
+/* Footer links */
+.link {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 12px;
+}
+
+.link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Copyright text styling */
+.footer-copyright {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-links {
+        flex-direction: row; /* Ensure links are in a row */
+        justify-content: center;
+        gap: 5px; /* Close spacing for compact mobile design */
+        margin-bottom: 10px; /* Space between links and copyright */
+    }
+
+    .footer-links span {
+        display: inline; /* Ensure the separator appears between links */
+    }
+
+    .footer-container p {
+        margin-top: 0;
+    }
 }
 
         .logo a {
@@ -550,7 +616,18 @@ footer {
 
 
     <footer>
-        <p>&copy; 2024 TaskMaster AI. All rights reserved.</p>
+        <div class="footer-container">
+            <!-- Links section -->
+            <div class="footer-links">
+                <a href="privacy-policy.html" class="link">Privacy Policy</a>
+                <span>|</span>
+                <a href="terms.html" class="link">Terms & Conditions</a>
+            </div>
+            <!-- Copyright section -->
+            <p class="footer-copyright">
+                &copy; 2024 TaskMaster AI. All rights reserved.
+            </p>
+        </div>
     </footer>
 
 
