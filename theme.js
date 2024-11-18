@@ -17,13 +17,12 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
     color: white !important; /* Applies to text elements only */
 }
 
-
     
     body {
         font-family: 'Poppins', sans-serif;
         line-height: 1.6;
         color: var(--text-color);
-        background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+        background: var( --bg-color);
         background-size: 400% 400%;
         animation: gradientBG 10s ease infinite;
         backdrop-filter: blur(10px);
@@ -36,7 +35,7 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
     }
 
 .upgrade-btn2 {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--accent-color);
     color: var(--text-color);
     padding: 0.5rem 1rem;
     border: none;
