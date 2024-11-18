@@ -250,43 +250,74 @@
 /* General footer styling */
 footer {
     background-color: var(--card-bg); /* Light gray for subtle contrast */
-    padding: 10px 20px; /* Comfortable padding */
+    padding: 10px 40px; /* Comfortable padding */
     font-size: 14px;
     text-align: center;
 }
 
-/* Flexbox container for footer elements */
+/* Flexbox container for desktop layout */
 .footer-container {
     display: flex;
-    justify-content: space-between; /* Space elements evenly on the left and right */
-    align-items: center; /* Vertically align items */
-    max-width: 1200px; /* Optional: Center the content with a max width */
-    margin: 0 auto; /* Center the footer content */
+    justify-content: space-between; /* Space out links and copyright text */
+    align-items: center; /* Vertical alignment */
+    max-width: 480px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    margin-top: 5px;
 }
 
 /* Footer links styling */
+.footer-links {
+    display: flex;
+    gap: 5px; /* Space between links */
+    align-items: center;
+}
+
+/* Styling for the separator */
+.footer-links span {
+    color: #6c757d; /* Muted gray for the separator */
+}
+
+/* Footer links */
 .link {
-    color: #007BFF; /* Soft blue for a professional look */
-    text-decoration: none; /* No underline for a clean look */
-    font-weight: bold;
-    transition: color 0.3s ease; /* Smooth hover effect */
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 12px;
 }
 
-/* Hover effect for footer links */
 .link:hover {
-    color: #0056b3; /* Darker blue for hover */
-    text-decoration: underline; /* Optional: Add underline on hover */
+    color: #0056b3;
+    text-decoration: underline;
 }
 
-/* Center the copyright text on smaller screens */
+/* Copyright text styling */
+.footer-copyright {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Mobile adjustments */
 @media (max-width: 768px) {
     .footer-container {
         flex-direction: column; /* Stack items vertically */
+        align-items: center;
         text-align: center;
     }
 
-    .footer-container a {
-        margin: 5px 0; /* Add spacing between links */
+    .footer-links {
+        flex-direction: row; /* Ensure links are in a row */
+        justify-content: center;
+        gap: 5px; /* Close spacing for compact mobile design */
+        margin-bottom: 10px; /* Space between links and copyright */
+    }
+
+    .footer-links span {
+        display: inline; /* Ensure the separator appears between links */
+    }
+
+    .footer-container p {
+        margin-top: 0;
     }
 }
 
