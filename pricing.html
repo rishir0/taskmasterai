@@ -247,12 +247,49 @@
             color: var(--primary-color);
         }
 
-        footer {
-            text-align: center;
-            padding: 2rem 0;
-            background-color: var(--card-bg);
-            color: #D1D5DB;
-        }
+/* General footer styling */
+footer {
+    background-color: #f8f9fa; /* Light gray for subtle contrast */
+    padding: 10px 20px; /* Comfortable padding */
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Flexbox container for footer elements */
+.footer-container {
+    display: flex;
+    justify-content: space-between; /* Space elements evenly on the left and right */
+    align-items: center; /* Vertically align items */
+    max-width: 1200px; /* Optional: Center the content with a max width */
+    margin: 0 auto; /* Center the footer content */
+}
+
+/* Footer links styling */
+.link {
+    color: #007BFF; /* Soft blue for a professional look */
+    text-decoration: none; /* No underline for a clean look */
+    font-weight: bold;
+    transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover effect for footer links */
+.link:hover {
+    color: #0056b3; /* Darker blue for hover */
+    text-decoration: underline; /* Optional: Add underline on hover */
+}
+
+/* Center the copyright text on smaller screens */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center;
+    }
+
+    .footer-container a {
+        margin: 5px 0; /* Add spacing between links */
+    }
+}
+
 
         .logo a {
             display: flex;
@@ -619,9 +656,14 @@
         </div>
     </main>
 
-    <footer>
+<footer>
+    <div class="footer-container">
+        <a href="privacy-policy.html" class="link">Privacy Policy</a>
         <p>&copy; 2024 TaskMaster AI. All rights reserved.</p>
-    </footer>
+        <a href="terms.html" class="link">Terms & Conditions</a>
+    </div>
+</footer>
+
 
     <script>
         const yearlyButton = document.getElementById('yearly');
