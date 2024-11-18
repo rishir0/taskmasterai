@@ -95,6 +95,30 @@
             color: var(--primary-color);
         }
 
+/* Styling for the Privacy Policy link */
+.link {
+    color: #007BFF; /* Soft blue color for a professional look */
+    text-decoration: none; /* Removes underline for a clean appearance */
+    font-weight: bold; /* Makes the text stand out */
+    border-bottom: 2px solid transparent; /* Adds subtle hover effect */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+/* Hover effect for the link */
+.link:hover {
+    color: #0056b3; /* Darker blue for better hover contrast */
+    border-bottom: 2px solid #0056b3; /* Adds underline to highlight hover */
+    cursor: pointer; /* Indicates interactivity */
+}
+
+/* Optional: Focused state for accessibility */
+.link:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle glow effect */
+    border-radius: 2px; /* Matches button-like look when focused */
+}
+
+
 .get-started-btn {
     background-color: var(--accent-color) !important;
     color: white !important; /* Text always white */
