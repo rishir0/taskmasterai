@@ -198,6 +198,80 @@ textarea::placeholder {
   fill: white;
 }
 
+/* Add this to your existing CSS */
+
+/* Snowflake container */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: transparent;
+    z-index: 1;
+    overflow: hidden;
+}
+
+/* Snowflake Styles */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    font-size: 1em;
+    animation: fall infinite linear, drift infinite ease-in-out;
+    opacity: 0.8;
+}
+
+/* Snowflake Falling Animation */
+@keyframes fall {
+    0% {
+        transform: translateY(-100px);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+/* Snowflake Horizontal Drift */
+@keyframes drift {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+    100% {
+        transform: translateX(-20px);
+    }
+}
+
+
+// Add snowflakes dynamically to the body background
+const createSnowflake = () => {
+    const snowflake = document.createElement("div");
+    snowflake.classList.add("snowflake");
+    snowflake.textContent = "❄"; // You can use other snowflake emojis or symbols
+
+    // Randomize snowflake properties
+    snowflake.style.left = `${Math.random() * 100}vw`;
+    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`;
+    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Falling speed
+    snowflake.style.animationDelay = `${Math.random() * 5}s`; // Delay before falling
+
+    document.body.appendChild(snowflake);
+
+    // Remove snowflake after animation completes
+    setTimeout(() => {
+        snowflake.remove();
+    }, 10000); // Matches the longest animation duration
+};
+
+// Generate snowflakes at intervals
+setInterval(createSnowflake, 300);
+
+
 
     `;
 
