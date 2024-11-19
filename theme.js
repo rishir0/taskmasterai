@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Force all text color to white, overriding any other styles */
-h2, span {
+h2, span, p {
     color: white !important; /* Applies to text elements only */
 }
 
@@ -205,24 +205,24 @@ body {
 
 /* Snowflake styles */
 .snowflake {
-    position: fixed; /* Ensures the snowflake moves with the viewport */
-    top: -10px; /* Starts slightly off-screen */
+    position: fixed; /* Snowflakes move relative to the viewport */
+    top: -5%; /* Start slightly off-screen */
     left: 0;
-    font-size: 1em; /* Base size for snowflakes */
+    font-size: 1em; /* Default size */
     color: white; /* Snowflake color */
     opacity: 0.8; /* Slight transparency */
-    pointer-events: none; /* Prevent interaction with snowflakes */
-    z-index: -1; /* Behind all elements */
+    pointer-events: none; /* Don't interact with snowflakes */
+    z-index: -1; /* Ensure snowflakes are behind content */
     animation: fall infinite linear, drift infinite ease-in-out;
 }
 
 /* Falling animation */
 @keyframes fall {
     0% {
-        transform: translateY(-100px); /* Start off-screen */
+        transform: translateY(-5%); /* Start just above the screen */
     }
     100% {
-        transform: translateY(100vh); /* Fall to the bottom of the screen */
+        transform: translateY(105%); /* Fall past the bottom of the screen */
     }
 }
 
@@ -232,12 +232,13 @@ body {
         transform: translateX(0);
     }
     50% {
-        transform: translateX(20px); /* Drift slightly to the right */
+        transform: translateX(20px); /* Slightly drift right */
     }
     100% {
-        transform: translateX(-20px); /* Drift slightly to the left */
+        transform: translateX(-20px); /* Slightly drift left */
     }
 }
+
 
 
 
@@ -322,25 +323,26 @@ body {
 const createSnowflake = () => {
     const snowflake = document.createElement("div");
     snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄"; // Snowflake symbol
+    snowflake.textContent = "❄"; // Snowflake character
 
-    // Randomize initial position and properties
-    snowflake.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+    // Randomize snowflake properties
+    snowflake.style.left = `${Math.random() * 100}vw`; // Random position across the viewport
     snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`; // Random size
     snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Random falling speed
-    snowflake.style.animationDelay = `${Math.random() * 5}s`; // Delay before falling starts
+    snowflake.style.animationDelay = `${Math.random() * 3}s`; // Staggered appearance
 
-    // Append snowflake to the body
+    // Append the snowflake to the body
     document.body.appendChild(snowflake);
 
-    // Remove the snowflake after it finishes falling
+    // Remove the snowflake after it falls off-screen
     setTimeout(() => {
         snowflake.remove();
-    }, 10000); // Matches the longest animation duration
+    }, 8000); // Matches the longest animation duration
 };
 
-// Generate snowflakes at regular intervals
+// Generate snowflakes periodically
 setInterval(createSnowflake, 300);
+
 
 
 
