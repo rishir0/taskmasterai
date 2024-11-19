@@ -621,6 +621,19 @@ body.night-mode {
     font-weight: 600; /* Semi-bold */
 }
 
+/* Snowflake wrapper - hidden by default */
+.snowflakes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensures snowflakes are behind all content */
+    pointer-events: none; /* Prevents snowflakes from interfering with user interactions */
+    overflow: hidden;
+    display: none; /* Snowflakes hidden by default */
+}
+
 </style>
 
 </head>
@@ -721,7 +734,12 @@ body.night-mode {
                 </div>
             </div>
         </div>
+
+
 <div class="calendar">
+    <div class="snowflakes">
+        <!-- Snowflakes will be dynamically created here -->
+    </div>
     <div class="calendar-nav-header">
         <button id="prevWeek" aria-label="Previous Week">
             <!-- Previous SVG Icon -->
