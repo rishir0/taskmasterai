@@ -598,7 +598,7 @@ body {
             const snowflakesContainer = document.querySelector('.snowflakes');
 
             // Number of snowflakes to generate
-            const numberOfSnowflakes = 30;
+            const numberOfSnowflakes = 20;
 
             // Create and append snowflakes
             for (let i = 0; i < numberOfSnowflakes; i++) {
