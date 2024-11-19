@@ -3010,25 +3010,128 @@ function loadAllNotes() {
         return;
     }
 
-    // A flag to track if any notes were added
-    let notesLoaded = false;
-
     // Load manual and generated notes together
     loadManualNotes();
     loadGeneratedNotes();
     loadGeneratedPDFs();
-
-    // Check if no notes were loaded and show fallback message
-    if (!notesLoaded) {
-        notesList.innerHTML = `
-            <p style="text-align: center; color: #555; font-size: 16px;">
-                It looks like you haven't created any notes yet. To get started, click the <b>+ Add Note</b> button. 
-                You can upload files (<b>PDFs 📄</b>, <b>audio 🎧</b>, <b>YouTube links 📺</b>), 
-                create a note manually (<b>✍️</b>), or generate notes with AI using straight text (<b>🤖</b>).
-            </p>
-        `;
-    }
     
+}
+
+function updateFallbackMessage() {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) {
+        console.error("User not authenticated yet");
+        return;
+    }
+
+    const notesList = document.getElementById('notes-list');
+    let manualNotesEmpty = true;
+    let generatedNotesEmpty = true;
+    let generatedPDFsEmpty = true;
+
+    function checkAndUpdateFallback() {
+        // If all collections are empty, show the fallback message
+        if (manualNotesEmpty && generatedNotesEmpty && generatedPDFsEmpty) {
+            notesList.innerHTML = `
+                <p style="text-align: center; color: #555; font-size: 16px;">
+                    It looks like you haven't created any notes yet. To get started, click the <b>+ Add Note</b> button. 
+                    You can upload files (<b>PDFs 📄</b>, <b>audio 🎧</b>, <b>YouTube links 📺</b>), 
+                    create a note manually (<b>✍️</b>), or generate notes with AI using straight text (<b>🤖</b>).
+                </p>
+            `;
+        } else {
+            // Clear the fallback message if it exists
+            const fallbackMessage = notesList.querySelector("p");
+            if (fallbackMessage) fallbackMessage.remove();
+        }
+    }
+
+    // Listen to manual notes
+    db.collection('manualnotes')
+        .where('userId', '==', userId)
+        .onSnapshot(snapshot => {
+            manualNotesEmpty = snapshot.empty;
+            // Clear manual notes and add to the list
+            const manualNotes = document.querySelectorAll("[data-type='manualnote']");
+            manualNotes.forEach(note => note.remove());
+
+            snapshot.forEach(doc => {
+                const note = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.setAttribute('data-id', doc.id);
+                noteDiv.setAttribute('data-type', 'manualnote');
+                noteDiv.innerHTML = `
+                    <strong>${note.title}</strong> - ${note.date}<br/>
+                    ${note.note}
+                `;
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'manualnotes'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'manualnotes'));
+                noteDiv.appendChild(buttonContainer);
+                notesList.appendChild(noteDiv);
+            });
+
+            checkAndUpdateFallback();
+        });
+
+    // Listen to generated notes
+    db.collection('generatednotes')
+        .where('userId', '==', userId)
+        .onSnapshot(snapshot => {
+            generatedNotesEmpty = snapshot.empty;
+            // Clear generated notes and add to the list
+            const generatedNotes = document.querySelectorAll("[data-type='generatednote']");
+            generatedNotes.forEach(note => note.remove());
+
+            snapshot.forEach(doc => {
+                const note = doc.data();
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.setAttribute('data-id', doc.id);
+                noteDiv.setAttribute('data-type', 'generatednote');
+                noteDiv.innerHTML = `
+                    <strong>${note.title}</strong> - ${note.date}<br/>
+                    ${note.note}
+                `;
+                const buttonContainer = createButtonContainer();
+                buttonContainer.appendChild(createEditButton(doc.id, 'generatednotes'));
+                buttonContainer.appendChild(createDeleteButton(doc.id, 'generatednotes'));
+                noteDiv.appendChild(buttonContainer);
+                notesList.appendChild(noteDiv);
+            });
+
+            checkAndUpdateFallback();
+        });
+
+// Listen to generated PDFs
+db.collection('generatedpdfs') // Changed to 'generatedpdfs'
+    .where('userId', '==', userId)
+    .onSnapshot(snapshot => {
+        generatedPDFsEmpty = snapshot.empty; // This variable name remains the same for consistency
+        // Clear generated PDFs and add to the list
+        const generatedPDFs = document.querySelectorAll("[data-type='generatedPDF']");
+        generatedPDFs.forEach(note => note.remove());
+
+        snapshot.forEach(doc => {
+            const pdf = doc.data();
+            const pdfDiv = document.createElement('div');
+            pdfDiv.className = 'note-item';
+            pdfDiv.setAttribute('data-id', doc.id);
+            pdfDiv.setAttribute('data-type', 'generatedPDF');
+            pdfDiv.innerHTML = `
+                <strong>${pdf.title}</strong> - ${pdf.description}<br/>
+            `;
+            const buttonContainer = createButtonContainer();
+            buttonContainer.appendChild(createEditButton(doc.id, 'generatedpdfs'));
+            buttonContainer.appendChild(createDeleteButton(doc.id, 'generatedpdfs'));
+            pdfDiv.appendChild(buttonContainer);
+            notesList.appendChild(pdfDiv);
+        });
+
+        checkAndUpdateFallback();
+    });
+
 }
 
 
@@ -3047,7 +3150,6 @@ function loadManualNotes() {
                 noteDiv.className = 'note-item';
                 noteDiv.setAttribute('data-id', doc.id); // Set data-id for easy reference
                 noteDiv.setAttribute('data-type', 'manualnote'); // Set data-type attribute
-                notesLoaded = true; // Mark as loaded
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
                     ${note.note}
