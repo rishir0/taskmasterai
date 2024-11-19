@@ -12,10 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     --border-radius: 15px;
 }
 
-/* Force all text color to white, overriding any other styles */
-body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
-    color: white !important; /* Applies to text elements only */
-}
 
     
     body {
@@ -68,23 +64,7 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
     margin-right: -15px !important;
 }
 
-.section-content {
-    font-size: 16px; /* Adjust the font size */
-    color: white; /* Set the text color */
-    line-height: 1.6; /* Add line height for better readability */
-    margin: 10px 0; /* Add vertical margin for spacing */
-    padding: 8px; /* Add padding inside the paragraph */
-    background-color: var(--card-bg);
-    border-radius: 10px; /* Rounded corners for the background */
-    word-wrap: break-word; /* Ensure text wraps properly */
-}
 
-.summary-section h3 {
-    display: flex;
-    align-items: center;
-    font-size: 18px; /* Adjust font size if needed */
-    color: white;  
-}
 
 <span style="font-size: 12px; color: white; margin-left: 10px; display: inline-block; vertical-align: middle;"></span>
 
@@ -100,33 +80,8 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
   fill: white;
 }
     
-    .card {
-        margin-bottom: 20px;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 10px 15px;
-    }
-
-    .card-body {
-        padding: 15px;
-    }
-
-    .logo {
 
 
-    color: var(--text-color);
-
-
-}
-
-.section h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: white;
-}
 
 /* Date styling */
 .note-item span.date {
@@ -135,62 +90,14 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
     display: inline; /* Keep date inline */
 }
 
-.arrow-icon {
-    width: 54px;
-    height: 54px;
-    fill: white; /* Ensure the arrow icon is white */
-    margin-bottom: -10px;
-}
-
-/* Note text styling */
-.note-item p.note-text {
-    font-size: 1rem; /* Note text size */
-    color: white; /* Note text color */
-    margin: 5px 0 0 0; /* Space above note text */
-}
-
-/* Title styling */
-.note-item strong2 {
-    font-size: 1.3rem; /* Title size */
-    color: white; /* Title color */
-    display: inline; /* Keep title inline */
-    margin-right: 10px; /* Space between title and date */
-    font-weight: bold; /* Make the title bold */
-}
-
-/* Productivity Stats Styling */
-.productivity-stats h2, .upcoming-deadlines h3 {
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
 
 
-/* Section Headings */
-.tab-content h2 {
-    color: white;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
-
-/* Filled part of the Progress Bar */
-.progress-fill {
-    background-color: white; /* Use primary color for the fill */
-    height: 100%;
-    border-radius: 10px; /* Ensure rounded corners */
-    transition: width 0.3s ease; /* Smooth width change */
-}
 
 
-#tasks-projects .tasks-section h2,
-#tasks-projects .projects-section h2,
-#tasks-projects .goals-section h2,
-#tasks-projects .plans-section h2 {
-    color: white;
-    margin-bottom: 20px;
-    font-weight: bold;
-}
+
+
+
+
 
 .upgrade-btn {
     background: var(--hover-bg);
@@ -205,7 +112,7 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
     align-items: center;
     transition: background-color 0.3s ease, transform 0.3s ease;
     backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--accent-color);
 }
 
 
