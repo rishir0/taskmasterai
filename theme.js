@@ -344,25 +344,26 @@ body {
 const createSnowflake = () => {
     const snowflake = document.createElement("div");
     snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄"; // Snowflake character
+    snowflake.textContent = "❄"; // You can use other snowflake emojis or symbols
 
     // Randomize snowflake properties
-    snowflake.style.left = `${Math.random() * 100}vw`; // Random position across the viewport
-    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`; // Random size
-    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Random falling speed
-    snowflake.style.animationDelay = `${Math.random() * 3}s`; // Staggered appearance
+    snowflake.style.left = `${Math.random() * 100}vw`;
+    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`;
+    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Falling speed
+    snowflake.style.animationDelay = `${Math.random() * 5}s`; // Delay before falling
 
-    // Append the snowflake to the body
+    // Append snowflakes to body or a high-level container
     document.body.appendChild(snowflake);
 
-    // Remove the snowflake after it falls off-screen
+    // Remove snowflake after animation completes
     setTimeout(() => {
         snowflake.remove();
-    }, 8000); // Matches the longest animation duration
+    }, 10000); // Matches the longest animation duration
 };
 
-// Generate snowflakes periodically
+// Generate snowflakes at intervals
 setInterval(createSnowflake, 300);
+
 
 
 
