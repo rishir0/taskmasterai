@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
     --border-radius: 15px;
 }
 
+/* Force all text color to white, overriding any other styles */
+h2 {
+    color: white !important; /* Applies to text elements only */
+}
 
     
     body {
