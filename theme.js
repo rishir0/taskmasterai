@@ -139,9 +139,10 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
 .arrow-icon {
     width: 54px;
     height: 54px;
-    fill: white; /* Ensure the arrow icon is white */
+    fill: white !important; /* Ensure the arrow icon is white with higher specificity */
     margin-bottom: -10px;
 }
+
 
 /* Note text styling */
 .note-item p.note-text {
@@ -473,6 +474,12 @@ textarea::placeholder {
                 transform: translateX(-50%) translateY(100vh);
             }
         }
+.arrow-icon {
+    width: 54px;
+    height: 54px;
+    fill: white !important; /* Ensure the arrow icon is white with higher specificity */
+    margin-bottom: -10px;
+}
 
 
     `;
