@@ -2109,6 +2109,7 @@ h9 svg {
                     document.getElementById('displayName').textContent = username;
                     loadNotes();        // Load AI note
                     loadManualNotes();  // Load manual note
+                    updateFallbackMessage();
                 } else {
                     // No user is signed in.
                     window.location.href = "login.html"; // Redirect to login page
