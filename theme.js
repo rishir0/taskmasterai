@@ -698,4 +698,6 @@ if (window.location.pathname.endsWith('account.html')) {
         removeLightThemeBtn.style.display = 'none';
         applyDarkThemeBtn.style.display = 'inline-block';
         removeDarkThemeBtn.style.display = 'none';
-    });
+        });
+    }
+});
