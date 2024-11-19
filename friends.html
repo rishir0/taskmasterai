@@ -1926,7 +1926,18 @@ body.night-mode {
     overflow-y: auto; /* Enable vertical scrolling when visible */
 }
 
-
+/* Snowflake wrapper - hidden by default */
+.snowflakes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensures snowflakes are behind all content */
+    pointer-events: none; /* Prevents snowflakes from interfering with user interactions */
+    overflow: hidden;
+    display: none; /* Snowflakes hidden by default */
+}
 
         
     </style>
@@ -2030,6 +2041,9 @@ body.night-mode {
             </div>
         </div>  
 <div class="main-content">
+    <div class="snowflakes">
+        <!-- Snowflakes will be dynamically created here -->
+    </div>
     <div class="dashboard-header">
         <h1>
             Friends
