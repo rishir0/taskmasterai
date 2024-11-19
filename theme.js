@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Force all text color to white, overriding any other styles */
-h2, span, p {
+h2, span, a, li, td, th, div, p {
     color: white !important; /* Applies to text elements only */
 }
 
@@ -203,41 +203,62 @@ body {
     position: relative; /* Ensures snowflakes appear within the body context */
 }
 
+/* Add this to ensure snowflakes are visible on all screens */
+
+/* Snowflake container */
+body {
+    position: relative; /* Ensure snowflakes are positioned relative to the body */
+    overflow: visible; /* Prevent clipping */
+}
+
+body::before {
+    content: "";
+    position: fixed; /* Fixed positioning ensures snowflakes stay visible during scrolling */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Prevent interactions with the snowflakes */
+    background: transparent;
+    z-index: 9999; /* Place above all other content */
+    overflow: visible;
+}
+
 /* Snowflake styles */
 .snowflake {
-    position: fixed; /* Snowflakes move relative to the viewport */
-    top: -5%; /* Start slightly off-screen */
+    position: fixed;
+    top: -10px;
     left: 0;
-    font-size: 1em; /* Default size */
-    color: white; /* Snowflake color */
-    opacity: 0.8; /* Slight transparency */
-    pointer-events: none; /* Don't interact with snowflakes */
-    z-index: -1; /* Ensure snowflakes are behind content */
+    color: white;
+    font-size: 1em;
     animation: fall infinite linear, drift infinite ease-in-out;
+    opacity: 0.8;
+    z-index: 9999; /* Ensure snowflakes appear above everything */
 }
 
-/* Falling animation */
+/* Snowflake falling animation */
 @keyframes fall {
     0% {
-        transform: translateY(-5%); /* Start just above the screen */
+        transform: translateY(-100px);
     }
     100% {
-        transform: translateY(105%); /* Fall past the bottom of the screen */
+        transform: translateY(100vh);
     }
 }
 
-/* Horizontal drifting animation */
+/* Snowflake horizontal drift */
 @keyframes drift {
     0% {
         transform: translateX(0);
     }
     50% {
-        transform: translateX(20px); /* Slightly drift right */
+        transform: translateX(20px);
     }
     100% {
-        transform: translateX(-20px); /* Slightly drift left */
+        transform: translateX(-20px);
     }
 }
+
 
 
 
