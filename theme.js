@@ -332,6 +332,23 @@ h2, span, a, li, td, th, div, p {
 
 
 
+.card {
+    margin-bottom: 20px !important;
+}
+
+.card-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    padding: 10px 15px !important;
+}
+
+.card-body {
+    padding: 15px !important;
+}
+
+.logo {
+    color: var(--primary-color) !important;
+}
 
 
 
