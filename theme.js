@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Force all text color to white, overriding any other styles */
-h2 {
+h2, span {
     color: white !important; /* Applies to text elements only */
 }
 
