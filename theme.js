@@ -224,40 +224,37 @@ body::before {
     overflow: visible;
 }
 
-/* Snowflake styles */
+/* Snowflake styling */
 .snowflake {
-    position: fixed;
-    top: -10px;
-    left: 0;
-    color: white;
-    font-size: 1em;
-    animation: fall infinite linear, drift infinite ease-in-out;
-    opacity: 0.8;
-    z-index: 9999; /* Ensure snowflakes appear above everything */
+    position: fixed; /* Sticks snowflakes to the viewport */
+    top: -5%; /* Start slightly above the viewport */
+    pointer-events: none; /* No interference with user interaction */
+    color: white; /* Snowflake color */
+    font-size: 1em; /* Base font size (will vary) */
+    opacity: 0.8; /* Slight transparency for realism */
+    z-index: -1; /* Behind all other elements */
 }
 
 /* Snowflake falling animation */
-@keyframes fall {
+@keyframes snowfall {
     0% {
-        transform: translateY(-100px);
+        transform: translateY(0) translateX(0); /* Start at top */
     }
     100% {
-        transform: translateY(100vh);
+        transform: translateY(110vh) translateX(20vw); /* Fall past the bottom */
     }
 }
 
-/* Snowflake horizontal drift */
-@keyframes drift {
-    0% {
+/* Gentle swaying motion */
+@keyframes sway {
+    0%, 100% {
         transform: translateX(0);
     }
     50% {
-        transform: translateX(20px);
-    }
-    100% {
-        transform: translateX(-20px);
+        transform: translateX(10px); /* Drift horizontally */
     }
 }
+
 
 
 
@@ -341,28 +338,39 @@ body {
     `;
 
 
-const createSnowflake = () => {
+// Function to create and animate a snowflake
+function createSnowflake() {
     const snowflake = document.createElement("div");
     snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄"; // You can use other snowflake emojis or symbols
+    snowflake.textContent = "❄"; // Snowflake character
 
-    // Randomize snowflake properties
-    snowflake.style.left = `${Math.random() * 100}vw`;
-    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`;
-    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Falling speed
-    snowflake.style.animationDelay = `${Math.random() * 5}s`; // Delay before falling
+    // Randomize snowflake starting position and size
+    const size = Math.random() * 1.5 + 0.5; // Size between 0.5em and 2em
+    const startLeft = Math.random() * 100; // Random horizontal position
 
-    // Append snowflakes to body or a high-level container
+    // Apply randomized styles
+    snowflake.style.left = `${startLeft}vw`; // Random horizontal start
+    snowflake.style.fontSize = `${size}em`; // Random size
+    snowflake.style.animation = `
+        snowfall ${Math.random() * 5 + 5}s linear,
+        sway ${Math.random() * 3 + 2}s ease-in-out infinite
+    `;
+
+    // Add the snowflake to the body
     document.body.appendChild(snowflake);
 
-    // Remove snowflake after animation completes
+    // Remove snowflake after it leaves the viewport
     setTimeout(() => {
         snowflake.remove();
-    }, 10000); // Matches the longest animation duration
-};
+    }, 10000); // Matches maximum animation duration
+}
 
-// Generate snowflakes at intervals
-setInterval(createSnowflake, 300);
+// Delay the snowflake generation by 5 seconds
+setTimeout(() => {
+    // Generate snowflakes at intervals
+    setInterval(createSnowflake, 200); // A new snowflake every 200ms
+}, 5000); // 5-second delay
+
 
 
 
