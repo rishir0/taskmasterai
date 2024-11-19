@@ -214,7 +214,9 @@ textarea::placeholder {
     z-index: -1 !important; /* Snowflakes behind content */
     pointer-events: none !important; /* Prevent snowflakes from interfering with interactions */
     overflow: hidden !important;
+    display: block !important; /* Ensure snowflakes are displayed */
 }
+
 
 
         /* Snowflake */
