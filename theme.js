@@ -699,4 +699,3 @@ if (window.location.pathname.endsWith('account.html')) {
         applyDarkThemeBtn.style.display = 'inline-block';
         removeDarkThemeBtn.style.display = 'none';
     });
-}
