@@ -1692,6 +1692,18 @@ h9 svg {
     margin-right: 10px; /* Add space between label and choice text */
 }
 
+/* Snowflake wrapper - hidden by default */
+.snowflakes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensures snowflakes are behind all content */
+    pointer-events: none; /* Prevents snowflakes from interfering with user interactions */
+    overflow: hidden;
+    display: none; /* Snowflakes hidden by default */
+}
 
 
     </style>
@@ -1795,7 +1807,9 @@ h9 svg {
             </div>
         </div>
         <div class="main-content">
-            <!-- Main heading and subheading -->
+    <div class="snowflakes">
+        <!-- Snowflakes will be dynamically created here -->
+    </div>
             <div class="notes-dashboard-container">
                 <h1 class="main-heading">
                     <span class="svg-icon">
