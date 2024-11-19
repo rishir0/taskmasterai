@@ -3181,6 +3181,9 @@ function loadGeneratedNotes() {
         .onSnapshot(snapshot => {
             const notesList = document.getElementById('notes-list');
 
+            // Track if there are any notes in this collection
+            let hasGeneratedNotes = false;
+
             snapshot.docChanges().forEach(change => {
                 const noteData = change.doc.data();
                 const noteId = change.doc.id;
@@ -3190,9 +3193,13 @@ function loadGeneratedNotes() {
                 const overview = noteData.overview || "No overview available.";
                 const keyPoints = noteData.keyPoints || [];
                 const timestamp = noteData.timestamp?.toDate();
-                const dateCreated = timestamp ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() : "Unknown Date";
+                const dateCreated = timestamp 
+                    ? timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString() 
+                    : "Unknown Date";
 
                 if (change.type === "added" || change.type === "modified") {
+                    hasGeneratedNotes = true;
+
                     let noteDiv = document.querySelector(`[data-id='${noteId}']`);
                     if (!noteDiv) {
                         noteDiv = document.createElement('div');
@@ -3283,6 +3290,10 @@ function loadGeneratedNotes() {
                     if (noteDiv) {
                         notesList.removeChild(noteDiv);
                     }
+            // Update the flag for fallback handling
+            generatedNotesEmpty = !hasGeneratedNotes;
+            checkAndUpdateFallback();
+
                 }
             });
         }, error => {
