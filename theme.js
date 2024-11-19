@@ -198,62 +198,33 @@ textarea::placeholder {
   fill: white;
 }
 
-/* Snowflake container */
-body {
-    position: relative; /* Ensures snowflakes appear within the body context */
-}
-
-/* Add this to ensure snowflakes are visible on all screens */
-
-/* Snowflake container */
-body {
-    position: relative; /* Ensure snowflakes are positioned relative to the body */
-    overflow: visible; /* Prevent clipping */
-}
-
-body::before {
-    content: "";
-    position: fixed; /* Fixed positioning ensures snowflakes stay visible during scrolling */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* Prevent interactions with the snowflakes */
-    background: transparent;
-    z-index: 9999; /* Place above all other content */
-    overflow: visible;
-}
-
-/* Snowflake styling */
+/* Snowflake styles */
 .snowflake {
-    position: fixed; /* Sticks snowflakes to the viewport */
-    top: -5%; /* Start slightly above the viewport */
-    pointer-events: none; /* No interference with user interaction */
-    color: white; /* Snowflake color */
-    font-size: 1em; /* Base font size (will vary) */
+    position: fixed; /* Fixed so snowflakes stay visible */
+    top: -5%; /* Start just above the viewport */
+    pointer-events: none; /* Prevent interaction with snowflakes */
+    color: white; /* White snowflakes */
     opacity: 0.8; /* Slight transparency for realism */
     z-index: -1; /* Behind all other elements */
 }
 
-/* Snowflake falling animation */
+/* Fall animation */
 @keyframes snowfall {
-    0% {
-        transform: translateY(0) translateX(0); /* Start at top */
-    }
-    100% {
-        transform: translateY(110vh) translateX(20vw); /* Fall past the bottom */
+    to {
+        transform: translateY(110vh); /* Fall below the viewport */
     }
 }
 
-/* Gentle swaying motion */
+/* Sway animation */
 @keyframes sway {
     0%, 100% {
-        transform: translateX(0);
+        transform: translateX(0); /* No horizontal movement at start and end */
     }
     50% {
-        transform: translateX(10px); /* Drift horizontally */
+        transform: translateX(20px); /* Sway 20px left and right */
     }
 }
+
 
 
 
@@ -344,32 +315,37 @@ function createSnowflake() {
     snowflake.classList.add("snowflake");
     snowflake.textContent = "❄"; // Snowflake character
 
-    // Randomize snowflake starting position and size
+    // Randomize starting position, size, and speed
     const size = Math.random() * 1.5 + 0.5; // Size between 0.5em and 2em
-    const startLeft = Math.random() * 100; // Random horizontal position
+    const startLeft = Math.random() * 100; // Random horizontal position (0-100vw)
+    const fallDuration = Math.random() * 5 + 5; // Fall duration between 5-10 seconds
+    const swayDuration = Math.random() * 3 + 2; // Sway duration between 2-5 seconds
 
-    // Apply randomized styles
-    snowflake.style.left = `${startLeft}vw`; // Random horizontal start
+    // Apply styles
+    snowflake.style.left = `${startLeft}vw`; // Random starting horizontal position
     snowflake.style.fontSize = `${size}em`; // Random size
     snowflake.style.animation = `
-        snowfall ${Math.random() * 5 + 5}s linear,
-        sway ${Math.random() * 3 + 2}s ease-in-out infinite
+        snowfall ${fallDuration}s linear, 
+        sway ${swayDuration}s ease-in-out infinite
     `;
 
     // Add the snowflake to the body
     document.body.appendChild(snowflake);
 
-    // Remove snowflake after it leaves the viewport
+    // Remove snowflake after it leaves the screen
     setTimeout(() => {
         snowflake.remove();
-    }, 10000); // Matches maximum animation duration
+    }, fallDuration * 1000); // Remove after its fall duration
 }
 
-// Delay the snowflake generation by 5 seconds
-setTimeout(() => {
-    // Generate snowflakes at intervals
-    setInterval(createSnowflake, 200); // A new snowflake every 200ms
-}, 5000); // 5-second delay
+// Start generating snowflakes
+function startSnowfall() {
+    setInterval(createSnowflake, 300); // Generate a snowflake every 300ms
+}
+
+// Delay snowflake generation by 5 seconds
+setTimeout(startSnowfall, 5000);
+
 
 
 
