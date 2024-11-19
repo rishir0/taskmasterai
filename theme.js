@@ -198,32 +198,46 @@ textarea::placeholder {
   fill: white;
 }
 
-/* Snowflake styles */
-.snowflake {
-    position: fixed; /* Fixed so snowflakes stay visible */
-    top: -5%; /* Start just above the viewport */
-    pointer-events: none; /* Prevent interaction with snowflakes */
-    color: white; /* White snowflakes */
-    opacity: 0.8; /* Slight transparency for realism */
-    z-index: -1; /* Behind all other elements */
-}
+      /* Snowflake container */
+        body {
+            position: relative;
+            overflow: hidden;
+        }
 
-/* Fall animation */
-@keyframes snowfall {
-    to {
-        transform: translateY(110vh); /* Fall below the viewport */
-    }
-}
+        /* Snowflake wrapper */
+        .snowflakes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Snowflakes behind content */
+            pointer-events: none; /* Prevent snowflakes from interfering with interactions */
+            overflow: hidden;
+        }
 
-/* Sway animation */
-@keyframes sway {
-    0%, 100% {
-        transform: translateX(0); /* No horizontal movement at start and end */
-    }
-    50% {
-        transform: translateX(20px); /* Sway 20px left and right */
-    }
-}
+        /* Snowflake */
+        .snowflake {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.7;
+            background-color: white;
+            border-radius: 50%;
+            animation: fall 5s linear infinite;
+        }
+
+        /* Snowflake fall animation */
+        @keyframes fall {
+            0% {
+                transform: translateX(-50%) translateY(-10%);
+            }
+            100% {
+                transform: translateX(-50%) translateY(100vh);
+            }
+        }
+
 
 
 
@@ -309,43 +323,42 @@ body {
     `;
 
 
-// Function to create and animate a snowflake
-function createSnowflake() {
-    const snowflake = document.createElement("div");
-    snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄"; // Snowflake character
+        // Function to create a snowflake
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
 
-    // Randomize starting position, size, and speed
-    const size = Math.random() * 1.5 + 0.5; // Size between 0.5em and 2em
-    const startLeft = Math.random() * 100; // Random horizontal position (0-100vw)
-    const fallDuration = Math.random() * 5 + 5; // Fall duration between 5-10 seconds
-    const swayDuration = Math.random() * 3 + 2; // Sway duration between 2-5 seconds
+            // Randomize the size and speed of the snowflake
+            const size = Math.random() * 10 + 5; // Random size between 5px and 15px
+            const animationDuration = Math.random() * 3 + 5; // Random duration between 5s and 8s
 
-    // Apply styles
-    snowflake.style.left = `${startLeft}vw`; // Random starting horizontal position
-    snowflake.style.fontSize = `${size}em`; // Random size
-    snowflake.style.animation = `
-        snowfall ${fallDuration}s linear, 
-        sway ${swayDuration}s ease-in-out infinite
-    `;
+            // Set random size and animation duration
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.animationDuration = `${animationDuration}s`;
 
-    // Add the snowflake to the body
-    document.body.appendChild(snowflake);
+            // Position the snowflake randomly across the top
+            snowflake.style.left = `${Math.random() * 100}%`;
 
-    // Remove snowflake after it leaves the screen
-    setTimeout(() => {
-        snowflake.remove();
-    }, fallDuration * 1000); // Remove after its fall duration
-}
+            return snowflake;
+        }
 
-// Start generating snowflakes
-function startSnowfall() {
-    setInterval(createSnowflake, 300); // Generate a snowflake every 300ms
-}
+        // Function to create and append snowflakes to the container
+        function generateSnowflakes() {
+            const snowflakesContainer = document.querySelector('.snowflakes');
 
-// Delay snowflake generation by 5 seconds
-setTimeout(startSnowfall, 5000);
+            // Number of snowflakes to generate
+            const numberOfSnowflakes = 50;
 
+            // Create and append snowflakes
+            for (let i = 0; i < numberOfSnowflakes; i++) {
+                const snowflake = createSnowflake();
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+
+        // Call the function to generate snowflakes when the page loads
+        window.onload = generateSnowflakes;
 
 
 
