@@ -317,6 +317,30 @@ body {
 }
     `;
 
+
+// Function to create a snowflake
+const createSnowflake = () => {
+    const snowflake = document.createElement("div");
+    snowflake.classList.add("snowflake");
+    snowflake.textContent = "❄"; // Snowflake symbol
+
+    // Randomize position and animation
+    snowflake.style.left = `${Math.random() * 100}vw`;
+    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`;
+    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Falling duration
+    snowflake.style.animationDelay = `${Math.random() * 3}s`; // Staggered start
+
+    document.body.appendChild(snowflake);
+
+    // Remove snowflake after animation ends
+    setTimeout(() => snowflake.remove(), 10000); // Match the animation duration
+};
+
+// Generate snowflakes at regular intervals
+setInterval(createSnowflake, 300);
+
+
+
     function applyTheme(styles, themeName) {
         removeTheme();
         let styleSheet = document.createElement("style");
