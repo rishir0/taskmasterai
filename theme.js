@@ -204,17 +204,18 @@ textarea::placeholder {
             overflow: hidden;
         }
 
-        /* Snowflake wrapper */
-        .snowflakes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Snowflakes behind content */
-            pointer-events: none; /* Prevent snowflakes from interfering with interactions */
-            overflow: hidden;
-        }
+/* Snowflake wrapper */
+.snowflakes {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: -1 !important; /* Snowflakes behind content */
+    pointer-events: none !important; /* Prevent snowflakes from interfering with interactions */
+    overflow: hidden !important;
+}
+
 
         /* Snowflake */
         .snowflake {
