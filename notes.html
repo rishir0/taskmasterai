@@ -3047,7 +3047,7 @@ function loadManualNotes() {
                 noteDiv.className = 'note-item';
                 noteDiv.setAttribute('data-id', doc.id); // Set data-id for easy reference
                 noteDiv.setAttribute('data-type', 'manualnote'); // Set data-type attribute
-
+                notesLoaded = true; // Mark as loaded
                 noteDiv.innerHTML = `
                     <strong>${note.title}</strong> - ${note.date}<br/>
                     ${note.note}
@@ -3167,6 +3167,7 @@ function loadGeneratedNotes() {
                     // Append the note to the list if it's new
                     if (!notesList.contains(noteDiv)) {
                         notesList.appendChild(noteDiv);
+                        notesLoaded = true; // Mark as loaded
                     }
 
                     // Check localStorage to see if this note should be collapsed or expanded
