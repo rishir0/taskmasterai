@@ -248,28 +248,7 @@ body::before {
 }
 
 
-// Add snowflakes dynamically to the body background
-const createSnowflake = () => {
-    const snowflake = document.createElement("div");
-    snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄"; // You can use other snowflake emojis or symbols
 
-    // Randomize snowflake properties
-    snowflake.style.left = `${Math.random() * 100}vw`;
-    snowflake.style.fontSize = `${Math.random() * 1.5 + 0.5}em`;
-    snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`; // Falling speed
-    snowflake.style.animationDelay = `${Math.random() * 5}s`; // Delay before falling
-
-    document.body.appendChild(snowflake);
-
-    // Remove snowflake after animation completes
-    setTimeout(() => {
-        snowflake.remove();
-    }, 10000); // Matches the longest animation duration
-};
-
-// Generate snowflakes at intervals
-setInterval(createSnowflake, 300);
 
 
 
