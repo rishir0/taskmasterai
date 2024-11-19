@@ -198,20 +198,9 @@ textarea::placeholder {
   fill: white;
 }
 
-/* Add this to your existing CSS */
-
 /* Snowflake container */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: transparent;
-    z-index: 1;
-    overflow: hidden;
+body {
+    position: relative; /* Ensures snowflakes appear within the body context */
 }
 
 /* Snowflake Styles */
@@ -220,8 +209,10 @@ body::before {
     top: -10px;
     color: white;
     font-size: 1em;
-    animation: fall infinite linear, drift infinite ease-in-out;
+    animation: fall 10s linear infinite, drift 5s ease-in-out infinite;
     opacity: 0.8;
+    pointer-events: none; /* Prevent interactions with snowflakes */
+    z-index: 1000; /* Ensure snowflakes are above all content */
 }
 
 /* Snowflake Falling Animation */
@@ -240,12 +231,13 @@ body::before {
         transform: translateX(0);
     }
     50% {
-        transform: translateX(20px);
+        transform: translateX(30px);
     }
     100% {
-        transform: translateX(-20px);
+        transform: translateX(-30px);
     }
 }
+
 
 
 
