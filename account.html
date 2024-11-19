@@ -955,6 +955,20 @@ scrollbar-thumb {
 }
 
 
+/* Snowflake wrapper - hidden by default */
+.snowflakes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensures snowflakes are behind all content */
+    pointer-events: none; /* Prevents snowflakes from interfering with user interactions */
+    overflow: hidden;
+    display: none; /* Snowflakes hidden by default */
+}
+
+
     </style>
 </head>
 
@@ -1289,7 +1303,10 @@ document.querySelector('.revert-profile-picture-btn').addEventListener('click', 
                 </div>
             </div>
         </div>
-        <div class="main-content">
+<div class="main-content">
+    <div class="snowflakes">
+        <!-- Snowflakes will be dynamically created here -->
+    </div>
             <div class="settings-header">
               <h1>
                 <span class="account-icon">
