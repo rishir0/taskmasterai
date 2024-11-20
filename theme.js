@@ -455,43 +455,34 @@ textarea::placeholder {
             overflow: hidden;
         }
 
-/* Snowflake wrapper */
-.snowflakes {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    z-index: -1 !important; /* Snowflakes behind content */
-    pointer-events: none !important; /* Prevent snowflakes from interfering with interactions */
-    overflow: hidden !important;
-    display: block !important; /* Ensure snowflakes are displayed */
-}
-
-
-
-.snowflake {
-    position: absolute;
-    top: -10%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0.7;
-    background-color: white;
-    border-radius: 50%;
-    animation: fall 5s linear infinite;
-    will-change: transform;
-}
-
-
-        /* Snowflake fall animation */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .snowflake {
+            position: absolute;
+            top: -20px; /* Start above the screen */
+            background-color: white;
+            border-radius: 50%;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
         @keyframes fall {
-            0% {
-                transform: translateX(-50%) translateY(-10%);
+            from {
+                transform: translateY(0);
             }
-            100% {
-                transform: translateX(-50%) translateY(100vh);
+            to {
+                transform: translateY(100vh); /* Fall to bottom of screen */
             }
         }
+
+
 .arrow-icon {
     width: 54px;
     height: 54px;
@@ -601,16 +592,26 @@ body {
             // Number of snowflakes to generate
             const numberOfSnowflakes = 20;
 
+            const snowflakes = [];
+
             // Create and append snowflakes
             for (let i = 0; i < numberOfSnowflakes; i++) {
                 const snowflake = createSnowflake();
                 snowflakesContainer.appendChild(snowflake);
+                snowflakes.push(snowflake);
             }
+
+            // Function to reposition snowflakes smoothly
+            setInterval(() => {
+                snowflakes.forEach((snowflake) => {
+                    snowflake.style.left = `${Math.random() * 100}%`;
+                    snowflake.style.animationDuration = `${Math.random() * 3 + 5}s`; // Randomize fall speed
+                });
+            }, 1000); // Reposition every second
         }
 
         // Call the function to generate snowflakes when the page loads
         window.onload = generateSnowflakes;
-
 
 
 
