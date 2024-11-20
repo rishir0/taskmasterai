@@ -470,17 +470,18 @@ textarea::placeholder {
 
 
 
-        /* Snowflake */
-        .snowflake {
-            position: absolute;
-            top: -10%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.7;
-            background-color: white;
-            border-radius: 50%;
-            animation: fall 5s linear infinite;
-        }
+.snowflake {
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.7;
+    background-color: white;
+    border-radius: 50%;
+    animation: fall 5s linear infinite;
+    will-change: transform;
+}
+
 
         /* Snowflake fall animation */
         @keyframes fall {
