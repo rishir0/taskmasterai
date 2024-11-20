@@ -455,19 +455,21 @@ textarea::placeholder {
             overflow: hidden;
         }
 
-/* Snowflake container */
+/* Snowflake wrapper */
 .snowflakes {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Snowflakes behind content */
-    pointer-events: none; /* Prevent snowflakes from interfering with interactions */
-    overflow: hidden;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: -1 !important; /* Snowflakes behind content */
+    pointer-events: none !important; /* Prevent snowflakes from interfering with interactions */
+    overflow: hidden !important;
+    display: block !important; /* Ensure snowflakes are displayed */
 }
 
-/* Snowflake */
+
+
 .snowflake {
     position: absolute;
     top: -10%;
@@ -480,16 +482,16 @@ textarea::placeholder {
     will-change: transform;
 }
 
-/* Snowflake fall animation */
-@keyframes fall {
-    0% {
-        transform: translateX(-50%) translateY(-10%);
-    }
-    100% {
-        transform: translateX(-50%) translateY(100vh);
-    }
-}
 
+        /* Snowflake fall animation */
+        @keyframes fall {
+            0% {
+                transform: translateX(-50%) translateY(-10%);
+            }
+            100% {
+                transform: translateX(-50%) translateY(100vh);
+            }
+        }
 .arrow-icon {
     width: 54px;
     height: 54px;
@@ -572,59 +574,42 @@ body {
     `;
 
 
-(function () {
-    // Function to create a snowflake
-    function createSnowflake() {
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
+        // Function to create a snowflake
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
 
-        // Randomize the size and speed of the snowflake
-        const size = Math.random() * 10 + 5; // Random size between 5px and 15px
-        const animationDuration = Math.random() * 3 + 5; // Random duration between 5s and 8s
+            // Randomize the size and speed of the snowflake
+            const size = Math.random() * 10 + 5; // Random size between 5px and 15px
+            const animationDuration = Math.random() * 3 + 5; // Random duration between 5s and 8s
 
-        // Set random size and animation duration
-        snowflake.style.width = `${size}px`;
-        snowflake.style.height = `${size}px`;
-        snowflake.style.animationDuration = `${animationDuration}s`;
+            // Set random size and animation duration
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.animationDuration = `${animationDuration}s`;
 
-        // Position the snowflake randomly across the top
-        snowflake.style.left = `${Math.random() * 100}%`;
+            // Position the snowflake randomly across the top
+            snowflake.style.left = `${Math.random() * 100}%`;
 
-        return snowflake;
-    }
-
-    // Function to manage continuous snowflake generation
-    function generateSnowflakes() {
-        const snowflakesContainer = document.querySelector('.snowflakes');
-
-        // Generate a new snowflake every 500ms
-        setInterval(() => {
-            const snowflake = createSnowflake();
-            snowflakesContainer.appendChild(snowflake);
-
-            // Remove snowflake after its animation ends
-            setTimeout(() => {
-                snowflake.remove();
-            }, parseFloat(snowflake.style.animationDuration) * 1000);
-        }, 500); // Adjust interval as needed
-    }
-
-    // Initialize the snowflakes on page load
-    function initSnowfall() {
-        // Check if the snowflake container already exists (for SPA or multipage setups)
-        if (!document.querySelector('.snowflakes')) {
-            const snowflakesContainer = document.createElement('div');
-            snowflakesContainer.classList.add('snowflakes');
-            document.body.appendChild(snowflakesContainer);
+            return snowflake;
         }
 
-        // Start generating snowflakes
-        generateSnowflakes();
-    }
+        // Function to create and append snowflakes to the container
+        function generateSnowflakes() {
+            const snowflakesContainer = document.querySelector('.snowflakes');
 
-    // Run the initialization function on every page
-    document.addEventListener('DOMContentLoaded', initSnowfall);
-})();
+            // Number of snowflakes to generate
+            const numberOfSnowflakes = 20;
+
+            // Create and append snowflakes
+            for (let i = 0; i < numberOfSnowflakes; i++) {
+                const snowflake = createSnowflake();
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+
+        // Call the function to generate snowflakes when the page loads
+        window.onload = generateSnowflakes;
 
 
 
