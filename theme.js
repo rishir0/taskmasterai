@@ -507,10 +507,10 @@ textarea::placeholder {
     --secondary-color: #8d8aaf; /* Consistent secondary color */
     --accent-color: #003366; /* Consistent accent color */
     --text-color: #ffffff; /* Keep text color white */
-    --bg-color: rgba(31, 31, 31, 0.9); /* Darker background color */
+    --bg-color: #000000; /* Darker background color */
     --card-bg: rgba(31, 31, 31, 0.9); /* Darker card background */
-    --glass-bg: rgba(31, 31, 31, 0.9); /* Darker glass background */
-    --hover-bg: rgba(55, 55, 55, 0.9); /* Darker hover background */
+    --glass-bg: #000000; /* Darker glass background */
+    --hover-bg: #000000; /* Darker hover background */
     --border-radius: 15px;
 }
 
@@ -518,7 +518,7 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(135deg, rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.9));
+    background: linear-gradient(135deg, #000000, #000000, #000000);
     background-size: 400% 400%;
     animation: gradientBG 10s ease infinite;
     backdrop-filter: blur(10px);
