@@ -22,7 +22,7 @@ body, p, h1, h2, h3, h4, h5, h6, span, a, li, td, th, div {
         font-family: 'Poppins', sans-serif;
         line-height: 1.6;
         color: var(--text-color);
-        background: linear-gradient(135deg, rgba(35, 35, 35, 0.8), rgba(66, 66, 70, 0.8), rgba(116, 116, 119, 0.8));
+        background: linear-gradient(135deg, rgba(116, 116, 119, 0.8), rgba(116, 116, 119, 0.8), rgba(116, 116, 119, 0.8));
         background-size: 400% 400%;
         animation: gradientBG 10s ease infinite;
         backdrop-filter: blur(10px);
