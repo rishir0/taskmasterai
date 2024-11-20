@@ -602,7 +602,7 @@ function generateSnowflakes() {
     const snowflakesContainer = document.querySelector('.snowflakes');
 
     // Number of snowflakes to generate
-    const numberOfSnowflakes = 20;
+    const numberOfSnowflakes = 15;
 
     // Check if snowflakes are already cached
     if (snowflakesCache.length === 0) {
