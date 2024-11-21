@@ -4431,15 +4431,22 @@ function sanitizeTitle(title) {
         title = title.replace(regex, '').trim();
     });
 
-    // Check if the title is exactly "Loading..." and allow ellipsis
-    if (title === "Loading...") {
-        return title; // Return "Loading..." as is
-    }
+// Check if the title is exactly "Loading..." and allow ellipsis
+if (title === "Loading...") {
+    return title; // Return "Loading..." as is
+}
 
-    // Remove trailing periods for all other titles
-    title = title.replace(/\.+$/, '').trim();
+// Remove "Content: " at the beginning
+title = title.replace(/^Content:\s*/, '');
 
-    return title; // Return the sanitized title
+// Remove "[corrected title " if detected anywhere in the title
+title = title.replace(/\[corrected title\s*/gi, '');
+
+// Remove trailing periods for all other titles
+title = title.replace(/\.+$/, '').trim();
+
+return title; // Return the sanitized title
+
 }
 
 
