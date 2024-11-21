@@ -4498,6 +4498,9 @@ if (/suicide/i.test(content)) {
 // Split content into individual lines
 let lines = content.split('\n').map(line => line.trim());
 
+// Remove the word "Content:" from each line without removing the entire line
+lines = lines.map(line => line.replace(/\bContent:\b/g, '').trim());
+
 // Remove lines that don’t end with a period or lines that contain only numbers
 lines = lines.filter(line => line.endsWith('.') && !/^\(?\d+\)?[\.:]?\s*$/.test(line));
 
@@ -4508,6 +4511,7 @@ lines = lines.filter(Boolean);
 return lines.length
     ? lines.join(' ') // Join sentences with spaces
     : '💭 TaskMaster is still thinking... Check back later.';
+
 
 }
 
