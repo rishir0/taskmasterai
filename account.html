@@ -1963,6 +1963,29 @@ h2, span, a, li, td, th, div, p {
 
 
 
+
+.card {
+    margin-bottom: 20px !important;
+}
+
+.card-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    padding: 10px 15px !important;
+}
+
+.card-body {
+    padding: 15px !important;
+}
+
+.logo {
+    color: var(--primary-color) !important;
+}
+
+
+
+
+
 .upgrade-btn {
     background: var(--hover-bg);
     color: var(--text-color);
@@ -2079,17 +2102,18 @@ textarea::placeholder {
 
 
 
-        /* Snowflake */
-        .snowflake {
-            position: absolute;
-            top: -10%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.7;
-            background-color: white;
-            border-radius: 50%;
-            animation: fall 5s linear infinite;
-        }
+.snowflake {
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.7;
+    background-color: white;
+    border-radius: 50%;
+    animation: fall 5s linear infinite;
+    will-change: transform;
+}
+
 
         /* Snowflake fall animation */
         @keyframes fall {
@@ -2100,6 +2124,12 @@ textarea::placeholder {
                 transform: translateX(-50%) translateY(100vh);
             }
         }
+.arrow-icon {
+    width: 54px;
+    height: 54px;
+    fill: white !important; /* Ensure the arrow icon is white with higher specificity */
+    margin-bottom: -10px;
+}
 
 
     `;
