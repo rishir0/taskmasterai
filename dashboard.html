@@ -4579,7 +4579,7 @@ async function updateAISummary(userId) {
         const summaryContainer = aiSummarySection.querySelector('.ai-assistant-card');
         summaryContainer.innerHTML += `
             <div class="summary-section error-state">
-                <p>‼️🚨 Unable to generate your Smart Overview at this time. Please try again later. ‼️🚨</p>
+                <p>⏳ You have reached your daily limit for Smart Overview. Your limit will reset shortly. ⏳</p>
             </div>
         `;
     }
