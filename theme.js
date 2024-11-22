@@ -573,22 +573,21 @@ body {
 const snowflakesCache = [];
 
 // Function to create a snowflake
-function createSnowflake(left, top) {
+function createSnowflake() {
     const snowflake = document.createElement('div');
     snowflake.classList.add('snowflake');
 
-    // Fixed size and animation duration
-    const size = 10; // Fixed size of 10px
-    const animationDuration = 6; // Fixed duration of 6s
+    // Randomize the size and speed of the snowflake
+    const size = Math.random() * 10 + 5; // Random size between 5px and 15px
+    const animationDuration = Math.random() * 3 + 5; // Random duration between 5s and 8s
 
-    // Set size, animation duration, and position
+    // Set random size and animation duration
     snowflake.style.width = `${size}px`;
     snowflake.style.height = `${size}px`;
     snowflake.style.animationDuration = `${animationDuration}s`;
 
-    // Position the snowflake based on the pattern
-    snowflake.style.left = `${left}%`;
-    snowflake.style.top = `${top}%`;
+    // Position the snowflake randomly across the top
+    snowflake.style.left = `${Math.random() * 100}%`;
 
     return snowflake;
 }
@@ -597,30 +596,29 @@ function createSnowflake(left, top) {
 function generateSnowflakes() {
     const snowflakesContainer = document.querySelector('.snowflakes');
 
-    // Grid pattern configuration
-    const rows = 10; // Number of rows
-    const columns = 10; // Number of columns
-    const horizontalSpacing = 10; // Horizontal spacing percentage
-    const verticalSpacing = 10; // Vertical spacing percentage
+    // Number of snowflakes to generate
+    const numberOfSnowflakes = 20;
 
-    // Clear previous snowflakes from the container
-    snowflakesContainer.innerHTML = '';
-
-    // Generate snowflakes in a grid pattern
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < columns; col++) {
-            const left = col * horizontalSpacing;
-            const top = row * verticalSpacing;
-            const snowflake = createSnowflake(left, top);
+    // Check if snowflakes are already cached
+    if (snowflakesCache.length === 0) {
+        for (let i = 0; i < numberOfSnowflakes; i++) {
+            const snowflake = createSnowflake();
             snowflakesCache.push(snowflake);
             snowflakesContainer.appendChild(snowflake);
         }
+    } else {
+        // If cached, reposition and append them
+        snowflakesCache.forEach((snowflake) => {
+            snowflake.style.left = `${Math.random() * 100}%`; // Reposition randomly
+            if (!snowflake.parentElement) {
+                snowflakesContainer.appendChild(snowflake);
+            }
+        });
     }
 }
 
 // Call the function to generate snowflakes when the page loads
 window.onload = generateSnowflakes;
-
 
 
 
