@@ -316,16 +316,29 @@ if (signinForm) {
             window.location.href = "dashboard.html";
         } catch (error) {
             const errorCode = error.code;
-            const errorMessage = error.message;
-            if (errorCode === "auth/wrong-password") {
-                alert("Incorrect password. Please try again.");
-            } else {
-                console.error('Error signing in:', errorCode, errorMessage);
-                alert(`Error signing in: ${errorCode} - ${errorMessage}`);
+
+            // Handle specific error codes
+            switch (errorCode) {
+                case "auth/wrong-password":
+                    alert("Incorrect password. Please try again.");
+                    break;
+                case "auth/user-not-found":
+                    alert("No user found with this email. Please check your email address.");
+                    break;
+                case "auth/invalid-email":
+                    alert("The email address is not valid. Please check and try again.");
+                    break;
+                case "auth/invalid-credential":
+                    alert("Invalid credentials. Please try again or reset your password.");
+                    break;
+                default:
+                    console.error('Error signing in:', errorCode, error.message);
+                    alert(`Unexpected error signing in: ${errorCode} - ${error.message}`);
             }
         }
     });
 }
+
 
 </script>
 </body>
