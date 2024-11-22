@@ -286,16 +286,26 @@ if (googleLoginBtn) {
             })
             .catch((error) => {
                 const errorCode = error.code;
-                const errorMessage = error.message;
-                if (errorCode === "auth/popup-closed-by-user") {
-                    alert("Google login canceled.");
-                } else {
-                    console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                    alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
+
+                // Handle specific error codes
+                switch (errorCode) {
+                    case "auth/popup-closed-by-user":
+                        alert("Google login canceled.");
+                        break;
+                    case "auth/cancelled-popup-request":
+                        alert("Google login canceled.");
+                        break;
+                    case "auth/network-request-failed":
+                        alert("Network error. Please check your internet connection and try again.");
+                        break;
+                    default:
+                        console.error('Error with Google Sign-In:', errorCode, error.message);
+                        alert(`Unexpected error with Google Sign-In: ${errorCode}. Please try again.`);
                 }
             });
     });
 }
+
 
 // Sign-In Form
 const signinForm = document.getElementById('signin-form');
