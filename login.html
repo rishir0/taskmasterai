@@ -230,94 +230,103 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Function to save or update user data
-    const saveUserData = async (user, onlineStatus) => {
-        try {
-            await setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName || "Anonymous",
-                online: onlineStatus,
-                lastSeen: serverTimestamp() // Use server timestamp
-            }, { merge: true });
-            console.log(`User data saved and online status set to ${onlineStatus}`);
-        } catch (error) {
-            console.error("Error saving user data:", error);
-        }
-    };
-
-    // Update online status when the user is logged in
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            saveUserData(user, true); // Set status to online
-
-            // Set status to offline when the tab or browser is closed
-            window.addEventListener('beforeunload', () => {
-                saveUserData(user, false); // Set status to offline
-            });
-
-            // Set status to offline when the user explicitly logs out
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await saveUserData(user, false);
-                    await auth.signOut();
-                    window.location.href = "signin.html"; // Redirect to sign-in page after logging out
-                });
-            }
-        }
-    });
-
-    // Google Sign-In
-    const provider = new GoogleAuthProvider();
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then(async (result) => {
-                    const user = result.user;
-                    console.log('Google Sign-In successful:', user);
-
-                    // Save user data and update status
-                    await saveUserData(user, true);
-
-                    // Redirect to dashboard
-                    window.location.href = "dashboard.html";
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                    alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-                });
-        });
+// Function to save or update user data
+const saveUserData = async (user, onlineStatus) => {
+    try {
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || "Anonymous",
+            online: onlineStatus,
+            lastSeen: serverTimestamp() // Use server timestamp
+        }, { merge: true });
+        console.log(`User data saved and online status set to ${onlineStatus}`);
+    } catch (error) {
+        console.error("Error saving user data:", error);
     }
+};
 
-    // Sign-In Form
-    const signinForm = document.getElementById('signin-form');
-    if (signinForm) {
-        signinForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                console.log('Sign-In successful:', user);
+// Update online status when the user is logged in
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        saveUserData(user, true); // Set status to online
+
+        // Set status to offline when the tab or browser is closed
+        window.addEventListener('beforeunload', () => {
+            saveUserData(user, false); // Set status to offline
+        });
+
+        // Set status to offline when the user explicitly logs out
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                await saveUserData(user, false);
+                await auth.signOut();
+                window.location.href = "signin.html"; // Redirect to sign-in page after logging out
+            });
+        }
+    }
+});
+
+// Google Sign-In
+const provider = new GoogleAuthProvider();
+const googleLoginBtn = document.getElementById('google-login-btn');
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, provider)
+            .then(async (result) => {
+                const user = result.user;
+                console.log('Google Sign-In successful:', user);
 
                 // Save user data and update status
                 await saveUserData(user, true);
 
                 // Redirect to dashboard
                 window.location.href = "dashboard.html";
-            } catch (error) {
+            })
+            .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
+                if (errorCode === "auth/popup-closed-by-user") {
+                    alert("Google login canceled.");
+                } else {
+                    console.error('Error with Google Sign-In:', errorCode, errorMessage);
+                    alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
+                }
+            });
+    });
+}
+
+// Sign-In Form
+const signinForm = document.getElementById('signin-form');
+if (signinForm) {
+    signinForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            console.log('Sign-In successful:', user);
+
+            // Save user data and update status
+            await saveUserData(user, true);
+
+            // Redirect to dashboard
+            window.location.href = "dashboard.html";
+        } catch (error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            if (errorCode === "auth/wrong-password") {
+                alert("Incorrect password. Please try again.");
+            } else {
                 console.error('Error signing in:', errorCode, errorMessage);
                 alert(`Error signing in: ${errorCode} - ${errorMessage}`);
             }
-        });
-    }
+        }
+    });
+}
+
 </script>
 </body>
 </html>
