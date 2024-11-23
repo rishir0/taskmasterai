@@ -288,41 +288,63 @@
         });
     }
 
-    // Sign-Up Form
-    const signupForm = document.getElementById('signup-form');
-    if (signupForm) {
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const firstName = document.getElementById('firstname').value;
-            const lastName = document.getElementById('lastname').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+// Sign-Up Form
+const signupForm = document.getElementById('signup-form');
+if (signupForm) {
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const firstName = document.getElementById('firstname').value;
+        const lastName = document.getElementById('lastname').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    // Signed up
-                    const user = userCredential.user;
-                    const displayName = `${firstName} ${lastName}`;
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+                // Signed up
+                const user = userCredential.user;
+                const displayName = `${firstName} ${lastName}`;
 
-                    // Update user's profile
-                    await updateProfile(user, { displayName: displayName });
+                // Update user's profile
+                await updateProfile(user, { displayName: displayName });
 
-                    console.log('Sign-Up successful:', user);
+                console.log('Sign-Up successful:', user);
 
-                    // Save user data with the new user flag
-                    await saveUserData(user, true);
+                // Save user data with the new user flag
+                await saveUserData(user, true);
 
-                    // Redirect to splash screen
-                    window.location.href = "splashscreen.html";
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.error('Error signing up:', errorCode, errorMessage);
-                    alert(`Error signing up: ${errorCode} - ${errorMessage}`);
-                });
-        });
-    }
+                // Redirect to splash screen
+                window.location.href = "splashscreen.html";
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Error signing up:', errorCode, errorMessage);
+
+                // User-friendly error messages
+                let userMessage = 'An error occurred during sign-up. Please try again.';
+                switch (errorCode) {
+                    case 'auth/email-already-in-use':
+                        userMessage = 'This email address is already registered. Please use a different email or log in.';
+                        break;
+                    case 'auth/invalid-email':
+                        userMessage = 'The email address is not valid. Please check and try again.';
+                        break;
+                    case 'auth/weak-password':
+                        userMessage = 'Your password is too weak. Please use a stronger password.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        userMessage = 'Sign-up is currently not allowed. Please contact support.';
+                        break;
+                    default:
+                        userMessage = 'An unexpected error occurred. Please try again later.';
+                        break;
+                }
+
+                alert(userMessage);
+            });
+    });
+}
+
     </script>
 </body>
 </html>
