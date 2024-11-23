@@ -8,8 +8,11 @@ function App() {
     <div className="min-h-screen bg-gray-900 font-poppins">
       <header className="fixed w-full bg-gray-900/80 backdrop-blur-lg border-b border-gray-800 z-50">
         <div className="container mx-auto px-4 py-4">
-          <nav a href="index.html" className="flex items-center justify-between">
-            <Logo />
+          <nav className="flex items-center justify-between">
+            {/* Make the logo clickable and navigate to index.html */}
+            <a href="index.html">
+              <Logo />
+            </a>
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-300 hover:text-indigo-400 transition-colors">Features</a>
