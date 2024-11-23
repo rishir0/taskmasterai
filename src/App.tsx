@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Logo } from './components/Logo';
 import { HeroSection } from './components/HeroSection';
 import { MainFeatures } from './components/MainFeatures';
-import { auth } from './firebase';  // Import Firebase auth
+import { auth, db } from './firebase';
 
 function App() {
   const [user, setUser] = useState(null);  // State to track the authenticated user
