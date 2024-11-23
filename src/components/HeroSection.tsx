@@ -50,22 +50,23 @@ export function HeroSection() {
             </a>
           </div>
           
-          <div className="mt-12 flex items-center justify-center gap-8">
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gray-900 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={`https://source.unsplash.com/random/100x100?face&${i}`}
-                    alt={`User ${i}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-gray-400">
-              Joined by <span className="text-indigo-400 font-semibold">10,000+</span> professionals
-            </p>
-          </div>
+<div className="mt-12 flex items-center justify-center gap-8">
+  <div className="flex -space-x-2">
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gray-900 flex items-center justify-center overflow-hidden">
+        <img
+          src={`https://randomuser.me/api/portraits/men/${i}.jpg`}  // generic male faces
+          alt={`User ${i}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    ))}
+  </div>
+  <p className="text-sm text-gray-400">
+    Joined by <span className="text-indigo-400 font-semibold">10,000+</span> professionals
+  </p>
+</div>
+
         </div>
       </div>
     </section>
