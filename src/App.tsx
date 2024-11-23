@@ -19,7 +19,7 @@ function App() {
               <a href="pricing.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Pricing</a>
               <a href="contact.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Contact</a>
               <a href="signup.html" className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition-all transform hover:scale-105">
-                Get Started
+                Get Started Today
               </a>
             </div>
 
