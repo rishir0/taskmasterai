@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Logo } from './components/Logo';
 import { HeroSection } from './components/HeroSection';
 import { MainFeatures } from './components/MainFeatures';
-import Dashboard from './components/Dashboard';  // Add the new Dashboard component
 
 function App() {
   return (
