@@ -29,7 +29,7 @@ export function HeroSection() {
           </h1>
           
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Upload any document, audio, or video and let TaskMaster
+            Upload any document, audio, or video and let
             <span className="text-indigo-400"> TaskMaster</span> organize, summarize, and transform them into useful insights.
           </p>
           
