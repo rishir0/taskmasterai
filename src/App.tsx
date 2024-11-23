@@ -8,7 +8,7 @@ function App() {
     <div className="min-h-screen bg-gray-900 font-poppins">
       <header className="fixed w-full bg-gray-900/80 backdrop-blur-lg border-b border-gray-800 z-50">
         <div className="container mx-auto px-4 py-4">
-          <nav <a href="index.html" className="flex items-center justify-between">
+          <nav a href="index.html" className="flex items-center justify-between">
             <Logo />
             
             <div className="hidden md:flex items-center space-x-8">
