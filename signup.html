@@ -263,30 +263,50 @@
         }
     });
 
-    // Google Sign-In
-    const provider = new GoogleAuthProvider();
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then(async (result) => {
-                    const user = result.user;
-                    console.log('Google Sign-In successful:', user);
+// Google Sign-In
+const provider = new GoogleAuthProvider();
+const googleLoginBtn = document.getElementById('google-login-btn');
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, provider)
+            .then(async (result) => {
+                const user = result.user;
+                console.log('Google Sign-In successful:', user);
 
-                    // Save user data and update status
-                    await saveUserData(user, true);
+                // Save user data and update status
+                await saveUserData(user, true);
 
-                    // Redirect to dashboard
-                    window.location.href = "splashscreen.html";
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.error('Error with Google Sign-In:', errorCode, errorMessage);
-                    alert(`Error with Google Sign-In: ${errorCode} - ${errorMessage}`);
-                });
-        });
-    }
+                // Redirect to dashboard
+                window.location.href = "splashscreen.html";
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Error with Google Sign-In:', errorCode, errorMessage);
+
+                // User-friendly error messages
+                let userMessage = 'An error occurred during Google Sign-In. Please try again.';
+                switch (errorCode) {
+                    case 'auth/cancelled-popup-request':
+                    case 'auth/popup-closed-by-user':
+                        userMessage = 'Sign-in was canceled. Please try again and complete the process.';
+                        break;
+                    case 'auth/network-request-failed':
+                        userMessage = 'Network error occurred. Please check your connection and try again.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        userMessage = 'Google Sign-In is currently not enabled. Please contact support.';
+                        break;
+                    default:
+                        userMessage = 'An unexpected error occurred. Please try again later.';
+                        break;
+                }
+
+                alert(userMessage);
+            });
+    });
+}
+
 
 // Sign-Up Form
 const signupForm = document.getElementById('signup-form');
