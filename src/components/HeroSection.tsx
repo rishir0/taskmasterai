@@ -33,23 +33,22 @@ export function HeroSection() {
             <span className="text-indigo-400"> TaskMaster</span> organize, summarize, and transform them into useful insights.
           </p>
           
-<div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-  <div className="flex flex-col items-center sm:items-start">
-    <a href="/signup" 
-       className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
-      <span className="text-white">Start now for free</span>
-      <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-    </a>
-    <span className="text-sm text-gray-400 mt-2">No credit card required.</span>
-  </div>
-
-  <a href="#demo" 
-     className="inline-flex items-center px-8 py-3 bg-gray-800/50 text-white rounded-full text-lg font-semibold border border-gray-700/50 backdrop-blur-sm transition-all hover:bg-gray-700/50">
-    Watch demo
-  </a>
-</div>
-
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col items-center">
+              <a href="/signup" 
+                 className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
+                <span className="text-white">Start now for free</span>
+                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+              </a>
+              <span className="text-sm text-gray-400 mt-2">No credit card required.</span>
+            </div>
+            
+            <a href="#demo" 
+               className="inline-flex items-center px-8 py-3 bg-gray-800/50 text-white rounded-full text-lg font-semibold border border-gray-700/50 backdrop-blur-sm transition-all hover:bg-gray-700/50">
+              Watch demo
+            </a>
+          </div>
           
 <div className="mt-12 flex items-center justify-center gap-8">
   <div className="flex -space-x-2">
