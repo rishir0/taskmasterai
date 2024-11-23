@@ -12,7 +12,7 @@ export function HeroSection() {
           <div className="flex justify-center mb-8">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700/50 backdrop-blur-sm">
               <Sparkles className="w-4 h-4 text-yellow-500 mr-2" />
-              <span className="text-sm text-gray-300">Powered by Advanced AI Technology</span>
+              <span className="text-sm text-gray-300">Powered by our Advanced AI Models</span>
             </div>
           </div>
           
@@ -29,8 +29,8 @@ export function HeroSection() {
           </h1>
           
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Upload any document, audio, video, or website and transform it into 
-            <span className="text-indigo-400"> actionable insights</span> with our AI-powered platform.
+            Upload any document, audio, or video and let
+            <span className="text-indigo-400"> TaskMaster</span> organize, summarize, and turn them into tasks, notes, and insights to boost your productivity.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
