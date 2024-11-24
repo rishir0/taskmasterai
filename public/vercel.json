@@ -1,12 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/index",
-      "destination": "/index.html"
+      "source": "/login",
+      "destination": "/dist/login.html"
+    },
+    {
+      "source": "/",
+      "destination": "/dist/index.html"
     },
     {
       "source": "/:path*",
-      "destination": "/:path*.html"
+      "destination": "/dist/:path*"
     }
   ],
   "redirects": [
@@ -16,8 +20,8 @@
       "permanent": true
     },
     {
-      "source": "/:path*.html",
-      "destination": "/:path*",
+      "source": "/login.html",
+      "destination": "/login",
       "permanent": true
     }
   ]
