@@ -1,8 +1,11 @@
 import React from 'react';
 import { GradientMesh } from './GradientMesh';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export function HeroSection() {
+  const { user } = useAuth();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <GradientMesh />
@@ -34,39 +37,42 @@ export function HeroSection() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <div className="flex flex-col items-center">
-              <a href="/signup" 
-                 className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
-                <span className="text-white">Start now for free</span>
-                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-              </a>
-              <span className="text-sm text-gray-400 mt-2">No credit card required.</span>
-            </div>
+            {!user && (
+              <div className="flex flex-col items-center">
+                <a href="/signup" 
+                   className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
+                  <span className="text-white">Start now for free</span>
+                  <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+                </a>
+                <span className="text-sm text-gray-400 mt-2">No credit card required.</span>
+              </div>
+            )}
             
-            <a href="#demo" 
+            <a href={user ? "/dashboard" : "#demo"} 
                className="inline-flex items-center px-8 py-3 bg-gray-800/50 text-white rounded-full text-lg font-semibold border border-gray-700/50 backdrop-blur-sm transition-all hover:bg-gray-700/50">
-              Watch demo
+              {user ? 'Go to Dashboard' : 'Watch demo'}
             </a>
           </div>
           
-<div className="mt-12 flex items-center justify-center gap-8">
-  <div className="flex -space-x-2">
-    {[1, 2, 3, 4].map((i) => (
-      <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gray-900 flex items-center justify-center overflow-hidden">
-        <img
-          src={`https://randomuser.me/api/portraits/men/${i}.jpg`}  // generic male faces
-          alt={`User ${i}`}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    ))}
-  </div>
-  <p className="text-sm text-gray-400">
-    Joined by <span className="text-indigo-400 font-semibold">10,000+</span> professionals
-  </p>
-</div>
-
+          {!user && (
+            <div className="mt-12 flex items-center justify-center gap-8">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gray-900 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={`https://randomuser.me/api/portraits/men/${i}.jpg`}
+                      alt={`User ${i}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-400">
+                Joined by <span className="text-indigo-400 font-semibold">10,000+</span> professionals
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>
