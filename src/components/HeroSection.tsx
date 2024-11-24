@@ -20,10 +20,10 @@ export function HeroSection() {
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            <span className="block">
+            <span className="block mb-4">
               Smart scheduling,
             </span>
-            <span className="block">
+            <span className="block mb-4">
               seamless collaboration
             </span>
             <span className="block">
@@ -42,7 +42,7 @@ export function HeroSection() {
               <a href="/signup" 
                  className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
                 <span className="text-white">Start now for free</span>
-                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-5 h-5 ml-2 text-white transition-transform group-hover:translate-x-1" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
               </a>
             )}
