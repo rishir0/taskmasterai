@@ -32,21 +32,19 @@ export function HeroSection() {
           </h1>
           
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Upload any document, audio, or video and let
-            <span className="text-indigo-400"> TaskMaster</span> organize, summarize, and transform them into useful insights.
+            Upload any document, audio, or video and let{' '}
+            <span className="text-indigo-400">TaskMaster</span>{' '}
+            organize, summarize, and transform them into useful insights.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-row items-center justify-center gap-6">
             {!user && (
-              <div className="flex flex-col items-center">
-                <a href="/signup" 
-                   className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
-                  <span className="text-white">Start now for free</span>
-                  <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-                </a>
-                <span className="text-sm text-gray-400 mt-2">No credit card required.</span>
-              </div>
+              <a href="/signup" 
+                 className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
+                <span className="text-white">Start now for free</span>
+                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+              </a>
             )}
             
             <a href={user ? "/dashboard" : "#demo"} 
