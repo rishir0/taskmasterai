@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/login",
-      "destination": "/dist/login.html"
+      "destination": "/public/login.html"
     },
     {
       "source": "/",
-      "destination": "/dist/index.html"
+      "destination": "/index.html"
     },
     {
       "source": "/:path*",
