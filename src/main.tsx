@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<App />} />
+          <Route path="/" element={<App />} /> {/* Default homepage route */}
         </Routes>
       </AuthProvider>
     </BrowserRouter>
