@@ -1,28 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/login",
-      "destination": "/public/login.html"
-    },
-    {
-      "source": "/",
+      "source": "/(.*)",
       "destination": "/index.html"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/dist/:path*"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/index.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/login.html",
-      "destination": "/login",
-      "permanent": true
     }
   ]
 }
