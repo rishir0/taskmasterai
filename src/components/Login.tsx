@@ -22,28 +22,9 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-gray-900 font-poppins">
-      <header className="fixed w-full bg-gray-900/80 backdrop-blur-lg border-b border-gray-800 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
-            {/* Make the logo clickable and navigate to index.html */}
-            <a href="index.html">
-              <img src="/path/to/logo.png" alt="TaskMaster AI" className="h-8" />
-            </a>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-300 hover:text-indigo-400 transition-colors">Features</a>
-              <a href="pricing.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Pricing</a>
-              <a href="contact.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Contact</a>
-              <a 
-                href={user ? "/dashboard.html" : "/signup.html"} 
-                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full transition-all transform hover:scale-105"
-              >
-                {user ? "Dashboard" : "Get Started Today"}
-              </a>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <head>
+        <title>Login | TaskMaster AI</title>
+      </head>
 
       <main className="flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl">
