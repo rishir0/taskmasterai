@@ -28,7 +28,21 @@ function Login() {
 
       <main className="flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl">
-          <h2 className="text-3xl text-center text-white mb-6">Login to TaskMaster AI</h2>
+          <h2 className="text-3xl text-center text-white mb-2">Login</h2>
+          <p className="text-center text-gray-300 mb-6">Create notes in minutes. Free forever. No credit card required.</p>
+          
+          <button 
+            className="w-full py-3 mb-4 bg-blue-600 text-white rounded-full hover:scale-105 transition-all"
+          >
+            Login with Google
+          </button>
+
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <hr className="w-1/4 border-t border-gray-600" />
+            <span className="text-gray-300">OR</span>
+            <hr className="w-1/4 border-t border-gray-600" />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="text-gray-300">Email</label>
@@ -52,13 +66,18 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <button 
-              type="submit" 
-              className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:scale-105 transition-all"
-            >
-              Login
-            </button>
           </form>
+
+          <div className="text-center mb-6">
+            <a href="/forgot-password" className="text-sm text-indigo-400 hover:text-indigo-500">Forgot password?</a>
+          </div>
+
+          <button 
+            type="submit" 
+            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:scale-105 transition-all"
+          >
+            Login
+          </button>
         </div>
       </main>
 
