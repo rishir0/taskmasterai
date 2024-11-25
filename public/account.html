@@ -1045,14 +1045,14 @@ function signOut() {
             return firebase.auth().signOut();
         }).then(function() {
             // Sign-out successful, redirect to login page
-            window.location.href = "login.html";
+            window.location.href = "login";
         }).catch(function(error) {
             // Handle any errors
             console.error("Error signing out:", error);
         });
     } else {
         // If no user is logged in, simply redirect to login page
-        window.location.href = "login.html";
+        window.location.href = "login";
     }
 }
 
@@ -1064,7 +1064,7 @@ function signOut() {
                 document.getElementById('email').value = user.email;
             } else {
                 // No user is signed in.
-                window.location.href = "login.html"; // Redirect to login page
+                window.location.href = "login"; // Redirect to login page
             }
         });
     });
