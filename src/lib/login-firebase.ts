@@ -38,8 +38,8 @@ export const googleSignIn = async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     console.log("Google Sign-In successful:", user);
-    await saveUserData(user);
-    return user; // Return user info if needed
+    await saveUserData(user); // Save user data to Firestore after successful login
+    return user; // Return user info to use in the calling function
   } catch (error) {
     console.error("Error with Google Sign-In:", error);
     throw error; // Re-throw the error to handle it in the calling function
