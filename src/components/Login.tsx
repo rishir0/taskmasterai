@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // Adjust if necessary to import the correct hook for your auth context
 import { Loader2 } from 'lucide-react';
+import { loginWithEmailPassword, loginWithGoogle } from '../services/login-firebase'; // Adjust the import path
 
 function Login() {
-  const { user, loading, login } = useAuth();
+  const { user, loading, setUser } = useAuth();  // Adjust to match your useAuth context
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    try {
+      const user = await loginWithEmailPassword(email, password);
+      setUser(user);  // Update the user context after successful login
+    } catch (error) {
+      console.error("Error during email login:", error);
+      // Handle errors (e.g., display an error message)
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const user = await loginWithGoogle();
+      setUser(user);  // Update the user context after successful login
+    } catch (error) {
+      console.error("Error during Google login:", error);
+      // Handle errors (e.g., display an error message)
+    }
   };
 
   if (loading) {
@@ -31,19 +48,23 @@ function Login() {
           <h2 className="text-3xl text-center text-white mb-2">Login</h2>
           <p className="text-center text-gray-300 mb-6">Create notes in minutes. Free forever. No credit card required.</p>
           
+          {/* Google Login Button */}
           <button 
+            onClick={handleGoogleLogin}
             className="w-full py-3 mb-4 bg-blue-600 text-white rounded-full hover:scale-105 transition-all"
           >
             Login with Google
           </button>
 
+          {/* OR Divider */}
           <div className="flex items-center justify-center space-x-2 mb-4">
             <hr className="w-1/4 border-t border-gray-600" />
             <span className="text-gray-300">OR</span>
             <hr className="w-1/4 border-t border-gray-600" />
           </div>
 
-          <form onSubmit={handleSubmit}>
+          {/* Email and Password Form */}
+          <form onSubmit={handleEmailLogin}>
             <div className="mb-4">
               <label htmlFor="email" className="text-gray-300">Email</label>
               <input 
@@ -68,33 +89,34 @@ function Login() {
             </div>
           </form>
 
+          {/* Forgot Password Link */}
           <div className="text-center mb-6">
             <a href="/forgot-password" className="text-sm text-indigo-400 hover:text-indigo-500">Forgot password?</a>
           </div>
 
+          {/* Login Button */}
           <button 
             type="submit" 
             className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:scale-105 transition-all"
           >
             Login
           </button>
-        </div>
-      </main>
 
-      <footer className="bg-gray-900 border-t border-gray-800">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <a href="/privacy-policy" className="text-sm text-gray-400 hover:text-indigo-400">Privacy Policy</a>
-              <span className="text-gray-600">|</span>
-              <a href="/terms" className="text-sm text-gray-400 hover:text-indigo-400">Terms & Conditions</a>
-            </div>
-            <p className="text-sm text-gray-400 mt-4 md:mt-0">
-              © 2024 TaskMaster AI. All rights reserved.
+          {/* Additional Links */}
+          <div className="mt-6 text-center text-gray-400">
+            <p>
+              Don't have an account?{' '}
+              <a href="/signup" className="text-indigo-400 hover:text-indigo-500">Sign Up</a>
+            </p>
+            <p className="mt-4 text-sm">
+              By signing in, you agree to our{' '}
+              <a href="/terms" className="text-indigo-400 hover:text-indigo-500">Terms of Service</a> and{' '}
+              <a href="/privacy-policy" className="text-indigo-400 hover:text-indigo-500">Privacy Policy</a>.
             </p>
           </div>
         </div>
-      </footer>
+      </main>
+
     </div>
   );
 }
