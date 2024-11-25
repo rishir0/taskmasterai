@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
-import { Login } from './components/Login';  // Named import
+import Login from './components/Login';  // Default import
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
