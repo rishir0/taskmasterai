@@ -14,7 +14,7 @@ function Login() {
       const user = await emailSignIn(email, password);
       console.log("Logged in as", user);
       // Redirect to splashscreen.html after successful login
-      window.location.href = '/splashscreen.html';
+      window.location.href = '/dashboard.html';
     } catch (error) {
       console.error("Login failed", error);
       // Handle login error (show error message, etc.)
@@ -26,7 +26,7 @@ function Login() {
       const user = await googleSignIn();
       console.log("Logged in with Google", user);
       // Redirect to splashscreen.html after successful login
-      window.location.href = '/splashscreen.html';
+      window.location.href = '/dashboard.html';
     } catch (error) {
       console.error("Google login failed", error);
       // Handle Google login error
