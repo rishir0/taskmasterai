@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext'; // Adjust if necessary to import the correct hook for your auth context
 import { Loader2 } from 'lucide-react';
-import { loginWithEmailPassword, loginWithGoogle } from '../services/login-firebase'; // Adjust the import path
+import { loginWithEmailPassword, loginWithGoogle } from '../lib/login-firebase'; // Adjust the import path
 
 function Login() {
   const { user, loading, setUser } = useAuth();  // Adjust to match your useAuth context
