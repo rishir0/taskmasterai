@@ -39,7 +39,7 @@ export function HeroSection() {
           
           <div className="flex flex-row items-center justify-center gap-6">
             {!user && (
-              <a href="/signup" 
+              <a href="/signup.html" 
                  className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
                 <span className="text-white">Start now for free</span>
                 <ArrowRight className="w-5 h-5 ml-2 text-white transition-transform group-hover:translate-x-1" />
