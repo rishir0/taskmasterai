@@ -10,7 +10,7 @@ export function useSignUpAuth() {
     try {
       setLoading(true);
       await createUserWithEmailAndPassword(auth, email, password);
-      window.location.href = '/dashboard';
+      window.location.href = '/splashscreen.html';
     } catch (err) {
       setError('Failed to create account');
       console.error(err);
@@ -24,7 +24,7 @@ export function useSignUpAuth() {
       setLoading(true);
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      window.location.href = '/dashboard';
+      window.location.href = '/splashscreen.html';
     } catch (err) {
       setError('Failed to sign up with Google');
       console.error(err);
