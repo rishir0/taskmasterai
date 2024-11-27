@@ -5,7 +5,7 @@ import { GoogleSignUpButton } from './google-signup-button';
 export function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { error, signUpWithEmail } = useSignUpAuth();
+  const { error, loading, signUpWithEmail } = useSignUpAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,9 +50,10 @@ export function SignUpForm() {
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <button
           type="submit"
-          className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:scale-105 transition-all"
+          disabled={loading}
+          className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Sign Up
+          {loading ? 'Signing up...' : 'Sign Up'}
         </button>
       </form>
     </>
