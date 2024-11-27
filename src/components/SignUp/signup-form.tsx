@@ -3,13 +3,15 @@ import { useSignUpAuth } from '../../hooks/use-signup-auth';
 import { GoogleSignUpButton } from './google-signup-button';
 
 export function SignUpForm() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { error, loading, signUpWithEmail } = useSignUpAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signUpWithEmail(email, password);
+    await signUpWithEmail(email, password, { firstName, lastName });
   };
 
   return (
@@ -23,6 +25,32 @@ export function SignUpForm() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label htmlFor="firstName" className="text-gray-300">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              className="w-full p-3 mt-2 rounded-lg bg-gray-700 text-white"
+              placeholder="Enter your first name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="lastName" className="text-gray-300">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              className="w-full p-3 mt-2 rounded-lg bg-gray-700 text-white"
+              placeholder="Enter your last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+        </div>
         <div className="mb-4">
           <label htmlFor="email" className="text-gray-300">Email</label>
           <input
