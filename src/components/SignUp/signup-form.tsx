@@ -32,7 +32,7 @@ export function SignUpForm() {
               type="text"
               id="firstName"
               className="w-full p-3 mt-2 rounded-lg bg-gray-700 text-white"
-              placeholder="Enter your first name"
+              placeholder=""
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -44,7 +44,7 @@ export function SignUpForm() {
               type="text"
               id="lastName"
               className="w-full p-3 mt-2 rounded-lg bg-gray-700 text-white"
-              placeholder="Enter your last name"
+              placeholder=""
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
