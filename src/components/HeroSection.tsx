@@ -39,7 +39,7 @@ export function HeroSection() {
           
           <div className="flex flex-row items-center justify-center gap-6">
             {!user && (
-              <a href="/signup.html" 
+              <a href="/signup" 
                  className="group relative inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
                 <span className="text-white">Start now for free</span>
                 <ArrowRight className="w-5 h-5 ml-2 text-white transition-transform group-hover:translate-x-1" />
@@ -47,7 +47,7 @@ export function HeroSection() {
               </a>
             )}
             
-            <a href={user ? "/dashboard" : "#demo"} 
+            <a href={user ? "/dashboard.html" : "#demo"} 
                className="inline-flex items-center px-8 py-3 bg-gray-800/50 text-white rounded-full text-lg font-semibold border border-gray-700/50 backdrop-blur-sm transition-all hover:bg-gray-700/50">
               {user ? 'Go to Dashboard' : 'Watch demo'}
             </a>
