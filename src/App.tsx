@@ -23,7 +23,7 @@ function App() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             {/* Make the logo clickable and navigate to index.html */}
-            <a href="index.html">
+            <a href="/">
               <Logo />
             </a>
             
@@ -32,7 +32,7 @@ function App() {
               <a href="pricing.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Pricing</a>
               <a href="contact.html" className="text-gray-300 hover:text-indigo-400 transition-colors">Contact</a>
               <a 
-                href={user ? "/dashboard.html" : "/signup.html"} 
+                href={user ? "/dashboard.html" : "/signup"} 
                 className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full transition-all transform hover:scale-105"
               >
                 {user ? "Dashboard" : "Get Started Today"}
