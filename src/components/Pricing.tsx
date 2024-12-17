@@ -1,12 +1,12 @@
-// src/components/Pricing.tsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { subscribeToAuthState } from '../lib/pricing-firebase';
+import { Logo } from './components/Logo'; // Adjust if needed based on your directory structure
 
 function Pricing() {
   const { loading } = useAuth();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null); // Replace 'any' with proper user type if needed
   const [isYearly, setIsYearly] = useState(true);
 
   useEffect(() => {
@@ -16,6 +16,14 @@ function Pricing() {
     });
     return () => unsubscribe();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+      </div>
+    );
+  }
 
   // Pricing logic
   const standardPriceText = isYearly ? '$8.99 per month' : '$12.99 per month';
@@ -32,17 +40,38 @@ function Pricing() {
   const standardCtaHref = user ? '/payment.html' : '/signup.html';
   const proCtaHref = user ? '/payment.html' : '/signup.html';
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-900 font-poppins text-white">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-900 font-poppins">
+      <header className="fixed w-full bg-gray-900/80 backdrop-blur-lg border-b border-gray-800 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            {/* Logo link to home */}
+            <a href="/">
+              <Logo />
+            </a>
+            
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-gray-300 hover:text-indigo-400 transition-colors">
+                Features
+              </a>
+              <a href="pricing.html" className="text-gray-300 hover:text-indigo-400 transition-colors">
+                Pricing
+              </a>
+              <a href="contact.html" className="text-gray-300 hover:text-indigo-400 transition-colors">
+                Contact
+              </a>
+              <a
+                href={user ? "/dashboard.html" : "/signup"}
+                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full transition-all transform hover:scale-105"
+              >
+                {user ? "Dashboard" : "Get Started Today"}
+              </a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8 text-white">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-indigo-400 mb-2">Choose Your Perfect Plan</h1>
           <p className="text-gray-300">Select a plan that works best for you.</p>
@@ -128,17 +157,22 @@ function Pricing() {
             </a>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 text-center text-sm text-gray-400">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
-            <a href="/privacy-policy.html" className="hover:underline">Privacy Policy</a>
-            <span>|</span>
-            <a href="/terms.html" className="hover:underline">Terms & Conditions</a>
-          </div>
-          <p>&copy; 2024 TaskMaster AI. All rights reserved.</p>
-        </footer>
       </main>
+
+      <footer className="bg-gray-900 border-t border-gray-800">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <a href="/privacy-policy" className="text-sm text-gray-400 hover:text-indigo-400">Privacy Policy</a>
+              <span className="text-gray-600">|</span>
+              <a href="/terms" className="text-sm text-gray-400 hover:text-indigo-400">Terms & Conditions</a>
+            </div>
+            <p className="text-sm text-gray-400 mt-4 md:mt-0">
+              © 2024 TaskMaster AI. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
