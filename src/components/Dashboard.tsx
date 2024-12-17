@@ -11,7 +11,7 @@ export function Dashboard() {
       <div className="sidebar fixed top-0 left-0 h-full w-64 bg-[#1E1E1E] flex flex-col p-5 box-border gap-5">
         
         {/* Logo Container */}
-        <div className="logo-container flex items-center mb-4"> {/* Changed mb-8 to mb-4 */}
+        <div className="logo-container flex items-center mb-8"> {/* Restored mb-8 */}
           <Logo className="mr-2" />
         </div>
         
