@@ -1,145 +1,72 @@
 import React from 'react';
 import { Home, Settings, Palette, StickyNote, Calendar, Users, Globe, Zap, Cpu, Gem, User } from 'lucide-react';
-// Import your Logo component
 import { Logo } from './Logo';
 
 export function Dashboard() {
   return (
-    <div style={styles.container}>
-      <div style={styles.sidebar}>
-        <div style={styles.logoContainer}>
-          <Logo style={styles.logoIcon} />
+    <div className="container bg-gray-900 text-white h-screen w-full overflow-hidden">
+      <div className="sidebar fixed top-0 left-0 h-full w-64 bg-[#1E1E1E] flex flex-col p-5 box-border gap-5">
+        <div className="logo-container flex items-center mb-8">
+          <Logo className="mr-2" />
         </div>
         
-        <div style={styles.menu}>
-          <div style={styles.menuItem}>
-            <Home style={styles.icon} />
+        <div className="menu flex flex-col gap-4 flex-grow">
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Home className="w-5 h-5" />
             <span>Dashboard</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Settings style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Settings className="w-5 h-5" />
             <span>Settings</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Palette style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Palette className="w-5 h-5" />
             <span>Theme</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <StickyNote style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <StickyNote className="w-5 h-5" />
             <span>Notes</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Calendar style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Calendar className="w-5 h-5" />
             <span>Calendar</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Users style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Users className="w-5 h-5" />
             <span>Friends</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Globe style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Globe className="w-5 h-5" />
             <span>Community</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Zap style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Zap className="w-5 h-5" />
             <span>Distraction Control</span>
           </div>
 
-          <div style={styles.menuItem}>
-            <Cpu style={styles.icon} />
+          <div className="menu-item flex items-center gap-2 cursor-pointer text-base">
+            <Cpu className="w-5 h-5" />
             <span>AI Chat Bot</span>
           </div>
-        </div>
 
-        <button style={styles.upgradeBtn}>
-          <Gem style={styles.icon} />
-          <span>Upgrade to Premium</span>
-        </button>
+          <button className="upgrade-btn bg-gradient-to-r from-pink-500 to-pink-600 text-white border-none py-2 px-4 rounded-full cursor-pointer font-semibold flex items-center gap-2 whitespace-nowrap mt-4">
+            <Gem className="w-5 h-5" />
+            <span>Upgrade to Premium</span>
+          </button>
+        </div>
         
-        <div style={styles.userProfile}>
-          <User style={styles.icon} />
+        <div className="user-profile mt-auto flex items-center gap-2 text-white cursor-pointer">
+          <User className="w-5 h-5" />
           <span>User Name</span>
         </div>
       </div>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    width: '100vw',
-    height: '100vh',
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-    backgroundColor: '#121212', 
-    fontFamily: 'Poppins, sans-serif',
-    color: '#F8F9FA',
-  },
-  sidebar: {
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    height: '100vh',
-    width: '250px',
-    background: '#1E1E1E',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px',
-    boxSizing: 'border-box',
-    gap: '20px',
-  },
-  logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '30px',
-  },
-  logoIcon: {
-    marginRight: '10px',
-  },
-  menu: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    flexGrow: 1,
-  },
-  menuItem: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    fontSize: '16px',
-    color: '#F8F9FA',
-    gap: '10px',
-  },
-  icon: {
-    width: '20px',
-    height: '20px',
-  },
-  upgradeBtn: {
-    background: 'linear-gradient(45deg, #F50057, #FF1493)',
-    color: '#F8F9FA',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '50px',
-    cursor: 'pointer',
-    fontWeight: 600,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  userProfile: {
-    marginTop: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    color: '#F8F9FA',
-    cursor: 'pointer',
-  },
-};
