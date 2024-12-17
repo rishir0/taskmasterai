@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { subscribeToAuthState } from '../lib/pricing-firebase';
-import { Logo } from './components/Logo'; // Adjust if needed based on your directory structure
+import { Logo } from './Logo';
 
 function Pricing() {
   const { loading } = useAuth();
