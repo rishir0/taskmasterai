@@ -5,7 +5,8 @@ import App from './App';
 import Login from './components/Login';
 import { SignUpPage } from './pages/signup-page';
 import { AuthProvider } from './contexts/AuthContext';
-import Pricing from './components/Pricing'; // Import the new Pricing component
+import Pricing from './components/Pricing'; // The Pricing component
+import { Dashboard } from './components/Dashboard'; // Import the Dashboard component
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,7 +16,8 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/pricing" element={<Pricing />} /> {/* New Pricing route */}
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/dashboard" element={<Dashboard />} /> {/* New Dashboard route */}
           <Route path="/" element={<App />} />
         </Routes>
       </AuthProvider>
