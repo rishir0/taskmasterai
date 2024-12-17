@@ -1,208 +1,163 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import {
-  onTasksSnapshot,
-  createTask,
-  createGoal,
-  createProject,
-  createPlan,
-  onGoalsSnapshot,
-  onProjectsSnapshot,
-  onPlansSnapshot,
-  // onEventsSnapshot, etc. as needed
-} from '../lib/dashboard-firebase';
-
-// Example import for Logo component if you have one
-// import { Logo } from './Logo'; 
+import React from 'react';
+// import { Logo } from './Logo'; // Uncomment if you have a Logo component
 
 export function Dashboard() {
-  const { user } = useAuth();
-  const [username, setUsername] = useState('Loading...');
-  const [displayName, setDisplayName] = useState('Loading...');
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [goals, setGoals] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [plans, setPlans] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'tasks' | 'goals' | 'projects' | 'plans'>('tasks');
-  
-  const [taskInput, setTaskInput] = useState('');
-  const [taskDueDate, setTaskDueDate] = useState('');
-  
-  const [goalInput, setGoalInput] = useState('');
-  const [goalDueDate, setGoalDueDate] = useState('');
-  
-  const [projectInput, setProjectInput] = useState('');
-  const [projectDueDate, setProjectDueDate] = useState('');
-  
-  const [planInput, setPlanInput] = useState('');
-  const [planDueDate, setPlanDueDate] = useState('');
-
-  // States for AI summary & weather, productivity stats, etc.
-  const [aiSections, setAiSections] = useState([
-    { title: 'Loading...', content: 'Loading...' },
-    { title: 'Loading...', content: 'Loading...' },
-    { title: 'Loading...', content: 'Loading...' },
-    { title: 'Loading...', content: 'Loading...' },
-  ]);
-  const [weatherInfo, setWeatherInfo] = useState('Loading your weather...');
-  const [weatherEmoji, setWeatherEmoji] = useState('🌤️');
-
-  // Example: load user info and display name
-  useEffect(() => {
-    if (user) {
-      // Fetch user info from Firestore (use a function from dashboard-firebase if available)
-      // For now, let's just set displayName = user.email
-      setDisplayName(user.displayName || user.email || 'User');
-      setUsername(user.displayName || user.email || 'User');
-      
-      // Subscribe to tasks
-      const unsubTasks = onTasksSnapshot(user.uid, (fetchedTasks) => {
-        setTasks(fetchedTasks);
-      });
-      
-      const unsubGoals = onGoalsSnapshot(user.uid, (fetchedGoals) => {
-        setGoals(fetchedGoals);
-      });
-      
-      const unsubProjects = onProjectsSnapshot(user.uid, (fetchedProjects) => {
-        setProjects(fetchedProjects);
-      });
-      
-      const unsubPlans = onPlansSnapshot(user.uid, (fetchedPlans) => {
-        setPlans(fetchedPlans);
-      });
-      
-      return () => {
-        unsubTasks();
-        unsubGoals();
-        unsubProjects();
-        unsubPlans();
-      };
-    }
-  }, [user]);
-
-  const handleCreateTask = async () => {
-    if (!user) return;
-    await createTask(taskInput, taskDueDate ? new Date(taskDueDate) : null, user.uid);
-    setTaskInput('');
-    setTaskDueDate('');
-  };
-
-  const handleCreateGoal = async () => {
-    if (!user) return;
-    await createGoal(goalInput, goalDueDate ? new Date(goalDueDate) : null, user.uid);
-    setGoalInput('');
-    setGoalDueDate('');
-  };
-
-  const handleCreateProject = async () => {
-    if (!user) return;
-    await createProject(projectInput, projectDueDate ? new Date(projectDueDate) : null, user.uid);
-    setProjectInput('');
-    setProjectDueDate('');
-  };
-
-  const handleCreatePlan = async () => {
-    if (!user) return;
-    await createPlan(planInput, planDueDate ? new Date(planDueDate) : null, user.uid);
-    setPlanInput('');
-    setPlanDueDate('');
-  };
-
-  const openTab = (tabName: 'tasks' | 'goals' | 'projects' | 'plans') => {
-    setActiveTab(tabName);
-  };
-
-  // Placeholder for toggling night mode
-  const toggleNightMode = () => {
-    document.body.classList.toggle('night-mode');
-  };
-
   return (
     <div className="container">
-      {/* Sidebar */}
+      <button className="sidebar-toggle">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
       <div className="sidebar">
-        {/* Logo */}
-        <div className="logo" onClick={() => window.location.href = '/'}>
-          {/* If you have a Logo component */}
-          {/* <Logo /> */}
+        <div className="logo" onClick={() => window.location.href='/'}>
+          {/* <Logo /> If you have a Logo component */}
           TaskMaster AI
         </div>
-
+        
         <div className="menu-item" onClick={() => window.location.href='/dashboard'}>
-          {/* Dashboard icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9L12 2L21 9V20C21 20.5304
+                    20.7893 21.0391 20.4142 21.4142C20.0391 
+                    21.7893 19.5304 22 19 22H5C4.46957 22 
+                    3.96086 21.7893 3.58579 21.4142C3.21071 
+                    21.0391 3 20.5304 3 20V9Z"/>
+            <path d="M9 22V12H15V22"/>
+          </svg>
           Dashboard
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/account.html'}>
-          {/* Settings icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 12C15 13.6569 13.6569 15 
+                     12 15C10.3431 15 9 13.6569 9 12C9 
+                     10.3431 10.3431 9 12 9C13.6569 9 15 
+                     10.3431 15 12Z"/>
+            <path d="M12.9046 3.06005C12.6988 3 
+                     12.4659 3 12 3C11.5341 3 11.3012 
+                     3 11.0954 3.06005C10.7942 3.14794 
+                     10.5281 3.32808 10.3346 3.57511 
+                     ..."/>
+          </svg>
           Settings
         </div>
 
-        <div className="menu-item toggle-night-mode" onClick={toggleNightMode}>
+        <div className="menu-item toggle-night-mode" onClick={() => document.body.classList.toggle('night-mode')}>
           <div className="theme-icon">
-            <svg id="theme-icon" /* ... */></svg>
+            <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3V4M12 20V21M4 12H3M6.31412 
+                       6.31412L5.5 5.5M17.6859 
+                       6.31412L18.5 5.5M6.31412 
+                       17.69L5.5 18.5001M17.6859 
+                       17.69L18.5 18.5001M21 
+                       12H20M16 12C16 14.2091 14.2091 
+                       16 12 16C9.79086 16 8 14.2091 8 
+                       12C8 9.79086 9.79086 8 12 8C14.2091 
+                       8 16 9.79086 16 12Z"/>
+            </svg>
           </div>
           Theme
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/notes.html'}>
-          {/* Notes icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff">
+            <path d="M20 14V7C20 5.34315 18.6569 
+                     4 17 4H12M20 14L13.5 20M20 
+                     14H15.5C14.3954 14 13.5 
+                     14.8954 13.5 16V20M13.5 
+                     20H7C5.34315 20 4 18.6569 
+                     4 17V12"/>
+            <path d="M7 4V7M7 10V7M7 7H4M7 
+                     7H10"/>
+          </svg>
           Notes
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/calendar.html'}>
-          {/* Calendar icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff">
+            <path d="M3 9H21M7 3V5M17 3V5M6 12H8M11 
+                     12H13M16 12H18M6 15H8M11 
+                     15H13M16 15H18M6 18H8M11 
+                     18H13M16 18H18M6.2 21H17.8C18.9201 
+                     21 19.4802 21 19.908 20.782C20.2843 
+                     20.5903 20.5903 20.2843 20.782 
+                     19.908C21 19.4802 21 18.9201 
+                     21 17.8V8.2C21 7.07989 21 
+                     6.51984 20.782 6.09202C20.5903 
+                     5.71569 20.2843 5.40973 19.908 
+                     5.21799C19.4802 5 18.9201 5 
+                     17.8 5H6.2C5.0799 5 4.51984 5 
+                     4.09202 5.21799C3.71569 5.40973 
+                     3.40973 5.71569 3.21799 6.09202C3 
+                     6.51984 3 7.07989 3 8.2V17.8C3 
+                     18.9201 3 19.4802 3.21799 
+                     19.908C3.40973 20.2843 3.71569 
+                     20.5903 4.09202 20.782C4.51984 
+                     21 5.07989 21 6.2 21Z"/>
+          </svg>
           Calendar
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/friends.html'}>
-          {/* Friends icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 64 64" stroke="#ffffff" fill="none">
+            <circle cx="29.22" cy="16.28" r="11.14"></circle>
+            <path d="M41.32,35.69c-2.69-1.95-8.34-3.25-12.1-3.25h0A22.55,..."/>
+            <circle cx="45.38" cy="46.92" r="11.94"></circle>
+            <line x1="45.98" y1="39.8" x2="45.98" y2="53.8"></line>
+            <line x1="38.98" y1="46.8" x2="52.98" y2="46.8"></line>
+          </svg>
           Friends
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/coming-soon.html'}>
-          {/* Community icon */}
-          <svg /* ... */></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 164 164" width="74" height="74">
+            <g transform="scale(2.75)"><path d="M11.63,37.02A20.1565..."/></g>
+          </svg>
           Community
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/features.html'}>
-          {/* Distraction Control icon */}
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
           Distraction Control
         </div>
 
         <div className="menu-item" onClick={() => window.location.href='/workschedule.html'}>
-          {/* AI Chat Bot icon */}
-          <svg /* ... */></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 98" fill="white" stroke="white">
+            <path d="..."/>
+          </svg>
           AI Chat Bot
         </div>
 
         <button className="upgrade-btn" onClick={() => window.location.href='/pricing.html'}>
-          <svg /* ... */></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 8l10 14L22 8l-4-6H6L2 8z"/>
+            <path d="M2 8h20"/>
+            <path d="M12 2v20"/>
+          </svg>
           Upgrade to Premium
         </button>
 
         <div className="user-profile" onClick={() => window.location.href='/account.html'}>
           <button className="account-button">
             <div className="user-avatar" id="smallProfilePictureContainer">
-              {/* Profile picture logic could go here */}
+              {/* Default Avatar */}
+              <svg id="defaultAvatar" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 ..."/>
+              </svg>
             </div>
-            <div id="username">{username}</div>
+            <div id="username">Srinivas Bajin <span className="dev-tag">DEV</span></div>
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="main-content">
+        <div className="snowflakes"></div>
         <div className="dashboard-header">
-          <h1>Good morning, <span id="displayName">{displayName}</span></h1>
+          <h1>🌞 Good morning, <span id="displayName">Srinivas Bajin</span></h1>
           <p>"The way to get started is to quit talking and begin doing."</p>
         </div>
 
@@ -211,20 +166,20 @@ export function Dashboard() {
           <div className="ai-assistant-card">
             <h2>
               <div className="ai-generated-tag">
-                <svg className="icon" /* ... */></svg>
-                Your Smart Overview <span className="beta-tag">BETA</span>
-                <span style={{ fontSize: '12px', color: '#777777', marginLeft: '10px' }}>
+                <svg className="icon" xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" style={{width:'1.2em',height:'2em',verticalAlign:'middle'}}>
+                  <path d="..."/>
+                </svg>
+                Your Smart Overview <span className="beta-tag">BETA</span> 
+                <span style={{fontSize: '12px', color: '#777777', marginLeft: '10px'}}>
                   TaskMaster can make mistakes. Verify details.
                 </span>
               </div>
             </h2>
 
-            {aiSections.map((section, idx) => (
-              <div key={idx} className="summary-section">
-                <h3>{section.title}</h3>
-                <div className="section-content">{section.content}</div>
-              </div>
-            ))}
+            <div className="summary-section">
+              <h3>👋 Welcome!</h3>
+              <p>TaskMaster is ready to generate your Smart Overview. To get started, create a task, goal, project, or plan.</p>
+            </div>
           </div>
         </div>
 
@@ -232,8 +187,7 @@ export function Dashboard() {
         <div className="header-section productivity-section">
           <div className="productivity-stats">
             <h3>Your Productivity</h3>
-            <p>✨ Nothing productive scheduled—why not get started?</p>
-            {/* Replace with actual productivity data once available */}
+            <p>✨ Nothing productive scheduled—why not get started? Create a task, goal, project, or plan to make the most of your time & stay productive! ✨</p>
           </div>
         </div>
 
@@ -247,162 +201,49 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Tabs for Tasks/Goals/Projects/Plans */}
+        {/* Tabs */}
         <ul className="nav nav-tabs">
-          <li className={activeTab === 'tasks' ? 'active' : ''}>
-            <a onClick={() => openTab('tasks')} className="tab-link">Tasks</a>
-          </li>
-          <li className={activeTab === 'goals' ? 'active' : ''}>
-            <a onClick={() => openTab('goals')} className="tab-link">Goals</a>
-          </li>
-          <li className={activeTab === 'projects' ? 'active' : ''}>
-            <a onClick={() => openTab('projects')} className="tab-link">Projects</a>
-          </li>
-          <li className={activeTab === 'plans' ? 'active' : ''}>
-            <a onClick={() => openTab('plans')} className="tab-link">Plans</a>
-          </li>
+          <li className="active"><a href="#tasks" className="tab-link">Tasks</a></li>
+          <li><a href="#goals" className="tab-link">Goals</a></li>
+          <li><a href="#projects" className="tab-link">Projects</a></li>
+          <li><a href="#plans" className="tab-link">Plans</a></li>
         </ul>
 
-        {/* Tasks Section */}
-        {activeTab === 'tasks' && (
-          <div id="tasks-section" className="tab-content active">
-            <h2>Tasks</h2>
+        <div id="tasks-section" className="tab-content" style={{display: 'block'}}>
+          <h2>Tasks</h2>
+          <div className="goal-card">
             <div className="form-group">
-              <input
-                type="text"
-                id="task-input"
-                placeholder="Enter new task"
-                value={taskInput}
-                onChange={(e) => setTaskInput(e.target.value)}
-              />
-              <button onClick={handleCreateTask}>Create Task</button>
-              <input
-                type="date"
-                id="task-due-date"
-                value={taskDueDate}
-                onChange={(e) => setTaskDueDate(e.target.value)}
-              />
-            </div>
-            <div id="tasks-list">
-              {tasks.map((task) => (
-                <div key={task.id} className="task-item">
-                  <span>{task.task}</span>
-                  {/* Add edit/delete/complete buttons as needed */}
-                </div>
-              ))}
+              <input type="text" id="task-input" placeholder="Enter new task" />
+              <button>Create Task</button>
+              <input type="date" id="task-due-date" placeholder="Due date" />
             </div>
           </div>
-        )}
-
-        {/* Goals Section */}
-        {activeTab === 'goals' && (
-          <div id="goals-section" className="tab-content active">
-            <h2>Goals</h2>
-            <div className="form-group">
-              <input
-                type="text"
-                id="goal-input"
-                placeholder="Enter new goal"
-                value={goalInput}
-                onChange={(e) => setGoalInput(e.target.value)}
-              />
-              <button onClick={handleCreateGoal}>Create Goal</button>
-              <input
-                type="date"
-                id="goal-due-date"
-                value={goalDueDate}
-                onChange={(e) => setGoalDueDate(e.target.value)}
-              />
-            </div>
-            <div id="goals-list">
-              {goals.map((goal) => (
-                <div key={goal.id} className="goal-item">
-                  <span>{goal.goal}</span>
-                  {/* Add edit/delete/complete buttons */}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Projects Section */}
-        {activeTab === 'projects' && (
-          <div id="projects-section" className="tab-content active">
-            <h2>Projects</h2>
-            <div className="form-group">
-              <input
-                type="text"
-                id="project-input"
-                placeholder="Enter new project"
-                value={projectInput}
-                onChange={(e) => setProjectInput(e.target.value)}
-              />
-              <button onClick={handleCreateProject}>Create Project</button>
-              <input
-                type="date"
-                id="project-due-date"
-                value={projectDueDate}
-                onChange={(e) => setProjectDueDate(e.target.value)}
-              />
-            </div>
-            <div id="projects-list">
-              {projects.map((proj) => (
-                <div key={proj.id} className="project-item">
-                  <span>{proj.project}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Plans Section */}
-        {activeTab === 'plans' && (
-          <div id="plans-section" className="tab-content active">
-            <h2>Plans</h2>
-            <div className="form-group">
-              <input
-                type="text"
-                id="plan-input"
-                placeholder="Enter new plan"
-                value={planInput}
-                onChange={(e) => setPlanInput(e.target.value)}
-              />
-              <button onClick={handleCreatePlan}>Create Plan</button>
-              <input
-                type="date"
-                id="plan-due-date"
-                value={planDueDate}
-                onChange={(e) => setPlanDueDate(e.target.value)}
-              />
-            </div>
-            <div id="plans-list">
-              {plans.map((plan) => (
-                <div key={plan.id} className="plan-item">
-                  <span>{plan.plan}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+          <div id="tasks-list"></div>
+        </div>
       </div>
 
       {/* Timer Sidebar */}
       <div className="timer-sidebar">
         <div className="weather-section">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ margin: 0 }}>Today's Weather</h2>
-            <span id="weather-emoji" style={{ fontSize: '1.5rem' }}>{weatherEmoji}</span>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <h2 style={{margin:0}}>Today's Weather</h2>
+            <span id="weather-emoji" style={{fontSize:'1.5rem'}}>☀️</span>
           </div>
-          <p id="weather-info" style={{ margin: '5px 0' }}>{weatherInfo}</p>
+          <p id="weather-info" style={{margin:'5px 0'}}>
+            Lexington, South Carolina<br/>
+            Sunny 🌞<br/>
+            60.1°F (Feels like: 60.1°F) 🔥<br/>
+            🌬 Wind: 5.6 mph<br/>
+            💧 Humidity: 75%
+          </p>
         </div>
 
         <div className="pomodoro-timer custom-timer">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <h2 contentEditable={true} style={{ flexGrow: 1, margin: 0 }}>Pomodoro Timer</h2>
+          <div style={{display:'flex',alignItems:'center'}}>
+            <h2 contentEditable={true} style={{flexGrow:1,margin:0}}>Pomodoro Timer</h2>
             <button id="add-timer">+</button>
           </div>
-          <input type="text" id="timer" value="25:00" readOnly />
+          <input type="text" id="timer" value="25:00" readOnly/>
           <div className="button-container">
             <button id="start">Start</button>
             <button id="pause">Pause</button>
@@ -411,8 +252,7 @@ export function Dashboard() {
         </div>
 
         <div id="custom-timers">
-          {/* Custom timers would be listed here */}
-          <p>⏰ Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own! ⏰</p>
+          <p>🎉 Looks like you have no current custom timers. To get started, just press the '+' button next to the Pomodoro timer and create your own! 🎉</p>
         </div>
       </div>
     </div>
