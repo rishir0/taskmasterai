@@ -36,9 +36,9 @@ function Pricing() {
   const standardCtaText = user ? 'Subscribe Now' : 'Get Started Now';
   const proCtaText = user ? 'Subscribe Now' : 'Get Started Now';
 
-  const basicCtaHref = user ? '/dashboard.html' : '/signup.html';
-  const standardCtaHref = user ? '/payment.html' : '/signup.html';
-  const proCtaHref = user ? '/payment.html' : '/signup.html';
+  const basicCtaHref = user ? '/dashboard.html' : '/signup';
+  const standardCtaHref = user ? '/payment.html' : '/signup';
+  const proCtaHref = user ? '/payment.html' : '/signup';
 
   return (
     <div className="min-h-screen bg-gray-900 font-poppins">
@@ -54,7 +54,7 @@ function Pricing() {
               <a href="#features" className="text-gray-300 hover:text-indigo-400 transition-colors">
                 Features
               </a>
-              <a href="pricing.html" className="text-gray-300 hover:text-indigo-400 transition-colors">
+              <a href="pricing" className="text-gray-300 hover:text-indigo-400 transition-colors">
                 Pricing
               </a>
               <a href="contact.html" className="text-gray-300 hover:text-indigo-400 transition-colors">
