@@ -5,66 +5,65 @@ import { Logo } from './Logo';
 
 export function Dashboard() {
   return (
-    <div className="container">
-      <div className="sidebar" style={styles.sidebar}>
-        <div className="logo-container" style={styles.logoContainer}>
+    <div style={styles.container}>
+      <div style={styles.sidebar}>
+        <div style={styles.logoContainer}>
           <Logo style={styles.logoIcon} />
-          <span style={styles.logoText}>TaskMaster AI</span>
         </div>
         
-        <div className="menu" style={styles.menu}>
-          <div className="menu-item" style={styles.menuItem}>
+        <div style={styles.menu}>
+          <div style={styles.menuItem}>
             <Home style={styles.icon} />
             <span>Dashboard</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Settings style={styles.icon} />
             <span>Settings</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Palette style={styles.icon} />
             <span>Theme</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <StickyNote style={styles.icon} />
             <span>Notes</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Calendar style={styles.icon} />
             <span>Calendar</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Users style={styles.icon} />
             <span>Friends</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Globe style={styles.icon} />
             <span>Community</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Zap style={styles.icon} />
             <span>Distraction Control</span>
           </div>
 
-          <div className="menu-item" style={styles.menuItem}>
+          <div style={styles.menuItem}>
             <Cpu style={styles.icon} />
             <span>AI Chat Bot</span>
           </div>
         </div>
 
-        <button className="upgrade-btn" style={styles.upgradeBtn}>
+        <button style={styles.upgradeBtn}>
           <Gem style={styles.icon} />
           <span>Upgrade to Premium</span>
         </button>
         
-        <div className="user-profile" style={styles.userProfile}>
+        <div style={styles.userProfile}>
           <User style={styles.icon} />
           <span>User Name</span>
         </div>
@@ -73,16 +72,22 @@ export function Dashboard() {
   );
 }
 
-// Inline styles for simplicity; adapt as needed
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    display: 'flex',
+    width: '100vw',
     height: '100vh',
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden',
     backgroundColor: '#121212', 
     fontFamily: 'Poppins, sans-serif',
     color: '#F8F9FA',
   },
   sidebar: {
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    height: '100vh',
     width: '250px',
     background: '#1E1E1E',
     display: 'flex',
@@ -98,11 +103,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   logoIcon: {
     marginRight: '10px',
-  },
-  logoText: {
-    fontSize: '1.4rem',
-    fontWeight: 700,
-    color: '#6C63FF',
   },
   menu: {
     display: 'flex',
